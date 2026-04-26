@@ -18,7 +18,7 @@ import { addToCart, CART_DUPLICATE_SERVICE_MESSAGE } from "@/lib/store/cart";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
-import { UpsellConfigurator } from "@/components/services/upsell-configurator";
+import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServiceById } from "@/lib/data/services";
 import type { CartItemUpsell } from "@/lib/types";
 
@@ -283,31 +283,16 @@ export function ServiceDetailReadyStore({
       </section>
 
       {service ? (
-        <section id="buy-now" className="py-12 md:py-16">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl rounded-2xl border border-border bg-card p-5 sm:p-6">
-              <h2 className="text-2xl font-bold mb-2">Купи сега</h2>
-              <p className="text-muted-foreground mb-5">Конфигурирай магазина и го добави в кошницата.</p>
-              <div className="mb-5">
-                <Price value={total} className={cn(headingFontClass, "text-3xl text-primary")} />
-              </div>
-              <div className="mb-6">
-                <h3 className="font-semibold mb-3">Допълнителни услуги</h3>
-                <UpsellConfigurator service={service} value={upsells} onChange={setUpsells} />
-              </div>
-              <div className="sticky bottom-4 z-20 pt-3">
-                <button
-                  type="button"
-                  onClick={handleCheckout}
-                  disabled={isAdding}
-                  className="h-12 px-6 text-base rounded-xl bg-orange-500 hover:bg-orange-600 text-white inline-flex items-center justify-center font-semibold disabled:opacity-70"
-                >
-                  {isAdding ? "Добавяне..." : "Добави в кошницата"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
+        <ServiceBuySection
+          service={service}
+          title="Купи сега"
+          description="Конфигурирай магазина и го добави в кошницата."
+          price={total}
+          upsells={upsells}
+          onUpsellsChange={setUpsells}
+          onAddToCart={handleCheckout}
+          isAdding={isAdding}
+        />
       ) : null}
 
       <div className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/95 backdrop-blur px-4 py-3">

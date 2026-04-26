@@ -14,11 +14,13 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { CartItemUpsell, Service } from "@/lib/types";
+import type { UpsellEntryErrors } from "@/components/services/upsell-validation";
 
 interface UpsellConfiguratorProps {
   service: Service;
   value: CartItemUpsell[];
   onChange: (nextValue: CartItemUpsell[]) => void;
+  errors?: UpsellEntryErrors;
 }
 
 function getUpsellAmount(service: Service, item: CartItemUpsell): number {
@@ -38,7 +40,7 @@ function getUpsellAmount(service: Service, item: CartItemUpsell): number {
   return (upsell.pricePerUnit ?? 0) * billableUnits;
 }
 
-export function UpsellConfigurator({ service, value, onChange }: UpsellConfiguratorProps) {
+export function UpsellConfigurator({ service, value, onChange, errors }: UpsellConfiguratorProps) {
   const byId = new Map(value.map((item) => [item.upsellId, item]));
 
   const setUpsell = (upsellId: string, next: CartItemUpsell | null) => {
@@ -172,16 +174,21 @@ export function UpsellConfigurator({ service, value, onChange }: UpsellConfigura
             {upsell.allowEntries && quantity > 0 ? (
               <div className="mt-3 space-y-2">
                 {Array.from({ length: quantity }).map((_, index) => (
-                  <Input
-                    key={`${upsell.id}-entry-${index}`}
-                    value={item?.entries?.[index] ?? ""}
-                    placeholder={`${upsell.entryPlaceholder ?? "Въведи стойност"} #${index + 1}`}
-                    onChange={(event) => {
-                      const entries = [...(item?.entries ?? [])];
-                      entries[index] = event.target.value;
-                      updateEntries(upsell.id, entries);
-                    }}
-                  />
+                  <div key={`${upsell.id}-entry-${index}`}>
+                    <Input
+                      value={item?.entries?.[index] ?? ""}
+                      placeholder={`${upsell.entryPlaceholder ?? "Въведи стойност"} #${index + 1}`}
+                      className={errors?.[upsell.id]?.[index] ? "border-destructive focus-visible:ring-destructive/40" : undefined}
+                      onChange={(event) => {
+                        const entries = [...(item?.entries ?? [])];
+                        entries[index] = event.target.value;
+                        updateEntries(upsell.id, entries);
+                      }}
+                    />
+                    {errors?.[upsell.id]?.[index] ? (
+                      <p className="mt-1 text-xs text-destructive">{errors[upsell.id][index]}</p>
+                    ) : null}
+                  </div>
                 ))}
               </div>
             ) : null}

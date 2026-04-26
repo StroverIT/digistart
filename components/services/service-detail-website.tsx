@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { getServiceById } from "@/lib/data/services";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { cn } from "@/lib/utils";
-import { UpsellConfigurator } from "@/components/services/upsell-configurator";
+import { ServiceBuySection } from "@/components/services/service-buy-section";
 import type { CartItemUpsell } from "@/lib/types";
 
 const service = getServiceById("websites");
@@ -297,31 +297,16 @@ export function ServiceDetailWebsite({
         </div>
       </section>
 
-      <section id="buy-now" className="py-12 md:py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl rounded-2xl border border-border bg-card p-5 sm:p-6">
-            <h2 className="text-2xl font-bold mb-2">Купи сега</h2>
-            <p className="text-muted-foreground mb-5">Конфигурирай услугата и я добави в кошницата.</p>
-            <div className="mb-5">
-              <Price value={selectedOption.price} className="text-3xl text-primary" />
-            </div>
-            <div className="mb-6">
-              <h3 className="font-semibold mb-3">Допълнителни услуги</h3>
-              <UpsellConfigurator service={service} value={upsells} onChange={setUpsells} />
-            </div>
-            <div className="sticky bottom-4 z-20 pt-3">
-              <Button
-                onClick={handleAddToCart}
-                size="lg"
-                disabled={isAdding}
-                className="h-12 px-6 text-base bg-orange-500 hover:bg-orange-600 text-white"
-              >
-                {isAdding ? "Добавяне..." : "Добави в кошницата"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ServiceBuySection
+        service={service}
+        title="Купи сега"
+        description="Конфигурирай услугата и я добави в кошницата."
+        price={selectedOption.price}
+        upsells={upsells}
+        onUpsellsChange={setUpsells}
+        onAddToCart={handleAddToCart}
+        isAdding={isAdding}
+      />
 
       <div className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/95 backdrop-blur px-4 py-3">
         <div className="mx-auto flex items-center justify-between gap-3">
