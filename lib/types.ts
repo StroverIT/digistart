@@ -1,0 +1,137 @@
+// Service types
+export interface ServiceOption {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  isMonthly?: boolean;
+}
+
+export interface ServiceUpsell {
+  id: string;
+  name: string;
+  description: string;
+  pricePerUnit: number;
+  unit: string;
+  min?: number;
+  max?: number;
+  default?: number;
+}
+
+export interface Service {
+  id: string;
+  slug: string;
+  name: string;
+  shortDescription: string;
+  fullDescription: string;
+  icon: string;
+  basePrice: number;
+  isMonthly?: boolean;
+  options: ServiceOption[];
+  upsells: ServiceUpsell[];
+  features: string[];
+  timeline: string;
+}
+
+// Cart types
+export interface CartItemUpsell {
+  upsellId: string;
+  quantity: number;
+}
+
+export interface CartItem {
+  id: string;
+  serviceId: string;
+  serviceName: string;
+  selectedOptionId: string;
+  selectedOptionName: string;
+  basePrice: number;
+  upsells: CartItemUpsell[];
+  totalPrice: number;
+  isMonthly?: boolean;
+}
+
+export interface Cart {
+  items: CartItem[];
+  totalOneTime: number;
+  totalMonthly: number;
+}
+
+// Order types
+export interface CustomerInfo {
+  name: string;
+  email: string;
+  phone: string;
+  company?: string;
+  notes?: string;
+}
+
+export interface Order {
+  id: string;
+  cart: Cart;
+  customer: CustomerInfo;
+  status: "pending" | "paid" | "in_progress" | "completed" | "cancelled";
+  createdAt: string;
+  updatedAt: string;
+  paymentIntentId?: string;
+}
+
+// Analytics types
+export interface DailyStats {
+  date: string;
+  visits: number;
+  orders: number;
+  revenue: number;
+}
+
+export interface ServiceStats {
+  serviceId: string;
+  serviceName: string;
+  orderCount: number;
+  revenue: number;
+}
+
+// Business Lead types
+export type LeadStatus = "prospect" | "contacted" | "accepted" | "declined";
+
+export interface SocialMedia {
+  facebook?: string;
+  instagram?: string;
+  linkedin?: string;
+  twitter?: string;
+  website?: string;
+}
+
+export interface PurchasedService {
+  serviceId: string;
+  serviceName: string;
+  optionName: string;
+  price: number;
+  isMonthly?: boolean;
+  purchasedAt: string;
+}
+
+export interface BusinessLead {
+  id: string;
+  // Business info
+  businessName: string;
+  ownerName?: string;
+  email?: string;
+  phone?: string;
+  address: string;
+  socialMedia?: SocialMedia;
+  notes?: string;
+  // Location
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  // Status & services
+  status: LeadStatus;
+  purchasedServices?: PurchasedService[];
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+  contactedAt?: string;
+  respondedAt?: string;
+}
