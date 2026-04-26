@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ServiceDetailWithConfigurator } from "@/components/services/service-detail-with-configurator";
+import { ServiceDetailSocialMedia } from "@/components/services/service-detail-social-media";
 import { getServiceById } from "@/lib/data/services";
 
 const service = getServiceById("social-media");
@@ -15,5 +15,5 @@ export default function SocialMediaPage() {
     notFound();
   }
 
-  return <ServiceDetailWithConfigurator service={service} />;
+  return <ServiceDetailSocialMedia service={service} />;
 }

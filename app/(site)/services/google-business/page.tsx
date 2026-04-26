@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ServiceDetailWithConfigurator } from "@/components/services/service-detail-with-configurator";
+import { ServiceDetailGoogleBusiness } from "@/components/services/service-detail-google-business";
 import { getServiceById } from "@/lib/data/services";
 
 const service = getServiceById("google-business");
@@ -15,5 +15,5 @@ export default function GoogleBusinessPage() {
     notFound();
   }
 
-  return <ServiceDetailWithConfigurator service={service} />;
+  return <ServiceDetailGoogleBusiness service={service} />;
 }
