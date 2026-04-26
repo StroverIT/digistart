@@ -15,6 +15,7 @@ import { getCart, clearCart } from "@/lib/store/cart";
 import { createOrder } from "@/lib/store/orders";
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
+import { getServiceById } from "@/lib/data/services";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -238,9 +239,32 @@ export default function CheckoutPage() {
                         {item.selectedOptionName}
                       </p>
                       {item.upsells.length > 0 && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          +{item.upsells.length} допълнителни услуги
-                        </p>
+                        <ul className="mt-2 space-y-1">
+                          {item.upsells.map((upsell) => {
+                            const service = getServiceById(item.serviceId);
+                            const serviceUpsell = service?.upsells.find(
+                              (config) => config.id === upsell.upsellId
+                            );
+                            if (!serviceUpsell) return null;
+
+                            const choiceName =
+                              serviceUpsell.kind === "choice"
+                                ? serviceUpsell.choices?.find((choice) => choice.id === upsell.choiceId)
+                                    ?.name
+                                : null;
+
+                            return (
+                              <li key={upsell.upsellId} className="text-xs text-muted-foreground">
+                                + {serviceUpsell.name}
+                                {choiceName ? ` (${choiceName})` : ""}
+                                {upsell.quantity > 0 ? ` x${upsell.quantity}` : ""}
+                                {upsell.entries?.filter(Boolean).length
+                                  ? ` - ${upsell.entries.filter(Boolean).join(", ")}`
+                                  : ""}
+                              </li>
+                            );
+                          })}
+                        </ul>
                       )}
                     </div>
                     <div className="text-right shrink-0">

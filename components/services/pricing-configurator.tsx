@@ -30,7 +30,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
       if (quantity > 0) {
         const upsell = service.upsells.find((u) => u.id === upsellId);
         if (upsell) {
-          total += upsell.pricePerUnit * quantity;
+          total += (upsell.pricePerUnit ?? 0) * quantity;
         }
       }
     }
@@ -126,7 +126,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
           <CardContent className="space-y-4">
             {service.upsells.map((upsell) => {
               const quantity = upsells[upsell.id] || 0;
-              const upsellTotal = upsell.pricePerUnit * quantity;
+              const upsellTotal = (upsell.pricePerUnit ?? 0) * quantity;
 
               return (
                 <div
@@ -147,7 +147,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
                         {upsell.description}
                       </p>
                       <p className="text-sm">
-                        <Price value={upsell.pricePerUnit} className="text-primary font-medium" />
+                        <Price value={upsell.pricePerUnit ?? 0} className="text-primary font-medium" />
                         <span className="text-muted-foreground">
                           {" "}/ {upsell.unit}
                         </span>
@@ -180,7 +180,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
                   {quantity > 0 && (
                     <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
-                        {quantity} x <Price value={upsell.pricePerUnit} />
+                        {quantity} x <Price value={upsell.pricePerUnit ?? 0} />
                       </span>
                       <span className="font-medium text-primary">
                         +<Price value={upsellTotal} className="text-primary font-medium" />

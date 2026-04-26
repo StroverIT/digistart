@@ -11,11 +11,27 @@ export interface ServiceUpsell {
   id: string;
   name: string;
   description: string;
-  pricePerUnit: number;
-  unit: string;
+  kind?: "toggle" | "quantity" | "choice";
+  unit?: string;
+  pricePerUnit?: number;
+  isMonthly?: boolean;
   min?: number;
   max?: number;
   default?: number;
+  helperText?: string;
+  includedUnits?: number;
+  tierStep?: number;
+  tierPrice?: number;
+  choices?: {
+    id: string;
+    name: string;
+    description?: string;
+    pricePerUnit: number;
+    isMonthly?: boolean;
+  }[];
+  allowEntries?: boolean;
+  entryLabel?: string;
+  entryPlaceholder?: string;
 }
 
 export interface Service {
@@ -37,6 +53,9 @@ export interface Service {
 export interface CartItemUpsell {
   upsellId: string;
   quantity: number;
+  choiceId?: string;
+  entries?: string[];
+  note?: string;
 }
 
 export interface CartItem {
@@ -48,6 +67,8 @@ export interface CartItem {
   basePrice: number;
   upsells: CartItemUpsell[];
   totalPrice: number;
+  totalOneTime: number;
+  totalMonthly: number;
   isMonthly?: boolean;
 }
 

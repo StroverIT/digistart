@@ -351,7 +351,7 @@ export default function OrdersPage() {
                                     className="text-sm text-muted-foreground"
                                   >
                                     {serviceUpsell.name} x{upsell.quantity} (+
-                                    <Price value={serviceUpsell.pricePerUnit * upsell.quantity} />)
+                                    <Price value={(serviceUpsell.pricePerUnit ?? 0) * upsell.quantity} />)
                                   </li>
                                 );
                               })}

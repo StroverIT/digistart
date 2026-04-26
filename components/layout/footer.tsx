@@ -1,5 +1,6 @@
 import TransitionLink from "@/components/transitions/TransitionLink";
-import { Zap, Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
+import Image from "next/image";
+import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
 import { siteContact } from "@/lib/site-contact";
 
 const services = [
@@ -24,7 +25,13 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <TransitionLink href="/" className="flex items-center gap-2 mb-4">
-              <Zap className="h-8 w-8 text-primary" />
+              <Image
+                src="/logo.png"
+                alt="DigiStart logo"
+                width={32}
+                height={32}
+                className="h-8 w-8"
+              />
               <span className="text-xl font-bold">
                 Digi<span className="text-primary">Start</span>
               </span>

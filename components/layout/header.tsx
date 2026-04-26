@@ -3,7 +3,8 @@
 import TransitionLink from "@/components/transitions/TransitionLink";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X, ShoppingCart, Zap } from "lucide-react";
+import Image from "next/image";
+import { Menu, X, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { getCartItemCount } from "@/lib/store/cart";
@@ -92,10 +93,14 @@ export function Header() {
           {/* Logo */}
 
           <TransitionLink href="/" className="flex items-center gap-2 group rounded-lg">
-            <div className="relative">
-              <Zap className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
-              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
+            <Image
+              src="/logo.png"
+              alt="DigiStart logo"
+              width={32}
+              height={32}
+              className="h-8 w-8 transition-transform group-hover:scale-110"
+              priority
+            />
             <span className="text-xl font-bold tracking-tight">
               Digi<span className="text-primary">Start</span>
             </span>
@@ -189,7 +194,14 @@ export function Header() {
                   <div className="flex items-center justify-between mb-8">
                     {isHome ? (
                       <span className="flex items-center gap-2" aria-current="page">
-                        <Zap className="h-7 w-7 text-primary" />
+                        <Image
+                          src="/logo.png"
+                          alt="DigiStart logo"
+                          width={28}
+                          height={28}
+                          className="h-7 w-7"
+                          priority
+                        />
                         <span className="text-lg font-bold">
                           Digi<span className="text-primary">Start</span>
                         </span>
@@ -197,7 +209,14 @@ export function Header() {
                     ) : (
                       <SheetClose asChild>
                         <TransitionLink href="/" className="flex items-center gap-2">
-                          <Zap className="h-7 w-7 text-primary" />
+                          <Image
+                            src="/logo.png"
+                            alt="DigiStart logo"
+                            width={28}
+                            height={28}
+                            className="h-7 w-7"
+                            priority
+                          />
                           <span className="text-lg font-bold">
                             Digi<span className="text-primary">Start</span>
                           </span>

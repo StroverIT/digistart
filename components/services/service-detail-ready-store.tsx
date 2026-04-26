@@ -18,9 +18,13 @@ import { addToCart, CART_DUPLICATE_SERVICE_MESSAGE } from "@/lib/store/cart";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
+import { UpsellConfigurator } from "@/components/services/upsell-configurator";
+import { getServiceById } from "@/lib/data/services";
+import type { CartItemUpsell } from "@/lib/types";
 
 const SERVICE_ID = "ready-store";
 const OPTION_ID = "standard";
+const service = getServiceById(SERVICE_ID);
 
 const PAIN_POINTS = [
   {
@@ -82,12 +86,17 @@ export function ServiceDetailReadyStore({
 }: ServiceDetailReadyStoreProps) {
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
+  const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
 
   const total = 499;
 
+  const scrollToBuySection = () => {
+    document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const handleCheckout = () => {
     setIsAdding(true);
-    const result = addToCart(SERVICE_ID, OPTION_ID, []);
+    const result = addToCart(SERVICE_ID, OPTION_ID, upsells);
     if (!result.added) {
       setIsAdding(false);
       if (result.reason === "duplicate") {
@@ -161,11 +170,10 @@ export function ServiceDetailReadyStore({
               />
               <button
                 type="button"
-                onClick={handleCheckout}
-                disabled={isAdding}
+                onClick={scrollToBuySection}
                 className="h-14 px-8 text-lg rounded-xl bg-orange-500 hover:bg-orange-600 text-white inline-flex items-center justify-center font-semibold"
               >
-                {isAdding ? "Добавяне..." : "Поръчай магазин сега"}
+                Купи сега
                 <ArrowRight className="ml-2 h-5 w-5" />
               </button>
             </div>
@@ -274,6 +282,34 @@ export function ServiceDetailReadyStore({
         </div>
       </section>
 
+      {service ? (
+        <section id="buy-now" className="py-12 md:py-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl rounded-2xl border border-border bg-card p-5 sm:p-6">
+              <h2 className="text-2xl font-bold mb-2">Купи сега</h2>
+              <p className="text-muted-foreground mb-5">Конфигурирай магазина и го добави в кошницата.</p>
+              <div className="mb-5">
+                <Price value={total} className={cn(headingFontClass, "text-3xl text-primary")} />
+              </div>
+              <div className="mb-6">
+                <h3 className="font-semibold mb-3">Допълнителни услуги</h3>
+                <UpsellConfigurator service={service} value={upsells} onChange={setUpsells} />
+              </div>
+              <div className="sticky bottom-4 z-20 pt-3">
+                <button
+                  type="button"
+                  onClick={handleCheckout}
+                  disabled={isAdding}
+                  className="h-12 px-6 text-base rounded-xl bg-orange-500 hover:bg-orange-600 text-white inline-flex items-center justify-center font-semibold disabled:opacity-70"
+                >
+                  {isAdding ? "Добавяне..." : "Добави в кошницата"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <div className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/95 backdrop-blur px-4 py-3">
         <div className="mx-auto flex items-center justify-between gap-3">
           <div>
@@ -286,7 +322,7 @@ export function ServiceDetailReadyStore({
             disabled={isAdding}
             className="min-h-11 min-w-30 shrink-0 rounded-lg bg-orange-500 px-4 text-sm font-bold text-white hover:bg-orange-600 disabled:opacity-70"
           >
-            {isAdding ? "Добавяне..." : "Започни сега"}
+            {isAdding ? "Добавяне..." : "Добави в кошницата"}
           </button>
         </div>
       </div>

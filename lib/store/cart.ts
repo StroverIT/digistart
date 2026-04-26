@@ -24,7 +24,15 @@ export function getCart(): Cart {
   }
   
   try {
-    return JSON.parse(stored);
+    const parsed = JSON.parse(stored) as Cart;
+    parsed.items = (parsed.items ?? []).map((item) => {
+      const oneTime = item.totalOneTime ?? (item.isMonthly ? 0 : item.totalPrice);
+      const monthly = item.totalMonthly ?? (item.isMonthly ? item.totalPrice : 0);
+      return { ...item, totalOneTime: oneTime, totalMonthly: monthly };
+    });
+    parsed.totalOneTime = parsed.items.reduce((sum, item) => sum + item.totalOneTime, 0);
+    parsed.totalMonthly = parsed.items.reduce((sum, item) => sum + item.totalMonthly, 0);
+    return parsed;
   } catch {
     return { items: [], totalOneTime: 0, totalMonthly: 0 };
   }
@@ -40,23 +48,50 @@ export function calculateItemTotal(
   serviceId: string,
   optionId: string,
   upsells: CartItemUpsell[]
-): { total: number; isMonthly: boolean } {
+): { total: number; isMonthly: boolean; oneTimeTotal: number; monthlyTotal: number } {
   const service = getServiceById(serviceId);
-  if (!service) return { total: 0, isMonthly: false };
+  if (!service) return { total: 0, isMonthly: false, oneTimeTotal: 0, monthlyTotal: 0 };
 
   const option = service.options.find((o) => o.id === optionId);
-  if (!option) return { total: 0, isMonthly: false };
+  if (!option) return { total: 0, isMonthly: false, oneTimeTotal: 0, monthlyTotal: 0 };
 
-  let total = option.price;
+  let oneTimeTotal = option.isMonthly ? 0 : option.price;
+  let monthlyTotal = option.isMonthly ? option.price : 0;
 
-  for (const upsell of upsells) {
-    const serviceUpsell = service.upsells.find((u) => u.id === upsell.upsellId);
-    if (serviceUpsell) {
-      total += serviceUpsell.pricePerUnit * upsell.quantity;
+  for (const upsellItem of upsells) {
+    const serviceUpsell = service.upsells.find((u) => u.id === upsellItem.upsellId);
+    if (!serviceUpsell || upsellItem.quantity <= 0) continue;
+
+    const isChoice = serviceUpsell.kind === "choice" && serviceUpsell.choices?.length;
+    if (isChoice) {
+      const selectedChoice = serviceUpsell.choices!.find((c) => c.id === upsellItem.choiceId);
+      if (!selectedChoice) continue;
+      const upsellAmount = selectedChoice.pricePerUnit * upsellItem.quantity;
+      if (selectedChoice.isMonthly) monthlyTotal += upsellAmount;
+      else oneTimeTotal += upsellAmount;
+      continue;
     }
+
+    const includedUnits = serviceUpsell.includedUnits ?? 0;
+    const billableUnits = Math.max(0, upsellItem.quantity - includedUnits);
+    let upsellAmount = 0;
+
+    if (serviceUpsell.tierStep && serviceUpsell.tierPrice) {
+      upsellAmount = Math.ceil(billableUnits / serviceUpsell.tierStep) * serviceUpsell.tierPrice;
+    } else {
+      upsellAmount = (serviceUpsell.pricePerUnit ?? 0) * billableUnits;
+    }
+
+    if (serviceUpsell.isMonthly) monthlyTotal += upsellAmount;
+    else oneTimeTotal += upsellAmount;
   }
 
-  return { total, isMonthly: option.isMonthly || false };
+  return {
+    total: oneTimeTotal + monthlyTotal,
+    isMonthly: option.isMonthly || false,
+    oneTimeTotal,
+    monthlyTotal,
+  };
 }
 
 export function addToCart(
@@ -75,7 +110,11 @@ export function addToCart(
   const option = service.options.find((o) => o.id === optionId);
   if (!option) return { cart, added: false, reason: "invalid" };
 
-  const { total, isMonthly } = calculateItemTotal(serviceId, optionId, upsells);
+  const { total, isMonthly, oneTimeTotal, monthlyTotal } = calculateItemTotal(
+    serviceId,
+    optionId,
+    upsells
+  );
 
   const newItem: CartItem = {
     id: `${serviceId}-${optionId}-${Date.now()}`,
@@ -86,6 +125,8 @@ export function addToCart(
     basePrice: option.price,
     upsells,
     totalPrice: total,
+    totalOneTime: oneTimeTotal,
+    totalMonthly: monthlyTotal,
     isMonthly,
   };
 
@@ -104,6 +145,23 @@ export function removeFromCart(itemId: string): Cart {
   return cart;
 }
 
+export function updateCartItemUpsells(itemId: string, upsells: CartItemUpsell[]): Cart {
+  const cart = getCart();
+  const item = cart.items.find((cartItem) => cartItem.id === itemId);
+  if (!item) return cart;
+
+  const totals = calculateItemTotal(item.serviceId, item.selectedOptionId, upsells);
+  item.upsells = upsells;
+  item.totalPrice = totals.total;
+  item.totalOneTime = totals.oneTimeTotal;
+  item.totalMonthly = totals.monthlyTotal;
+  item.isMonthly = totals.isMonthly;
+
+  recalculateTotals(cart);
+  saveCart(cart);
+  return cart;
+}
+
 export function clearCart(): Cart {
   const emptyCart: Cart = { items: [], totalOneTime: 0, totalMonthly: 0 };
   saveCart(emptyCart);
@@ -111,13 +169,8 @@ export function clearCart(): Cart {
 }
 
 function recalculateTotals(cart: Cart): void {
-  cart.totalOneTime = cart.items
-    .filter((item) => !item.isMonthly)
-    .reduce((sum, item) => sum + item.totalPrice, 0);
-  
-  cart.totalMonthly = cart.items
-    .filter((item) => item.isMonthly)
-    .reduce((sum, item) => sum + item.totalPrice, 0);
+  cart.totalOneTime = cart.items.reduce((sum, item) => sum + (item.totalOneTime ?? 0), 0);
+  cart.totalMonthly = cart.items.reduce((sum, item) => sum + (item.totalMonthly ?? 0), 0);
 }
 
 export function getCartItemCount(): number {

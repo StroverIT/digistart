@@ -7,15 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import type { Cart, CartItem } from "@/lib/types";
-import { getCart, removeFromCart } from "@/lib/store/cart";
+import { getCart, removeFromCart, updateCartItemUpsells } from "@/lib/store/cart";
 import { getServiceById } from "@/lib/data/services";
+import { UpsellConfigurator } from "@/components/services/upsell-configurator";
 
 function CartItemCard({
   item,
   onRemove,
+  onUpsellsChange,
 }: {
   item: CartItem;
   onRemove: () => void;
+  onUpsellsChange: (itemId: string, upsells: CartItem["upsells"]) => void;
 }) {
   const service = getServiceById(item.serviceId);
 
@@ -44,30 +47,14 @@ function CartItemCard({
             </div>
 
             {/* Upsells */}
-            {item.upsells.length > 0 && service && (
+            {service && (
               <div className="mt-3 pt-3 border-t border-border">
                 <p className="text-sm font-medium mb-2">Допълнителни услуги:</p>
-                <ul className="space-y-1">
-                  {item.upsells.map((upsell) => {
-                    const serviceUpsell = service.upsells.find(
-                      (u) => u.id === upsell.upsellId
-                    );
-                    if (!serviceUpsell) return null;
-                    return (
-                      <li
-                        key={upsell.upsellId}
-                        className="text-sm text-muted-foreground flex items-center justify-between"
-                      >
-                        <span>
-                          {serviceUpsell.name} x{upsell.quantity}
-                        </span>
-                        <span>
-                          +<Price value={serviceUpsell.pricePerUnit * upsell.quantity} />
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
+                <UpsellConfigurator
+                  service={service}
+                  value={item.upsells}
+                  onChange={(upsells) => onUpsellsChange(item.id, upsells)}
+                />
               </div>
             )}
           </div>
@@ -75,9 +62,19 @@ function CartItemCard({
           {/* Price */}
           <div className="text-right shrink-0">
             <Price value={item.totalPrice} className="text-2xl text-primary" />
-            {item.isMonthly && (
-              <span className="text-sm text-muted-foreground">/мес</span>
-            )}
+            <div className="text-xs text-muted-foreground mt-1">
+              {item.totalOneTime > 0 ? (
+                <span>
+                  Еднократно: <Price value={item.totalOneTime} />
+                </span>
+              ) : null}
+              {item.totalOneTime > 0 && item.totalMonthly > 0 ? <span> • </span> : null}
+              {item.totalMonthly > 0 ? (
+                <span>
+                  Месечно: <Price value={item.totalMonthly} />/мес
+                </span>
+              ) : null}
+            </div>
           </div>
         </div>
       </CardContent>
@@ -103,6 +100,11 @@ export default function CartPage() {
 
   const handleRemove = (itemId: string) => {
     const updatedCart = removeFromCart(itemId);
+    setCart(updatedCart);
+  };
+
+  const handleUpsellsChange = (itemId: string, upsells: CartItem["upsells"]) => {
+    const updatedCart = updateCartItemUpsells(itemId, upsells);
     setCart(updatedCart);
   };
 
@@ -163,6 +165,7 @@ export default function CartPage() {
                   key={item.id}
                   item={item}
                   onRemove={() => handleRemove(item.id)}
+                  onUpsellsChange={handleUpsellsChange}
                 />
               ))}
 
