@@ -12,8 +12,8 @@ export function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5" />
-      
+      <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
+
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
@@ -21,7 +21,7 @@ export function HeroSection() {
       </div>
 
       {/* Grid pattern overlay */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.02]"
         style={{
           backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
@@ -50,7 +50,7 @@ export function HeroSection() {
 
           {/* Subheadline */}
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed text-pretty">
-            Професионални уеб сайтове, онлайн магазини и дигитален маркетинг. 
+            Професионални уеб сайтове, онлайн магазини и дигитален маркетинг.
             Превръщаме вашите идеи в работещи решения, които генерират приходи.
           </p>
 

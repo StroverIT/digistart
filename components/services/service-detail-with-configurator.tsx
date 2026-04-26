@@ -144,6 +144,7 @@ export function ServiceDetailWithConfigurator({
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
 
+
   const handleGoogleCheckout = () => {
     setIsAdding(true);
     addToCart(service.id, GOOGLE_PROFILE_OPTION_ID, []);
