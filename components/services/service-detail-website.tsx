@@ -125,11 +125,12 @@ export function ServiceDetailWebsite() {
               на предварително фиксирана цена. Без скрити такси, без чакане с месеци.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
+              <p className="text-3xl sm:text-4xl font-bold text-primary">{selectedOption.price} лв.</p>
               <Button
                 onClick={handleAddToCart}
                 size="lg"
                 disabled={isAdding}
-                className="h-14 px-8 text-lg"
+                className="h-14 px-8 text-lg bg-orange-500 hover:bg-orange-600 text-white"
               >
                 {isAdding ? "Добавяне..." : "Поръчай своя сайт сега"}
                 <ArrowRight className="ml-2 h-5 w-5" />

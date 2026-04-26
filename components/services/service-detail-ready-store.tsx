@@ -1,159 +1,76 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import TransitionLink from "@/components/transitions/TransitionLink";
 import {
-  ArrowLeft,
-  CheckCircle,
-  FileText,
-  LayoutDashboard,
+  ArrowRight,
+  CheckCircle2,
+  CircleX,
+  ClipboardList,
+  MonitorCheck,
+  Phone,
   Rocket,
   ShoppingCart,
-  TrendingUp,
+  Zap,
 } from "lucide-react";
-import { addToCart, calculateItemTotal } from "@/lib/store/cart";
-import type { CartItemUpsell } from "@/lib/types";
+import { addToCart } from "@/lib/store/cart";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
 const SERVICE_ID = "ready-store";
 const OPTION_ID = "standard";
 
-const FEATURES = [
-  "Индивидуален дизайн с твоето лого",
-  "Качване на първите 20 продукта",
-  "Интеграция на методи за плащане (Stripe/Наложен платеж)",
-  "Мобилна версия (Responsive design)",
-  "Основни SEO настройки",
-  "Безплатен хостинг за първия месец",
+const PAIN_POINTS = [
+  {
+    title: "Ограничен си географски",
+    text: "Ако продаваш само на място, клиентите ти са само хората от твоя град или квартал. Изпускаш хиляди купувачи от цялата страна.",
+  },
+  {
+    title: "Изпускаш продажби, докато спиш",
+    text: "Голяма част от хората пазаруват вечер след работа или през уикендите. Ако нямаш онлайн магазин, тези пари отиват при конкуренцията.",
+  },
+  {
+    title: "Губиш време в чатове",
+    text: "Продажбите само през съобщения във Facebook и Instagram са бавни, объркващи и изискват твоето постоянно внимание. Магазинът автоматизира всичко това.",
+  },
+] as const;
+
+const SOLUTION_ITEMS = [
+  "Индивидуален дизайн: Модерна визия, съобразена с твоя бранд, която вдъхва доверие и стимулира покупките.",
+  "Мобилна версия (Responsive): Магазинът изглежда и работи перфектно на всяко мобилно устройство.",
+  "Методи за плащане: Настройка на наложен платеж, банков път или интеграция за плащане с карта (Stripe/MyPOS).",
+  "Лесен панел за управление: Добавяш продукти, променяш цени и следиш поръчки без сложни кодове.",
+  "Качване на първоначални продукти: Качваме първите ти продукти (например до 20 бр.), за да стартираш веднага.",
+  "Интеграция с куриери (Еконт / Спиди): Подготовка за лесно генериране на товарителници директно от системата.",
 ] as const;
 
 const STEPS = [
   {
-    title: "1. Поръчваш",
-    body: "Избираш пакета и плащаш сигурно онлайн.",
+    title: "Стъпка 1: Поръчка онлайн",
+    body: "Избираш пакета и плащаш бързо и сигурно през нашия сайт. Цената е ясна и крайна - без скрити такси за разработка.",
     icon: ShoppingCart,
   },
   {
-    title: "2. Попълваш",
-    body: "Получаваш кратък въпросник, където качваш лого и информация.",
-    icon: FileText,
+    title: "Стъпка 2: Кратка консултация (до 15 мин)",
+    body: "Свързваме се с теб. Уточняваме продуктите, куриерите, методите на плащане и визията на твоя бранд. Нищо излишно.",
+    icon: Phone,
   },
   {
-    title: "3. Продаваш",
-    body: "До 48 часа магазинът ти е готов за първите клиенти.",
+    title: "Стъпка 3: Демо версия за преглед",
+    body: "Изработваме магазина и ти показваме работна версия. Правим нужните конфигурации според твоите специфични нужди.",
+    icon: MonitorCheck,
+  },
+  {
+    title: "Стъпка 4: Готов за продажби",
+    body: "Магазинът е онлайн. Системата е тествана, клиентите могат да добавят в количката, а ти започваш да получаваш първите си поръчки.",
     icon: Rocket,
   },
 ] as const;
 
-const ADDONS = [
-  {
-    id: "gmb-profile" as const,
-    title: "Google My Business Профил",
-    price: 99,
-  },
-  {
-    id: "facebook-pixel" as const,
-    title: "Facebook Pixel Интеграция",
-    price: 49,
-  },
-] as const;
-
-type AddonId = (typeof ADDONS)[number]["id"];
-
 interface ServiceDetailReadyStoreProps {
-  /** Montserrat 900 (or similar) for headlines */
   headingFontClass: string;
-  /** Inter (or clean UI sans) for body copy */
   bodyFontClass?: string;
   className?: string;
-}
-
-function StorefrontPreview() {
-  return (
-    <div
-      className="relative mx-auto w-full max-w-lg select-none rounded-2xl border border-gray-200/80 bg-white p-3 shadow-2xl shadow-blue-600/10 ring-1 ring-black/5 sm:p-4"
-      aria-hidden
-    >
-      <div className="mb-3 flex items-center justify-between gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 px-3 py-2.5 text-white sm:px-4">
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
-            <LayoutDashboard className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-[10px] font-medium uppercase tracking-wider text-blue-100">
-              DigiStart Store
-            </p>
-            <p className="text-sm font-bold leading-tight">Табло · Поръчки</p>
-          </div>
-        </div>
-        <TrendingUp className="h-5 w-5 shrink-0 text-blue-100" />
-      </div>
-      <div className="grid grid-cols-12 gap-2 sm:gap-3">
-        <div className="col-span-4 space-y-2 rounded-xl bg-gray-50 p-2 sm:p-3">
-          <div className="h-2 w-8 rounded-full bg-blue-600/80" />
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className={cn(
-                "h-2 rounded-full",
-                i === 1 ? "bg-blue-600" : "bg-gray-200"
-              )}
-            />
-          ))}
-        </div>
-        <div className="col-span-8 space-y-2 sm:space-y-3">
-          <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-xl border border-gray-100 bg-white p-2.5 shadow-sm">
-              <p className="text-[10px] text-gray-500">Приход днес</p>
-              <p className="text-lg font-black text-gray-900">1 240 лв</p>
-              <div className="mt-2 h-8 rounded-md bg-gradient-to-t from-blue-600/20 to-transparent" />
-            </div>
-            <div className="rounded-xl border border-gray-100 bg-white p-2.5 shadow-sm">
-              <p className="text-[10px] text-gray-500">Поръчки</p>
-              <p className="text-lg font-black text-gray-900">18</p>
-              <div className="mt-2 flex items-end gap-0.5">
-                {[40, 65, 35, 80, 55, 90].map((h, j) => (
-                  <div
-                    key={j}
-                    className="flex-1 rounded-sm bg-orange-500/85"
-                    style={{ height: `${h}%`, minHeight: "18px" }}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="rounded-xl border border-dashed border-blue-200 bg-blue-50/50 p-2.5">
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-blue-900">
-                Последни продажби
-              </span>
-              <span className="rounded-md bg-white px-1.5 py-0.5 text-[9px] font-medium text-blue-600 ring-1 ring-blue-100">
-                На живо
-              </span>
-            </div>
-            <div className="space-y-1.5">
-              {[1, 2, 3].map((row) => (
-                <div
-                  key={row}
-                  className="flex items-center gap-2 rounded-lg bg-white/90 px-2 py-1.5 shadow-sm ring-1 ring-gray-100"
-                >
-                  <div className="h-8 w-8 rounded-md bg-gray-100" />
-                  <div className="min-w-0 flex-1">
-                    <div className="h-2 w-2/3 max-w-[120px] rounded-full bg-gray-200" />
-                    <div className="mt-1 h-1.5 w-1/3 rounded-full bg-gray-100" />
-                  </div>
-                  <div className="shrink-0 text-[10px] font-bold text-emerald-600">
-                    +{row * 37} лв
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 export function ServiceDetailReadyStore({
@@ -162,32 +79,13 @@ export function ServiceDetailReadyStore({
   className,
 }: ServiceDetailReadyStoreProps) {
   const { push } = useTransitionRouter();
-  const [addons, setAddons] = useState<Record<AddonId, boolean>>({
-    "gmb-profile": false,
-    "facebook-pixel": false,
-  });
   const [isAdding, setIsAdding] = useState(false);
 
-  const cartUpsells: CartItemUpsell[] = useMemo(() => {
-    const list: CartItemUpsell[] = [];
-    if (addons["gmb-profile"]) {
-      list.push({ upsellId: "gmb-profile", quantity: 1 });
-    }
-    if (addons["facebook-pixel"]) {
-      list.push({ upsellId: "facebook-pixel", quantity: 1 });
-    }
-    return list;
-  }, [addons]);
-
-  const { total } = calculateItemTotal(SERVICE_ID, OPTION_ID, cartUpsells);
-
-  const toggleAddon = (id: AddonId) => {
-    setAddons((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+  const total = 499;
 
   const handleCheckout = () => {
     setIsAdding(true);
-    addToCart(SERVICE_ID, OPTION_ID, cartUpsells);
+    addToCart(SERVICE_ID, OPTION_ID, []);
     setTimeout(() => {
       setIsAdding(false);
       push("/кошница");
@@ -197,227 +95,190 @@ export function ServiceDetailReadyStore({
   return (
     <div
       className={cn(
-        "relative min-h-screen bg-gray-50 text-gray-900 antialiased",
+        "pt-20 pb-28 md:pb-16",
         bodyFontClass,
         className
       )}
     >
-      <div className="border-b border-gray-200/80 bg-white">
-        <div className="container mx-auto max-w-6xl px-4 pb-10 pt-24 sm:pb-14 sm:pt-28 md:pt-32">
+      <section className="relative overflow-hidden pt-10 pb-14 md:pt-14 md:pb-18">
+        <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/3 -left-24 h-80 w-80 rounded-full bg-primary/10 blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 -right-24 h-72 w-72 rounded-full bg-primary/5 blur-3xl animate-pulse delay-1000" />
+        </div>
+        <div
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
+
+        <div className="container relative z-10 mx-auto px-4">
           <TransitionLink
             href="/#услуги"
-            className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-blue-600"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Обратно към услугите
+            Към услугите
           </TransitionLink>
 
-          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
-            <div className="order-2 lg:order-1">
-              <span className="inline-flex items-center rounded-full border border-blue-600/20 bg-blue-50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-blue-600 sm:text-xs">
-                Бърза изработка
-              </span>
-              <h1
-                className={cn(
-                  headingFontClass,
-                  "mt-4 text-balance text-4xl font-black leading-[1.05] tracking-tight text-gray-900 sm:text-5xl sm:leading-[1.02] lg:text-6xl"
-                )}
-              >
-                Онлайн Магазин
-              </h1>
-              <p className="mt-4 max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg">
-                Продавай веднага с професионален магазин, настроен специално за
-                твоя бизнес. Без скрити такси.
-              </p>
+          <div className="max-w-4xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+              <ShoppingCart className="h-4 w-4" />
+              Продавай 24/7 без ограничения
+            </span>
+            <h1
+              className={cn(
+                headingFontClass,
+                "mt-6 text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-balance"
+              )}
+            >
+              Готов Онлайн Магазин.{" "}
+              <span className="gradient-text">Твоят бизнес, отворен денонощно.</span>
+            </h1>
+            <p className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
+              Излез на онлайн пазара бързо и без стрес. Получаваш професионален, напълно
+              функциониращ електронен магазин на фиксирана цена. Ти осигуряваш продуктите, ние се
+              грижим за всичко останало.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
               <p
                 className={cn(
                   headingFontClass,
-                  "mt-8 text-4xl font-black tabular-nums tracking-tight text-blue-600 sm:text-5xl"
+                  "text-3xl sm:text-4xl font-bold text-primary tabular-nums"
                 )}
               >
-                Цена: {total} лв.
+                {total} лв.
               </p>
               <button
                 type="button"
                 onClick={handleCheckout}
                 disabled={isAdding}
-                aria-label="Добави в количката и продължи към поръчка"
-                className="mt-6 flex h-14 w-full min-w-0 items-center justify-center rounded-xl bg-orange-500 px-4 text-base font-bold text-white shadow-lg shadow-orange-500/30 transition hover:bg-orange-600 active:scale-[0.99] disabled:opacity-70 sm:min-w-[280px] sm:px-6 sm:w-auto"
+                className="h-14 px-8 text-lg rounded-xl bg-orange-500 hover:bg-orange-600 text-white inline-flex items-center justify-center font-semibold"
               >
-                {isAdding ? "Добавяне..." : "Добави в количката и стартирай"}
+                {isAdding ? "Добавяне..." : "Поръчай магазин сега"}
+                <ArrowRight className="ml-2 h-5 w-5" />
               </button>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="order-1 flex justify-center lg:order-2 lg:justify-end">
-              <div className="relative w-full max-w-lg">
-                <div className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 rounded-full bg-blue-600/15 blur-2xl sm:h-40 sm:w-40" />
-                <div className="pointer-events-none absolute -bottom-8 -left-4 h-28 w-28 rounded-full bg-orange-400/20 blur-2xl" />
-                <StorefrontPreview />
+      <section className="py-16 md:py-20 bg-card/50">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+              Проблемът
+            </span>
+            <h2 className={cn(headingFontClass, "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance")}>
+              Защо губиш пари всеки ден без онлайн магазин?
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Физическият обект има работно време. Твоят сайт - не.
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {PAIN_POINTS.map((item) => (
+              <div
+                key={item.title}
+                className="group bg-card border border-border hover:border-destructive/50 rounded-xl transition-all duration-300"
+              >
+                <div className="p-6 md:p-7">
+                  <CircleX className="h-5 w-5 text-red-500 mb-4" />
+                  <h3 className="font-bold text-lg mb-3">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
+                </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+              Решението
+            </span>
+            <h2 className={cn(headingFontClass, "text-3xl sm:text-4xl md:text-5xl font-bold text-balance")}>
+              Какво е включено в пакета "Онлайн Магазин"?
+            </h2>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {SOLUTION_ITEMS.map((item) => (
+              <div
+                key={item}
+                className="group border border-border bg-card hover:border-primary/50 transition-all duration-300 rounded-xl"
+              >
+                <div className="p-5 md:p-6 flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                  <p className="text-muted-foreground leading-relaxed">{item}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+              Процес
+            </span>
+            <h2 className={cn(headingFontClass, "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance")}>
+              Как да стартираш продажбите? (Само 4 лесни стъпки)
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Процесът е оптимизиран, за да започнеш да печелиш възможно най-бързо.
+            </p>
+          </div>
+          <div className="relative">
+            <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-border to-transparent -translate-y-1/2" />
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {STEPS.map((step, index) => (
+                <div key={step.title} className="relative">
+                  <div className="group bg-card border border-border hover:border-primary/50 transition-colors h-full rounded-xl">
+                    <div className="p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                          <step.icon className="h-5 w-5" />
+                        </div>
+                        <span className="text-3xl font-bold text-muted-foreground/30">
+                          0{index + 1}
+                        </span>
+                        <ClipboardList className="ml-auto h-5 w-5 text-muted-foreground" />
+                      </div>
+                      <h3 className="font-semibold mb-2">{step.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{step.body}</p>
+                    </div>
+                  </div>
+                  {index < STEPS.length - 1 && (
+                    <div className="lg:hidden flex justify-center my-4">
+                      <div className="h-8 w-0.5 bg-border" />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
-
-      <section
-        id="package-includes"
-        className="border-b border-gray-200/80 bg-white py-12 sm:py-16"
-      >
-        <div className="container mx-auto max-w-6xl px-4">
-          <h2
-            className={cn(
-              headingFontClass,
-              "text-balance text-2xl font-black tracking-tight text-gray-900 sm:text-3xl"
-            )}
-          >
-            Какво получаваш в пакета?
-          </h2>
-          <ul className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-            {FEATURES.map((item) => (
-              <li
-                key={item}
-                className="flex gap-3 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4 sm:px-5"
-              >
-                <CheckCircle
-                  className="mt-0.5 h-5 w-5 shrink-0 text-green-600"
-                  strokeWidth={2.25}
-                  aria-hidden
-                />
-                <span className="text-[15px] leading-snug text-gray-700 sm:text-base">
-                  {item}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
       </section>
 
-      <section
-        id="how-it-works"
-        className="border-b border-gray-200/80 bg-gray-50 py-12 sm:py-16"
-      >
-        <div className="container mx-auto max-w-6xl px-4">
-          <h2
-            className={cn(
-              headingFontClass,
-              "text-balance text-2xl font-black tracking-tight text-gray-900 sm:text-3xl"
-            )}
-          >
-            Как работи? (Само 3 стъпки)
-          </h2>
-          <ol className="mt-8 grid list-none gap-4 md:grid-cols-3 md:gap-5">
-            {STEPS.map(({ title, body, icon: Icon }, index) => (
-              <li
-                key={title}
-                className="flex flex-col rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm ring-1 ring-gray-900/5 sm:p-6"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/25">
-                    <Icon className="h-6 w-6" strokeWidth={2} aria-hidden />
-                  </div>
-                  <span className="text-xs font-semibold tabular-nums text-gray-400">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <h3
-                  className={cn(
-                    headingFontClass,
-                    "mt-4 text-lg font-black text-gray-900 sm:text-xl"
-                  )}
-                >
-                  {title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-gray-600 sm:text-[15px]">
-                  {body}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section
-        id="upsells"
-        className="bg-white pb-28 pt-12 sm:pb-16 sm:pt-16 md:pb-16"
-      >
-        <div className="container mx-auto max-w-6xl px-4">
-          <h2
-            className={cn(
-              headingFontClass,
-              "text-balance text-2xl font-black tracking-tight text-gray-900 sm:text-3xl"
-            )}
-          >
-            Увеличи продажбите си (Добавки)
-          </h2>
-          <div className="mt-8 grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-            {ADDONS.map((addon) => {
-              const selected = addons[addon.id];
-              return (
-                <div
-                  key={addon.id}
-                  className={cn(
-                    "flex flex-col rounded-xl border-2 p-4 transition-colors sm:flex-row sm:items-center sm:justify-between sm:p-4",
-                    selected
-                      ? "border-blue-600 bg-blue-50/50"
-                      : "border-gray-100 bg-gray-50/80"
-                  )}
-                >
-                  <div className="min-w-0">
-                    <p className="text-[15px] font-semibold leading-tight text-gray-900 sm:text-base">
-                      {addon.title}
-                    </p>
-                    <p
-                      className={cn(
-                        headingFontClass,
-                        "mt-1 text-lg font-black tabular-nums text-blue-600"
-                      )}
-                    >
-                      {addon.price} лв.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => toggleAddon(addon.id)}
-                    aria-pressed={selected}
-                    className={cn(
-                      "mt-3 inline-flex min-h-10 shrink-0 items-center justify-center rounded-lg px-4 text-sm font-bold transition sm:ml-3 sm:mt-0",
-                      selected
-                        ? "bg-blue-600 text-white hover:bg-blue-700"
-                        : "bg-orange-500 text-white hover:bg-orange-600"
-                    )}
-                  >
-                    {selected ? "Добавено ✓" : "+ Добави"}
-                  </button>
-                </div>
-              );
-            })}
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/95 backdrop-blur px-4 py-3">
+        <div className="mx-auto flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs text-muted-foreground">Пакет "Онлайн Магазин"</p>
+            <p className={cn(headingFontClass, "font-semibold tabular-nums")}>{total} лв.</p>
           </div>
-        </div>
-      </section>
-
-      <div
-        className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200/90 bg-white/90 px-4 py-2.5 shadow-[0_-10px_40px_rgba(15,23,42,0.12)] backdrop-blur-md md:hidden"
-        style={{ paddingBottom: "max(0.625rem, env(safe-area-inset-bottom))" }}
-        role="region"
-        aria-label="Бърза поръчка"
-      >
-        <div className="mx-auto flex max-w-lg items-center justify-between gap-3">
-          <p
-            className={cn(
-              headingFontClass,
-              "text-xl font-black tabular-nums text-gray-900"
-            )}
-          >
-            {total} лв.
-          </p>
           <button
             type="button"
             onClick={handleCheckout}
             disabled={isAdding}
-            aria-label="Купи сега"
-            className="min-h-11 min-w-[7.5rem] shrink-0 rounded-lg bg-orange-500 px-4 text-sm font-bold text-white shadow-md shadow-orange-500/30 hover:bg-orange-600 disabled:opacity-70"
+            className="min-h-11 min-w-30 shrink-0 rounded-lg bg-orange-500 px-4 text-sm font-bold text-white hover:bg-orange-600 disabled:opacity-70"
           >
-            {isAdding ? "..." : "Купи Сега"}
+            {isAdding ? "Добавяне..." : "Започни сега"}
           </button>
         </div>
       </div>
