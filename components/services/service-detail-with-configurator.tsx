@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import type { ReactNode } from "react";
 import { useState } from "react";
@@ -17,6 +17,7 @@ import {
   Rocket,
   Share2,
   ShoppingCart,
+  Smartphone,
   Zap,
 } from "lucide-react";
 import TransitionLink from "@/components/transitions/TransitionLink";
@@ -42,7 +43,7 @@ interface ServiceDetailWithConfiguratorProps {
 
 const GOOGLE_PROFILE_PRICE = 149;
 const GOOGLE_PROFILE_OPTION_ID = "basic";
-const MARKETING_START_PRICE = 399;
+const MARKETING_START_PRICE = 250;
 
 const googlePainPoints = [
   {
@@ -92,25 +93,26 @@ const googleSteps = [
 
 const marketingPainPoints = [
   {
-    title: "Органичният обхват е мъртъв",
-    text: "Алгоритмите на социалните мрежи почти не показват безплатните публикации. Дори последователите ти често не виждат какво предлагаш без реклама.",
+    title: "Нямаш време за качествено съдържание",
+    text: "Писането на текстове, правенето на дизайни и монтирането на Reels отнема часове. Накрая публикуваш нещо набързо, което не носи резултат.",
   },
   {
-    title: "Изгаряш бюджет с бутона Boost",
-    text: "Пускането на реклами през Boost Post е най-бързият начин да похарчиш пари за лайкове, без реални продажби и качествени запитвания.",
+    title: "Органичният обхват не стига",
+    text: "Дори с хубави постове, без правилно настроени реклами в Meta, Google и TikTok достигаш до твърде малко хора и растежът спира.",
   },
   {
-    title: "Конкуренцията ти вече е там",
-    text: "Докато ти се колебаеш, конкурентите ти пускат професионални реклами, достигат твоите потенциални клиенти и взимат техните покупки.",
+    title: "Хаос и липса на стратегия",
+    text: "Публикуваш хаотично без ясен план. Това обърква аудиторията и създава непрофесионално впечатление, което отблъсква купувачите.",
   },
 ] as const;
 
 const marketingSolutionItems = [
-  "Професионален Business Manager: Създаване и правилна техническа настройка на Meta бизнес акаунт.",
-  "Интеграция на Facebook Pixel: Свързване със сайта/магазина за проследяване на покупки и резултати.",
-  "Детайлен анализ на аудиторията: Точно таргетиране по възраст, интереси, локация и поведение.",
-  "Създаване на 1 основна кампания: Кампания за продажби/запитвания с до 3 визии и продаващи текстове.",
-  "Ретаргетинг база: Подготовка на системата да връща с реклами хората, които са посетили сайта ти без да купят.",
+  "Органично съдържание (Meta & TikTok): Създаване и публикуване на ангажиращи постове, каросели, сторита и Reels.",
+  "Професионален Copywriting & Дизайн: Продаващи текстове и визии, съобразени с бранда и актуалните трендове.",
+  "Управление на платени реклами: Настройка и оптимизация на кампании във Facebook, Instagram, Google Ads и TikTok.",
+  "Инсталиране на тракинг (Pixel/Analytics): Свързване на платформите със сайта за точно проследяване на резултатите.",
+  "Месечен план (Content Calendar): Ясен график какво, кога и къде ще бъде публикувано.",
+  "Анализ и отчет: Всеки месец получаваш ясна справка за нови клиенти, продажби и растеж на профилите.",
 ] as const;
 
 const marketingSteps = [
@@ -121,17 +123,17 @@ const marketingSteps = [
   },
   {
     title: "Стъпка 2: Кратка консултация (до 15 мин)",
-    text: "Уточняваме кои продукти/услуги искаш да продаваш, кой е идеалният клиент и какъв дневен рекламен бюджет ще отделяш.",
+    text: "Уточняваме гласа на бранда, ключовите продукти/услуги, идеалния клиент и бюджета за платена реклама.",
     icon: Phone,
   },
   {
-    title: "Стъпка 3: Демо версия и текстове",
-    text: "Подготвяме рекламните текстове, визиите и аудиториите. Преглеждаш всичко, за да е перфектно за бизнеса ти.",
+    title: "Стъпка 3: Демо версия на стратегията",
+    text: "Изготвяме първоначален месечен план за постове, текстове, Reels идеи и рекламни стратегии за преглед и одобрение.",
     icon: MonitorCheck,
   },
   {
-    title: "Стъпка 4: Рекламите са активни",
-    text: "Натискаме старт на кампаниите и рекламите започват да се показват на хиляди нови потенциални клиенти.",
+    title: "Стъпка 4: Всичко е активно",
+    text: "Стартираме органичното съдържание и платените реклами. Профилите ти започват да работят за теб 24/7.",
     icon: Rocket,
   },
 ] as const;
@@ -357,23 +359,24 @@ export function ServiceDetailWithConfigurator({
 
             <div className="max-w-4xl">
               <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-                <Zap className="h-4 w-4" />
-                Достигни до хиляди нови клиенти
+                <Smartphone className="h-4 w-4" />
+                Пълно дигитално присъствие
               </span>
               <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-balance">
-                Професионален Маркетинг Пакет.{" "}
-                <span className="gradient-text">Реални продажби, без празни обещания.</span>
+                Управление на Социални Мрежи и Реклама.{" "}
+                <span className="gradient-text">Ние поемаме контрола, ти броиш продажбите.</span>
               </h1>
               <p className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
-                Започни да рекламираш във Facebook и Instagram правилно. Изграждаме и настройваме
-                твоите първи професионални рекламни кампании на фиксирана цена. Ти определяш
-                бюджета, ние носим резултатите.
+                Забрави за стреса от постоянното мислене какво да публикувам днес. Ние създаваме
+                грабващи Reels, сторита и постове, и управляваме печеливши реклами в Meta, Google
+                и TikTok. Всичко на една ясна, фиксирана цена.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
                 <Price
                   value={MARKETING_START_PRICE}
                   className="text-3xl sm:text-4xl text-primary"
                 />
+                <span className="text-muted-foreground">/месец</span>
                 <Button
                   onClick={() => {
                     setIsAdding(true);
@@ -387,7 +390,7 @@ export function ServiceDetailWithConfigurator({
                   disabled={isAdding}
                   className="h-14 px-8 text-lg bg-orange-500 hover:bg-orange-600 text-white"
                 >
-                  {isAdding ? "Добавяне..." : "Стартирай своите реклами"}
+                  {isAdding ? "Добавяне..." : "Довери ни своите мрежи"}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </div>
@@ -405,7 +408,7 @@ export function ServiceDetailWithConfigurator({
                 Защо хубавият сайт не стига, ако няма кой да го види?
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed">
-                Ако разчиташ само на безплатни публикации, бизнесът ти буксува.
+                Да управляваш бизнес и да си маркетолог едновременно е невъзможно.
               </p>
             </div>
             <div className="grid gap-6 md:grid-cols-3">
@@ -432,7 +435,7 @@ export function ServiceDetailWithConfigurator({
                 Решението
               </span>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-balance">
-                Какво е включено в Маркетинг пакета?
+                Какво е включено в пакета "Социални Мрежи"?
               </h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -461,7 +464,7 @@ export function ServiceDetailWithConfigurator({
                 Как да стартираме кампаниите? (Само 4 лесни стъпки)
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed">
-                Максимално изчистен процес за бързи резултати без сложни маркетингови термини.
+                Ние поемаме тежката работа, за да можеш да се фокусираш върху бизнеса си.
               </p>
             </div>
             <div className="relative">
@@ -499,8 +502,9 @@ export function ServiceDetailWithConfigurator({
         <div className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/95 backdrop-blur px-4 py-3">
           <div className="mx-auto flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs text-muted-foreground">Пакет "Маркетинг старт"</p>
+              <p className="text-xs text-muted-foreground">Пакет "Социални Мрежи"</p>
               <Price value={MARKETING_START_PRICE} className="font-semibold" />
+              <p className="text-xs text-muted-foreground">/мес.</p>
             </div>
             <Button
               onClick={() => {
@@ -514,7 +518,7 @@ export function ServiceDetailWithConfigurator({
               disabled={isAdding}
               className="min-h-11 min-w-30 shrink-0 px-4 text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white"
             >
-              {isAdding ? "Добавяне..." : "Стартирай рекламите"}
+              {isAdding ? "Добавяне..." : "Стартирай сега"}
             </Button>
           </div>
         </div>
