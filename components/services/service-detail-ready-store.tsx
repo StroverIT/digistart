@@ -1,8 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import TransitionLink from "@/components/transitions/TransitionLink";
 import {
   ArrowLeft,
   CheckCircle,
@@ -15,6 +14,7 @@ import {
 import { addToCart, calculateItemTotal } from "@/lib/store/cart";
 import type { CartItemUpsell } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
 const SERVICE_ID = "ready-store";
 const OPTION_ID = "standard";
@@ -155,7 +155,7 @@ function StorefrontPreview() {
 export function ServiceDetailReadyStore({
   headingFontClass,
 }: ServiceDetailReadyStoreProps) {
-  const router = useRouter();
+  const { push } = useTransitionRouter();
   const [addons, setAddons] = useState<Record<AddonId, boolean>>({
     "gmb-profile": false,
     "facebook-pixel": false,
@@ -184,7 +184,7 @@ export function ServiceDetailReadyStore({
     addToCart(SERVICE_ID, OPTION_ID, cartUpsells);
     setTimeout(() => {
       setIsAdding(false);
-      router.push("/кошница");
+      push("/кошница");
     }, 250);
   };
 
@@ -192,13 +192,13 @@ export function ServiceDetailReadyStore({
     <div className="relative min-h-screen bg-gray-50 text-gray-900">
       <div className="border-b border-gray-200/80 bg-white">
         <div className="container mx-auto max-w-6xl px-4 pb-10 pt-24 sm:pb-14 sm:pt-28 md:pt-32">
-          <Link
+          <TransitionLink
             href="/#услуги"
             className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-blue-600"
           >
             <ArrowLeft className="h-4 w-4" />
             Обратно към услугите
-          </Link>
+          </TransitionLink>
 
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
             <div className="order-2 lg:order-1">

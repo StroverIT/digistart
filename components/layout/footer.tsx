@@ -1,4 +1,4 @@
-import Link from "next/link";
+import TransitionLink from "@/components/transitions/TransitionLink";
 import { Zap, Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
 import { siteContact } from "@/lib/site-contact";
 
@@ -23,12 +23,12 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
+            <TransitionLink href="/" className="flex items-center gap-2 mb-4">
               <Zap className="h-8 w-8 text-primary" />
               <span className="text-xl font-bold">
                 Digi<span className="text-primary">Start</span>
               </span>
-            </Link>
+            </TransitionLink>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
               Изграждаме дигиталното бъдеще на вашия бизнес. Професионални уеб решения, които работят за вас.
             </p>
@@ -69,12 +69,12 @@ export function Footer() {
             <ul className="space-y-3">
               {services.map((service) => (
                 <li key={service.href}>
-                  <Link
+                  <TransitionLink
                     href={service.href}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     {service.label}
-                  </Link>
+                  </TransitionLink>
                 </li>
               ))}
             </ul>
@@ -86,12 +86,12 @@ export function Footer() {
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.href}>
-                  <Link
+                  <TransitionLink
                     href={link.href}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.label}
-                  </Link>
+                  </TransitionLink>
                 </li>
               ))}
             </ul>
@@ -135,18 +135,18 @@ export function Footer() {
             &copy; {new Date().getFullYear()} DigiStart. Всички права запазени.
           </p>
           <div className="flex items-center gap-6">
-            <Link
+            <TransitionLink
               href="/поверителност"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Поверителност
-            </Link>
-            <Link
+            </TransitionLink>
+            <TransitionLink
               href="/условия"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Условия за ползване
-            </Link>
+            </TransitionLink>
           </div>
         </div>
       </div>

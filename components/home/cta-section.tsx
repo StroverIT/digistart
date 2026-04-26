@@ -1,4 +1,4 @@
-import Link from "next/link";
+import TransitionLink from "@/components/transitions/TransitionLink";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { siteContact } from "@/lib/site-contact";
@@ -28,12 +28,12 @@ export function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/#услуги">
+            <TransitionLink href="/#услуги">
               <Button size="lg" className="glow-primary text-lg h-14 px-8">
                 Разгледайте услугите
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </Link>
+            </TransitionLink>
             <a href={`mailto:${siteContact.email}`}>
               <Button variant="outline" size="lg" className="text-lg h-14 px-8">
                 {siteContact.email}

@@ -61,7 +61,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="bg" className="bg-background">
-      <body className={`${montserrat.className} font-sans antialiased`}>
+      <body className={`${montserrat.className} font-sans antialiased overflow-x-hidden`}>
         <DigiStartAnalytics />
         <Providers>{children}</Providers>
       </body>

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import TransitionLink from "@/components/transitions/TransitionLink";
 import { Globe, ShoppingCart, MapPin, Share2, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -63,7 +63,7 @@ export function ServicesSection() {
                         </span>
                       </div>
                     </div>
-                    <Link href={`/услуги/${service.slug}`}>
+                    <TransitionLink href={`/услуги/${service.slug}`}>
                       <Button
                         variant="ghost"
                         className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
@@ -71,7 +71,7 @@ export function ServicesSection() {
                         Научете повече
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
-                    </Link>
+                    </TransitionLink>
                   </div>
                 </div>
               </CardContent>

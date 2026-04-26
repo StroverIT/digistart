@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import TransitionLink from "@/components/transitions/TransitionLink";
 import { ArrowLeft, ArrowRight, ShoppingCart, Trash2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -147,12 +147,12 @@ export default function CartPage() {
               <p className="text-muted-foreground mb-6">
                 Разгледайте нашите услуги и добавете нещо в кошницата.
               </p>
-              <Link href="/#услуги">
+              <TransitionLink href="/#услуги">
                 <Button className="glow-primary">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Към услугите
                 </Button>
-              </Link>
+              </TransitionLink>
             </CardContent>
           </Card>
         ) : (
@@ -167,13 +167,13 @@ export default function CartPage() {
                 />
               ))}
 
-              <Link
+              <TransitionLink
                 href="/#услуги"
                 className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mt-4"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Продължете с пазаруването
-              </Link>
+              </TransitionLink>
             </div>
 
             {/* Order Summary */}
@@ -218,12 +218,12 @@ export default function CartPage() {
                     )}
                   </div>
 
-                  <Link href="/поръчка" className="block">
+                  <TransitionLink href="/поръчка" className="block">
                     <Button size="lg" className="w-full glow-primary">
                       Продължи към поръчка
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
-                  </Link>
+                  </TransitionLink>
 
                   <p className="text-xs text-muted-foreground text-center">
                     Плащането ще бъде извършено през Stripe

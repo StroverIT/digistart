@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import TransitionLink from "@/components/transitions/TransitionLink";
 import { ArrowLeft, CreditCard, Shield, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,9 +12,10 @@ import type { Cart, CustomerInfo } from "@/lib/types";
 import { getCart, clearCart } from "@/lib/store/cart";
 import { createOrder } from "@/lib/store/orders";
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
+import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
 export default function CheckoutPage() {
-  const router = useRouter();
+  const { push } = useTransitionRouter();
   const [cart, setCart] = useState<Cart>({ items: [], totalOneTime: 0, totalMonthly: 0 });
   const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,9 +33,9 @@ export default function CheckoutPage() {
     setCart(currentCart);
 
     if (currentCart.items.length === 0) {
-      router.push("/кошница");
+      push("/кошница");
     }
-  }, [router]);
+  }, [push]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -58,7 +58,7 @@ export default function CheckoutPage() {
     clearCart();
 
     // Redirect to success page
-    router.push(`/поръчка/успех?id=${order.id}`);
+    push(`/поръчка/успех?id=${order.id}`);
   };
 
   if (!mounted || cart.items.length === 0) {
@@ -77,13 +77,13 @@ export default function CheckoutPage() {
     <div className="pt-24 pb-16">
       <div className="container mx-auto px-4">
         {/* Back link */}
-        <Link
+        <TransitionLink
           href="/кошница"
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="h-4 w-4" />
           Обратно към кошницата
-        </Link>
+        </TransitionLink>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left - Form */}

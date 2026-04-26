@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import TransitionLink from "@/components/transitions/TransitionLink";
 import { useState, useEffect } from "react";
 import { Menu, X, ShoppingCart, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -54,7 +54,7 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
+          <TransitionLink href="/" className="flex items-center gap-2 group">
             <div className="relative">
               <Zap className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
               <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -62,25 +62,25 @@ export function Header() {
             <span className="text-xl font-bold tracking-tight">
               Digi<span className="text-primary">Start</span>
             </span>
-          </Link>
+          </TransitionLink>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
-              <Link
+              <TransitionLink
                 key={link.href}
                 href={link.href}
                 className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50"
               >
                 {link.label}
-              </Link>
+              </TransitionLink>
             ))}
           </nav>
 
           {/* Actions */}
           <div className="flex items-center gap-3">
             {/* Cart Button */}
-            <Link href="/кошница">
+            <TransitionLink href="/кошница">
               <Button
                 variant="ghost"
                 size="icon"
@@ -94,12 +94,12 @@ export function Header() {
                 )}
                 <span className="sr-only">Кошница</span>
               </Button>
-            </Link>
+            </TransitionLink>
 
             {/* CTA Button - Desktop */}
-            <Link href="/#услуги" className="hidden md:block">
+            <TransitionLink href="/#услуги" className="hidden md:block">
               <Button className="glow-primary">Започнете сега</Button>
-            </Link>
+            </TransitionLink>
 
             {/* Mobile Menu */}
             <Sheet>
@@ -112,12 +112,12 @@ export function Header() {
               <SheetContent side="right" className="w-80 bg-background border-border">
                 <div className="flex flex-col h-full">
                   <div className="flex items-center justify-between mb-8">
-                    <Link href="/" className="flex items-center gap-2">
+                    <TransitionLink href="/" className="flex items-center gap-2">
                       <Zap className="h-7 w-7 text-primary" />
                       <span className="text-lg font-bold">
                         Digi<span className="text-primary">Start</span>
                       </span>
-                    </Link>
+                    </TransitionLink>
                     <SheetClose asChild>
                       <Button variant="ghost" size="icon">
                         <X className="h-5 w-5" />
@@ -128,23 +128,23 @@ export function Header() {
                   <nav className="flex flex-col gap-2">
                     {navLinks.map((link) => (
                       <SheetClose key={link.href} asChild>
-                        <Link
+                        <TransitionLink
                           href={link.href}
                           className="px-4 py-3 text-lg font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-lg transition-colors"
                         >
                           {link.label}
-                        </Link>
+                        </TransitionLink>
                       </SheetClose>
                     ))}
                   </nav>
 
                   <div className="mt-auto pt-8">
                     <SheetClose asChild>
-                      <Link href="/#услуги" className="block">
+                      <TransitionLink href="/#услуги" className="block">
                         <Button className="w-full glow-primary" size="lg">
                           Започнете сега
                         </Button>
-                      </Link>
+                      </TransitionLink>
                     </SheetClose>
                   </div>
                 </div>

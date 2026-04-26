@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import TransitionLink from "@/components/transitions/TransitionLink";
 import { ArrowLeft, Clock, Check, Globe, ShoppingCart, MapPin, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -54,13 +54,13 @@ export default async function ServicePage({ params }: PageProps) {
     <div className="pt-24 pb-16">
       <div className="container mx-auto px-4">
         {/* Back link */}
-        <Link
+        <TransitionLink
           href="/#услуги"
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="h-4 w-4" />
           Обратно към услугите
-        </Link>
+        </TransitionLink>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Left - Service Info */}
@@ -119,11 +119,11 @@ export default async function ServicePage({ params }: PageProps) {
                 {services
                   .filter((s) => s.id !== service.id)
                   .map((s) => (
-                    <Link key={s.id} href={`/услуги/${s.slug}`}>
+                    <TransitionLink key={s.id} href={`/услуги/${s.slug}`}>
                       <Button variant="outline" size="sm">
                         {s.name}
                       </Button>
-                    </Link>
+                    </TransitionLink>
                   ))}
               </div>
             </div>

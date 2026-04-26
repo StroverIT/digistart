@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+import TransitionLink from "@/components/transitions/TransitionLink";
 import { CheckCircle2, ArrowRight, Mail, Phone, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -142,18 +142,18 @@ function SuccessContent() {
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <Link href="/">
+        <TransitionLink href="/">
           <Button variant="outline" size="lg">
             <Home className="mr-2 h-5 w-5" />
             Към началото
           </Button>
-        </Link>
-        <Link href="/#услуги">
+        </TransitionLink>
+        <TransitionLink href="/#услуги">
           <Button size="lg" className="glow-primary">
             Разгледайте още услуги
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
-        </Link>
+        </TransitionLink>
       </div>
     </div>
   );

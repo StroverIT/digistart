@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { Check, Plus, Minus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,13 +8,14 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import type { Service, CartItemUpsell } from "@/lib/types";
 import { addToCart } from "@/lib/store/cart";
+import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
 interface PricingConfiguratorProps {
   service: Service;
 }
 
 export function PricingConfigurator({ service }: PricingConfiguratorProps) {
-  const router = useRouter();
+  const { push } = useTransitionRouter();
   const [selectedOptionId, setSelectedOptionId] = useState(service.options[0].id);
   const [upsells, setUpsells] = useState<Record<string, number>>({});
   const [isAdding, setIsAdding] = useState(false);
@@ -61,7 +61,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
     
     setTimeout(() => {
       setIsAdding(false);
-      router.push("/кошница");
+      push("/кошница");
     }, 300);
   };
 

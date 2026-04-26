@@ -1,4 +1,4 @@
-import Link from "next/link";
+import TransitionLink from "@/components/transitions/TransitionLink";
 import { ArrowRight, Play, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -66,18 +66,18 @@ export function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/#услуги">
+            <TransitionLink href="/#услуги">
               <Button size="lg" className="glow-primary text-lg h-14 px-8">
                 Вижте услугите
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </Link>
-            <Link href="/#процес">
+            </TransitionLink>
+            <TransitionLink href="/#процес">
               <Button variant="outline" size="lg" className="text-lg h-14 px-8 border-border hover:bg-secondary/50">
                 <Play className="mr-2 h-5 w-5" />
                 Как работим
               </Button>
-            </Link>
+            </TransitionLink>
           </div>
 
           {/* Trust indicators */}
