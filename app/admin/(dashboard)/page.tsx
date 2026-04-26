@@ -88,7 +88,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Общо приходи"
-          value={`${totalRevenue} лв`}
+          value={`€${totalRevenue}`}
           description="Всички времена"
           icon={<CreditCard className="h-6 w-6" />}
           trend="+12% от миналия месец"
@@ -186,7 +186,7 @@ export default function AdminDashboard() {
                         <OrderStatusBadge status={order.status} />
                       </td>
                       <td className="py-3 px-4 text-right font-semibold">
-                        {order.cart.totalOneTime + order.cart.totalMonthly} лв
+                        €{order.cart.totalOneTime + order.cart.totalMonthly}
                       </td>
                     </tr>
                   ))}

@@ -65,7 +65,7 @@ export function ServicesPieChart({ data }: ServicesPieChartProps) {
               color: "oklch(0.13 0.005 260)",
             }}
             formatter={(value: number, name: string, props) => [
-              `${value} поръчки (${props.payload.revenue} лв)`,
+              `${value} поръчки (€${props.payload.revenue})`,
               name,
             ]}
           />

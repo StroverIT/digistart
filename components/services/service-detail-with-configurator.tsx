@@ -191,7 +191,7 @@ export function ServiceDetailWithConfigurator({
               </p>
               <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
                 <p className="text-3xl sm:text-4xl font-bold text-primary tabular-nums">
-                  {GOOGLE_PROFILE_PRICE} лв.
+                  €{GOOGLE_PROFILE_PRICE}
                 </p>
                 <Button
                   onClick={handleGoogleCheckout}
@@ -312,7 +312,7 @@ export function ServiceDetailWithConfigurator({
           <div className="mx-auto flex items-center justify-between gap-3">
             <div>
               <p className="text-xs text-muted-foreground">Пакет "Google Бизнес"</p>
-              <p className="font-semibold tabular-nums">{GOOGLE_PROFILE_PRICE} лв.</p>
+              <p className="font-semibold tabular-nums">€{GOOGLE_PROFILE_PRICE}</p>
             </div>
             <Button
               onClick={handleGoogleCheckout}
@@ -369,7 +369,7 @@ export function ServiceDetailWithConfigurator({
               </p>
               <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
                 <p className="text-3xl sm:text-4xl font-bold text-primary tabular-nums">
-                  {MARKETING_START_PRICE} лв.
+                  €{MARKETING_START_PRICE}
                 </p>
                 <Button
                   onClick={() => {
@@ -497,7 +497,7 @@ export function ServiceDetailWithConfigurator({
           <div className="mx-auto flex items-center justify-between gap-3">
             <div>
               <p className="text-xs text-muted-foreground">Пакет "Маркетинг старт"</p>
-              <p className="font-semibold tabular-nums">{MARKETING_START_PRICE} лв.</p>
+              <p className="font-semibold tabular-nums">€{MARKETING_START_PRICE}</p>
             </div>
             <Button
               onClick={() => {
@@ -544,7 +544,7 @@ export function ServiceDetailWithConfigurator({
                     {service.timeline}
                   </span>
                   <span>
-                    от <span className="text-primary font-semibold">{service.basePrice} лв</span>
+                    от <span className="text-primary font-semibold">€{service.basePrice}</span>
                     {service.isMonthly && "/мес"}
                   </span>
                 </div>

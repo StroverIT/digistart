@@ -208,7 +208,7 @@ export default function CheckoutPage() {
                   </>
                 ) : (
                   <>
-                    Плати {cart.totalOneTime + cart.totalMonthly} лв
+                    Плати €{cart.totalOneTime + cart.totalMonthly}
                     {cart.totalMonthly > 0 && cart.totalOneTime === 0 && "/мес"}
                   </>
                 )}
@@ -241,7 +241,7 @@ export default function CheckoutPage() {
                       )}
                     </div>
                     <div className="text-right shrink-0">
-                      <span className="font-semibold">{item.totalPrice} лв</span>
+                      <span className="font-semibold">€{item.totalPrice}</span>
                       {item.isMonthly && (
                         <span className="text-sm text-muted-foreground">
                           /мес
@@ -258,7 +258,7 @@ export default function CheckoutPage() {
                       <span className="text-muted-foreground">
                         Еднократни услуги
                       </span>
-                      <span>{cart.totalOneTime} лв</span>
+                      <span>€{cart.totalOneTime}</span>
                     </div>
                   )}
                   {cart.totalMonthly > 0 && (
@@ -266,7 +266,7 @@ export default function CheckoutPage() {
                       <span className="text-muted-foreground">
                         Месечни абонаменти
                       </span>
-                      <span>{cart.totalMonthly} лв/мес</span>
+                      <span>€{cart.totalMonthly}/мес</span>
                     </div>
                   )}
                 </div>
@@ -276,7 +276,7 @@ export default function CheckoutPage() {
                     <span className="text-lg font-semibold">Обща сума</span>
                     <div className="text-right">
                       <span className="text-2xl font-bold gradient-text">
-                        {cart.totalOneTime + cart.totalMonthly} лв
+                        €{cart.totalOneTime + cart.totalMonthly}
                       </span>
                       {cart.totalMonthly > 0 && cart.totalOneTime === 0 && (
                         <span className="text-muted-foreground">/мес</span>
@@ -285,7 +285,7 @@ export default function CheckoutPage() {
                   </div>
                   {cart.totalMonthly > 0 && cart.totalOneTime > 0 && (
                     <p className="text-sm text-muted-foreground text-right mt-1">
-                      + {cart.totalMonthly} лв/мес след това
+                      + €{cart.totalMonthly}/мес след това
                     </p>
                   )}
                 </div>

@@ -59,7 +59,7 @@ export function ServicesSection() {
                           {service.basePrice}
                         </span>
                         <span className="text-muted-foreground">
-                          {service.isMonthly ? "лв/мес" : "лв"}
+                          {service.isMonthly ? "€/мес" : "€"}
                         </span>
                       </div>
                     </div>

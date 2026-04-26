@@ -72,7 +72,7 @@ function SuccessContent() {
                     {item.serviceName} - {item.selectedOptionName}
                   </span>
                   <span className="font-medium">
-                    {item.totalPrice} лв
+                    €{item.totalPrice}
                     {item.isMonthly && "/мес"}
                   </span>
                 </div>
@@ -82,7 +82,7 @@ function SuccessContent() {
             <div className="border-t border-border pt-4 mt-4 flex items-center justify-between">
               <span className="font-semibold">Обща сума</span>
               <span className="text-xl font-bold gradient-text">
-                {order.cart.totalOneTime + order.cart.totalMonthly} лв
+                €{order.cart.totalOneTime + order.cart.totalMonthly}
               </span>
             </div>
           </CardContent>

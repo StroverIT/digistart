@@ -227,7 +227,7 @@ export default function OrdersPage() {
                       </td>
                       <td className="py-3 px-4 text-right">
                         <span className="font-semibold">
-                          {order.cart.totalOneTime + order.cart.totalMonthly} лв
+                          €{order.cart.totalOneTime + order.cart.totalMonthly}
                         </span>
                       </td>
                       <td className="py-3 px-4">
@@ -328,7 +328,7 @@ export default function OrdersPage() {
                             </p>
                           </div>
                           <span className="font-semibold">
-                            {item.totalPrice} лв
+                            €{item.totalPrice}
                             {item.isMonthly && "/мес"}
                           </span>
                         </div>
@@ -348,9 +348,8 @@ export default function OrdersPage() {
                                     key={upsell.upsellId}
                                     className="text-sm text-muted-foreground"
                                   >
-                                    {serviceUpsell.name} x{upsell.quantity} (+
-                                    {serviceUpsell.pricePerUnit * upsell.quantity}{" "}
-                                    лв)
+                                    {serviceUpsell.name} x{upsell.quantity} (+€
+                                    {serviceUpsell.pricePerUnit * upsell.quantity})
                                   </li>
                                 );
                               })}
@@ -393,9 +392,9 @@ export default function OrdersPage() {
                     Обща сума
                   </span>
                   <p className="text-2xl font-bold gradient-text">
+                    €
                     {selectedOrder.cart.totalOneTime +
-                      selectedOrder.cart.totalMonthly}{" "}
-                    лв
+                      selectedOrder.cart.totalMonthly}
                   </p>
                 </div>
               </div>

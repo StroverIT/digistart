@@ -98,7 +98,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
                 </div>
                 <div className="text-right shrink-0">
                   <span className="text-xl font-bold text-primary">
-                    {option.price} лв
+                    €{option.price}
                   </span>
                   {option.isMonthly && (
                     <span className="text-sm text-muted-foreground">/мес</span>
@@ -141,7 +141,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
                       </p>
                       <p className="text-sm">
                         <span className="text-primary font-medium">
-                          {upsell.pricePerUnit} лв
+                          €{upsell.pricePerUnit}
                         </span>
                         <span className="text-muted-foreground">
                           {" "}/ {upsell.unit}
@@ -175,10 +175,10 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
                   {quantity > 0 && (
                     <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
-                        {quantity} x {upsell.pricePerUnit} лв
+                        {quantity} x €{upsell.pricePerUnit}
                       </span>
                       <span className="font-medium text-primary">
-                        +{upsellTotal} лв
+                        +€{upsellTotal}
                       </span>
                     </div>
                   )}
@@ -196,7 +196,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
             <span className="text-lg font-medium">Обща цена</span>
             <div className="text-right">
               <span className="text-3xl font-bold gradient-text">
-                {totalPrice} лв
+                €{totalPrice}
               </span>
               {selectedOption.isMonthly && (
                 <span className="text-muted-foreground ml-1">/мес</span>

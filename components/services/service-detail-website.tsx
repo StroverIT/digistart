@@ -142,7 +142,7 @@ export function ServiceDetailWebsite({
             </p>
             <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
               <p className="text-3xl sm:text-4xl font-bold text-primary tabular-nums">
-                {selectedOption.price} лв.
+                €{selectedOption.price}
               </p>
               <Button
                 onClick={handleAddToCart}
@@ -288,7 +288,7 @@ export function ServiceDetailWebsite({
         <div className="mx-auto flex items-center justify-between gap-3">
           <div>
             <p className="text-xs text-muted-foreground">Пакет "Уебсайт"</p>
-            <p className="font-semibold tabular-nums">{selectedOption.price} лв.</p>
+            <p className="font-semibold tabular-nums">€{selectedOption.price}</p>
           </div>
           <Button
             onClick={handleAddToCart}

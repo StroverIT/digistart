@@ -61,7 +61,7 @@ function CartItemCard({
                           {serviceUpsell.name} x{upsell.quantity}
                         </span>
                         <span>
-                          +{serviceUpsell.pricePerUnit * upsell.quantity} лв
+                          +€{serviceUpsell.pricePerUnit * upsell.quantity}
                         </span>
                       </li>
                     );
@@ -74,7 +74,7 @@ function CartItemCard({
           {/* Price */}
           <div className="text-right shrink-0">
             <span className="text-2xl font-bold text-primary">
-              {item.totalPrice} лв
+              €{item.totalPrice}
             </span>
             {item.isMonthly && (
               <span className="text-sm text-muted-foreground">/мес</span>
@@ -189,7 +189,7 @@ export default function CartPage() {
                         Еднократни услуги
                       </span>
                       <span className="font-semibold">
-                        {cart.totalOneTime} лв
+                        €{cart.totalOneTime}
                       </span>
                     </div>
                   )}
@@ -199,7 +199,7 @@ export default function CartPage() {
                         Месечни абонаменти
                       </span>
                       <span className="font-semibold">
-                        {cart.totalMonthly} лв/мес
+                        €{cart.totalMonthly}/мес
                       </span>
                     </div>
                   )}
@@ -208,12 +208,12 @@ export default function CartPage() {
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-semibold">Обща сума</span>
                       <span className="text-2xl font-bold gradient-text">
-                        {cart.totalOneTime + cart.totalMonthly} лв
+                        €{cart.totalOneTime + cart.totalMonthly}
                       </span>
                     </div>
                     {cart.totalMonthly > 0 && cart.totalOneTime > 0 && (
                       <p className="text-sm text-muted-foreground text-right">
-                        + {cart.totalMonthly} лв/мес след това
+                        + €{cart.totalMonthly}/мес след това
                       </p>
                     )}
                   </div>

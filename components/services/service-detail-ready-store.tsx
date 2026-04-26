@@ -149,7 +149,7 @@ export function ServiceDetailReadyStore({
                   "text-3xl sm:text-4xl font-bold text-primary tabular-nums"
                 )}
               >
-                {total} лв.
+                €{total}
               </p>
               <button
                 type="button"
@@ -270,7 +270,7 @@ export function ServiceDetailReadyStore({
         <div className="mx-auto flex items-center justify-between gap-3">
           <div>
             <p className="text-xs text-muted-foreground">Пакет "Онлайн Магазин"</p>
-            <p className={cn(headingFontClass, "font-semibold tabular-nums")}>{total} лв.</p>
+            <p className={cn(headingFontClass, "font-semibold tabular-nums")}>€{total}</p>
           </div>
           <button
             type="button"
