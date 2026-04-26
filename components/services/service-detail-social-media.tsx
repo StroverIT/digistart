@@ -20,7 +20,7 @@ import { addToCart } from "@/lib/store/cart";
 import type { Service } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
-const MARKETING_START_PRICE = 250;
+const MARKETING_START_PRICE = 200;
 
 const marketingPainPoints = [
   {

@@ -20,7 +20,7 @@ import { addToCart } from "@/lib/store/cart";
 import type { Service } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
-const GOOGLE_PROFILE_PRICE = 149;
+const GOOGLE_PROFILE_PRICE = 50;
 const GOOGLE_PROFILE_OPTION_ID = "basic";
 
 const googlePainPoints = [
