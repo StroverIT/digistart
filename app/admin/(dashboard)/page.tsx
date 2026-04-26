@@ -10,7 +10,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import type { Order, DailyStats, ServiceStats } from "@/lib/types";
-import { getOrders, getDailyStats, getServiceStats, seedDemoOrders } from "@/lib/store/orders";
 import { RevenueChart } from "@/components/admin/revenue-chart";
 import { ServicesPieChart } from "@/components/admin/services-pie-chart";
 
@@ -54,10 +53,49 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     setMounted(true);
-    seedDemoOrders();
-    setOrders(getOrders());
-    setDailyStats(getDailyStats(14));
-    setServiceStats(getServiceStats());
+    fetch("/api/checkout/orders")
+      .then((response) => response.json())
+      .then((data: { orders?: Order[] }) => {
+        const allOrders = data.orders ?? [];
+        setOrders(allOrders);
+
+        const byDate = new Map<string, DailyStats>();
+        for (let i = 13; i >= 0; i--) {
+          const date = new Date();
+          date.setDate(date.getDate() - i);
+          const dateStr = date.toISOString().split("T")[0];
+          byDate.set(dateStr, { date: dateStr, visits: 0, orders: 0, revenue: 0 });
+        }
+        for (const order of allOrders) {
+          const dateStr = order.createdAt.split("T")[0];
+          const row = byDate.get(dateStr);
+          if (!row) continue;
+          row.orders += 1;
+          row.revenue += order.cart.totalOneTime + order.cart.totalMonthly;
+        }
+        setDailyStats(Array.from(byDate.values()));
+
+        const byService = new Map<string, ServiceStats>();
+        for (const order of allOrders) {
+          for (const item of order.cart.items) {
+            const current = byService.get(item.serviceId) ?? {
+              serviceId: item.serviceId,
+              serviceName: item.serviceName,
+              orderCount: 0,
+              revenue: 0,
+            };
+            current.orderCount += 1;
+            current.revenue += item.totalPrice;
+            byService.set(item.serviceId, current);
+          }
+        }
+        setServiceStats(Array.from(byService.values()));
+      })
+      .catch(() => {
+        setOrders([]);
+        setDailyStats([]);
+        setServiceStats([]);
+      });
   }, []);
 
   if (!mounted) {

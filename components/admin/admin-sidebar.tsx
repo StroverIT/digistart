@@ -7,6 +7,7 @@ import {
   Zap,
   LayoutDashboard,
   ShoppingBag,
+  CalendarDays,
   MapPin,
   LogOut,
   ExternalLink,
@@ -32,6 +33,11 @@ const navItems = [
     href: "/admin/поръчки",
     label: "Поръчки",
     icon: ShoppingBag,
+  },
+  {
+    href: "/admin/консултации",
+    label: "Консултации",
+    icon: CalendarDays,
   },
   {
     href: "/admin/бизнеси",

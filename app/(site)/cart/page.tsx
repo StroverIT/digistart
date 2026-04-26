@@ -7,21 +7,23 @@ import gsap from "gsap";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
-import type { Cart, CartItem } from "@/lib/types";
+import type { Cart, CartItem, Service } from "@/lib/types";
 import { getCart, removeFromCart, updateCartItemUpsells } from "@/lib/store/cart";
 import { getServiceById } from "@/lib/data/services";
 import { UpsellConfigurator } from "@/components/services/upsell-configurator";
 
 function CartItemCard({
   item,
+  serviceFromDb,
   onRemove,
   onUpsellsChange,
 }: {
   item: CartItem;
+  serviceFromDb?: Service;
   onRemove: () => void;
   onUpsellsChange: (itemId: string, upsells: CartItem["upsells"]) => void;
 }) {
-  const service = getServiceById(item.serviceId);
+  const service = serviceFromDb ?? getServiceById(item.serviceId);
   const [showUpsells, setShowUpsells] = useState(false);
   const hasUpsells = Boolean(service?.upsells.length);
   const upsellsWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -150,11 +152,20 @@ function CartItemCard({
 
 export default function CartPage() {
   const [cart, setCart] = useState<Cart>({ items: [], totalOneTime: 0, totalMonthly: 0 });
+  const [servicesById, setServicesById] = useState<Record<string, Service>>({});
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     setCart(getCart());
+    fetch("/api/services")
+      .then((response) => response.json())
+      .then((data: { services?: Service[] }) => {
+        const map: Record<string, Service> = {};
+        for (const service of data.services ?? []) map[service.id] = service;
+        setServicesById(map);
+      })
+      .catch(() => undefined);
 
     const handleCartUpdate = () => {
       setCart(getCart());
@@ -230,6 +241,7 @@ export default function CartPage() {
                 <CartItemCard
                   key={item.id}
                   item={item}
+                  serviceFromDb={servicesById[item.serviceId]}
                   onRemove={() => handleRemove(item.id)}
                   onUpsellsChange={handleUpsellsChange}
                 />

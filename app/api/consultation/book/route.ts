@@ -61,6 +61,8 @@ export async function POST(req: Request) {
     };
 
     await saveConsultationBooking(bookingRecord);
+    const refreshed = await getConsultationBookings();
+    const saved = refreshed.find((booking) => booking.id === bookingRecord.id);
 
     return NextResponse.json({
       booking: {
@@ -70,6 +72,8 @@ export async function POST(req: Request) {
         source: bookingRecord.source,
         status: bookingRecord.status,
         orderId: bookingRecord.orderId,
+        timezone: saved?.timezone ?? "Europe/Sofia",
+        meetUrl: saved?.meetUrl,
       },
     });
   } catch {

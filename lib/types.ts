@@ -94,6 +94,8 @@ export interface ConsultationBooking {
   source: "public" | "checkout";
   status: "scheduled" | "cancelled";
   orderId?: string;
+  timezone?: string;
+  meetUrl?: string;
 }
 
 export interface Order {

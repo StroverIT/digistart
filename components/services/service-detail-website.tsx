@@ -23,9 +23,7 @@ import { getServiceById } from "@/lib/data/services";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { cn } from "@/lib/utils";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
-import type { CartItemUpsell } from "@/lib/types";
-
-const service = getServiceById("websites");
+import type { CartItemUpsell, Service } from "@/lib/types";
 
 const painPoints = [
   {
@@ -78,13 +76,16 @@ interface ServiceDetailWebsiteProps {
   headingFontClass?: string;
   bodyFontClass?: string;
   className?: string;
+  serviceData?: Service;
 }
 
 export function ServiceDetailWebsite({
   headingFontClass,
   bodyFontClass,
   className,
+  serviceData,
 }: ServiceDetailWebsiteProps) {
+  const service = serviceData ?? getServiceById("websites");
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);

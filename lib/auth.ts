@@ -1,9 +1,8 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-// Demo credentials - in production, use environment variables
-const ADMIN_EMAIL = "admin@digistart.bg";
-const ADMIN_PASSWORD = "admin123";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@digistart.bg";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "admin123";
 
 export const authOptions: NextAuthOptions = {
   providers: [

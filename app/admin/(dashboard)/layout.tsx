@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import "leaflet/dist/leaflet.css";
 
 export default async function AdminDashboardLayout({
   children,

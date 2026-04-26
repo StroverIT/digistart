@@ -72,12 +72,12 @@ export function HeroSection() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </TransitionLink>
-            <TransitionLink href="/#процес">
+            {/* <TransitionLink href="/#процес">
               <Button variant="outline" size="lg" className="text-lg h-14 px-8 border-border hover:bg-secondary/50">
                 <Play className="mr-2 h-5 w-5" />
                 Как работим
               </Button>
-            </TransitionLink>
+            </TransitionLink> */}
           </div>
 
           {/* Trust indicators */}

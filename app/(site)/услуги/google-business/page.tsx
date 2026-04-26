@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ServiceDetailGoogleBusiness } from "@/components/services/service-detail-google-business";
-import { getServiceById } from "@/lib/data/services";
-
-const service = getServiceById("google-business");
+import { getServiceByIdFromDb } from "@/lib/server/services";
 
 export const metadata: Metadata = {
-  title: service?.name ?? "Google Business",
-  description: service?.shortDescription ?? "Услуга не е намерена.",
+  title: "Google Business",
+  description: "Услуга за Google Business профил.",
 };
 
-export default function GoogleBusinessPage() {
+export default async function GoogleBusinessPage() {
+  const service = await getServiceByIdFromDb("google-business");
   if (!service) {
     notFound();
   }

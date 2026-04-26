@@ -11,9 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Price } from "@/components/ui/price";
-import type { Cart, ConsultationBooking, CustomerInfo } from "@/lib/types";
+import type { Cart, ConsultationBooking, CustomerInfo, Service } from "@/lib/types";
 import { getCart, clearCart } from "@/lib/store/cart";
-import { createOrder } from "@/lib/store/orders";
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { getServiceById } from "@/lib/data/services";
@@ -30,6 +29,7 @@ export default function CheckoutPage() {
     null
   );
   const [consultationError, setConsultationError] = useState("");
+  const [servicesById, setServicesById] = useState<Record<string, Service>>({});
   const [formData, setFormData] = useState<CustomerInfo>({
     name: "",
     email: "",
@@ -42,6 +42,16 @@ export default function CheckoutPage() {
     setMounted(true);
     const currentCart = getCart();
     setCart(currentCart);
+    fetch("/api/services")
+      .then((response) => response.json())
+      .then((data: { services?: Service[] }) => {
+        const map: Record<string, Service> = {};
+        for (const service of data.services ?? []) {
+          map[service.id] = service;
+        }
+        setServicesById(map);
+      })
+      .catch(() => undefined);
     if (currentCart.items.length === 0) {
       // Replace: avoid empty checkout in history; /кошница rewrites to /cart in middleware.
       router.replace("/кошница");
@@ -71,8 +81,23 @@ export default function CheckoutPage() {
     // Simulate payment processing
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Create order
-    const order = createOrder(cart, formData, bookedConsultation ?? undefined);
+    const response = await fetch("/api/checkout/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cart,
+        customer: formData,
+        consultationId: bookedConsultation?.id,
+      }),
+    });
+
+    if (!response.ok) {
+      setIsSubmitting(false);
+      setConsultationError("Възникна грешка при запис на поръчката. Моля опитайте отново.");
+      return;
+    }
+
+    const { order } = (await response.json()) as { order: { id: string } };
 
     // Clear cart
     clearCart();
@@ -318,7 +343,7 @@ export default function CheckoutPage() {
                       {item.upsells.length > 0 && (
                         <ul className="mt-2 space-y-1">
                           {item.upsells.map((upsell) => {
-                            const service = getServiceById(item.serviceId);
+                            const service = servicesById[item.serviceId] ?? getServiceById(item.serviceId);
                             const serviceUpsell = service?.upsells.find(
                               (config) => config.id === upsell.upsellId
                             );

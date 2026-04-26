@@ -20,12 +20,10 @@ import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServiceById } from "@/lib/data/services";
-import type { CartItemUpsell } from "@/lib/types";
+import type { CartItemUpsell, Service } from "@/lib/types";
 
 const SERVICE_ID = "ready-store";
 const OPTION_ID = "standard";
-const service = getServiceById(SERVICE_ID);
-
 const PAIN_POINTS = [
   {
     title: "Ограничен си географски",
@@ -77,16 +75,21 @@ interface ServiceDetailReadyStoreProps {
   headingFontClass?: string;
   bodyFontClass?: string;
   className?: string;
+  serviceData?: Service;
 }
 
 export function ServiceDetailReadyStore({
   headingFontClass,
   bodyFontClass,
   className,
+  serviceData,
 }: ServiceDetailReadyStoreProps) {
+  const service = serviceData ?? getServiceById(SERVICE_ID);
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
+
+  if (!service) return null;
 
   const total = 499;
 

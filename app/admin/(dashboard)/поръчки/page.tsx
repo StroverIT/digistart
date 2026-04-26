@@ -26,8 +26,6 @@ import {
 } from "@/components/ui/select";
 import { Price } from "@/components/ui/price";
 import type { Order } from "@/lib/types";
-import { getOrders, updateOrderStatus, seedDemoOrders } from "@/lib/store/orders";
-import { getServiceById } from "@/lib/data/services";
 
 const statusOptions: { value: Order["status"]; label: string }[] = [
   { value: "pending", label: "Чакаща" },
@@ -67,10 +65,17 @@ export default function OrdersPage() {
 
   useEffect(() => {
     setMounted(true);
-    seedDemoOrders();
-    const allOrders = getOrders();
-    setOrders(allOrders);
-    setFilteredOrders(allOrders);
+    fetch("/api/checkout/orders")
+      .then((response) => response.json())
+      .then((data: { orders?: Order[] }) => {
+        const allOrders = data.orders ?? [];
+        setOrders(allOrders);
+        setFilteredOrders(allOrders);
+      })
+      .catch(() => {
+        setOrders([]);
+        setFilteredOrders([]);
+      });
   }, []);
 
   useEffect(() => {
@@ -94,15 +99,20 @@ export default function OrdersPage() {
   }, [searchQuery, statusFilter, orders]);
 
   const handleStatusChange = (orderId: string, newStatus: Order["status"]) => {
-    const updated = updateOrderStatus(orderId, newStatus);
-    if (updated) {
-      setOrders((prev) =>
-        prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
-      );
-      if (selectedOrder?.id === orderId) {
-        setSelectedOrder({ ...selectedOrder, status: newStatus });
-      }
-    }
+    fetch("/api/checkout/orders", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId, status: newStatus }),
+    })
+      .then((response) => response.json())
+      .then((data: { order?: Order }) => {
+        if (!data.order) return;
+        setOrders((prev) => prev.map((o) => (o.id === orderId ? data.order! : o)));
+        if (selectedOrder?.id === orderId) {
+          setSelectedOrder(data.order);
+        }
+      })
+      .catch(() => undefined);
   };
 
   if (!mounted) {

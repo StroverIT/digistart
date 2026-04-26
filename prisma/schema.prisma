@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Service {
+  id               String          @id
+  slug             String          @unique
+  name             String
+  shortDescription String
+  fullDescription  String
+  icon             String
+  basePrice        Int
+  isMonthly        Boolean         @default(false)
+  timeline         String
+  features         String[]
+  options          ServiceOption[]
+  upsells          ServiceUpsell[]
+  orderItems       OrderItem[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+}
+
+model ServiceOption {
+  id          String  @id @default(cuid())
+  optionKey   String
+  name        String
+  description String
+  price       Int
+  isMonthly   Boolean @default(false)
+  serviceId   String
+  service     Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, optionKey])
+}
+
+model ServiceUpsell {
+  id               String  @id @default(cuid())
+  upsellKey        String
+  name             String
+  description      String
+  kind             String?
+  unit             String?
+  pricePerUnit     Int?
+  isMonthly        Boolean @default(false)
+  min              Int?
+  max              Int?
+  defaultValue     Int?
+  helperText       String?
+  includedUnits    Int?
+  tierStep         Int?
+  tierPrice        Int?
+  allowEntries     Boolean @default(false)
+  entryLabel       String?
+  entryPlaceholder String?
+  choices          Json?
+  serviceId        String
+  service          Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, upsellKey])
+}
+
+model Order {
+  id             String               @id @default(cuid())
+  customerName   String
+  customerEmail  String
+  customerPhone  String
+  customerCompany String?
+  customerNotes  String?
+  totalOneTime   Int
+  totalMonthly   Int
+  status         String               @default("pending")
+  consultationId String?              @unique
+  consultation   ConsultationBooking? @relation("OrderConsultation", fields: [consultationId], references: [id], onDelete: SetNull)
+  items          OrderItem[]
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+}
+
+model OrderItem {
+  id                 String  @id @default(cuid())
+  serviceId          String
+  serviceName        String
+  selectedOptionId   String
+  selectedOptionName String
+  basePrice          Int
+  totalPrice         Int
+  totalOneTime       Int
+  totalMonthly       Int
+  isMonthly          Boolean @default(false)
+  upsells            Json
+  orderId            String
+  order              Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  service            Service @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+}
+
+model ConsultationBooking {
+  id            String    @id
+  name          String
+  email         String
+  phone         String
+  company       String?
+  notes         String?
+  date          String
+  time          String
+  source        String
+  status        String
+  orderId       String?
+  timezone      String    @default("Europe/Sofia")
+  startsAt      DateTime?
+  endsAt        DateTime?
+  meetUrl       String?
+  googleEventId String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  linkedOrder   Order?    @relation("OrderConsultation")
+}

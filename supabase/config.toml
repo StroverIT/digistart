@@ -1,0 +1,35 @@
+[api]
+enabled = true
+port = 58421
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 58422
+shadow_port = 58426
+major_version = 17
+
+[studio]
+enabled = true
+port = 58423
+
+[inbucket]
+enabled = true
+port = 58424
+smtp_port = 58425
+pop3_port = 58427
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["http://127.0.0.1:3000"]
+jwt_expiry = 3600
+enable_signup = false
+
+[analytics]
+enabled = false

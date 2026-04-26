@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ServiceDetailSocialMedia } from "@/components/services/service-detail-social-media";
-import { getServiceById } from "@/lib/data/services";
-
-const service = getServiceById("social-media");
+import { getServiceByIdFromDb } from "@/lib/server/services";
 
 export const metadata: Metadata = {
-  title: service?.name ?? "Социални мрежи",
-  description: service?.shortDescription ?? "Услуга не е намерена.",
+  title: "Социални мрежи",
+  description: "Услуга за управление на социални мрежи.",
 };
 
-export default function SocialMediaPage() {
+export default async function SocialMediaPage() {
+  const service = await getServiceByIdFromDb("social-media");
   if (!service) {
     notFound();
   }
