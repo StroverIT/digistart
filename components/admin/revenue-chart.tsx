@@ -43,16 +43,16 @@ export function RevenueChart({ data }: RevenueChartProps) {
               <stop offset="95%" stopColor="oklch(0.65 0.22 250)" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.28 0.01 260)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0.01 260)" />
           <XAxis
             dataKey="date"
-            stroke="oklch(0.65 0 0)"
+            stroke="oklch(0.45 0.02 260)"
             fontSize={12}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
-            stroke="oklch(0.65 0 0)"
+            stroke="oklch(0.45 0.02 260)"
             fontSize={12}
             tickLine={false}
             axisLine={false}
@@ -60,10 +60,10 @@ export function RevenueChart({ data }: RevenueChartProps) {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: "oklch(0.17 0.005 260)",
-              border: "1px solid oklch(0.28 0.01 260)",
+              backgroundColor: "oklch(0.99 0.003 260)",
+              border: "1px solid oklch(0.9 0.01 260)",
               borderRadius: "8px",
-              color: "oklch(0.98 0 0)",
+              color: "oklch(0.13 0.005 260)",
             }}
             formatter={(value: number) => [`${value} лв`, "Приходи"]}
           />

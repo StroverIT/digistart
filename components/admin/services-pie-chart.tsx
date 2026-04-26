@@ -59,10 +59,10 @@ export function ServicesPieChart({ data }: ServicesPieChartProps) {
           </Pie>
           <Tooltip
             contentStyle={{
-              backgroundColor: "oklch(0.17 0.005 260)",
-              border: "1px solid oklch(0.28 0.01 260)",
+              backgroundColor: "oklch(0.99 0.003 260)",
+              border: "1px solid oklch(0.9 0.01 260)",
               borderRadius: "8px",
-              color: "oklch(0.98 0 0)",
+              color: "oklch(0.13 0.005 260)",
             }}
             formatter={(value: number, name: string, props) => [
               `${value} поръчки (${props.payload.revenue} лв)`,
@@ -74,7 +74,7 @@ export function ServicesPieChart({ data }: ServicesPieChartProps) {
               paddingTop: "20px",
             }}
             formatter={(value) => (
-              <span style={{ color: "oklch(0.65 0 0)" }}>{value}</span>
+              <span style={{ color: "oklch(0.13 0.005 260)" }}>{value}</span>
             )}
           />
         </PieChart>
