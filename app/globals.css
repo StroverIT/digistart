@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -60,9 +60,9 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-inter), 'Inter', sans-serif;
-  --font-heading: var(--font-montserrat), 'Montserrat', sans-serif;
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  --font-sans: var(--font-inter), "Inter", sans-serif;
+  --font-heading: var(--font-montserrat), "Montserrat", sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -142,7 +142,11 @@
 
 /* Gradient text utility */
 .gradient-text {
-  background: linear-gradient(135deg, oklch(0.65 0.22 250), oklch(0.75 0.18 280));
+  background: linear-gradient(
+    135deg,
+    oklch(0.65 0.22 250),
+    oklch(0.75 0.18 280)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
