@@ -5,6 +5,14 @@ import { getServiceById } from "@/lib/data/services";
 
 const CART_STORAGE_KEY = "digistart-cart";
 
+/** Shown when the user tries to add a service that is already in the cart. */
+export const CART_DUPLICATE_SERVICE_MESSAGE =
+  "Тази услуга вече е в кошницата.";
+
+export type AddToCartResult =
+  | { cart: Cart; added: true }
+  | { cart: Cart; added: false; reason: "duplicate" | "invalid" };
+
 export function getCart(): Cart {
   if (typeof window === "undefined") {
     return { items: [], totalOneTime: 0, totalMonthly: 0 };
@@ -55,13 +63,17 @@ export function addToCart(
   serviceId: string,
   optionId: string,
   upsells: CartItemUpsell[]
-): Cart {
+): AddToCartResult {
   const cart = getCart();
   const service = getServiceById(serviceId);
-  if (!service) return cart;
+  if (!service) return { cart, added: false, reason: "invalid" };
+
+  if (cart.items.some((item) => item.serviceId === serviceId)) {
+    return { cart, added: false, reason: "duplicate" };
+  }
 
   const option = service.options.find((o) => o.id === optionId);
-  if (!option) return cart;
+  if (!option) return { cart, added: false, reason: "invalid" };
 
   const { total, isMonthly } = calculateItemTotal(serviceId, optionId, upsells);
 
@@ -81,7 +93,7 @@ export function addToCart(
   recalculateTotals(cart);
   saveCart(cart);
 
-  return cart;
+  return { cart, added: true };
 }
 
 export function removeFromCart(itemId: string): Cart {

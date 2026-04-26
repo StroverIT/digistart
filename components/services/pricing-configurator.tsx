@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Price } from "@/components/ui/price";
 import { cn } from "@/lib/utils";
 import type { Service, CartItemUpsell } from "@/lib/types";
-import { addToCart } from "@/lib/store/cart";
+import { addToCart, CART_DUPLICATE_SERVICE_MESSAGE } from "@/lib/store/cart";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
+import { toast } from "sonner";
 
 interface PricingConfiguratorProps {
   service: Service;
@@ -53,13 +54,20 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
 
   const handleAddToCart = () => {
     setIsAdding(true);
-    
+
     const cartUpsells: CartItemUpsell[] = Object.entries(upsells)
       .filter(([_, quantity]) => quantity > 0)
       .map(([upsellId, quantity]) => ({ upsellId, quantity }));
 
-    addToCart(service.id, selectedOptionId, cartUpsells);
-    
+    const result = addToCart(service.id, selectedOptionId, cartUpsells);
+    if (!result.added) {
+      setIsAdding(false);
+      if (result.reason === "duplicate") {
+        toast(CART_DUPLICATE_SERVICE_MESSAGE);
+      }
+      return;
+    }
+
     setTimeout(() => {
       setIsAdding(false);
       push("/кошница");

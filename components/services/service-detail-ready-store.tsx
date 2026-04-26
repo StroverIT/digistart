@@ -14,7 +14,8 @@ import {
   ShoppingCart,
   Zap,
 } from "lucide-react";
-import { addToCart } from "@/lib/store/cart";
+import { addToCart, CART_DUPLICATE_SERVICE_MESSAGE } from "@/lib/store/cart";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
@@ -86,7 +87,14 @@ export function ServiceDetailReadyStore({
 
   const handleCheckout = () => {
     setIsAdding(true);
-    addToCart(SERVICE_ID, OPTION_ID, []);
+    const result = addToCart(SERVICE_ID, OPTION_ID, []);
+    if (!result.added) {
+      setIsAdding(false);
+      if (result.reason === "duplicate") {
+        toast(CART_DUPLICATE_SERVICE_MESSAGE);
+      }
+      return;
+    }
     setTimeout(() => {
       setIsAdding(false);
       push("/кошница");

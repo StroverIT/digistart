@@ -16,7 +16,8 @@ import TransitionLink from "@/components/transitions/TransitionLink";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
-import { addToCart } from "@/lib/store/cart";
+import { addToCart, CART_DUPLICATE_SERVICE_MESSAGE } from "@/lib/store/cart";
+import { toast } from "sonner";
 import type { Service } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
@@ -79,7 +80,14 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
 
   const handleGoogleCheckout = () => {
     setIsAdding(true);
-    addToCart(service.id, GOOGLE_PROFILE_OPTION_ID, []);
+    const result = addToCart(service.id, GOOGLE_PROFILE_OPTION_ID, []);
+    if (!result.added) {
+      setIsAdding(false);
+      if (result.reason === "duplicate") {
+        toast(CART_DUPLICATE_SERVICE_MESSAGE);
+      }
+      return;
+    }
     setTimeout(() => {
       setIsAdding(false);
       push("/кошница");

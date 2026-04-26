@@ -17,7 +17,8 @@ import TransitionLink from "@/components/transitions/TransitionLink";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
-import { addToCart } from "@/lib/store/cart";
+import { addToCart, CART_DUPLICATE_SERVICE_MESSAGE } from "@/lib/store/cart";
+import { toast } from "sonner";
 import { getServiceById } from "@/lib/data/services";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { cn } from "@/lib/utils";
@@ -91,7 +92,14 @@ export function ServiceDetailWebsite({
 
   const handleAddToCart = () => {
     setIsAdding(true);
-    addToCart(service.id, selectedOption.id, []);
+    const result = addToCart(service.id, selectedOption.id, []);
+    if (!result.added) {
+      setIsAdding(false);
+      if (result.reason === "duplicate") {
+        toast(CART_DUPLICATE_SERVICE_MESSAGE);
+      }
+      return;
+    }
 
     setTimeout(() => {
       setIsAdding(false);

@@ -152,9 +152,15 @@ export function Header() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="relative hover:bg-secondary/50"
+                  className={cn(
+                    "relative group rounded-xl transition-all duration-200 ease-out",
+                    "text-muted-foreground hover:text-primary",
+                    "hover:bg-primary/10 hover:ring-1 hover:ring-primary/20",
+                    "hover:shadow-[0_0_24px_-8px] hover:shadow-primary/30",
+                    "active:scale-[0.96] motion-reduce:active:scale-100",
+                  )}
                 >
-                  <ShoppingCart className="h-5 w-5" />
+                  <ShoppingCart className="h-5 w-5 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:scale-100" />
                   {cartCount > 0 && (
                     <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
                       {cartCount}
