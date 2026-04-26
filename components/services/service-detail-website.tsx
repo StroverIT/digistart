@@ -1,10 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   CheckCircle2,
-  FileText,
-  Lock,
+  CircleX,
+  ClipboardList,
+  MessageCircle,
+  MonitorCheck,
+  Phone,
   Rocket,
   ShoppingCart,
   Zap,
@@ -18,54 +21,64 @@ import { useTransitionRouter } from "@/components/transitions/useTransitionRoute
 
 const service = getServiceById("websites");
 
+const painPoints = [
+  {
+    title: "Губиш доверие",
+    text: "В днешно време, ако клиентите не могат да те намерят в интернет, те просто не вярват, че бизнесът ти е легитимен.",
+  },
+  {
+    title: "Изпускаш топли клиенти",
+    text: "Хората търсят твоите услуги в Google точно в този момент. Щом нямаш сайт, те намират конкуренцията ти и плащат на нея.",
+  },
+  {
+    title: "Работиш по-трудно",
+    text: "Сайтът е твоят виртуален търговец, който работи 24/7. Без него трябва да обясняваш едно и също нещо по телефона стотици пъти.",
+  },
+] as const;
+
+const solutionItems = [
+  "Индивидуален дизайн: Съобразен изцяло с твоя бранд, лого и цветове.",
+  "Перфектна мобилна версия: Сайтът ще изглежда безупречно на всеки телефон и таблет.",
+  "Основни страници: Всичко необходимо (Начало, За нас, Услуги, Контакти, Галерия).",
+  "Базова SEO оптимизация: Техническа готовност сайтът ти да бъде четен правилно от Google.",
+  "Форми за контакт и карта: Клиентите лесно изпращат запитвания и те намират.",
+  "Бързо зареждане: Изграден с модерни технологии за светкавична скорост.",
+] as const;
+
 const steps = [
   {
-    title: "Стъпка 1: Поръчваш онлайн",
-    text: "Избираш пакета и плащаш сигурно през нашия сайт. Без чакане за оферти.",
+    title: "Стъпка 1: Поръчка онлайн",
+    text: "Избираш пакета и плащаш бързо и сигурно през нашия сайт. Цената е фиксирана - край на изненадите!",
     icon: ShoppingCart,
   },
   {
-    title: "Стъпка 2: Попълваш въпросник",
-    text: "Веднага след плащането получаваш линк, където да прикачиш своето лого, текстове и снимки.",
-    icon: FileText,
+    title: "Стъпка 2: Кратка консултация (до 15 мин)",
+    text: "Свързваме се с теб за бърз разговор. Уточняваме визията, цветовете и нуждите на бизнеса.",
+    icon: Phone,
   },
   {
-    title: "Стъпка 3: Сайтът ти е готов",
-    text: "Ние сглобяваме всичко и до броени дни твоят нов уебсайт е официално онлайн и готов да печели клиенти.",
+    title: "Стъпка 3: Демо версия за преглед",
+    text: "Изработваме работна версия. Преглеждаш я и правим конфигурации, докато пасне идеално.",
+    icon: MonitorCheck,
+  },
+  {
+    title: "Стъпка 4: Готов уебсайт онлайн",
+    text: "Качваме сайта на реален домейн и той започва да работи за теб веднага.",
     icon: Rocket,
   },
 ] as const;
 
 export function ServiceDetailWebsite() {
   const { push } = useTransitionRouter();
-  const [selectedUpsells, setSelectedUpsells] = useState<Record<string, number>>({});
   const [isAdding, setIsAdding] = useState(false);
 
   if (!service) return null;
 
   const selectedOption = service.options[0];
 
-  const totalPrice = useMemo(() => {
-    return service.upsells.reduce((total, upsell) => {
-      const qty = selectedUpsells[upsell.id] ?? 0;
-      return total + qty * upsell.pricePerUnit;
-    }, selectedOption.price);
-  }, [selectedOption.price, selectedUpsells]);
-
-  const toggleUpsell = (upsellId: string) => {
-    setSelectedUpsells((prev) => ({
-      ...prev,
-      [upsellId]: prev[upsellId] === 1 ? 0 : 1,
-    }));
-  };
-
   const handleAddToCart = () => {
     setIsAdding(true);
-    const upsells = Object.entries(selectedUpsells)
-      .filter(([_, quantity]) => quantity > 0)
-      .map(([upsellId, quantity]) => ({ upsellId, quantity }));
-
-    addToCart(service.id, selectedOption.id, upsells);
+    addToCart(service.id, selectedOption.id, []);
 
     setTimeout(() => {
       setIsAdding(false);
@@ -74,7 +87,7 @@ export function ServiceDetailWebsite() {
   };
 
   return (
-    <div className="pt-24 pb-16">
+    <div className="pt-24 pb-28 md:pb-16">
       <div className="container mx-auto px-4">
         <TransitionLink
           href="/#услуги"
@@ -87,37 +100,43 @@ export function ServiceDetailWebsite() {
           <div className="max-w-3xl">
             <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1.5 text-sm font-medium">
               <Zap className="h-4 w-4" />
-              Бърза изработка
+              Бързо, лесно и на ясна цена
             </span>
             <h1 className="mt-5 text-3xl sm:text-4xl md:text-5xl font-bold text-balance">
-              Професионален Фирмен Уебсайт
+              Твоят професионален уебсайт. Готов за броени дни.
             </h1>
             <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-              Представи бизнеса си онлайн с модерен сайт, без да чакаш с месеци и без излишни
-              срещи. Плащаш предварително ясна цена, а ние вършим останалото.
+              Спри да губиш клиенти, защото те няма онлайн. Представи бизнеса си с модерен сайт
+              на предварително фиксирана цена. Без скрити такси, без чакане с месеци.
             </p>
             <div className="mt-7 flex flex-col sm:flex-row sm:items-center gap-4">
-              <p className="text-2xl font-bold">
-                {totalPrice} лв.
-                <span className="text-sm font-normal text-muted-foreground ml-2">
-                  (базова цена: 299 лв.)
-                </span>
-              </p>
-              <Button onClick={handleAddToCart} size="lg" disabled={isAdding}>
-                {isAdding ? "Добавяне..." : "Добави в количката и стартирай"}
+              <p className="text-3xl font-bold text-primary">{selectedOption.price} лв.</p>
+              <Button
+                onClick={handleAddToCart}
+                size="lg"
+                disabled={isAdding}
+                className="bg-orange-500 hover:bg-orange-600 text-white"
+              >
+                {isAdding ? "Добавяне..." : "Поръчай своя сайт сега"}
               </Button>
             </div>
           </div>
         </section>
 
         <section className="mt-12">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6">Какво получаваш в пакета?</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {service.features.map((feature) => (
-              <Card key={feature} className="border-border">
-                <CardContent className="p-5 flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
-                  <p className="text-muted-foreground">{feature}</p>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">
+            Защо бизнесът ти има нужда от уебсайт точно сега?
+          </h2>
+          <p className="text-muted-foreground mb-6">
+            Всеки ден без сайт е подарен клиент на конкуренцията.
+          </p>
+          <div className="grid gap-4 md:grid-cols-3">
+            {painPoints.map((item) => (
+              <Card key={item.title} className="border-border">
+                <CardContent className="p-6">
+                  <CircleX className="h-5 w-5 text-red-500 mb-3" />
+                  <h3 className="font-semibold mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.text}</p>
                 </CardContent>
               </Card>
             ))}
@@ -125,12 +144,34 @@ export function ServiceDetailWebsite() {
         </section>
 
         <section className="mt-14">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6">Как работи? (Само 3 стъпки)</h2>
-          <div className="grid gap-4 md:grid-cols-3">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6">Какво е включено в пакета?</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {solutionItems.map((item) => (
+              <Card key={item} className="border-border">
+                <CardContent className="p-5 flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                  <p className="text-muted-foreground">{item}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-14">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">
+            Как да започнем? (Само 4 лесни стъпки)
+          </h2>
+          <p className="text-muted-foreground mb-6">
+            Направихме процеса максимално бърз, за да не губиш време.
+          </p>
+          <div className="grid gap-4 md:grid-cols-2">
             {steps.map((step) => (
               <Card key={step.title} className="border-border">
                 <CardContent className="p-6">
-                  <step.icon className="h-6 w-6 text-primary mb-4" />
+                  <div className="flex items-center justify-between mb-4">
+                    <step.icon className="h-6 w-6 text-primary" />
+                    <ClipboardList className="h-5 w-5 text-muted-foreground" />
+                  </div>
                   <h3 className="font-semibold mb-2">{step.title}</h3>
                   <p className="text-sm text-muted-foreground">{step.text}</p>
                 </CardContent>
@@ -139,45 +180,29 @@ export function ServiceDetailWebsite() {
           </div>
         </section>
 
-        <section className="mt-14">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6">
-            Увеличи резултатите си (Добавки)
-          </h2>
-          <div className="space-y-3">
-            {service.upsells.map((upsell) => {
-              const selected = (selectedUpsells[upsell.id] ?? 0) > 0;
-
-              return (
-                <button
-                  key={upsell.id}
-                  type="button"
-                  onClick={() => toggleUpsell(upsell.id)}
-                  className={`w-full rounded-xl border p-5 text-left transition-colors ${
-                    selected
-                      ? "border-primary bg-primary/5"
-                      : "border-border bg-card hover:border-primary/40"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-semibold">{upsell.name}</p>
-                      <p className="text-sm text-muted-foreground mt-1">{upsell.description}</p>
-                    </div>
-                    <p className="font-semibold text-primary">+{upsell.pricePerUnit} лв.</p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
         <section className="mt-12 rounded-xl border border-border bg-card p-5 sm:p-6">
           <p className="text-sm sm:text-base flex items-start gap-2 text-muted-foreground">
-            <Lock className="h-4 w-4 mt-0.5 shrink-0" />
-            100% Прозрачност: Без скрити месечни такси за поддръжка от наша страна. Сайтът е
-            изцяло твоя собственост!
+            <MessageCircle className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
+            Цената е фиксирана и прозрачна. Получаваш ясна рамка, бърз процес и сайт, който е
+            готов да работи за бизнеса ти.
           </p>
         </section>
+      </div>
+
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/95 backdrop-blur px-4 py-3">
+        <div className="mx-auto flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs text-muted-foreground">Пакет "Уебсайт"</p>
+            <p className="font-semibold">{selectedOption.price} лв.</p>
+          </div>
+          <Button
+            onClick={handleAddToCart}
+            disabled={isAdding}
+            className="bg-orange-500 hover:bg-orange-600 text-white"
+          >
+            {isAdding ? "Добавяне..." : "Започни сега"}
+          </Button>
+        </div>
       </div>
     </div>
   );
