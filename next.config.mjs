@@ -6,22 +6,23 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  async redirects() {
+  async rewrites() {
     return [
       {
-        source: "/услуги/websites",
-        destination: "/услуги/уебсайт",
-        permanent: true,
+        source: "/услуги/уебсайт",
+        destination: "/services/website",
       },
       {
-        source: "/услуги/готов-онлайн-магазин",
-        destination: "/услуги/онлайн-магазин",
-        permanent: true,
+        source: "/услуги/онлайн-магазин",
+        destination: "/services/online-store",
       },
       {
-        source: "/услуги/онлайн-магазини",
-        destination: "/услуги/онлайн-магазин",
-        permanent: true,
+        source: "/услуги/google-business",
+        destination: "/services/google-business",
+      },
+      {
+        source: "/услуги/социални-мрежи",
+        destination: "/services/social-media",
       },
     ];
   },
