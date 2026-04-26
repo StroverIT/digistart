@@ -19,6 +19,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { addToCart } from "@/lib/store/cart";
 import { getServiceById } from "@/lib/data/services";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
+import { cn } from "@/lib/utils";
 
 const service = getServiceById("websites");
 
@@ -69,7 +70,17 @@ const steps = [
   },
 ] as const;
 
-export function ServiceDetailWebsite() {
+interface ServiceDetailWebsiteProps {
+  headingFontClass: string;
+  bodyFontClass?: string;
+  className?: string;
+}
+
+export function ServiceDetailWebsite({
+  headingFontClass,
+  bodyFontClass,
+  className,
+}: ServiceDetailWebsiteProps) {
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
 
@@ -88,7 +99,7 @@ export function ServiceDetailWebsite() {
   };
 
   return (
-    <div className="pt-20 pb-28 md:pb-16">
+    <div className={cn("pt-20 pb-28 md:pb-16", bodyFontClass, className)}>
       <section className="relative overflow-hidden pt-10 pb-14 md:pt-14 md:pb-18">
         <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
         <div className="absolute inset-0 overflow-hidden">
@@ -117,7 +128,12 @@ export function ServiceDetailWebsite() {
               <Zap className="h-4 w-4" />
               Бързо, лесно и на ясна цена
             </span>
-            <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-balance">
+            <h1
+              className={cn(
+                headingFontClass,
+                "mt-6 text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-balance"
+              )}
+            >
               Твоят професионален уебсайт. <span className="gradient-text">Готов за броени дни.</span>
             </h1>
             <p className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
@@ -125,7 +141,9 @@ export function ServiceDetailWebsite() {
               на предварително фиксирана цена. Без скрити такси, без чакане с месеци.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-              <p className="text-3xl sm:text-4xl font-bold text-primary">{selectedOption.price} лв.</p>
+              <p className="text-3xl sm:text-4xl font-bold text-primary tabular-nums">
+                {selectedOption.price} лв.
+              </p>
               <Button
                 onClick={handleAddToCart}
                 size="lg"
@@ -146,7 +164,12 @@ export function ServiceDetailWebsite() {
             <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
               Проблемът
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance">
+            <h2
+              className={cn(
+                headingFontClass,
+                "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance"
+              )}
+            >
               Защо бизнесът ти има нужда от уебсайт точно сега?
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
@@ -176,7 +199,12 @@ export function ServiceDetailWebsite() {
             <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
               Решението
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-balance">
+            <h2
+              className={cn(
+                headingFontClass,
+                "text-3xl sm:text-4xl md:text-5xl font-bold text-balance"
+              )}
+            >
               Какво е включено в пакета?
             </h2>
           </div>
@@ -202,7 +230,12 @@ export function ServiceDetailWebsite() {
             <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
               Процес
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance">
+            <h2
+              className={cn(
+                headingFontClass,
+                "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance"
+              )}
+            >
               Как да започнем? (Само 4 лесни стъпки)
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
@@ -255,12 +288,12 @@ export function ServiceDetailWebsite() {
         <div className="mx-auto flex items-center justify-between gap-3">
           <div>
             <p className="text-xs text-muted-foreground">Пакет "Уебсайт"</p>
-            <p className="font-semibold">{selectedOption.price} лв.</p>
+            <p className="font-semibold tabular-nums">{selectedOption.price} лв.</p>
           </div>
           <Button
             onClick={handleAddToCart}
             disabled={isAdding}
-            className="bg-orange-500 hover:bg-orange-600 text-white"
+            className="min-h-11 min-w-30 shrink-0 px-4 text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white"
           >
             {isAdding ? "Добавяне..." : "Започни сега"}
           </Button>
