@@ -116,9 +116,9 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
               <Smartphone className="h-4 w-4" />
               Пълно дигитално присъствие
             </span>
-            <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-balance">
-              Управление на Социални Мрежи и Реклама.{" "}
-              <span className="gradient-text">Ние поемаме контрола, ти броиш продажбите.</span>
+            <h1 className="mt-6 text-4xl sm:text-5xl leading-tight text-balance">
+              Управление на Социални Мрежи и Реклама
+              <div className="gradient-text">Ние поемаме контрола, ти броиш продажбите</div>
             </h1>
             <p className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
               Забрави за стреса от постоянното мислене какво да публикувам днес. Ние създаваме
