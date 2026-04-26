@@ -87,6 +87,17 @@ function SuccessContent() {
                 className="text-xl gradient-text"
               />
             </div>
+
+            {order.consultation ? (
+              <div className="border-t border-border pt-4 mt-4">
+                <p className="text-sm text-muted-foreground mb-1">
+                  Запазена консултация
+                </p>
+                <p className="font-medium">
+                  {order.consultation.date} в {order.consultation.time}
+                </p>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       )}
@@ -109,7 +120,9 @@ function SuccessContent() {
                 2
               </span>
               <span className="text-muted-foreground">
-                Наш консултант ще се свърже с вас за безплатна консултация
+                {order?.consultation
+                  ? `Консултацията ви е потвърдена за ${order.consultation.date} в ${order.consultation.time}`
+                  : "Наш консултант ще се свърже с вас за безплатна консултация"}
               </span>
             </li>
             <li className="flex items-start gap-3">

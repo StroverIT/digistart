@@ -177,8 +177,8 @@ export function Header() {
             )}
 
             {/* CTA Button - Desktop */}
-            <TransitionLink href="/#услуги" className="hidden md:block">
-              <Button className="glow-primary">Започнете сега</Button>
+            <TransitionLink href="/консултация" className="hidden md:block">
+              <Button className="glow-primary">Безплатна консултация</Button>
             </TransitionLink>
 
             {/* Mobile Menu */}
@@ -259,9 +259,9 @@ export function Header() {
 
                   <div className="mt-auto pt-8">
                     <SheetClose asChild>
-                      <TransitionLink href="/#услуги" className="block">
+                      <TransitionLink href="/консултация" className="block">
                         <Button className="w-full glow-primary" size="lg">
-                          Започнете сега
+                          Безплатна консултация
                         </Button>
                       </TransitionLink>
                     </SheetClose>

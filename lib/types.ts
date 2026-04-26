@@ -87,10 +87,20 @@ export interface CustomerInfo {
   notes?: string;
 }
 
+export interface ConsultationBooking {
+  id: string;
+  date: string;
+  time: string;
+  source: "public" | "checkout";
+  status: "scheduled" | "cancelled";
+  orderId?: string;
+}
+
 export interface Order {
   id: string;
   cart: Cart;
   customer: CustomerInfo;
+  consultation?: ConsultationBooking;
   status: "pending" | "paid" | "in_progress" | "completed" | "cancelled";
   createdAt: string;
   updatedAt: string;

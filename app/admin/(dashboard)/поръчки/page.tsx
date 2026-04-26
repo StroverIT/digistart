@@ -183,6 +183,9 @@ export default function OrdersPage() {
                     <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
                       Статус
                     </th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                      Консултация
+                    </th>
                     <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">
                       Сума
                     </th>
@@ -225,6 +228,15 @@ export default function OrdersPage() {
                       </td>
                       <td className="py-3 px-4">
                         <OrderStatusBadge status={order.status} />
+                      </td>
+                      <td className="py-3 px-4">
+                        {order.consultation ? (
+                          <span className="text-xs">
+                            {order.consultation.date} {order.consultation.time}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">Няма</span>
+                        )}
                       </td>
                       <td className="py-3 px-4 text-right">
                         <Price
@@ -402,6 +414,26 @@ export default function OrdersPage() {
                   />
                 </div>
               </div>
+
+              {selectedOrder.consultation ? (
+                <div>
+                  <h3 className="font-semibold mb-2">Консултация</h3>
+                  <div className="bg-secondary/50 rounded-lg p-4 space-y-1">
+                    <p>
+                      <span className="text-muted-foreground">Дата:</span>{" "}
+                      {selectedOrder.consultation.date}
+                    </p>
+                    <p>
+                      <span className="text-muted-foreground">Час:</span>{" "}
+                      {selectedOrder.consultation.time}
+                    </p>
+                    <p>
+                      <span className="text-muted-foreground">Източник:</span>{" "}
+                      {selectedOrder.consultation.source}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
             </div>
           )}
         </DialogContent>

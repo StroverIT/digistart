@@ -1,6 +1,13 @@
 "use client";
 
-import type { Order, Cart, CustomerInfo, DailyStats, ServiceStats } from "@/lib/types";
+import type {
+  Order,
+  Cart,
+  CustomerInfo,
+  DailyStats,
+  ServiceStats,
+  ConsultationBooking,
+} from "@/lib/types";
 import { getDailyPageViewCounts } from "@/lib/store/site-analytics";
 
 const ORDERS_STORAGE_KEY = "digistart-orders";
@@ -23,13 +30,18 @@ export function saveOrders(orders: Order[]): void {
   localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
 }
 
-export function createOrder(cart: Cart, customer: CustomerInfo): Order {
+export function createOrder(
+  cart: Cart,
+  customer: CustomerInfo,
+  consultation?: ConsultationBooking
+): Order {
   const orders = getOrders();
 
   const order: Order = {
     id: `ORD-${Date.now().toString(36).toUpperCase()}`,
     cart,
     customer,
+    consultation,
     status: "pending",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

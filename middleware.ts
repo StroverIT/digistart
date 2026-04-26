@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextFetchEvent, NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { withAuth } from "next-auth/middleware";
 
@@ -19,6 +19,7 @@ const authMiddleware = withAuth({
 const routeRewriteMap: Record<string, string> = {
   // Public URL can stay /кошница; filesystem route is /cart (Unicode segment 404s in some environments).
   "/кошница": "/cart",
+  "/консултация": "/consultation",
   "/поръчка/успех": "/checkout/success",
   "/поръчка": "/checkout",
   "/услуги/уебсайт": "/services/website",
@@ -27,7 +28,7 @@ const routeRewriteMap: Record<string, string> = {
   "/услуги/социални-мрежи": "/services/social-media",
 };
 
-export default function middleware(req: NextRequest) {
+export default function middleware(req: NextRequest, event: NextFetchEvent) {
   const pathname = req.nextUrl.pathname;
   // req.nextUrl.pathname is usually percent-encoded for non-ASCII. Maps & routing use decoded IRIs.
   const pathDecoded = (() => {
@@ -49,7 +50,7 @@ export default function middleware(req: NextRequest) {
   }
 
   if (req.nextUrl.pathname.startsWith("/admin")) {
-    return authMiddleware(req);
+    return authMiddleware(req as any, event);
   }
 
   return NextResponse.next();
