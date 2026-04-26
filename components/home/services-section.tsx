@@ -1,5 +1,6 @@
 import TransitionLink from "@/components/transitions/TransitionLink";
 import { Globe, ShoppingCart, MapPin, Share2, ArrowRight } from "lucide-react";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/ui/price";
@@ -10,6 +11,13 @@ const iconMap: Record<string, React.ReactNode> = {
   ShoppingCart: <ShoppingCart className="h-8 w-8" />,
   MapPin: <MapPin className="h-8 w-8" />,
   Share2: <Share2 className="h-8 w-8" />,
+};
+
+const stickerMap: Record<string, string> = {
+  websites: "/stickers/website.png",
+  "ready-store": "/stickers/online-shop.png",
+  "google-business": "/stickers/my-business.png",
+  "social-media": "/stickers/social-media.png",
 };
 
 export function ServicesSection() {
@@ -26,7 +34,7 @@ export function ServicesSection() {
             <span className="gradient-text">онлайн успех</span>
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            От професионални уеб сайтове до пълно управление на социални мрежи - 
+            От професионални уеб сайтове до пълно управление на социални мрежи -
             предлагаме комплексни решения за дигиталното присъствие на вашия бизнес.
           </p>
         </div>
@@ -40,9 +48,21 @@ export function ServicesSection() {
             >
               <CardContent className="p-6 md:p-8">
                 <div className="flex flex-col h-full">
-                  {/* Icon */}
-                  <div className="h-16 w-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
-                    {iconMap[service.icon]}
+                  {/* Sticker */}
+                  <div className="-mt-8 -mx-8 mb-1 flex justify-center sm:-mt-10 sm:-mx-10 md:-mt-12 md:-mx-12">
+                    <div className="group-hover:scale-105 transition-transform relative h-48 w-48 sm:h-56 sm:w-56 md:h-64 md:w-64 lg:h-72 lg:w-72">
+                    {stickerMap[service.id] ? (
+                      <Image
+                        src={stickerMap[service.id]}
+                        alt={`${service.name} sticker`}
+                        className="object-contain"
+                        fill
+                        sizes="(max-width: 640px) 12rem, (max-width: 768px) 14rem, (max-width: 1024px) 16rem, 18rem"
+                      />
+                    ) : (
+                      iconMap[service.icon]
+                    )}
+                    </div>
                   </div>
 
                   {/* Content */}
