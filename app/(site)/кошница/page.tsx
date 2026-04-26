@@ -5,6 +5,7 @@ import TransitionLink from "@/components/transitions/TransitionLink";
 import { ArrowLeft, ArrowRight, ShoppingCart, Trash2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Price } from "@/components/ui/price";
 import type { Cart, CartItem } from "@/lib/types";
 import { getCart, removeFromCart } from "@/lib/store/cart";
 import { getServiceById } from "@/lib/data/services";
@@ -61,7 +62,7 @@ function CartItemCard({
                           {serviceUpsell.name} x{upsell.quantity}
                         </span>
                         <span>
-                          +€{serviceUpsell.pricePerUnit * upsell.quantity}
+                          +<Price value={serviceUpsell.pricePerUnit * upsell.quantity} />
                         </span>
                       </li>
                     );
@@ -73,9 +74,7 @@ function CartItemCard({
 
           {/* Price */}
           <div className="text-right shrink-0">
-            <span className="text-2xl font-bold text-primary">
-              €{item.totalPrice}
-            </span>
+            <Price value={item.totalPrice} className="text-2xl text-primary" />
             {item.isMonthly && (
               <span className="text-sm text-muted-foreground">/мес</span>
             )}
@@ -188,9 +187,7 @@ export default function CartPage() {
                       <span className="text-muted-foreground">
                         Еднократни услуги
                       </span>
-                      <span className="font-semibold">
-                        €{cart.totalOneTime}
-                      </span>
+                      <Price value={cart.totalOneTime} className="font-semibold" />
                     </div>
                   )}
                   {cart.totalMonthly > 0 && (
@@ -199,7 +196,7 @@ export default function CartPage() {
                         Месечни абонаменти
                       </span>
                       <span className="font-semibold">
-                        €{cart.totalMonthly}/мес
+                        <Price value={cart.totalMonthly} />/мес
                       </span>
                     </div>
                   )}
@@ -207,13 +204,14 @@ export default function CartPage() {
                   <div className="border-t border-border pt-4">
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-semibold">Обща сума</span>
-                      <span className="text-2xl font-bold gradient-text">
-                        €{cart.totalOneTime + cart.totalMonthly}
-                      </span>
+                      <Price
+                        value={cart.totalOneTime + cart.totalMonthly}
+                        className="text-2xl gradient-text"
+                      />
                     </div>
                     {cart.totalMonthly > 0 && cart.totalOneTime > 0 && (
                       <p className="text-sm text-muted-foreground text-right">
-                        + €{cart.totalMonthly}/мес след това
+                        + <Price value={cart.totalMonthly} />/мес след това
                       </p>
                     )}
                   </div>

@@ -22,6 +22,7 @@ import {
 import TransitionLink from "@/components/transitions/TransitionLink";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Price } from "@/components/ui/price";
 import { PricingConfigurator } from "@/components/services/pricing-configurator";
 import { addToCart } from "@/lib/store/cart";
 import { services } from "@/lib/data/services";
@@ -190,9 +191,10 @@ export function ServiceDetailWithConfigurator({
                 оптимизираме твоя бизнес профил в Google на еднократна, фиксирана цена.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-                <p className="text-3xl sm:text-4xl font-bold text-primary tabular-nums">
-                  €{GOOGLE_PROFILE_PRICE}
-                </p>
+                <Price
+                  value={GOOGLE_PROFILE_PRICE}
+                  className="text-3xl sm:text-4xl text-primary"
+                />
                 <Button
                   onClick={handleGoogleCheckout}
                   size="lg"
@@ -312,7 +314,7 @@ export function ServiceDetailWithConfigurator({
           <div className="mx-auto flex items-center justify-between gap-3">
             <div>
               <p className="text-xs text-muted-foreground">Пакет "Google Бизнес"</p>
-              <p className="font-semibold tabular-nums">€{GOOGLE_PROFILE_PRICE}</p>
+              <Price value={GOOGLE_PROFILE_PRICE} className="font-semibold" />
             </div>
             <Button
               onClick={handleGoogleCheckout}
@@ -368,9 +370,10 @@ export function ServiceDetailWithConfigurator({
                 бюджета, ние носим резултатите.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-                <p className="text-3xl sm:text-4xl font-bold text-primary tabular-nums">
-                  €{MARKETING_START_PRICE}
-                </p>
+                <Price
+                  value={MARKETING_START_PRICE}
+                  className="text-3xl sm:text-4xl text-primary"
+                />
                 <Button
                   onClick={() => {
                     setIsAdding(true);
@@ -497,7 +500,7 @@ export function ServiceDetailWithConfigurator({
           <div className="mx-auto flex items-center justify-between gap-3">
             <div>
               <p className="text-xs text-muted-foreground">Пакет "Маркетинг старт"</p>
-              <p className="font-semibold tabular-nums">€{MARKETING_START_PRICE}</p>
+              <Price value={MARKETING_START_PRICE} className="font-semibold" />
             </div>
             <Button
               onClick={() => {
@@ -544,7 +547,7 @@ export function ServiceDetailWithConfigurator({
                     {service.timeline}
                   </span>
                   <span>
-                    от <span className="text-primary font-semibold">€{service.basePrice}</span>
+                    от <Price value={service.basePrice} className="text-primary font-semibold" />
                     {service.isMonthly && "/мес"}
                   </span>
                 </div>

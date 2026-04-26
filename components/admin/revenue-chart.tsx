@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from "recharts";
 import type { DailyStats } from "@/lib/types";
+import { formatPriceWithBgn } from "@/components/ui/price";
 
 interface RevenueChartProps {
   data: DailyStats[];
@@ -56,7 +57,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
             fontSize={12}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => `€${value}`}
+            tickFormatter={(value) => formatPriceWithBgn(Number(value))}
           />
           <Tooltip
             contentStyle={{
@@ -65,7 +66,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
               borderRadius: "8px",
               color: "oklch(0.13 0.005 260)",
             }}
-            formatter={(value: number) => [`€${value}`, "Приходи"]}
+            formatter={(value: number) => [formatPriceWithBgn(value), "Приходи"]}
           />
           <Area
             type="monotone"

@@ -8,6 +8,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Price } from "@/components/ui/price";
 import type { Order, DailyStats, ServiceStats } from "@/lib/types";
 import { getOrders, getDailyStats, getServiceStats, seedDemoOrders } from "@/lib/store/orders";
 import { RevenueChart } from "@/components/admin/revenue-chart";
@@ -15,7 +16,7 @@ import { ServicesPieChart } from "@/components/admin/services-pie-chart";
 
 interface StatCardProps {
   title: string;
-  value: string;
+  value: React.ReactNode;
   description: string;
   icon: React.ReactNode;
   trend?: string;
@@ -88,7 +89,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Общо приходи"
-          value={`€${totalRevenue}`}
+          value={<Price value={totalRevenue} />}
           description="Всички времена"
           icon={<CreditCard className="h-6 w-6" />}
           trend="+12% от миналия месец"
@@ -186,7 +187,7 @@ export default function AdminDashboard() {
                         <OrderStatusBadge status={order.status} />
                       </td>
                       <td className="py-3 px-4 text-right font-semibold">
-                        €{order.cart.totalOneTime + order.cart.totalMonthly}
+                        <Price value={order.cart.totalOneTime + order.cart.totalMonthly} />
                       </td>
                     </tr>
                   ))}

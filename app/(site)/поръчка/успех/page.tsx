@@ -6,6 +6,7 @@ import TransitionLink from "@/components/transitions/TransitionLink";
 import { CheckCircle2, ArrowRight, Mail, Phone, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Price } from "@/components/ui/price";
 import { siteContact } from "@/lib/site-contact";
 import type { Order } from "@/lib/types";
 import { getOrderById } from "@/lib/store/orders";
@@ -72,7 +73,7 @@ function SuccessContent() {
                     {item.serviceName} - {item.selectedOptionName}
                   </span>
                   <span className="font-medium">
-                    €{item.totalPrice}
+                    <Price value={item.totalPrice} />
                     {item.isMonthly && "/мес"}
                   </span>
                 </div>
@@ -81,9 +82,10 @@ function SuccessContent() {
 
             <div className="border-t border-border pt-4 mt-4 flex items-center justify-between">
               <span className="font-semibold">Обща сума</span>
-              <span className="text-xl font-bold gradient-text">
-                €{order.cart.totalOneTime + order.cart.totalMonthly}
-              </span>
+              <Price
+                value={order.cart.totalOneTime + order.cart.totalMonthly}
+                className="text-xl gradient-text"
+              />
             </div>
           </CardContent>
         </Card>

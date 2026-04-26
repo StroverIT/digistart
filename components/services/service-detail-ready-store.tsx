@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import TransitionLink from "@/components/transitions/TransitionLink";
+import { Price } from "@/components/ui/price";
 import {
   ArrowRight,
   CheckCircle2,
@@ -143,14 +144,13 @@ export function ServiceDetailReadyStore({
               грижим за всичко останало.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-              <p
+              <Price
+                value={total}
                 className={cn(
                   headingFontClass,
-                  "text-3xl sm:text-4xl font-bold text-primary tabular-nums"
+                  "text-3xl sm:text-4xl text-primary"
                 )}
-              >
-                €{total}
-              </p>
+              />
               <button
                 type="button"
                 onClick={handleCheckout}
@@ -270,7 +270,7 @@ export function ServiceDetailReadyStore({
         <div className="mx-auto flex items-center justify-between gap-3">
           <div>
             <p className="text-xs text-muted-foreground">Пакет "Онлайн Магазин"</p>
-            <p className={cn(headingFontClass, "font-semibold tabular-nums")}>€{total}</p>
+            <Price value={total} className={cn(headingFontClass, "font-semibold")} />
           </div>
           <button
             type="button"

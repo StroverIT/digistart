@@ -9,6 +9,7 @@ import {
   Tooltip,
 } from "recharts";
 import type { ServiceStats } from "@/lib/types";
+import { formatPriceWithBgn } from "@/components/ui/price";
 
 interface ServicesPieChartProps {
   data: ServiceStats[];
@@ -65,7 +66,7 @@ export function ServicesPieChart({ data }: ServicesPieChartProps) {
               color: "oklch(0.13 0.005 260)",
             }}
             formatter={(value: number, name: string, props) => [
-              `${value} поръчки (€${props.payload.revenue})`,
+              `${value} поръчки (${formatPriceWithBgn(props.payload.revenue)})`,
               name,
             ]}
           />

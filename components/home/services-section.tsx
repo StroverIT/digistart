@@ -2,6 +2,7 @@ import TransitionLink from "@/components/transitions/TransitionLink";
 import { Globe, ShoppingCart, MapPin, Share2, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Price } from "@/components/ui/price";
 import { services } from "@/lib/data/services";
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -55,12 +56,8 @@ export function ServicesSection() {
                     <div>
                       <span className="text-sm text-muted-foreground">от</span>
                       <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-bold text-primary">
-                          {service.basePrice}
-                        </span>
-                        <span className="text-muted-foreground">
-                          {service.isMonthly ? "€/мес" : "€"}
-                        </span>
+                        <Price value={service.basePrice} className="text-2xl text-primary" />
+                        {service.isMonthly && <span className="text-muted-foreground">/мес</span>}
                       </div>
                     </div>
                     <TransitionLink href={`/услуги/${service.slug}`}>

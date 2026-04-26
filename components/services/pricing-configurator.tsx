@@ -5,6 +5,7 @@ import { Check, Plus, Minus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Price } from "@/components/ui/price";
 import { cn } from "@/lib/utils";
 import type { Service, CartItemUpsell } from "@/lib/types";
 import { addToCart } from "@/lib/store/cart";
@@ -97,9 +98,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <span className="text-xl font-bold text-primary">
-                    €{option.price}
-                  </span>
+                  <Price value={option.price} className="text-xl text-primary" />
                   {option.isMonthly && (
                     <span className="text-sm text-muted-foreground">/мес</span>
                   )}
@@ -140,9 +139,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
                         {upsell.description}
                       </p>
                       <p className="text-sm">
-                        <span className="text-primary font-medium">
-                          €{upsell.pricePerUnit}
-                        </span>
+                        <Price value={upsell.pricePerUnit} className="text-primary font-medium" />
                         <span className="text-muted-foreground">
                           {" "}/ {upsell.unit}
                         </span>
@@ -175,10 +172,10 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
                   {quantity > 0 && (
                     <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
-                        {quantity} x €{upsell.pricePerUnit}
+                        {quantity} x <Price value={upsell.pricePerUnit} />
                       </span>
                       <span className="font-medium text-primary">
-                        +€{upsellTotal}
+                        +<Price value={upsellTotal} className="text-primary font-medium" />
                       </span>
                     </div>
                   )}
@@ -195,9 +192,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
           <div className="flex items-center justify-between mb-4">
             <span className="text-lg font-medium">Обща цена</span>
             <div className="text-right">
-              <span className="text-3xl font-bold gradient-text">
-                €{totalPrice}
-              </span>
+              <Price value={totalPrice} className="text-3xl gradient-text" />
               {selectedOption.isMonthly && (
                 <span className="text-muted-foreground ml-1">/мес</span>
               )}

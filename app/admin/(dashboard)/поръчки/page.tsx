@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Price } from "@/components/ui/price";
 import type { Order } from "@/lib/types";
 import { getOrders, updateOrderStatus, seedDemoOrders } from "@/lib/store/orders";
 import { getServiceById } from "@/lib/data/services";
@@ -226,9 +227,10 @@ export default function OrdersPage() {
                         <OrderStatusBadge status={order.status} />
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <span className="font-semibold">
-                          €{order.cart.totalOneTime + order.cart.totalMonthly}
-                        </span>
+                        <Price
+                          value={order.cart.totalOneTime + order.cart.totalMonthly}
+                          className="font-semibold"
+                        />
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center justify-center gap-2">
@@ -328,7 +330,7 @@ export default function OrdersPage() {
                             </p>
                           </div>
                           <span className="font-semibold">
-                            €{item.totalPrice}
+                            <Price value={item.totalPrice} />
                             {item.isMonthly && "/мес"}
                           </span>
                         </div>
@@ -348,8 +350,8 @@ export default function OrdersPage() {
                                     key={upsell.upsellId}
                                     className="text-sm text-muted-foreground"
                                   >
-                                    {serviceUpsell.name} x{upsell.quantity} (+€
-                                    {serviceUpsell.pricePerUnit * upsell.quantity})
+                                    {serviceUpsell.name} x{upsell.quantity} (+
+                                    <Price value={serviceUpsell.pricePerUnit * upsell.quantity} />)
                                   </li>
                                 );
                               })}
@@ -391,11 +393,13 @@ export default function OrdersPage() {
                   <span className="text-muted-foreground text-sm">
                     Обща сума
                   </span>
-                  <p className="text-2xl font-bold gradient-text">
-                    €
-                    {selectedOrder.cart.totalOneTime +
-                      selectedOrder.cart.totalMonthly}
-                  </p>
+                  <Price
+                    value={
+                      selectedOrder.cart.totalOneTime +
+                      selectedOrder.cart.totalMonthly
+                    }
+                    className="text-2xl gradient-text"
+                  />
                 </div>
               </div>
             </div>

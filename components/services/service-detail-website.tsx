@@ -16,6 +16,7 @@ import {
 import TransitionLink from "@/components/transitions/TransitionLink";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Price } from "@/components/ui/price";
 import { addToCart } from "@/lib/store/cart";
 import { getServiceById } from "@/lib/data/services";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
@@ -141,9 +142,7 @@ export function ServiceDetailWebsite({
               на предварително фиксирана цена. Без скрити такси, без чакане с месеци.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-              <p className="text-3xl sm:text-4xl font-bold text-primary tabular-nums">
-                €{selectedOption.price}
-              </p>
+              <Price value={selectedOption.price} className="text-3xl sm:text-4xl text-primary" />
               <Button
                 onClick={handleAddToCart}
                 size="lg"
@@ -288,7 +287,7 @@ export function ServiceDetailWebsite({
         <div className="mx-auto flex items-center justify-between gap-3">
           <div>
             <p className="text-xs text-muted-foreground">Пакет "Уебсайт"</p>
-            <p className="font-semibold tabular-nums">€{selectedOption.price}</p>
+            <Price value={selectedOption.price} className="font-semibold" />
           </div>
           <Button
             onClick={handleAddToCart}
