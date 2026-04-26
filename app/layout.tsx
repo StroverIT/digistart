@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat } from "next/font/google";
+import { Inter, Montserrat } from "next/font/google";
 import { DigiStartAnalytics } from "@/components/analytics/digistart-analytics";
 import { Providers } from "@/components/providers";
 import "./globals.css";
@@ -7,6 +7,11 @@ import "./globals.css";
 const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
   variable: "--font-montserrat",
+});
+
+const inter = Inter({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -61,7 +66,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="bg" className="bg-background">
-      <body className={`${montserrat.className} font-sans antialiased overflow-x-hidden`}>
+      <body
+        className={`${inter.variable} ${montserrat.variable} font-sans antialiased overflow-x-hidden`}
+      >
         <DigiStartAnalytics />
         <Providers>{children}</Providers>
       </body>

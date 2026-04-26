@@ -69,7 +69,7 @@ const STEPS = [
 ] as const;
 
 interface ServiceDetailReadyStoreProps {
-  headingFontClass: string;
+  headingFontClass?: string;
   bodyFontClass?: string;
   className?: string;
 }

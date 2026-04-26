@@ -1,15 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Montserrat } from "next/font/google";
 import { ServiceDetailReadyStore } from "@/components/services/service-detail-ready-store";
-
-const montserratBlack = Montserrat({
-  subsets: ["latin", "cyrillic"],
-  weight: "900",
-});
-
-const inter = Inter({
-  subsets: ["latin", "cyrillic"],
-});
 
 export const metadata: Metadata = {
   title: "Онлайн Магазин",
@@ -18,10 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function OnlineStorePage() {
-  return (
-    <ServiceDetailReadyStore
-      bodyFontClass={inter.className}
-      headingFontClass={montserratBlack.className}
-    />
-  );
+  return <ServiceDetailReadyStore />;
 }

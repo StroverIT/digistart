@@ -72,7 +72,7 @@ const steps = [
 ] as const;
 
 interface ServiceDetailWebsiteProps {
-  headingFontClass: string;
+  headingFontClass?: string;
   bodyFontClass?: string;
   className?: string;
 }
