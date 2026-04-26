@@ -124,11 +124,11 @@ function SuccessContent() {
       {/* Contact Info */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8 text-sm text-muted-foreground">
         <a
-          href="mailto:info@sleekroute.bg"
+          href="mailto:info@digistart.bg"
           className="flex items-center gap-2 hover:text-primary transition-colors"
         >
           <Mail className="h-4 w-4" />
-          info@sleekroute.bg
+          info@digistart.bg
         </a>
         <a
           href="tel:+359888123456"

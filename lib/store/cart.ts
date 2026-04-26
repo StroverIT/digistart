@@ -3,7 +3,7 @@
 import type { Cart, CartItem, CartItemUpsell } from "@/lib/types";
 import { getServiceById } from "@/lib/data/services";
 
-const CART_STORAGE_KEY = "sleek-route-cart";
+const CART_STORAGE_KEY = "digistart-cart";
 
 export function getCart(): Cart {
   if (typeof window === "undefined") {

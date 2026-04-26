@@ -1,20 +1,19 @@
-import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import type { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 // Demo credentials - in production, use environment variables
-const ADMIN_EMAIL = "admin@sleekroute.bg";
+const ADMIN_EMAIL = "admin@digistart.bg";
 const ADMIN_PASSWORD = "admin123";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
-    Credentials({
+    CredentialsProvider({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // Demo authentication - in production, check against database
         if (
           credentials?.email === ADMIN_EMAIL &&
           credentials?.password === ADMIN_PASSWORD
@@ -32,20 +31,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/admin/вход",
   },
-  callbacks: {
-    authorized: async ({ auth, request }) => {
-      const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
-      const isLoginPage = request.nextUrl.pathname === "/admin/вход";
-
-      if (isAdminRoute && !isLoginPage) {
-        return !!auth;
-      }
-
-      return true;
-    },
-  },
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
   },
-  trustHost: true,
-});
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+};

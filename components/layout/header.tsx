@@ -60,7 +60,7 @@ export function Header() {
               <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
             <span className="text-xl font-bold tracking-tight">
-              Sleek<span className="text-primary">Route</span>
+              Digi<span className="text-primary">Start</span>
             </span>
           </Link>
 
@@ -115,7 +115,7 @@ export function Header() {
                     <Link href="/" className="flex items-center gap-2">
                       <Zap className="h-7 w-7 text-primary" />
                       <span className="text-lg font-bold">
-                        Sleek<span className="text-primary">Route</span>
+                        Digi<span className="text-primary">Start</span>
                       </span>
                     </Link>
                     <SheetClose asChild>

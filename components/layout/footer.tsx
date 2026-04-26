@@ -25,7 +25,7 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-2 mb-4">
               <Zap className="h-8 w-8 text-primary" />
               <span className="text-xl font-bold">
-                Sleek<span className="text-primary">Route</span>
+                Digi<span className="text-primary">Start</span>
               </span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
@@ -103,10 +103,10 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <Mail className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <a
-                  href="mailto:info@sleekroute.bg"
+                  href="mailto:info@digistart.bg"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  info@sleekroute.bg
+                  info@digistart.bg
                 </a>
               </li>
               <li className="flex items-start gap-3">
@@ -131,7 +131,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Sleek Route. Всички права запазени.
+            &copy; {new Date().getFullYear()} DigiStart. Всички права запазени.
           </p>
           <div className="flex items-center gap-6">
             <Link

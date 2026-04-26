@@ -54,7 +54,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
         <Link href="/admin" className="flex items-center gap-2">
           <Zap className="h-7 w-7 text-primary" />
           <span className="text-lg font-bold">
-            Sleek<span className="text-primary">Route</span>
+            Digi<span className="text-primary">Start</span>
           </span>
         </Link>
       </div>

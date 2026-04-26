@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
+import { DigiStartAnalytics } from "@/components/analytics/digistart-analytics";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -10,8 +11,8 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: {
-    default: "Sleek Route | Дигитална агенция",
-    template: "%s | Sleek Route",
+    default: "DigiStart | Дигитална агенция",
+    template: "%s | DigiStart",
   },
   description:
     "Професионални уеб сайтове, онлайн магазини, Google Business оптимизация и управление на социални мрежи. Изграждаме вашето онлайн присъствие.",
@@ -25,19 +26,19 @@ export const metadata: Metadata = {
     "SEO",
     "България",
   ],
-  authors: [{ name: "Sleek Route" }],
-  creator: "Sleek Route",
+  authors: [{ name: "DigiStart" }],
+  creator: "DigiStart",
   openGraph: {
     type: "website",
     locale: "bg_BG",
-    siteName: "Sleek Route",
-    title: "Sleek Route | Дигитална агенция",
+    siteName: "DigiStart",
+    title: "DigiStart | Дигитална агенция",
     description:
       "Професионални уеб сайтове, онлайн магазини и дигитален маркетинг",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sleek Route | Дигитална агенция",
+    title: "DigiStart | Дигитална агенция",
     description:
       "Професионални уеб сайтове, онлайн магазини и дигитален маркетинг",
   },
@@ -61,8 +62,8 @@ export default function RootLayout({
   return (
     <html lang="bg" className="bg-background">
       <body className={`${montserrat.className} font-sans antialiased`}>
-        {children}
-        {process.env.NODE_ENV === "production" && <Analytics />}
+        <DigiStartAnalytics />
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

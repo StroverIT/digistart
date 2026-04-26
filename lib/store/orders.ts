@@ -1,8 +1,9 @@
 "use client";
 
 import type { Order, Cart, CustomerInfo, DailyStats, ServiceStats } from "@/lib/types";
+import { getDailyPageViewCounts } from "@/lib/store/site-analytics";
 
-const ORDERS_STORAGE_KEY = "sleek-route-orders";
+const ORDERS_STORAGE_KEY = "digistart-orders";
 
 export function getOrders(): Order[] {
   if (typeof window === "undefined") return [];
@@ -61,13 +62,15 @@ export function getOrderById(orderId: string): Order | null {
 export function getDailyStats(days: number = 30): DailyStats[] {
   const orders = getOrders();
   const stats: Map<string, DailyStats> = new Map();
-  
+  const pageViewsByDay = getDailyPageViewCounts(days);
+
   // Generate dates for the last N days
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date();
     date.setDate(date.getDate() - i);
     const dateStr = date.toISOString().split("T")[0];
-    stats.set(dateStr, { date: dateStr, visits: Math.floor(Math.random() * 100) + 10, orders: 0, revenue: 0 });
+    const visits = pageViewsByDay.get(dateStr) ?? 0;
+    stats.set(dateStr, { date: dateStr, visits, orders: 0, revenue: 0 });
   }
   
   // Add order data

@@ -18,10 +18,14 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+const DEDICATED_SERVICE_SLUGS = new Set(["готов-онлайн-магазин"]);
+
 export async function generateStaticParams() {
-  return services.map((service) => ({
-    slug: service.slug,
-  }));
+  return services
+    .filter((service) => !DEDICATED_SERVICE_SLUGS.has(service.slug))
+    .map((service) => ({
+      slug: service.slug,
+    }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

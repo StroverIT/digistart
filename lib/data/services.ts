@@ -2,6 +2,57 @@ import type { Service } from "@/lib/types";
 
 export const services: Service[] = [
   {
+    id: "ready-store",
+    slug: "готов-онлайн-магазин",
+    name: "Готов Онлайн Магазин",
+    shortDescription:
+      "Продавай веднага с професионален магазин, настроен специално за твоя бизнес. Без скрити такси.",
+    fullDescription:
+      "Продуктизиран пакет за бърз старт: индивидуален дизайн, продукти, плащания и мобилна версия — до 48 часа до първи клиенти.",
+    icon: "ShoppingCart",
+    basePrice: 499,
+    options: [
+      {
+        id: "standard",
+        name: "Готов Онлайн Магазин",
+        description:
+          "Пълен пакет: дизайн с лого, продукти, плащания, SEO и хостинг за първия месец",
+        price: 499,
+      },
+    ],
+    upsells: [
+      {
+        id: "gmb-profile",
+        name: "Google My Business Профил",
+        description: "Настройка и оптимизация на GMB за локални търсения",
+        pricePerUnit: 99,
+        unit: "добавка",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+      {
+        id: "facebook-pixel",
+        name: "Facebook Pixel Интеграция",
+        description: "Инсталация и тест на Meta Pixel за реклами и анализ",
+        pricePerUnit: 49,
+        unit: "добавка",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+    ],
+    features: [
+      "Индивидуален дизайн с твоето лого",
+      "Качване на първите 20 продукта",
+      "Интеграция на методи за плащане (Stripe/Наложен платеж)",
+      "Мобилна версия (Responsive design)",
+      "Основни SEO настройки",
+      "Безплатен хостинг за първия месец",
+    ],
+    timeline: "До 48 часа",
+  },
+  {
     id: "websites",
     slug: "websites",
     name: "Уеб сайтове",

@@ -2,7 +2,7 @@
 
 import { BusinessLead, LeadStatus, PurchasedService } from "@/lib/types";
 
-const LEADS_STORAGE_KEY = "sleekroute_leads";
+const LEADS_STORAGE_KEY = "digistart_leads";
 
 // Demo leads for testing
 const demoLeads: BusinessLead[] = [

@@ -49,7 +49,7 @@ export default function AdminLoginPage() {
           <div className="flex items-center justify-center gap-2 mb-4">
             <Zap className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold">
-              Sleek<span className="text-primary">Route</span>
+              Digi<span className="text-primary">Start</span>
             </span>
           </div>
           <CardTitle className="flex items-center justify-center gap-2">
@@ -74,7 +74,7 @@ export default function AdminLoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@sleekroute.bg"
+                  placeholder="admin@digistart.bg"
                   required
                 />
               </Field>
@@ -114,7 +114,7 @@ export default function AdminLoginPage() {
               Демо данни за вход:
             </p>
             <p className="text-xs text-muted-foreground text-center font-mono">
-              admin@sleekroute.bg / admin123
+              admin@digistart.bg / admin123
             </p>
           </div>
         </CardContent>

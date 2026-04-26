@@ -33,9 +33,9 @@ export function CTASection() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <a href="mailto:info@sleekroute.bg">
+            <a href="mailto:info@digistart.bg">
               <Button variant="outline" size="lg" className="text-lg h-14 px-8">
-                info@sleekroute.bg
+                info@digistart.bg
               </Button>
             </a>
           </div>

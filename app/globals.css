@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Sleek Route - Dark theme with electric blue accent */
+/* DigiStart - Dark theme with electric blue accent */
 :root {
   /* Dark charcoal background */
   --background: oklch(0.13 0.005 260);
