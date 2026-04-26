@@ -132,11 +132,11 @@ export function ServiceDetailReadyStore({
             <h1
               className={cn(
                 headingFontClass,
-                "mt-6 text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-balance"
+                "mt-6 text-4xl sm:text-5xl leading-tight text-balance"
               )}
             >
-              Готов Онлайн Магазин.{" "}
-              <span className="gradient-text">Твоят бизнес, отворен денонощно.</span>
+              Готов Онлайн Магазин
+              <div className="gradient-text">Твоят бизнес, отворен денонощно</div>
             </h1>
             <p className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
               Излез на онлайн пазара бързо и без стрес. Получаваш професионален, напълно

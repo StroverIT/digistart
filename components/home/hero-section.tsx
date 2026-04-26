@@ -42,7 +42,7 @@ export function HeroSection() {
           </div>
 
           {/* Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 text-balance">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-17 mb-6 text-balance">
             Изградете{" "}
             <span className="gradient-text">дигиталното бъдеще</span>{" "}
             на вашия бизнес
@@ -81,7 +81,7 @@ export function HeroSection() {
           </div>
 
           {/* Trust indicators */}
-          <div className="mt-16 pt-8 border-t border-border/50">
+          {/* <div className="mt-16 pt-8 border-t border-border/50">
             <p className="text-sm text-muted-foreground mb-6">Доверени от водещи компании в България</p>
             <div className="flex flex-wrap items-center justify-center gap-8 opacity-50">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -92,7 +92,7 @@ export function HeroSection() {
                 />
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

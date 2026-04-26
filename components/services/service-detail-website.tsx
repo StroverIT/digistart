@@ -132,10 +132,10 @@ export function ServiceDetailWebsite({
             <h1
               className={cn(
                 headingFontClass,
-                "mt-6 text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-balance"
+                "mt-6 text-4xl sm:text-5xl leading-tight text-balance"
               )}
             >
-              Твоят професионален уебсайт. <span className="gradient-text">Готов за броени дни.</span>
+              Твоят професионален уебсайт <div className="gradient-text">Готов за броени дни</div>
             </h1>
             <p className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
               Спри да губиш клиенти, защото те няма онлайн. Представи бизнеса си с модерен сайт
