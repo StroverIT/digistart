@@ -74,38 +74,24 @@ export function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
           ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg"
           : "bg-transparent"
-      }`}
+        }`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          {isHome ? (
-            <span
-              className="flex items-center gap-2 rounded-lg outline-none ring-2 ring-primary/25 ring-offset-2 ring-offset-background"
-              aria-current="page"
-            >
-              <div className="relative">
-                <Zap className="h-8 w-8 text-primary" />
-              </div>
-              <span className="text-xl font-bold tracking-tight">
-                Digi<span className="text-primary">Start</span>
-              </span>
+
+          <TransitionLink href="/" className="flex items-center gap-2 group rounded-lg">
+            <div className="relative">
+              <Zap className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
+              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+            <span className="text-xl font-bold tracking-tight">
+              Digi<span className="text-primary">Start</span>
             </span>
-          ) : (
-            <TransitionLink href="/" className="flex items-center gap-2 group rounded-lg">
-              <div className="relative">
-                <Zap className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
-                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <span className="text-xl font-bold tracking-tight">
-                Digi<span className="text-primary">Start</span>
-              </span>
-            </TransitionLink>
-          )}
+          </TransitionLink>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1" aria-label="Основна навигация">
