@@ -6,6 +6,7 @@ import Link from "next/link";
 import { CheckCircle2, ArrowRight, Mail, Phone, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { siteContact } from "@/lib/site-contact";
 import type { Order } from "@/lib/types";
 import { getOrderById } from "@/lib/store/orders";
 
@@ -124,18 +125,18 @@ function SuccessContent() {
       {/* Contact Info */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8 text-sm text-muted-foreground">
         <a
-          href="mailto:info@digistart.bg"
+          href={`mailto:${siteContact.email}`}
           className="flex items-center gap-2 hover:text-primary transition-colors"
         >
           <Mail className="h-4 w-4" />
-          info@digistart.bg
+          {siteContact.email}
         </a>
         <a
-          href="tel:+359888123456"
+          href={siteContact.phoneHref}
           className="flex items-center gap-2 hover:text-primary transition-colors"
         >
           <Phone className="h-4 w-4" />
-          +359 888 123 456
+          {siteContact.phoneLabel}
         </a>
       </div>
 

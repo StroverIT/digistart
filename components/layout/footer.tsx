@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Zap, Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
+import { siteContact } from "@/lib/site-contact";
 
 const services = [
   { href: "/услуги/websites", label: "Уеб сайтове" },
@@ -33,7 +34,7 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-3">
               <a
-                href="https://facebook.com"
+                href={siteContact.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -42,7 +43,7 @@ export function Footer() {
                 <Facebook className="h-5 w-5" />
               </a>
               <a
-                href="https://instagram.com"
+                href={siteContact.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -51,7 +52,7 @@ export function Footer() {
                 <Instagram className="h-5 w-5" />
               </a>
               <a
-                href="https://linkedin.com"
+                href={siteContact.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -103,19 +104,19 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <Mail className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <a
-                  href="mailto:info@digistart.bg"
+                  href={`mailto:${siteContact.email}`}
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  info@digistart.bg
+                  {siteContact.email}
                 </a>
               </li>
               <li className="flex items-start gap-3">
                 <Phone className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <a
-                  href="tel:+359888123456"
+                  href={siteContact.phoneHref}
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  +359 888 123 456
+                  {siteContact.phoneLabel}
                 </a>
               </li>
               <li className="flex items-start gap-3">

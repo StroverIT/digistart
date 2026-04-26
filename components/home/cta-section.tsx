@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { siteContact } from "@/lib/site-contact";
 
 export function CTASection() {
   return (
@@ -33,17 +34,17 @@ export function CTASection() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <a href="mailto:info@digistart.bg">
+            <a href={`mailto:${siteContact.email}`}>
               <Button variant="outline" size="lg" className="text-lg h-14 px-8">
-                info@digistart.bg
+                {siteContact.email}
               </Button>
             </a>
           </div>
 
           <p className="text-sm text-muted-foreground mt-8">
             Или ни се обадете на{" "}
-            <a href="tel:+359888123456" className="text-primary hover:underline">
-              +359 888 123 456
+            <a href={siteContact.phoneHref} className="text-primary hover:underline">
+              {siteContact.phoneLabel}
             </a>
           </p>
         </div>
