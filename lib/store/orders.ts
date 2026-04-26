@@ -7,10 +7,10 @@ const ORDERS_STORAGE_KEY = "digistart-orders";
 
 export function getOrders(): Order[] {
   if (typeof window === "undefined") return [];
-  
+
   const stored = localStorage.getItem(ORDERS_STORAGE_KEY);
   if (!stored) return [];
-  
+
   try {
     return JSON.parse(stored);
   } catch {
@@ -25,7 +25,7 @@ export function saveOrders(orders: Order[]): void {
 
 export function createOrder(cart: Cart, customer: CustomerInfo): Order {
   const orders = getOrders();
-  
+
   const order: Order = {
     id: `ORD-${Date.now().toString(36).toUpperCase()}`,
     cart,
@@ -34,23 +34,23 @@ export function createOrder(cart: Cart, customer: CustomerInfo): Order {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  
+
   orders.unshift(order);
   saveOrders(orders);
-  
+
   return order;
 }
 
 export function updateOrderStatus(orderId: string, status: Order["status"]): Order | null {
   const orders = getOrders();
   const orderIndex = orders.findIndex((o) => o.id === orderId);
-  
+
   if (orderIndex === -1) return null;
-  
+
   orders[orderIndex].status = status;
   orders[orderIndex].updatedAt = new Date().toISOString();
   saveOrders(orders);
-  
+
   return orders[orderIndex];
 }
 
@@ -72,7 +72,7 @@ export function getDailyStats(days: number = 30): DailyStats[] {
     const visits = pageViewsByDay.get(dateStr) ?? 0;
     stats.set(dateStr, { date: dateStr, visits, orders: 0, revenue: 0 });
   }
-  
+
   // Add order data
   for (const order of orders) {
     const dateStr = order.createdAt.split("T")[0];
@@ -82,14 +82,14 @@ export function getDailyStats(days: number = 30): DailyStats[] {
       stat.revenue += order.cart.totalOneTime + order.cart.totalMonthly;
     }
   }
-  
+
   return Array.from(stats.values());
 }
 
 export function getServiceStats(): ServiceStats[] {
   const orders = getOrders();
   const stats: Map<string, ServiceStats> = new Map();
-  
+
   for (const order of orders) {
     for (const item of order.cart.items) {
       const existing = stats.get(item.serviceId) || {
@@ -103,7 +103,7 @@ export function getServiceStats(): ServiceStats[] {
       stats.set(item.serviceId, existing);
     }
   }
-  
+
   return Array.from(stats.values()).sort((a, b) => b.revenue - a.revenue);
 }
 
@@ -111,7 +111,7 @@ export function getServiceStats(): ServiceStats[] {
 export function seedDemoOrders(): void {
   const existingOrders = getOrders();
   if (existingOrders.length > 0) return;
-  
+
   const demoOrders: Order[] = [
     {
       id: "ORD-ABC123",
@@ -120,16 +120,16 @@ export function seedDemoOrders(): void {
           {
             id: "demo-1",
             serviceId: "websites",
-            serviceName: "Уеб сайтове",
-            selectedOptionId: "business",
-            selectedOptionName: "Бизнес сайт",
-            basePrice: 300,
-            upsells: [{ upsellId: "extra-pages", quantity: 3 }],
-            totalPrice: 390,
+            serviceName: "Професионален Фирмен Уебсайт",
+            selectedOptionId: "business-site",
+            selectedOptionName: "Професионален Фирмен Уебсайт",
+            basePrice: 299,
+            upsells: [{ upsellId: "gmb-profile", quantity: 1 }],
+            totalPrice: 398,
             isMonthly: false,
           },
         ],
-        totalOneTime: 390,
+        totalOneTime: 398,
         totalMonthly: 0,
       },
       customer: {
@@ -148,17 +148,17 @@ export function seedDemoOrders(): void {
         items: [
           {
             id: "demo-2",
-            serviceId: "ecommerce",
-            serviceName: "Онлайн магазини",
-            selectedOptionId: "professional",
-            selectedOptionName: "Професионален магазин",
-            basePrice: 600,
-            upsells: [{ upsellId: "courier-integration", quantity: 2 }],
-            totalPrice: 900,
+            serviceId: "ready-store",
+            serviceName: "Онлайн Магазин",
+            selectedOptionId: "standard",
+            selectedOptionName: "Онлайн Магазин",
+            basePrice: 499,
+            upsells: [{ upsellId: "gmb-profile", quantity: 1 }],
+            totalPrice: 598,
             isMonthly: false,
           },
         ],
-        totalOneTime: 900,
+        totalOneTime: 598,
         totalMonthly: 0,
       },
       customer: {
@@ -200,6 +200,6 @@ export function seedDemoOrders(): void {
       updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     },
   ];
-  
+
   saveOrders(demoOrders);
 }

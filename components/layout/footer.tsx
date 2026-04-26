@@ -3,8 +3,8 @@ import { Zap, Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-
 import { siteContact } from "@/lib/site-contact";
 
 const services = [
-  { href: "/услуги/websites", label: "Уеб сайтове" },
-  { href: "/услуги/онлайн-магазини", label: "Онлайн магазини" },
+  { href: "/услуги/уебсайт", label: "Уеб сайтове" },
+  { href: "/услуги/онлайн-магазин", label: "Онлайн магазин" },
   { href: "/услуги/google-business", label: "Google Business" },
   { href: "/услуги/социални-мрежи", label: "Социални мрежи" },
 ];

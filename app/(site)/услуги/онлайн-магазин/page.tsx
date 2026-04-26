@@ -12,15 +12,16 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Готов Онлайн Магазин",
+  title: "Онлайн Магазин",
   description:
     "Продавай веднага с професионален магазин, настроен специално за твоя бизнес. Без скрити такси.",
 };
 
-export default function ReadyOnlineStorePage() {
+export default function OnlineStorePage() {
   return (
-    <div className={inter.className}>
-      <ServiceDetailReadyStore headingFontClass={montserratBlack.className} />
-    </div>
+    <ServiceDetailReadyStore
+      bodyFontClass={inter.className}
+      headingFontClass={montserratBlack.className}
+    />
   );
 }

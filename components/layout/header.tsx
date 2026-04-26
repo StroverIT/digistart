@@ -9,8 +9,8 @@ import { getCartItemCount } from "@/lib/store/cart";
 
 const navLinks = [
   { href: "/", label: "Начало" },
-  { href: "/услуги/websites", label: "Уеб сайтове" },
-  { href: "/услуги/онлайн-магазини", label: "Онлайн магазини" },
+  { href: "/услуги/уебсайт", label: "Уебсайт" },
+  { href: "/услуги/онлайн-магазин", label: "Онлайн магазин" },
   { href: "/услуги/google-business", label: "Google Business" },
   { href: "/услуги/социални-мрежи", label: "Социални мрежи" },
 ];

@@ -80,7 +80,7 @@ const TransitionLink = ({
 
       // Exit animation -> then navigate
       playExit(() => {
-        router.push(currentHrefRef.current);
+        router.push(encodeURI(currentHrefRef.current));
       });
     },
     [

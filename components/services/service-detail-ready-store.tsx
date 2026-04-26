@@ -62,7 +62,11 @@ const ADDONS = [
 type AddonId = (typeof ADDONS)[number]["id"];
 
 interface ServiceDetailReadyStoreProps {
+  /** Montserrat 900 (or similar) for headlines */
   headingFontClass: string;
+  /** Inter (or clean UI sans) for body copy */
+  bodyFontClass?: string;
+  className?: string;
 }
 
 function StorefrontPreview() {
@@ -154,6 +158,8 @@ function StorefrontPreview() {
 
 export function ServiceDetailReadyStore({
   headingFontClass,
+  bodyFontClass,
+  className,
 }: ServiceDetailReadyStoreProps) {
   const { push } = useTransitionRouter();
   const [addons, setAddons] = useState<Record<AddonId, boolean>>({
@@ -189,7 +195,13 @@ export function ServiceDetailReadyStore({
   };
 
   return (
-    <div className="relative min-h-screen bg-gray-50 text-gray-900">
+    <div
+      className={cn(
+        "relative min-h-screen bg-gray-50 text-gray-900 antialiased",
+        bodyFontClass,
+        className
+      )}
+    >
       <div className="border-b border-gray-200/80 bg-white">
         <div className="container mx-auto max-w-6xl px-4 pb-10 pt-24 sm:pb-14 sm:pt-28 md:pt-32">
           <TransitionLink
@@ -202,16 +214,16 @@ export function ServiceDetailReadyStore({
 
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
             <div className="order-2 lg:order-1">
-              <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-blue-700">
+              <span className="inline-flex items-center rounded-full border border-blue-600/20 bg-blue-50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-blue-600 sm:text-xs">
                 Бърза изработка
               </span>
               <h1
                 className={cn(
                   headingFontClass,
-                  "mt-4 text-4xl font-black leading-[1.05] tracking-tight text-gray-900 sm:text-5xl sm:leading-[1.02] lg:text-6xl"
+                  "mt-4 text-balance text-4xl font-black leading-[1.05] tracking-tight text-gray-900 sm:text-5xl sm:leading-[1.02] lg:text-6xl"
                 )}
               >
-                Готов Онлайн Магазин
+                Онлайн Магазин
               </h1>
               <p className="mt-4 max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg">
                 Продавай веднага с професионален магазин, настроен специално за
@@ -220,7 +232,7 @@ export function ServiceDetailReadyStore({
               <p
                 className={cn(
                   headingFontClass,
-                  "mt-8 text-3xl font-black text-blue-600 sm:text-4xl"
+                  "mt-8 text-4xl font-black tabular-nums tracking-tight text-blue-600 sm:text-5xl"
                 )}
               >
                 Цена: {total} лв.
@@ -229,7 +241,8 @@ export function ServiceDetailReadyStore({
                 type="button"
                 onClick={handleCheckout}
                 disabled={isAdding}
-                className="mt-6 flex h-14 w-full items-center justify-center rounded-xl bg-orange-500 px-6 text-base font-semibold text-white shadow-lg shadow-orange-500/30 transition hover:bg-orange-600 active:scale-[0.99] disabled:opacity-70 sm:min-w-[280px] sm:w-auto"
+                aria-label="Добави в количката и продължи към поръчка"
+                className="mt-6 flex h-14 w-full min-w-0 items-center justify-center rounded-xl bg-orange-500 px-4 text-base font-bold text-white shadow-lg shadow-orange-500/30 transition hover:bg-orange-600 active:scale-[0.99] disabled:opacity-70 sm:min-w-[280px] sm:px-6 sm:w-auto"
               >
                 {isAdding ? "Добавяне..." : "Добави в количката и стартирай"}
               </button>
@@ -246,25 +259,29 @@ export function ServiceDetailReadyStore({
         </div>
       </div>
 
-      <section className="border-b border-gray-200/80 bg-white py-12 sm:py-16">
+      <section
+        id="package-includes"
+        className="border-b border-gray-200/80 bg-white py-12 sm:py-16"
+      >
         <div className="container mx-auto max-w-6xl px-4">
           <h2
             className={cn(
               headingFontClass,
-              "text-2xl font-black tracking-tight text-gray-900 sm:text-3xl"
+              "text-balance text-2xl font-black tracking-tight text-gray-900 sm:text-3xl"
             )}
           >
             Какво получаваш в пакета?
           </h2>
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2 sm:gap-5">
+          <ul className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
             {FEATURES.map((item) => (
               <li
                 key={item}
-                className="flex gap-3 rounded-2xl border border-gray-100 bg-gray-50/80 px-4 py-3.5 sm:px-5 sm:py-4"
+                className="flex gap-3 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4 sm:px-5"
               >
                 <CheckCircle
-                  className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500"
+                  className="mt-0.5 h-5 w-5 shrink-0 text-green-600"
                   strokeWidth={2.25}
+                  aria-hidden
                 />
                 <span className="text-[15px] leading-snug text-gray-700 sm:text-base">
                   {item}
@@ -275,24 +292,32 @@ export function ServiceDetailReadyStore({
         </div>
       </section>
 
-      <section className="border-b border-gray-200/80 bg-gray-50 py-12 sm:py-16">
+      <section
+        id="how-it-works"
+        className="border-b border-gray-200/80 bg-gray-50 py-12 sm:py-16"
+      >
         <div className="container mx-auto max-w-6xl px-4">
           <h2
             className={cn(
               headingFontClass,
-              "text-2xl font-black tracking-tight text-gray-900 sm:text-3xl"
+              "text-balance text-2xl font-black tracking-tight text-gray-900 sm:text-3xl"
             )}
           >
             Как работи? (Само 3 стъпки)
           </h2>
-          <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-6">
-            {STEPS.map(({ title, body, icon: Icon }) => (
-              <div
+          <ol className="mt-8 grid list-none gap-4 md:grid-cols-3 md:gap-5">
+            {STEPS.map(({ title, body, icon: Icon }, index) => (
+              <li
                 key={title}
-                className="flex flex-col rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm sm:p-6"
+                className="flex flex-col rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm ring-1 ring-gray-900/5 sm:p-6"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/25">
-                  <Icon className="h-6 w-6" strokeWidth={2} />
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/25">
+                    <Icon className="h-6 w-6" strokeWidth={2} aria-hidden />
+                  </div>
+                  <span className="text-xs font-semibold tabular-nums text-gray-400">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
                 </div>
                 <h3
                   className={cn(
@@ -305,48 +330,57 @@ export function ServiceDetailReadyStore({
                 <p className="mt-2 text-sm leading-relaxed text-gray-600 sm:text-[15px]">
                   {body}
                 </p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
-      <section className="bg-white pb-28 pt-12 sm:pb-16 sm:pt-16 md:pb-16">
+      <section
+        id="upsells"
+        className="bg-white pb-28 pt-12 sm:pb-16 sm:pt-16 md:pb-16"
+      >
         <div className="container mx-auto max-w-6xl px-4">
           <h2
             className={cn(
               headingFontClass,
-              "text-2xl font-black tracking-tight text-gray-900 sm:text-3xl"
+              "text-balance text-2xl font-black tracking-tight text-gray-900 sm:text-3xl"
             )}
           >
             Увеличи продажбите си (Добавки)
           </h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:max-w-3xl">
+          <div className="mt-8 grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
             {ADDONS.map((addon) => {
               const selected = addons[addon.id];
               return (
                 <div
                   key={addon.id}
                   className={cn(
-                    "flex flex-col rounded-2xl border-2 bg-gray-50/50 p-4 transition-colors sm:flex-row sm:items-center sm:justify-between sm:p-5",
+                    "flex flex-col rounded-xl border-2 p-4 transition-colors sm:flex-row sm:items-center sm:justify-between sm:p-4",
                     selected
-                      ? "border-blue-600 bg-blue-50/40"
-                      : "border-gray-100"
+                      ? "border-blue-600 bg-blue-50/50"
+                      : "border-gray-100 bg-gray-50/80"
                   )}
                 >
-                  <div>
-                    <p className="font-semibold text-gray-900">
+                  <div className="min-w-0">
+                    <p className="text-[15px] font-semibold leading-tight text-gray-900 sm:text-base">
                       {addon.title}
                     </p>
-                    <p className="mt-1 text-lg font-black text-blue-600">
+                    <p
+                      className={cn(
+                        headingFontClass,
+                        "mt-1 text-lg font-black tabular-nums text-blue-600"
+                      )}
+                    >
                       {addon.price} лв.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => toggleAddon(addon.id)}
+                    aria-pressed={selected}
                     className={cn(
-                      "mt-4 inline-flex h-11 shrink-0 items-center justify-center rounded-lg px-4 text-sm font-semibold transition sm:mt-0",
+                      "mt-3 inline-flex min-h-10 shrink-0 items-center justify-center rounded-lg px-4 text-sm font-bold transition sm:ml-3 sm:mt-0",
                       selected
                         ? "bg-blue-600 text-white hover:bg-blue-700"
                         : "bg-orange-500 text-white hover:bg-orange-600"
@@ -362,8 +396,10 @@ export function ServiceDetailReadyStore({
       </section>
 
       <div
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md md:hidden"
-        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+        className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200/90 bg-white/90 px-4 py-2.5 shadow-[0_-10px_40px_rgba(15,23,42,0.12)] backdrop-blur-md md:hidden"
+        style={{ paddingBottom: "max(0.625rem, env(safe-area-inset-bottom))" }}
+        role="region"
+        aria-label="Бърза поръчка"
       >
         <div className="mx-auto flex max-w-lg items-center justify-between gap-3">
           <p
@@ -378,7 +414,8 @@ export function ServiceDetailReadyStore({
             type="button"
             onClick={handleCheckout}
             disabled={isAdding}
-            className="min-h-11 shrink-0 rounded-lg bg-orange-500 px-5 text-sm font-semibold text-white shadow-md shadow-orange-500/25 hover:bg-orange-600 disabled:opacity-70"
+            aria-label="Купи сега"
+            className="min-h-11 min-w-[7.5rem] shrink-0 rounded-lg bg-orange-500 px-4 text-sm font-bold text-white shadow-md shadow-orange-500/30 hover:bg-orange-600 disabled:opacity-70"
           >
             {isAdding ? "..." : "Купи Сега"}
           </button>

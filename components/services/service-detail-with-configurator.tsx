@@ -1,59 +1,29 @@
-import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
+import { ArrowLeft, Check, Clock, Globe, MapPin, Share2, ShoppingCart } from "lucide-react";
 import TransitionLink from "@/components/transitions/TransitionLink";
-import { ArrowLeft, Clock, Check, Globe, ShoppingCart, MapPin, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { services, getServiceBySlug } from "@/lib/data/services";
 import { PricingConfigurator } from "@/components/services/pricing-configurator";
-import type { Metadata } from "next";
+import { services } from "@/lib/data/services";
+import type { Service } from "@/lib/types";
 
-const iconMap: Record<string, React.ReactNode> = {
+const iconMap: Record<string, ReactNode> = {
   Globe: <Globe className="h-12 w-12" />,
   ShoppingCart: <ShoppingCart className="h-12 w-12" />,
   MapPin: <MapPin className="h-12 w-12" />,
   Share2: <Share2 className="h-12 w-12" />,
 };
 
-interface PageProps {
-  params: Promise<{ slug: string }>;
+interface ServiceDetailWithConfiguratorProps {
+  service: Service;
 }
 
-const DEDICATED_SERVICE_SLUGS = new Set(["готов-онлайн-магазин"]);
-
-export async function generateStaticParams() {
-  return services
-    .filter((service) => !DEDICATED_SERVICE_SLUGS.has(service.slug))
-    .map((service) => ({
-      slug: service.slug,
-    }));
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const service = getServiceBySlug(slug);
-  
-  if (!service) {
-    return { title: "Услуга не е намерена" };
-  }
-
-  return {
-    title: service.name,
-    description: service.shortDescription,
-  };
-}
-
-export default async function ServicePage({ params }: PageProps) {
-  const { slug } = await params;
-  const service = getServiceBySlug(slug);
-
-  if (!service) {
-    notFound();
-  }
-
+export function ServiceDetailWithConfigurator({
+  service,
+}: ServiceDetailWithConfiguratorProps) {
   return (
     <div className="pt-24 pb-16">
       <div className="container mx-auto px-4">
-        {/* Back link */}
         <TransitionLink
           href="/#услуги"
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
@@ -63,39 +33,30 @@ export default async function ServicePage({ params }: PageProps) {
         </TransitionLink>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Left - Service Info */}
           <div>
-            {/* Header */}
             <div className="flex items-start gap-4 mb-6">
               <div className="h-20 w-20 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                 {iconMap[service.icon]}
               </div>
               <div>
-                <h1 className="text-3xl sm:text-4xl font-bold mb-2">
-                  {service.name}
-                </h1>
+                <h1 className="text-3xl sm:text-4xl font-bold mb-2">{service.name}</h1>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
                     {service.timeline}
                   </span>
                   <span>
-                    от{" "}
-                    <span className="text-primary font-semibold">
-                      {service.basePrice} лв
-                    </span>
+                    от <span className="text-primary font-semibold">{service.basePrice} лв</span>
                     {service.isMonthly && "/мес"}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Description */}
             <p className="text-lg text-muted-foreground leading-relaxed mb-8">
               {service.fullDescription}
             </p>
 
-            {/* Features */}
             <Card className="bg-card border-border">
               <CardContent className="p-6">
                 <h2 className="text-lg font-semibold mb-4">Какво включва</h2>
@@ -112,7 +73,6 @@ export default async function ServicePage({ params }: PageProps) {
               </CardContent>
             </Card>
 
-            {/* Related Services */}
             <div className="mt-8">
               <h2 className="text-lg font-semibold mb-4">Други услуги</h2>
               <div className="flex flex-wrap gap-2">
@@ -129,7 +89,6 @@ export default async function ServicePage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Right - Pricing Configurator */}
           <div className="lg:sticky lg:top-24 lg:self-start">
             <PricingConfigurator service={service} />
           </div>

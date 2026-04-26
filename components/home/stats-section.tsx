@@ -1,8 +1,8 @@
 const stats = [
-  { value: "10+", label: "Успешни проекта" },
-  { value: "10+", label: "Доволни клиенти" },
+  { value: "2+", label: "Успешни проекта" },
+  { value: "2+", label: "Доволни клиенти" },
   { value: "8+", label: "Години опит" },
-  { value: "98%", label: "Удовлетвореност" },
+  { value: "100%", label: "Удовлетвореност" },
 ];
 
 export function StatsSection() {
