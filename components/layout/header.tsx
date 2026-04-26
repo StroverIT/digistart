@@ -46,7 +46,15 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const isHome = isPathActive(pathname, navLinks[0].paths);
-  const isCartPage = pathname === "/кошница";
+  const pathnameDecoded = (() => {
+    try {
+      return decodeURI(pathname);
+    } catch {
+      return pathname;
+    }
+  })();
+  const isCartPage =
+    pathnameDecoded === "/кошница" || pathname === "/cart" || pathnameDecoded === "/cart";
 
   useEffect(() => {
     // Initial cart count

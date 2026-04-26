@@ -136,9 +136,11 @@ const TransitionLink = ({
       // Mark navigation as pending
       setPendingNavigation(true);
 
-      // Exit animation -> then navigate
+      // Exit animation -> then navigate.
+      // Do not use encodeURI() here: it percent-encodes non-ASCII path segments, which
+      // can desync the App Router (cart is /cart, public URL is /кошница via middleware).
       playExit(() => {
-        router.push(encodeURI(currentHrefRef.current));
+        router.push(currentHrefRef.current);
       });
     },
     [

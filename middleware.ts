@@ -17,6 +17,8 @@ const authMiddleware = withAuth({
 });
 
 const routeRewriteMap: Record<string, string> = {
+  // Public URL can stay /кошница; filesystem route is /cart (Unicode segment 404s in some environments).
+  "/кошница": "/cart",
   "/услуги/уебсайт": "/services/website",
   "/услуги/онлайн-магазин": "/services/online-store",
   "/услуги/google-business": "/services/google-business",
@@ -25,8 +27,18 @@ const routeRewriteMap: Record<string, string> = {
 
 export default function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
-  const decodedPathname = decodeURI(pathname);
-  const rewriteDestination = routeRewriteMap[decodedPathname] ?? routeRewriteMap[pathname];
+  // req.nextUrl.pathname is usually percent-encoded for non-ASCII. Maps & routing use decoded IRIs.
+  const pathDecoded = (() => {
+    try {
+      return decodeURI(pathname);
+    } catch {
+      return pathname;
+    }
+  })();
+
+  // Service public URLs → /services/… (map keys and pathDecoded are both Unicode, e.g. /услуги/…)
+  const rewriteDestination =
+    routeRewriteMap[pathDecoded] ?? routeRewriteMap[pathname];
 
   if (rewriteDestination) {
     const url = req.nextUrl.clone();
