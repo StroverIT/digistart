@@ -19,6 +19,8 @@ const authMiddleware = withAuth({
 const routeRewriteMap: Record<string, string> = {
   // Public URL can stay /кошница; filesystem route is /cart (Unicode segment 404s in some environments).
   "/кошница": "/cart",
+  "/поръчка/успех": "/checkout/success",
+  "/поръчка": "/checkout",
   "/услуги/уебсайт": "/services/website",
   "/услуги/онлайн-магазин": "/services/online-store",
   "/услуги/google-business": "/services/google-business",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import TransitionLink from "@/components/transitions/TransitionLink";
 import { ArrowLeft, CreditCard, Shield, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const { push } = useTransitionRouter();
   const [cart, setCart] = useState<Cart>({ items: [], totalOneTime: 0, totalMonthly: 0 });
   const [mounted, setMounted] = useState(false);
@@ -32,11 +34,11 @@ export default function CheckoutPage() {
     setMounted(true);
     const currentCart = getCart();
     setCart(currentCart);
-
     if (currentCart.items.length === 0) {
-      push("/кошница");
+      // Replace: avoid empty checkout in history; /кошница rewrites to /cart in middleware.
+      router.replace("/кошница");
     }
-  }, [push]);
+  }, [router]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
