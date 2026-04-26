@@ -76,7 +76,7 @@ export function ServicesSection() {
                     <div>
                       <span className="text-sm text-muted-foreground">от</span>
                       <div className="flex items-baseline gap-1">
-                        <Price value={service.basePrice} className="text-2xl text-primary" />
+                        <Price value={service.basePrice} className="text-xl sm:text-2xl text-primary" />
                         {service.isMonthly && <span className="text-muted-foreground">/мес</span>}
                       </div>
                     </div>
