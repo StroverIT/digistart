@@ -87,7 +87,9 @@ async function fetchServicesFromDb(): Promise<Service[]> {
 
 export async function getServices(): Promise<Service[]> {
   try {
-    return await fetchServicesFromDb();
+    const dbServices = await fetchServicesFromDb();
+    if (dbServices.length === 0) return fallbackServices;
+    return dbServices;
   } catch {
     return fallbackServices;
   }
