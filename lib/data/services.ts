@@ -21,24 +21,49 @@ export const services: Service[] = [
     ],
     upsells: [
       {
-        id: "live-chat",
-        name: "Live chat интеграция",
-        description:
-          "Позволи на клиентите да ти пишат директно от сайта. Интеграция с Messenger или чат платформа по избор.",
-        kind: "toggle",
-        pricePerUnit: 25,
-        unit: "добавка",
-        min: 0,
-        max: 1,
-        default: 0,
-      },
-      {
         id: "copywriting",
         name: "Професионален copywriting",
         description:
           "Нямаш готови текстове? Ние ще напишем продаващи и грабващи текстове за всичките ти страници.",
         kind: "toggle",
         pricePerUnit: 75,
+        unit: "добавка",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+      {
+        id: "monthly-maintenance",
+        name: "Месечна поддръжка и сигурност",
+        description:
+          "Премиум хостинг, ежедневни архиви, защита и обновяване за безотказна работа.",
+        kind: "toggle",
+        isMonthly: true,
+        pricePerUnit: 25,
+        unit: "месец",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+      {
+        id: "skip-the-line",
+        name: "Skip the Line (експресно)",
+        description:
+          "Проектът ти става приоритетен и стартираме до 48 часа след консултацията.",
+        kind: "toggle",
+        pricePerUnit: 100,
+        unit: "добавка",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+      {
+        id: "live-chat",
+        name: "Live chat интеграция",
+        description:
+          "Позволи на клиентите да ти пишат директно от сайта. Интеграция с Messenger или чат платформа по избор.",
+        kind: "toggle",
+        pricePerUnit: 25,
         unit: "добавка",
         min: 0,
         max: 1,
@@ -58,18 +83,6 @@ export const services: Service[] = [
         allowEntries: true,
         entryLabel: "Име на страница",
         entryPlaceholder: "Напр. Цени",
-      },
-      {
-        id: "skip-the-line",
-        name: "Skip the Line (експресно)",
-        description:
-          "Проектът ти става приоритетен и стартираме до 48 часа след консултацията.",
-        kind: "toggle",
-        pricePerUnit: 100,
-        unit: "добавка",
-        min: 0,
-        max: 1,
-        default: 0,
       },
       {
         id: "booking-system",
@@ -98,19 +111,7 @@ export const services: Service[] = [
         entryLabel: "Език",
         entryPlaceholder: "Напр. English",
       },
-      {
-        id: "monthly-maintenance",
-        name: "Месечна поддръжка и сигурност",
-        description:
-          "Премиум хостинг, ежедневни архиви, защита и обновяване за безотказна работа.",
-        kind: "toggle",
-        isMonthly: true,
-        pricePerUnit: 25,
-        unit: "месец",
-        min: 0,
-        max: 1,
-        default: 0,
-      },
+
     ],
     features: [
       "Индивидуален дизайн, адаптиран към фирмените цветове и лого",
