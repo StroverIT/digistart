@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   CheckCircle2,
@@ -17,7 +17,12 @@ import TransitionLink from "@/components/transitions/TransitionLink";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
-import { addToCart, CART_DUPLICATE_SERVICE_MESSAGE } from "@/lib/store/cart";
+import {
+  addToCart,
+  CART_DUPLICATE_SERVICE_MESSAGE,
+  getCart,
+  updateCartItemUpsells,
+} from "@/lib/store/cart";
 import { toast } from "sonner";
 import { getServiceById } from "@/lib/data/services";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
@@ -95,6 +100,24 @@ export function ServiceDetailWebsite({
   if (!service) return null;
 
   const selectedOption = service.options[0];
+  const [existingCartItemId, setExistingCartItemId] = useState<string | null>(null);
+  const isInCart = useMemo(() => Boolean(existingCartItemId), [existingCartItemId]);
+
+  useEffect(() => {
+    const syncFromCart = () => {
+      const cart = getCart();
+      const existingItem = cart.items.find(
+        (item) => item.serviceId === service.id && item.selectedOptionId === selectedOption.id
+      );
+
+      setExistingCartItemId(existingItem?.id ?? null);
+      setUpsells(existingItem?.upsells ?? []);
+    };
+
+    syncFromCart();
+    window.addEventListener("cart-updated", syncFromCart);
+    return () => window.removeEventListener("cart-updated", syncFromCart);
+  }, [service.id, selectedOption.id]);
 
   const scrollToBuySection = () => {
     document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -102,6 +125,16 @@ export function ServiceDetailWebsite({
 
   const handleAddToCart = () => {
     setIsAdding(true);
+
+    if (existingCartItemId) {
+      updateCartItemUpsells(existingCartItemId, upsells);
+      setTimeout(() => {
+        setIsAdding(false);
+        push("/кошница");
+      }, 300);
+      return;
+    }
+
     const result = addToCart(service.id, selectedOption.id, upsells);
     if (!result.added) {
       setIsAdding(false);
@@ -305,6 +338,7 @@ export function ServiceDetailWebsite({
         title="Купи сега"
         description="Конфигурирай услугата и я добави в кошницата."
         price={selectedOption.price}
+        ctaLabel={isInCart ? "Промени в кошницата" : "Добави в кошницата"}
         upsells={upsells}
         onUpsellsChange={setUpsells}
         onAddToCart={handleAddToCart}
@@ -322,7 +356,7 @@ export function ServiceDetailWebsite({
             disabled={isAdding}
             className="min-h-11 min-w-30 shrink-0 px-4 text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white"
           >
-            {isAdding ? "Добавяне..." : "Добави в кошницата"}
+            {isAdding ? "Добавяне..." : isInCart ? "Промени в кошницата" : "Добави в кошницата"}
           </Button>
         </div>
       </div>

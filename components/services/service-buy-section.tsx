@@ -18,6 +18,7 @@ interface ServiceBuySectionProps {
   description: string;
   price: number;
   monthlyLabel?: string;
+  ctaLabel?: string;
   upsells: CartItemUpsell[];
   onUpsellsChange: (nextUpsells: CartItemUpsell[]) => void;
   onAddToCart: () => void;
@@ -30,6 +31,7 @@ export function ServiceBuySection({
   description,
   price,
   monthlyLabel,
+  ctaLabel,
   upsells,
   onUpsellsChange,
   onAddToCart,
@@ -91,7 +93,7 @@ export function ServiceBuySection({
               disabled={isAdding}
               className="h-12 px-6 text-base bg-orange-500 hover:bg-orange-600 text-white"
             >
-              {isAdding ? "Обработка..." : "Добави в кошницата"}
+              {isAdding ? "Обработка..." : (ctaLabel ?? "Добави в кошницата")}
             </Button>
           </div>
         </div>
