@@ -5,7 +5,7 @@ import { siteContact } from "@/lib/site-contact";
 
 export function CTASection() {
   return (
-    <section id="контакти" className="py-20 md:py-28 relative overflow-hidden">
+    <section id="contacts" className="py-20 md:py-28 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-primary/5" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/10 rounded-full blur-3xl" />
@@ -28,13 +28,13 @@ export function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <TransitionLink href="/консултация">
+            <TransitionLink href="/consultation">
               <Button size="lg" className="glow-primary text-lg h-14 px-8">
                 Запази безплатна консултация
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </TransitionLink>
-            <TransitionLink href="/#услуги">
+            <TransitionLink href="/#services">
               <Button variant="outline" size="lg" className="text-lg h-14 px-8">
                 Разгледайте услугите
               </Button>

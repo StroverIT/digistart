@@ -33,7 +33,7 @@ const steps = [
 
 export function ProcessSection() {
   return (
-    <section id="процес" className="py-20 md:py-28">
+    <section id="process" className="py-20 md:py-28">
       <div className="container mx-auto px-4">
         {/* Section header */}
         <div className="text-center max-w-2xl mx-auto mb-16">

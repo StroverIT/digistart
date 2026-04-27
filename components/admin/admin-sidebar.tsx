@@ -24,33 +24,17 @@ interface AdminSidebarProps {
 }
 
 const navItems = [
-  {
-    href: "/admin",
-    label: "Табло",
-    icon: LayoutDashboard,
-  },
-  {
-    href: "/admin/поръчки",
-    label: "Поръчки",
-    icon: ShoppingBag,
-  },
-  {
-    href: "/admin/консултации",
-    label: "Консултации",
-    icon: CalendarDays,
-  },
-  {
-    href: "/admin/бизнеси",
-    label: "Бизнеси",
-    icon: MapPin,
-  },
-];
+  { href: "/admin", label: "Табло", icon: LayoutDashboard },
+  { href: "/admin/orders", label: "Поръчки", icon: ShoppingBag },
+  { href: "/admin/consultations", label: "Консултации", icon: CalendarDays },
+  { href: "/admin/businesses", label: "Бизнеси", icon: MapPin },
+] as const;
 
 export function AdminSidebar({ user }: AdminSidebarProps) {
   const pathname = usePathname();
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: "/admin/вход" });
+    signOut({ callbackUrl: "/admin/login" });
   };
 
   return (

@@ -22,7 +22,7 @@ const stickerMap: Record<string, string> = {
 
 export function ServicesSection() {
   return (
-    <section id="услуги" className="py-20 md:py-28 bg-card/50">
+    <section id="services" className="py-20 md:py-28 bg-card/50">
       <div className="container mx-auto px-4">
         {/* Section header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
@@ -80,7 +80,7 @@ export function ServicesSection() {
                         {service.isMonthly && <span className="text-muted-foreground">/мес</span>}
                       </div>
                     </div>
-                    <TransitionLink href={`/услуги/${service.slug}`}>
+                    <TransitionLink href={`/services/${service.slug}`}>
                       <Button
                         variant="ghost"
                         className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"

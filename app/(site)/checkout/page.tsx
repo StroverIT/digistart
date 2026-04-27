@@ -91,8 +91,8 @@ export default function CheckoutPage() {
       })
       .catch(() => undefined);
     if (currentCart.items.length === 0) {
-      // Replace: avoid empty checkout in history; /кошница rewrites to /cart in middleware.
-      router.replace("/кошница");
+      // Replace: avoid empty checkout in history; return to cart.
+      router.replace("/cart");
     }
   }, [router]);
 
@@ -193,7 +193,7 @@ export default function CheckoutPage() {
       <div className="container mx-auto px-4">
         {/* Back link */}
         <TransitionLink
-          href="/кошница"
+          href="/cart"
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="h-4 w-4" />

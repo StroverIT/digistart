@@ -70,7 +70,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
 
     setTimeout(() => {
       setIsAdding(false);
-      push("/кошница");
+      push("/cart");
     }, 300);
   };
 

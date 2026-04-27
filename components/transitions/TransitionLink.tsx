@@ -138,7 +138,7 @@ const TransitionLink = ({
 
       // Exit animation -> then navigate.
       // Do not use encodeURI() here: it percent-encodes non-ASCII path segments, which
-      // can desync the App Router (cart is /cart, public URL is /кошница via middleware).
+      // can desync the App Router (legacy Cyrillic URLs are rewritten in middleware).
       playExit(() => {
         router.push(currentHrefRef.current);
       });

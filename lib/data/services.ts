@@ -3,7 +3,7 @@ import type { Service } from "@/lib/types";
 export const services: Service[] = [
   {
     id: "websites",
-    slug: "уебсайт",
+    slug: "website",
     name: "Професионален Фирмен Уебсайт",
     shortDescription:
       "Представи бизнеса си онлайн с модерен сайт, без да чакаш с месеци и без излишни срещи.",
@@ -125,7 +125,7 @@ export const services: Service[] = [
   },
   {
     id: "ready-store",
-    slug: "онлайн-магазин",
+    slug: "online-store",
     name: "Онлайн Магазин",
     shortDescription:
       "Продавай веднага с професионален магазин, настроен специално за твоя бизнес. Без скрити такси.",
@@ -356,7 +356,7 @@ export const services: Service[] = [
   },
   {
     id: "social-media",
-    slug: "социални-мрежи",
+    slug: "social-media",
     name: "Социални мрежи",
     shortDescription: "Професионално управление на вашите социални мрежи за повече ангажираност и продажби.",
     fullDescription: "Създаваме съдържание, което привлича внимание и генерира ангажираност. От визуални постове до рекламни кампании - управляваме цялостното ви присъствие в социалните мрежи.",
@@ -436,8 +436,20 @@ export const services: Service[] = [
   },
 ];
 
+/** Historical slug values (e.g. in DB) → canonical Latin slugs. */
+const LEGACY_SERVICE_SLUGS: Record<string, string> = {
+  "\u0443\u0435\u0431\u0441\u0430\u0439\u0442": "website",
+  "\u043e\u043d\u043b\u0430\u0439\u043d-\u043c\u0430\u0433\u0430\u0437\u0438\u043d": "online-store",
+  "\u0441\u043e\u0446\u0438\u0430\u043b\u043d\u0438-\u043c\u0440\u0435\u0436\u0438": "social-media",
+};
+
+export function resolveServiceSlug(slug: string): string {
+  return LEGACY_SERVICE_SLUGS[slug] ?? slug;
+}
+
 export function getServiceBySlug(slug: string): Service | undefined {
-  return services.find((s) => s.slug === slug);
+  const canonical = resolveServiceSlug(slug);
+  return services.find((s) => s.slug === canonical);
 }
 
 export function getServiceById(id: string): Service | undefined {

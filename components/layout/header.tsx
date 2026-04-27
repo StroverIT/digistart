@@ -12,19 +12,19 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/", label: "Начало", paths: ["/"] },
-  { href: "/услуги/уебсайт", label: "Уебсайт", paths: ["/услуги/уебсайт", "/services/website"] },
+  { href: "/services/website", label: "Уебсайт", paths: ["/услуги/уебсайт", "/services/website"] },
   {
-    href: "/услуги/онлайн-магазин",
+    href: "/services/online-store",
     label: "Онлайн магазин",
     paths: ["/услуги/онлайн-магазин", "/services/online-store"],
   },
   {
-    href: "/услуги/google-business",
+    href: "/services/google-business",
     label: "Google Business",
     paths: ["/услуги/google-business", "/services/google-business"],
   },
   {
-    href: "/услуги/социални-мрежи",
+    href: "/services/social-media",
     label: "Социални мрежи",
     paths: ["/услуги/социални-мрежи", "/services/social-media"],
   },
@@ -54,8 +54,7 @@ export function Header() {
       return pathname;
     }
   })();
-  const isCartPage =
-    pathnameDecoded === "/кошница" || pathname === "/cart" || pathnameDecoded === "/cart";
+  const isCartPage = pathname === "/cart" || pathnameDecoded === "/cart";
 
   useEffect(() => {
     // Initial cart count
@@ -153,7 +152,7 @@ export function Header() {
                 <span className="sr-only">Кошница (текуща страница)</span>
               </Button>
             ) : (
-              <TransitionLink href="/кошница">
+              <TransitionLink href="/cart">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -177,7 +176,7 @@ export function Header() {
             )}
 
             {/* CTA Button - Desktop */}
-            <TransitionLink href="/консултация" className="hidden md:block">
+            <TransitionLink href="/consultation" className="hidden md:block">
               <Button className="glow-primary">Безплатна консултация</Button>
             </TransitionLink>
 
@@ -259,7 +258,7 @@ export function Header() {
 
                   <div className="mt-auto pt-8">
                     <SheetClose asChild>
-                      <TransitionLink href="/консултация" className="block">
+                      <TransitionLink href="/consultation" className="block">
                         <Button className="w-full glow-primary" size="lg">
                           Безплатна консултация
                         </Button>

@@ -225,7 +225,7 @@ export default function CartPage() {
               <p className="text-muted-foreground mb-6">
                 Разгледайте нашите услуги и добавете нещо в кошницата.
               </p>
-              <TransitionLink href="/#услуги">
+              <TransitionLink href="/#services">
                 <Button className="glow-primary">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Към услугите
@@ -248,7 +248,7 @@ export default function CartPage() {
               ))}
 
               <TransitionLink
-                href="/#услуги"
+                href="/#services"
                 className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mt-4"
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -297,7 +297,7 @@ export default function CartPage() {
                     )}
                   </div>
 
-                  <TransitionLink href="/поръчка" className="block">
+                  <TransitionLink href="/checkout" className="block">
                     <Button size="lg" className="w-full glow-primary">
                       Продължи към поръчка
                       <ArrowRight className="ml-2 h-5 w-5" />

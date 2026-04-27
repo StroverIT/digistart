@@ -66,13 +66,13 @@ export function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <TransitionLink href="/#услуги">
+            <TransitionLink href="/#services">
               <Button size="lg" className="glow-primary text-lg h-14 px-8">
                 Вижте услугите
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </TransitionLink>
-            {/* <TransitionLink href="/#процес">
+            {/* <TransitionLink href="/#process">
               <Button variant="outline" size="lg" className="text-lg h-14 px-8 border-border hover:bg-secondary/50">
                 <Play className="mr-2 h-5 w-5" />
                 Как работим

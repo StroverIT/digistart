@@ -130,7 +130,7 @@ export function ServiceDetailWebsite({
       updateCartItemUpsells(existingCartItemId, upsells);
       setTimeout(() => {
         setIsAdding(false);
-        push("/кошница");
+        push("/cart");
       }, 300);
       return;
     }
@@ -146,7 +146,7 @@ export function ServiceDetailWebsite({
 
     setTimeout(() => {
       setIsAdding(false);
-      push("/кошница");
+      push("/cart");
     }, 300);
   };
 
@@ -169,7 +169,7 @@ export function ServiceDetailWebsite({
 
         <div className="container relative z-10 mx-auto px-4">
           <TransitionLink
-            href="/#услуги"
+            href="/#services"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
           >
             Към услугите

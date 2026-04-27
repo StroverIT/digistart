@@ -173,10 +173,10 @@ export async function POST(req: NextRequest) {
 
     if (uiMode === "embedded") {
       sessionBase.ui_mode = "embedded_page";
-      sessionBase.return_url = `${siteUrl}/поръчка/успех?id=${order.id}&session_id={CHECKOUT_SESSION_ID}`;
+      sessionBase.return_url = `${siteUrl}/checkout/success?id=${order.id}&session_id={CHECKOUT_SESSION_ID}`;
     } else {
-      sessionBase.success_url = `${siteUrl}/поръчка/успех?id=${order.id}&session_id={CHECKOUT_SESSION_ID}`;
-      sessionBase.cancel_url = `${siteUrl}/поръчка`;
+      sessionBase.success_url = `${siteUrl}/checkout/success?id=${order.id}&session_id={CHECKOUT_SESSION_ID}`;
+      sessionBase.cancel_url = `${siteUrl}/checkout`;
     }
 
     const session = await stripe.checkout.sessions.create(sessionBase);

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-/** See app/(site)/layout.tsx — same Next 16 prerender issue with non-ASCII route paths. */
+/** See app/(site)/layout.tsx — force-dynamic for admin shell. */
 export const dynamic = "force-dynamic";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {

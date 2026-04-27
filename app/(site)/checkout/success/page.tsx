@@ -175,7 +175,7 @@ function SuccessContent() {
             Към началото
           </Button>
         </TransitionLink>
-        <TransitionLink href="/#услуги">
+        <TransitionLink href="/#services">
           <Button size="lg" className="glow-primary">
             Разгледайте още услуги
             <ArrowRight className="ml-2 h-5 w-5" />

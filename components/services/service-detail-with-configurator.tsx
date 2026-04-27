@@ -36,7 +36,7 @@ export function ServiceDetailWithConfigurator({
     <div className="pt-24 pb-16">
       <div className="container mx-auto px-4">
         <TransitionLink
-          href="/#услуги"
+          href="/#services"
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -90,7 +90,7 @@ export function ServiceDetailWithConfigurator({
                 {services
                   .filter((s) => s.id !== service.id)
                   .map((s) => (
-                    <TransitionLink key={s.id} href={`/услуги/${s.slug}`}>
+                    <TransitionLink key={s.id} href={`/services/${s.slug}`}>
                       <Button variant="outline" size="sm">
                         {s.name}
                       </Button>

@@ -4,18 +4,18 @@ import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-react
 import { siteContact } from "@/lib/site-contact";
 
 const services = [
-  { href: "/услуги/уебсайт", label: "Уеб сайтове" },
-  { href: "/услуги/онлайн-магазин", label: "Онлайн магазин" },
-  { href: "/услуги/google-business", label: "Google Business" },
-  { href: "/услуги/социални-мрежи", label: "Социални мрежи" },
+  { href: "/services/website", label: "Уеб сайтове" },
+  { href: "/services/online-store", label: "Онлайн магазин" },
+  { href: "/services/google-business", label: "Google Business" },
+  { href: "/services/social-media", label: "Социални мрежи" },
 ];
 
 const quickLinks = [
   { href: "/", label: "Начало" },
-  { href: "/консултация", label: "Безплатна консултация" },
-  { href: "/#услуги", label: "Услуги" },
-  { href: "/#процес", label: "Как работим" },
-  { href: "/#контакти", label: "Контакти" },
+  { href: "/consultation", label: "Безплатна консултация" },
+  { href: "/#services", label: "Услуги" },
+  { href: "/#process", label: "Как работим" },
+  { href: "/#contacts", label: "Контакти" },
 ];
 
 export function Footer() {
@@ -144,13 +144,13 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-6">
             <TransitionLink
-              href="/поверителност"
+              href="/privacy"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Поверителност
             </TransitionLink>
             <TransitionLink
-              href="/условия"
+              href="/terms"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Условия за ползване

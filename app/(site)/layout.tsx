@@ -3,8 +3,7 @@ import { Footer } from "@/components/layout/footer";
 import PageTransitionProvider from "@/components/transitions/PageTransitionProvider";
 
 /**
- * Next.js 16 can throw InvalidCharacterError while prerendering client routes
- * whose URL path contains non-ASCII characters (e.g. /кошница, /поръчка).
+ * Next.js 16 can throw InvalidCharacterError while prerendering some client routes.
  * Opting this segment out of static generation avoids that failure.
  */
 export const dynamic = "force-dynamic";

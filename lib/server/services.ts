@@ -1,5 +1,5 @@
 import type { Service, ServiceOption, ServiceUpsell } from "@/lib/types";
-import { services as fallbackServices } from "@/lib/data/services";
+import { resolveServiceSlug, services as fallbackServices } from "@/lib/data/services";
 import { prisma } from "@/lib/prisma";
 
 function mapUpsell(upsell: {
@@ -71,7 +71,7 @@ async function fetchServicesFromDb(): Promise<Service[]> {
 
   return dbServices.map((service) => ({
     id: service.id,
-    slug: service.slug,
+    slug: resolveServiceSlug(service.slug),
     name: service.name,
     shortDescription: service.shortDescription,
     fullDescription: service.fullDescription,
@@ -102,5 +102,6 @@ export async function getServiceByIdFromDb(id: string): Promise<Service | undefi
 
 export async function getServiceBySlugFromDb(slug: string): Promise<Service | undefined> {
   const all = await getServices();
-  return all.find((service) => service.slug === slug);
+  const canonical = resolveServiceSlug(slug);
+  return all.find((service) => service.slug === canonical);
 }
