@@ -144,6 +144,19 @@ export const services: Service[] = [
     ],
     upsells: [
       {
+        id: "monthly-maintenance",
+        name: "Месечна поддръжка и сигурност",
+        description:
+          "Премиум хостинг, ежедневни архиви, ъпдейти и мониторинг за безпроблемна работа на магазина.",
+        kind: "toggle",
+        isMonthly: true,
+        pricePerUnit: 100,
+        unit: "месец",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+      {
         id: "sales-booster",
         name: 'Модул "Увеличи продажбите" (Upsell & Cross-sell)',
         description:
@@ -195,6 +208,7 @@ export const services: Service[] = [
         max: 1,
         default: 0,
       },
+
       {
         id: "pro-package",
         name: "ПРО Пакет: Куриери + Плащания с карта",
