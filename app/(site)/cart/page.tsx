@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import TransitionLink from "@/components/transitions/TransitionLink";
 import { ArrowLeft, ArrowRight, ChevronDown, Package, ShoppingCart, Trash2 } from "lucide-react";
 import gsap from "gsap";
@@ -23,7 +23,16 @@ function CartItemCard({
   onRemove: () => void;
   onUpsellsChange: (itemId: string, upsells: CartItem["upsells"]) => void;
 }) {
-  const service = serviceFromDb ?? getServiceById(item.serviceId);
+  const service = useMemo((): Service | undefined => {
+    const fromApi = serviceFromDb;
+    const fromStatic = getServiceById(item.serviceId);
+    if (!fromApi) return fromStatic;
+    if (fromApi.upsells.length > 0) return fromApi;
+    if (fromStatic && fromStatic.upsells.length > 0) {
+      return { ...fromApi, upsells: fromStatic.upsells };
+    }
+    return fromApi;
+  }, [serviceFromDb, item.serviceId]);
   const [showUpsells, setShowUpsells] = useState(false);
   const hasUpsells = Boolean(service?.upsells.length);
   const upsellsWrapperRef = useRef<HTMLDivElement | null>(null);

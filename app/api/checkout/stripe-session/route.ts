@@ -149,26 +149,16 @@ export async function POST(req: NextRequest) {
     });
 
     const uiMode = parsed.data.uiMode ?? "redirect";
-    const sessionBase: {
-      mode: "payment" | "subscription";
-      line_items: Array<{ price: string; quantity: number }>;
-      customer: string;
-      metadata: Record<string, string>;
-      payment_method_collection: "always";
-      billing_address_collection: "auto";
-      locale: "bg";
-      success_url?: string;
-      cancel_url?: string;
-      ui_mode?: "embedded_page";
-      return_url?: string;
-    } = {
+    // `payment_method_collection` is only valid when the session has recurring line items
+    // (subscription mode). One-time `payment` mode must omit it on API 2026-04-22.dahlia+.
+    const sessionBase: Parameters<typeof stripe.checkout.sessions.create>[0] = {
       mode,
       line_items: lineItems,
       customer: stripeCustomer.stripeCustomerId,
       metadata: { orderId: order.id },
-      payment_method_collection: "always",
       billing_address_collection: "auto",
       locale: "bg",
+      ...(mode === "subscription" ? { payment_method_collection: "always" as const } : {}),
     };
 
     if (uiMode === "embedded") {

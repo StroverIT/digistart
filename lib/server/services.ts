@@ -69,27 +69,42 @@ async function fetchServicesFromDb(): Promise<Service[]> {
     orderBy: { createdAt: "asc" },
   });
 
-  return dbServices.map((service) => ({
-    id: service.id,
-    slug: resolveServiceSlug(service.slug),
-    name: service.name,
-    shortDescription: service.shortDescription,
-    fullDescription: service.fullDescription,
-    icon: service.icon,
-    basePrice: service.basePrice,
-    isMonthly: service.isMonthly,
-    options: service.options.map(mapOption),
-    upsells: service.upsells.map(mapUpsell),
-    features: service.features,
-    timeline: service.timeline,
-  }));
+  return dbServices.map((service) => {
+    const fromDb: Service = {
+      id: service.id,
+      slug: resolveServiceSlug(service.slug),
+      name: service.name,
+      shortDescription: service.shortDescription,
+      fullDescription: service.fullDescription,
+      icon: service.icon,
+      basePrice: service.basePrice,
+      isMonthly: service.isMonthly,
+      options: service.options.map(mapOption),
+      upsells: service.upsells.map(mapUpsell),
+      features: service.features,
+      timeline: service.timeline,
+    };
+    // If Prisma has no upsell rows yet, keep catalog upsells from lib/data so UI and pricing stay in sync.
+    const fallback = fallbackServices.find((f) => f.id === service.id);
+    if (fromDb.upsells.length === 0 && fallback && fallback.upsells.length > 0) {
+      fromDb.upsells = fallback.upsells;
+    }
+    return fromDb;
+  });
 }
 
 export async function getServices(): Promise<Service[]> {
   try {
     const dbServices = await fetchServicesFromDb();
     if (dbServices.length === 0) return fallbackServices;
-    return dbServices;
+
+    // If the DB is only partially seeded, still expose every catalog service so
+    // /services/* pages and /api/services never 404 a known product.
+    const byId = new Map(fallbackServices.map((s) => [s.id, s]));
+    for (const s of dbServices) {
+      byId.set(s.id, s);
+    }
+    return Array.from(byId.values());
   } catch {
     return fallbackServices;
   }
