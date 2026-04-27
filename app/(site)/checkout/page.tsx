@@ -31,6 +31,7 @@ export default function CheckoutPage() {
     null
   );
   const [consultationError, setConsultationError] = useState("");
+  const [checkoutStep, setCheckoutStep] = useState<1 | 2>(1);
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [servicesById, setServicesById] = useState<Record<string, Service>>({});
   const [formData, setFormData] = useState<CustomerInfo>({
@@ -51,7 +52,6 @@ export default function CheckoutPage() {
       company: formData.company?.trim() || undefined,
       notes: formData.notes?.trim() || undefined,
     };
-
     const response = await fetch("/api/checkout/stripe-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -64,8 +64,6 @@ export default function CheckoutPage() {
     });
 
     if (!response.ok) {
-      const errorPayload = (await response.json().catch(() => ({}))) as { error?: string };
-      void errorPayload;
       return { ok: false as const };
     }
 
@@ -99,11 +97,10 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (!mounted) return;
     if (cart.items.length === 0) return;
+    if (checkoutStep !== 2) return;
     if (stripeClientSecret) return;
-    if (isSubmitting) return;
 
     let cancelled = false;
-    setIsSubmitting(true);
     createEmbeddedSession("auto")
       .then((result) => {
         if (cancelled) return;
@@ -124,15 +121,12 @@ export default function CheckoutPage() {
         if (!cancelled) {
           setConsultationError("Възникна грешка при зареждане на плащането.");
         }
-      })
-      .finally(() => {
-        if (!cancelled) setIsSubmitting(false);
       });
 
     return () => {
       cancelled = true;
     };
-  }, [mounted, cart.items.length, stripeClientSecret, isSubmitting]);
+  }, [mounted, cart.items.length, stripeClientSecret, checkoutStep]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -141,17 +135,33 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateStepOne = () => {
     setConsultationError("");
-    if (stripeClientSecret) return;
+
+    if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
+      setConsultationError("Моля попълнете име, имейл и телефон.");
+      return false;
+    }
 
     if (wantsConsultation && !bookedConsultation) {
       setConsultationError(
         "Маркирахте консултация, но няма запазен час. Моля запазете час преди плащане."
       );
-      return;
+      return false;
     }
+
+    return true;
+  };
+
+  const handleContinueToPayment = () => {
+    if (!validateStepOne()) return;
+    setCheckoutStep(2);
+  };
+
+  const handleRetryPayment = async () => {
+    setConsultationError("");
+    if (!validateStepOne()) return;
+    if (stripeClientSecret) return;
 
     setIsSubmitting(true);
     const result = await createEmbeddedSession("submit");
@@ -207,200 +217,228 @@ export default function CheckoutPage() {
               Завършване на поръчка
             </h1>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Contact Information */}
+            <div className="space-y-6">
               <Card className="bg-card border-border">
                 <CardHeader>
-                  <CardTitle className="text-lg">Данни за контакт</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <FieldGroup>
-                    <Field>
-                      <FieldLabel htmlFor="name">Име и фамилия *</FieldLabel>
-                      <Input
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        placeholder="Иван Петров"
-                        required
-                      />
-                    </Field>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field>
-                        <FieldLabel htmlFor="email">Имейл адрес *</FieldLabel>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          placeholder="ivan@example.com"
-                          required
-                        />
-                      </Field>
-
-                      <Field>
-                        <FieldLabel htmlFor="phone">Телефон *</FieldLabel>
-                        <Input
-                          id="phone"
-                          name="phone"
-                          type="tel"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          placeholder="+359 888 123 456"
-                          required
-                        />
-                      </Field>
-                    </div>
-
-                    <Field>
-                      <FieldLabel htmlFor="company">Фирма (по избор)</FieldLabel>
-                      <Input
-                        id="company"
-                        name="company"
-                        value={formData.company}
-                        onChange={handleInputChange}
-                        placeholder="Име на фирма"
-                      />
-                    </Field>
-
-                    <Field>
-                      <FieldLabel htmlFor="notes">
-                        Допълнителни бележки (по избор)
-                      </FieldLabel>
-                      <Textarea
-                        id="notes"
-                        name="notes"
-                        value={formData.notes}
-                        onChange={handleInputChange}
-                        placeholder="Опишете вашите нужди или специални изисквания..."
-                        rows={4}
-                      />
-                    </Field>
-                  </FieldGroup>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="text-lg">Безплатна консултация</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <Checkbox
-                      id="consultation"
-                      checked={wantsConsultation}
-                      onCheckedChange={(value) => {
-                        const checked = value === true;
-                        setWantsConsultation(checked);
-                        if (!checked) {
-                          setBookedConsultation(null);
-                          setConsultationError("");
-                        }
-                      }}
-                    />
-                    <div className="space-y-1">
-                      <Label htmlFor="consultation" className="cursor-pointer">
-                        Искам да запазя безплатна консултация
-                      </Label>
-                      <p className="text-sm text-muted-foreground">
-                        Ще резервирате конкретен ден и час директно тук.
-                      </p>
-                    </div>
-                  </div>
-
-                  {wantsConsultation ? (
-                    <ConsultationBookingForm
-                      source="checkout"
-                      title="Изберете ден и час"
-                      description="Консултацията е безплатна и не влияе на цената на поръчката."
-                      submitLabel={
-                        bookedConsultation ? "Промени часа за консултация" : "Запази час"
-                      }
-                      initialValues={{
-                        name: formData.name,
-                        email: formData.email,
-                        phone: formData.phone,
-                        company: formData.company,
-                        notes: formData.notes,
-                      }}
-                      onBooked={(booking) => {
-                        setBookedConsultation(booking);
-                        setConsultationError("");
-                      }}
-                    />
-                  ) : null}
-
-                  {bookedConsultation ? (
-                    <p className="text-sm text-green-600">
-                      Запазен час: {bookedConsultation.date} в {bookedConsultation.time}
-                    </p>
-                  ) : null}
-                  {consultationError ? (
-                    <p className="text-sm text-red-500">{consultationError}</p>
-                  ) : null}
-                </CardContent>
-              </Card>
-
-              {/* Payment - Mock Stripe */}
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <CreditCard className="h-5 w-5 text-primary" />
-                    Плащане
+                  <CardTitle className="text-base">
+                    Стъпка {checkoutStep} от 2:{" "}
+                    {checkoutStep === 1 ? "Данни за контакт" : "Плащане"}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  {stripeClientSecret ? (
-                    <div className="bg-secondary/30 rounded-lg p-2">
-                      <EmbeddedCheckoutProvider
-                        stripe={stripePromise}
-                        options={{ clientSecret: stripeClientSecret }}
-                      >
-                        <EmbeddedCheckout />
-                      </EmbeddedCheckoutProvider>
-                    </div>
-                  ) : (
-                    <div className="bg-secondary/50 rounded-lg p-6 text-center">
-                      <Lock className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
-                      <p className="text-muted-foreground text-sm mb-2">
-                        Сигурно плащане чрез Stripe
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Натиснете бутона „Плати“, за да заредите формата за карта тук
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
-                    <Shield className="h-4 w-4" />
-                    <span>Вашите данни са защитени с SSL криптиране</span>
-                  </div>
-                </CardContent>
               </Card>
 
-              {/* Submit */}
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full glow-primary"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin h-5 w-5 border-2 border-primary-foreground border-t-transparent rounded-full mr-2" />
-                    Обработка на плащането...
-                  </>
-                ) : (
-                  <>
-                    Плати <Price value={cart.totalOneTime + cart.totalMonthly} />
-                    {cart.totalMonthly > 0 && cart.totalOneTime === 0 && "/мес"}
-                  </>
-                )}
-              </Button>
-            </form>
+              {checkoutStep === 1 ? (
+                <>
+                  <Card className="bg-card border-border">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Данни за контакт</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <FieldGroup>
+                        <Field>
+                          <FieldLabel htmlFor="name">Име и фамилия *</FieldLabel>
+                          <Input
+                            id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            placeholder="Иван Петров"
+                            required
+                          />
+                        </Field>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <Field>
+                            <FieldLabel htmlFor="email">Имейл адрес *</FieldLabel>
+                            <Input
+                              id="email"
+                              name="email"
+                              type="email"
+                              value={formData.email}
+                              onChange={handleInputChange}
+                              placeholder="ivan@example.com"
+                              required
+                            />
+                          </Field>
+
+                          <Field>
+                            <FieldLabel htmlFor="phone">Телефон *</FieldLabel>
+                            <Input
+                              id="phone"
+                              name="phone"
+                              type="tel"
+                              value={formData.phone}
+                              onChange={handleInputChange}
+                              placeholder="+359 888 123 456"
+                              required
+                            />
+                          </Field>
+                        </div>
+
+                        <Field>
+                          <FieldLabel htmlFor="company">Фирма (по избор)</FieldLabel>
+                          <Input
+                            id="company"
+                            name="company"
+                            value={formData.company}
+                            onChange={handleInputChange}
+                            placeholder="Име на фирма"
+                          />
+                        </Field>
+
+                        <Field>
+                          <FieldLabel htmlFor="notes">
+                            Допълнителни бележки (по избор)
+                          </FieldLabel>
+                          <Textarea
+                            id="notes"
+                            name="notes"
+                            value={formData.notes}
+                            onChange={handleInputChange}
+                            placeholder="Опишете вашите нужди или специални изисквания..."
+                            rows={4}
+                          />
+                        </Field>
+                      </FieldGroup>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-card border-border">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Безплатна консултация</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <Checkbox
+                          id="consultation"
+                          checked={wantsConsultation}
+                          onCheckedChange={(value) => {
+                            const checked = value === true;
+                            setWantsConsultation(checked);
+                            if (!checked) {
+                              setBookedConsultation(null);
+                              setConsultationError("");
+                            }
+                          }}
+                        />
+                        <div className="space-y-1">
+                          <Label htmlFor="consultation" className="cursor-pointer">
+                            Искам да запазя безплатна консултация
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            Ще резервирате конкретен ден и час директно тук.
+                          </p>
+                        </div>
+                      </div>
+
+                      {wantsConsultation ? (
+                        <ConsultationBookingForm
+                          source="checkout"
+                          title="Изберете ден и час"
+                          description="Консултацията е безплатна и не влияе на цената на поръчката."
+                          submitLabel={
+                            bookedConsultation ? "Промени часа за консултация" : "Запази час"
+                          }
+                          initialValues={{
+                            name: formData.name,
+                            email: formData.email,
+                            phone: formData.phone,
+                            company: formData.company,
+                            notes: formData.notes,
+                          }}
+                          onBooked={(booking) => {
+                            setBookedConsultation(booking);
+                            setConsultationError("");
+                          }}
+                        />
+                      ) : null}
+
+                      {bookedConsultation ? (
+                        <p className="text-sm text-green-600">
+                          Запазен час: {bookedConsultation.date} в {bookedConsultation.time}
+                        </p>
+                      ) : null}
+                      {consultationError ? (
+                        <p className="text-sm text-red-500">{consultationError}</p>
+                      ) : null}
+                    </CardContent>
+                  </Card>
+
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="w-full glow-primary"
+                    onClick={handleContinueToPayment}
+                  >
+                    Продължи към плащане
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Card className="bg-card border-border">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <CreditCard className="h-5 w-5 text-primary" />
+                        Плащане
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {stripeClientSecret ? (
+                        <div className="bg-secondary/30 rounded-lg p-2">
+                          <EmbeddedCheckoutProvider
+                            stripe={stripePromise}
+                            options={{ clientSecret: stripeClientSecret }}
+                          >
+                            <EmbeddedCheckout />
+                          </EmbeddedCheckoutProvider>
+                        </div>
+                      ) : (
+                        <div className="bg-secondary/50 rounded-lg p-6 text-center">
+                          <Lock className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
+                          <p className="text-muted-foreground text-sm mb-2">
+                            Подготвяме защитената форма за плащане...
+                          </p>
+                          {consultationError ? (
+                            <p className="text-xs text-red-500 mb-4">{consultationError}</p>
+                          ) : null}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleRetryPayment}
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? "Обработка..." : "Опитай отново"}
+                          </Button>
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
+                        <Shield className="h-4 w-4" />
+                        <span>Вашите данни са защитени с SSL криптиране</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => setCheckoutStep(1)}
+                    >
+                      Назад към данните
+                    </Button>
+                    <Button
+                      type="button"
+                      className="flex-1"
+                      disabled
+                    >
+                      Завършете плащането във формата
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Right - Order Summary */}
