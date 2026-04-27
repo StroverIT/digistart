@@ -45,6 +45,7 @@ const payloadSchema = z.object({
     notes: z.string().optional(),
   }),
   consultationId: z.string().optional(),
+  uiMode: z.enum(["redirect", "embedded"]).optional(),
 });
 
 function amountToMinorUnits(amount: number) {
@@ -147,21 +148,47 @@ export async function POST(req: NextRequest) {
       phone: parsed.data.customer.phone,
     });
 
-    const session = await stripe.checkout.sessions.create({
+    const uiMode = parsed.data.uiMode ?? "redirect";
+    const sessionBase: {
+      mode: "payment" | "subscription";
+      line_items: Array<{ price: string; quantity: number }>;
+      customer: string;
+      metadata: Record<string, string>;
+      payment_method_collection: "always";
+      billing_address_collection: "auto";
+      locale: "bg";
+      success_url?: string;
+      cancel_url?: string;
+      ui_mode?: "embedded_page";
+      return_url?: string;
+    } = {
       mode,
       line_items: lineItems,
       customer: stripeCustomer.stripeCustomerId,
-      success_url: `${siteUrl}/поръчка/успех?id=${order.id}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/поръчка`,
-      metadata: {
-        orderId: order.id,
-      },
+      metadata: { orderId: order.id },
       payment_method_collection: "always",
       billing_address_collection: "auto",
       locale: "bg",
-    });
+    };
 
-    if (!session.url) {
+    if (uiMode === "embedded") {
+      sessionBase.ui_mode = "embedded_page";
+      sessionBase.return_url = `${siteUrl}/поръчка/успех?id=${order.id}&session_id={CHECKOUT_SESSION_ID}`;
+    } else {
+      sessionBase.success_url = `${siteUrl}/поръчка/успех?id=${order.id}&session_id={CHECKOUT_SESSION_ID}`;
+      sessionBase.cancel_url = `${siteUrl}/поръчка`;
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionBase);
+
+    if (uiMode === "embedded" && !session.client_secret) {
+      return NextResponse.json(
+        { error: "Stripe embedded session has no client secret." },
+        { status: 500 }
+      );
+    }
+
+    if (uiMode === "redirect" && !session.url) {
       return NextResponse.json({ error: "Stripe session has no redirect URL." }, { status: 500 });
     }
 
@@ -175,7 +202,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ checkoutUrl: session.url, orderId: order.id });
+    return NextResponse.json({
+      checkoutUrl: session.url ?? null,
+      clientSecret: session.client_secret ?? null,
+      orderId: order.id,
+    });
   } catch (error) {
     console.error("Stripe checkout session error", error);
     return NextResponse.json(

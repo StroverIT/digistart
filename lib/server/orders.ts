@@ -1,5 +1,6 @@
 import type { Cart, ConsultationBooking, CustomerInfo, Order } from "@/lib/types";
 import { prisma } from "@/lib/prisma";
+import { getServiceByIdFromDb } from "@/lib/server/services";
 
 function mapOrder(order: Awaited<ReturnType<typeof prisma.order.findFirstOrThrow>>): Order {
   return {
@@ -70,6 +71,42 @@ export async function createOrderInDb(params: {
   consultationId?: string;
 }) {
   const { cart, customer, consultationId } = params;
+  const uniqueServiceIds = Array.from(new Set(cart.items.map((item) => item.serviceId)));
+
+  for (const serviceId of uniqueServiceIds) {
+    const existing = await prisma.service.findUnique({ where: { id: serviceId } });
+    if (existing) continue;
+
+    const sourceService = await getServiceByIdFromDb(serviceId);
+    if (!sourceService) {
+      throw new Error(`Service ${serviceId} is missing in DB and source catalog.`);
+    }
+
+    await prisma.service.create({
+      data: {
+        id: sourceService.id,
+        slug: sourceService.slug,
+        name: sourceService.name,
+        shortDescription: sourceService.shortDescription,
+        fullDescription: sourceService.fullDescription,
+        icon: sourceService.icon,
+        basePrice: sourceService.basePrice,
+        isMonthly: sourceService.isMonthly ?? false,
+        timeline: sourceService.timeline,
+        features: sourceService.features,
+        options: {
+          create: sourceService.options.map((option) => ({
+            optionKey: option.id,
+            name: option.name,
+            description: option.description,
+            price: Math.round(option.price),
+            isMonthly: option.isMonthly ?? false,
+          })),
+        },
+      },
+    });
+  }
+
   const order = await prisma.order.create({
     data: {
       customerName: customer.name,

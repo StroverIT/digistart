@@ -16,6 +16,10 @@ import { getCart, clearCart } from "@/lib/store/cart";
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 import { getServiceById } from "@/lib/data/services";
 import ConsultationBookingForm from "@/components/consultation/consultation-booking-form";
+import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -27,6 +31,7 @@ export default function CheckoutPage() {
     null
   );
   const [consultationError, setConsultationError] = useState("");
+  const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [servicesById, setServicesById] = useState<Record<string, Service>>({});
   const [formData, setFormData] = useState<CustomerInfo>({
     name: "",
@@ -35,6 +40,41 @@ export default function CheckoutPage() {
     company: "",
     notes: "",
   });
+
+  const createEmbeddedSession = async (source: "auto" | "submit") => {
+    const fallbackEmail = `guest-${Date.now()}@digistart.local`;
+    const emailLooksValid = /\S+@\S+\.\S+/.test(formData.email);
+    const payloadCustomer: CustomerInfo = {
+      name: formData.name.trim() || "Клиент",
+      email: emailLooksValid ? formData.email.trim() : fallbackEmail,
+      phone: formData.phone.trim() || "000000",
+      company: formData.company?.trim() || undefined,
+      notes: formData.notes?.trim() || undefined,
+    };
+
+    const response = await fetch("/api/checkout/stripe-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cart,
+        customer: payloadCustomer,
+        consultationId: bookedConsultation?.id,
+        uiMode: "embedded",
+      }),
+    });
+
+    if (!response.ok) {
+      const errorPayload = (await response.json().catch(() => ({}))) as { error?: string };
+      void errorPayload;
+      return { ok: false as const };
+    }
+
+    const { checkoutUrl, clientSecret } = (await response.json()) as {
+      checkoutUrl?: string;
+      clientSecret?: string;
+    };
+    return { ok: true as const, checkoutUrl, clientSecret };
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -56,6 +96,44 @@ export default function CheckoutPage() {
     }
   }, [router]);
 
+  useEffect(() => {
+    if (!mounted) return;
+    if (cart.items.length === 0) return;
+    if (stripeClientSecret) return;
+    if (isSubmitting) return;
+
+    let cancelled = false;
+    setIsSubmitting(true);
+    createEmbeddedSession("auto")
+      .then((result) => {
+        if (cancelled) return;
+        if (!result.ok) {
+          setConsultationError("Възникна грешка при зареждане на плащането.");
+          return;
+        }
+        if (result.clientSecret) {
+          setStripeClientSecret(result.clientSecret);
+        } else if (result.checkoutUrl) {
+          clearCart();
+          window.location.assign(result.checkoutUrl);
+        } else {
+          setConsultationError("Stripe не върна client secret за вградено плащане.");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setConsultationError("Възникна грешка при зареждане на плащането.");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsSubmitting(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mounted, cart.items.length, stripeClientSecret, isSubmitting]);
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -66,6 +144,7 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setConsultationError("");
+    if (stripeClientSecret) return;
 
     if (wantsConsultation && !bookedConsultation) {
       setConsultationError(
@@ -75,32 +154,26 @@ export default function CheckoutPage() {
     }
 
     setIsSubmitting(true);
-
-    const response = await fetch("/api/checkout/stripe-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        cart,
-        customer: formData,
-        consultationId: bookedConsultation?.id,
-      }),
-    });
-
-    if (!response.ok) {
+    const result = await createEmbeddedSession("submit");
+    if (!result.ok) {
       setIsSubmitting(false);
       setConsultationError("Възникна грешка при стартиране на плащането. Моля опитайте отново.");
       return;
     }
-
-    const { checkoutUrl } = (await response.json()) as { checkoutUrl?: string };
-    if (!checkoutUrl) {
+    if (!result.clientSecret && !result.checkoutUrl) {
       setIsSubmitting(false);
       setConsultationError("Липсва линк за плащане. Моля опитайте отново.");
       return;
     }
 
+    if (result.clientSecret) {
+      setStripeClientSecret(result.clientSecret);
+      setIsSubmitting(false);
+      return;
+    }
+
     clearCart();
-    window.location.assign(checkoutUrl);
+    window.location.assign(result.checkoutUrl!);
   };
 
   if (!mounted || cart.items.length === 0) {
@@ -280,15 +353,26 @@ export default function CheckoutPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-secondary/50 rounded-lg p-6 text-center">
-                    <Lock className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
-                    <p className="text-muted-foreground text-sm mb-2">
-                      Сигурно плащане чрез Stripe
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Ще бъдете пренасочени към защитената Stripe страница за плащане
-                    </p>
-                  </div>
+                  {stripeClientSecret ? (
+                    <div className="bg-secondary/30 rounded-lg p-2">
+                      <EmbeddedCheckoutProvider
+                        stripe={stripePromise}
+                        options={{ clientSecret: stripeClientSecret }}
+                      >
+                        <EmbeddedCheckout />
+                      </EmbeddedCheckoutProvider>
+                    </div>
+                  ) : (
+                    <div className="bg-secondary/50 rounded-lg p-6 text-center">
+                      <Lock className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
+                      <p className="text-muted-foreground text-sm mb-2">
+                        Сигурно плащане чрез Stripe
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Натиснете бутона „Плати“, за да заредите формата за карта тук
+                      </p>
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
                     <Shield className="h-4 w-4" />
@@ -349,7 +433,7 @@ export default function CheckoutPage() {
                             const choiceName =
                               serviceUpsell.kind === "choice"
                                 ? serviceUpsell.choices?.find((choice) => choice.id === upsell.choiceId)
-                                    ?.name
+                                  ?.name
                                 : null;
 
                             return (
