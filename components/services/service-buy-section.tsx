@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/ui/price";
+import { Skeleton } from "@/components/ui/skeleton";
 import { UpsellConfigurator } from "@/components/services/upsell-configurator";
 import {
   validateUpsellEntries,
@@ -64,7 +65,15 @@ export function ServiceBuySection({
             <Price value={price} className="text-3xl text-primary" />
             {monthlyLabel ? <span className="text-muted-foreground">{monthlyLabel}</span> : null}
           </div>
-          {hasUpsells ? (
+          {isAdding ? (
+            <div className="mb-6 space-y-3">
+              <Skeleton className="h-5 w-48" />
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+            </div>
+          ) : null}
+          {hasUpsells && !isAdding ? (
             <div className="mb-6">
               <h3 className="font-semibold mb-3">Допълнителни услуги</h3>
               <UpsellConfigurator
@@ -82,7 +91,7 @@ export function ServiceBuySection({
               disabled={isAdding}
               className="h-12 px-6 text-base bg-orange-500 hover:bg-orange-600 text-white"
             >
-              {isAdding ? "Добавяне..." : "Добави в кошницата"}
+              {isAdding ? "Обработка..." : "Добави в кошницата"}
             </Button>
           </div>
         </div>

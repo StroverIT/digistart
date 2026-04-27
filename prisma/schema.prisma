@@ -64,20 +64,33 @@ model ServiceUpsell {
 }
 
 model Order {
-  id             String               @id @default(cuid())
-  customerName   String
-  customerEmail  String
-  customerPhone  String
-  customerCompany String?
-  customerNotes  String?
-  totalOneTime   Int
-  totalMonthly   Int
-  status         String               @default("pending")
-  consultationId String?              @unique
-  consultation   ConsultationBooking? @relation("OrderConsultation", fields: [consultationId], references: [id], onDelete: SetNull)
-  items          OrderItem[]
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
+  id                     String               @id @default(cuid())
+  customerName           String
+  customerEmail          String
+  customerPhone          String
+  customerCompany        String?
+  customerNotes          String?
+  totalOneTime           Int
+  totalMonthly           Int
+  status                 String               @default("pending")
+  consultationId         String?              @unique
+  consultation           ConsultationBooking? @relation("OrderConsultation", fields: [consultationId], references: [id], onDelete: SetNull)
+  items                  OrderItem[]
+  stripeCheckoutMode     String?
+  stripeCheckoutSessionId String?             @unique
+  stripePaymentIntentId  String?
+  stripeSubscriptionId   String?
+  stripeCustomerId       String?
+  stripePaymentStatus    String?
+  stripeCurrency         String?
+  stripeAmountSubtotal   Int?
+  stripeAmountTotal      Int?
+  stripeAmountTax        Int?
+  stripeMetadata         Json?
+  stripeCheckoutCompletedAt DateTime?
+  stripePaidAt           DateTime?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
 }
 
 model OrderItem {
@@ -117,4 +130,38 @@ model ConsultationBooking {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   linkedOrder   Order?    @relation("OrderConsultation")
+}
+
+model StripeCatalogMapping {
+  id                String   @id @default(cuid())
+  lookupKey         String   @unique
+  serviceId         String
+  serviceName       String
+  selectedOptionId  String
+  selectedOptionName String
+  billingType       String
+  unitAmount        Int
+  currency          String   @default("eur")
+  stripeProductId   String
+  stripePriceId     String
+  stripePaymentLinkId String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model StripeCustomerMapping {
+  id               String   @id @default(cuid())
+  customerEmail    String   @unique
+  customerName     String?
+  stripeCustomerId String   @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model StripeWebhookEvent {
+  id            String   @id @default(cuid())
+  stripeEventId String   @unique
+  eventType     String
+  orderId       String?
+  processedAt   DateTime @default(now())
 }

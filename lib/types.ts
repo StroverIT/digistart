@@ -106,7 +106,21 @@ export interface Order {
   status: "pending" | "paid" | "in_progress" | "completed" | "cancelled";
   createdAt: string;
   updatedAt: string;
-  paymentIntentId?: string;
+  stripe?: {
+    checkoutMode?: "payment" | "subscription";
+    checkoutSessionId?: string;
+    paymentIntentId?: string;
+    subscriptionId?: string;
+    customerId?: string;
+    paymentStatus?: string;
+    currency?: string;
+    amountSubtotal?: number;
+    amountTotal?: number;
+    amountTax?: number;
+    metadata?: Record<string, string>;
+    checkoutCompletedAt?: string;
+    paidAt?: string;
+  };
 }
 
 // Analytics types

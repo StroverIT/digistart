@@ -9,7 +9,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import { siteContact } from "@/lib/site-contact";
 import type { Order } from "@/lib/types";
-import { getOrderById } from "@/lib/store/orders";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -20,8 +19,12 @@ function SuccessContent() {
   useEffect(() => {
     setMounted(true);
     if (orderId) {
-      const foundOrder = getOrderById(orderId);
-      setOrder(foundOrder);
+      fetch(`/api/checkout/orders/${orderId}`)
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data: { order?: Order } | null) => {
+          setOrder(data?.order ?? null);
+        })
+        .catch(() => setOrder(null));
     }
   }, [orderId]);
 
@@ -50,6 +53,15 @@ function SuccessContent() {
       <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">
         Благодарим ви за доверието! Ще се свържем с вас в рамките на 24 часа за да обсъдим детайлите.
       </p>
+
+      {order && (
+        <p className="text-sm mb-6 text-muted-foreground">
+          Статус на плащането:{" "}
+          <span className="font-semibold text-foreground">
+            {order.status === "paid" ? "Потвърдено" : "Обработва се"}
+          </span>
+        </p>
+      )}
 
       {order && (
         <Card className="bg-card border-border mb-8 text-left">

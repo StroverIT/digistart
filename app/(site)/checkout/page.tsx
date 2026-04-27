@@ -14,13 +14,11 @@ import { Price } from "@/components/ui/price";
 import type { Cart, ConsultationBooking, CustomerInfo, Service } from "@/lib/types";
 import { getCart, clearCart } from "@/lib/store/cart";
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
-import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { getServiceById } from "@/lib/data/services";
 import ConsultationBookingForm from "@/components/consultation/consultation-booking-form";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { push } = useTransitionRouter();
   const [cart, setCart] = useState<Cart>({ items: [], totalOneTime: 0, totalMonthly: 0 });
   const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,10 +76,7 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
 
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    const response = await fetch("/api/checkout/orders", {
+    const response = await fetch("/api/checkout/stripe-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -93,17 +88,19 @@ export default function CheckoutPage() {
 
     if (!response.ok) {
       setIsSubmitting(false);
-      setConsultationError("Възникна грешка при запис на поръчката. Моля опитайте отново.");
+      setConsultationError("Възникна грешка при стартиране на плащането. Моля опитайте отново.");
       return;
     }
 
-    const { order } = (await response.json()) as { order: { id: string } };
+    const { checkoutUrl } = (await response.json()) as { checkoutUrl?: string };
+    if (!checkoutUrl) {
+      setIsSubmitting(false);
+      setConsultationError("Липсва линк за плащане. Моля опитайте отново.");
+      return;
+    }
 
-    // Clear cart
     clearCart();
-
-    // Redirect to success page
-    push(`/поръчка/успех?id=${order.id}`);
+    window.location.assign(checkoutUrl);
   };
 
   if (!mounted || cart.items.length === 0) {
@@ -289,7 +286,7 @@ export default function CheckoutPage() {
                       Сигурно плащане чрез Stripe
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Демо режим - в реална среда тук ще се появи формата за плащане на Stripe
+                      Ще бъдете пренасочени към защитената Stripe страница за плащане
                     </p>
                   </div>
 

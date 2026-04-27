@@ -43,6 +43,24 @@ function mapOrder(order: Awaited<ReturnType<typeof prisma.order.findFirstOrThrow
     status: order.status as Order["status"],
     createdAt: order.createdAt.toISOString(),
     updatedAt: order.updatedAt.toISOString(),
+    stripe: {
+      checkoutMode: order.stripeCheckoutMode ?? undefined,
+      checkoutSessionId: order.stripeCheckoutSessionId ?? undefined,
+      paymentIntentId: order.stripePaymentIntentId ?? undefined,
+      subscriptionId: order.stripeSubscriptionId ?? undefined,
+      customerId: order.stripeCustomerId ?? undefined,
+      paymentStatus: order.stripePaymentStatus ?? undefined,
+      currency: order.stripeCurrency ?? undefined,
+      amountSubtotal: order.stripeAmountSubtotal ?? undefined,
+      amountTotal: order.stripeAmountTotal ?? undefined,
+      amountTax: order.stripeAmountTax ?? undefined,
+      metadata:
+        order.stripeMetadata && typeof order.stripeMetadata === "object"
+          ? (order.stripeMetadata as Record<string, string>)
+          : undefined,
+      checkoutCompletedAt: order.stripeCheckoutCompletedAt?.toISOString(),
+      paidAt: order.stripePaidAt?.toISOString(),
+    },
   };
 }
 
@@ -105,6 +123,17 @@ export async function listOrdersFromDb(): Promise<Order[]> {
   return orders.map(mapOrder);
 }
 
+export async function getOrderByIdFromDb(orderId: string): Promise<Order | null> {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      items: true,
+      consultation: true,
+    },
+  });
+  return order ? mapOrder(order) : null;
+}
+
 export async function updateOrderStatusInDb(orderId: string, status: Order["status"]) {
   const updated = await prisma.order.update({
     where: { id: orderId },
@@ -114,5 +143,64 @@ export async function updateOrderStatusInDb(orderId: string, status: Order["stat
       consultation: true,
     },
   });
+  return mapOrder(updated);
+}
+
+export async function setOrderStripeSessionInDb(params: {
+  orderId: string;
+  checkoutSessionId: string;
+  checkoutMode: "payment" | "subscription";
+  customerId?: string | null;
+  metadata?: Record<string, string>;
+}) {
+  const updated = await prisma.order.update({
+    where: { id: params.orderId },
+    data: {
+      stripeCheckoutSessionId: params.checkoutSessionId,
+      stripeCheckoutMode: params.checkoutMode,
+      stripeCustomerId: params.customerId ?? undefined,
+      stripeMetadata: params.metadata ?? undefined,
+    },
+    include: { items: true, consultation: true },
+  });
+  return mapOrder(updated);
+}
+
+export async function setOrderStripeSnapshotInDb(params: {
+  orderId: string;
+  checkoutSessionId?: string | null;
+  paymentIntentId?: string | null;
+  subscriptionId?: string | null;
+  customerId?: string | null;
+  paymentStatus?: string | null;
+  currency?: string | null;
+  amountSubtotal?: number | null;
+  amountTotal?: number | null;
+  amountTax?: number | null;
+  metadata?: Record<string, string>;
+  checkoutCompletedAt?: Date | null;
+  paidAt?: Date | null;
+  markAsPaid?: boolean;
+}) {
+  const updated = await prisma.order.update({
+    where: { id: params.orderId },
+    data: {
+      stripeCheckoutSessionId: params.checkoutSessionId ?? undefined,
+      stripePaymentIntentId: params.paymentIntentId ?? undefined,
+      stripeSubscriptionId: params.subscriptionId ?? undefined,
+      stripeCustomerId: params.customerId ?? undefined,
+      stripePaymentStatus: params.paymentStatus ?? undefined,
+      stripeCurrency: params.currency ?? undefined,
+      stripeAmountSubtotal: params.amountSubtotal ?? undefined,
+      stripeAmountTotal: params.amountTotal ?? undefined,
+      stripeAmountTax: params.amountTax ?? undefined,
+      stripeMetadata: params.metadata ?? undefined,
+      stripeCheckoutCompletedAt: params.checkoutCompletedAt ?? undefined,
+      stripePaidAt: params.paidAt ?? undefined,
+      status: params.markAsPaid ? "paid" : undefined,
+    },
+    include: { items: true, consultation: true },
+  });
+
   return mapOrder(updated);
 }
