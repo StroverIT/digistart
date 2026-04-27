@@ -23,6 +23,12 @@ interface UpsellConfiguratorProps {
   errors?: UpsellEntryErrors;
 }
 
+function isMonthlyUnit(unit?: string): boolean {
+  if (!unit) return false;
+  const normalized = unit.trim().toLowerCase();
+  return normalized === "месец" || normalized === "месеца" || normalized === "мес";
+}
+
 function getUpsellAmount(service: Service, item: CartItemUpsell): number {
   const upsell = service.upsells.find((u) => u.id === item.upsellId);
   if (!upsell || item.quantity <= 0) return 0;
@@ -122,7 +128,9 @@ export function UpsellConfigurator({ service, value, onChange, errors }: UpsellC
                       <span className="text-muted-foreground"> / {upsell.unit}</span>
                     </>
                   )}
-                  {upsell.isMonthly ? <span className="text-muted-foreground"> /мес</span> : null}
+                  {upsell.isMonthly && !isMonthlyUnit(upsell.unit) ? (
+                    <span className="text-muted-foreground"> /мес</span>
+                  ) : null}
                 </p>
               </div>
 
