@@ -11,7 +11,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:push": "prisma db push",
     "prisma:seed": "tsx prisma/seed.ts",
-    "stripe-webhook": "stripe listen --forward-to localhost:3000/api/webhooks/stripe"
+    "stripe-webhook": "stripe listen --forward-to localhost:3000/api/stripe/webhook"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -49,6 +49,7 @@
     "@supabase/supabase-js": "^2.104.1",
     "@vis.gl/react-google-maps": "^1.8.3",
     "autoprefixer": "^10.4.20",
+    "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.1.1",
@@ -56,6 +57,7 @@
     "embla-carousel-react": "8.6.0",
     "googleapis": "^171.4.0",
     "gsap": "^3.13.0",
+    "hamburger-react": "^2.5.2",
     "input-otp": "1.4.2",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.564.0",
@@ -79,6 +81,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.0",
+    "@types/bcryptjs": "^3.0.0",
     "@types/node": "^22",
     "@types/pg": "^8.20.0",
     "@types/react": "^19",

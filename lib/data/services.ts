@@ -1,4 +1,30 @@
-import type { Service } from "@/lib/types";
+import type { Service, ServiceUpsell } from "@/lib/types";
+
+/** Shared checkout/cart upsells: logo design + color palette (per plan). */
+export const brandUpsells: ServiceUpsell[] = [
+  {
+    id: "logo-design",
+    name: "Изработка на лого",
+    description: "Професионален дизайн на лого спрямо твоя бранд.",
+    kind: "toggle",
+    pricePerUnit: 50,
+    unit: "добавка",
+    min: 0,
+    max: 1,
+    default: 0,
+  },
+  {
+    id: "color-palette",
+    name: "Цветова палитра и бранд гайд",
+    description: "Съгласувана цветова палитра + типография.",
+    kind: "toggle",
+    pricePerUnit: 20,
+    unit: "добавка",
+    min: 0,
+    max: 1,
+    default: 0,
+  },
+];
 
 export const services: Service[] = [
   {
@@ -111,7 +137,7 @@ export const services: Service[] = [
         entryLabel: "Език",
         entryPlaceholder: "Напр. English",
       },
-
+      ...brandUpsells,
     ],
     features: [
       "Индивидуален дизайн, адаптиран към фирмените цветове и лого",
@@ -233,6 +259,7 @@ export const services: Service[] = [
         max: 50000,
         default: 0,
       },
+      ...brandUpsells,
     ],
     features: [
       "Индивидуален дизайн с твоето лого",
@@ -343,6 +370,7 @@ export const services: Service[] = [
         max: 1,
         default: 0,
       },
+      ...brandUpsells,
     ],
     features: [
       "Пълна настройка на профила",
@@ -423,6 +451,7 @@ export const services: Service[] = [
         default: 0,
         helperText: "Минималният рекламен бюджет е 50 евро/месец за всеки избран канал.",
       },
+      ...brandUpsells,
     ],
     features: [
       "Създаване на съдържание",

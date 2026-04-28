@@ -1,6 +1,15 @@
+import { randomBytes } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { z } from "zod";
-import { createOrderInDb, setOrderStripeSessionInDb } from "@/lib/server/orders";
+import bcrypt from "bcryptjs";
+import { authOptions } from "@/lib/auth";
+import {
+  createOrderInDb,
+  setOrderStripeSessionInDb,
+  type InvoicePersistData,
+  type PendingCheckoutUser,
+} from "@/lib/server/orders";
 import type { CartItemUpsell } from "@/lib/types";
 import { getServiceByIdFromDb } from "@/lib/server/services";
 import { getStripeServerClient } from "@/lib/server/stripe";
@@ -8,6 +17,7 @@ import {
   resolveOrCreateCatalogPrice,
   resolveOrCreateStripeCustomer,
 } from "@/lib/server/stripe-catalog";
+import { applyInvoiceDetailsToStripeCustomer } from "@/lib/server/stripe-invoice";
 
 const upsellSchema: z.ZodType<CartItemUpsell> = z.object({
   upsellId: z.string(),
@@ -15,6 +25,27 @@ const upsellSchema: z.ZodType<CartItemUpsell> = z.object({
   choiceId: z.string().optional(),
   entries: z.array(z.string()).optional(),
   note: z.string().optional(),
+});
+
+const invoiceSchema = z.object({
+  companyName: z.string().min(2),
+  taxId: z.string().min(4),
+  vatNumber: z.string().optional(),
+  addressLine1: z.string().min(4),
+  mol: z.string().min(2),
+});
+
+const pendingUserSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  name: z.string().min(2),
+  phone: z.string().min(6),
+  company: z.string().optional(),
+});
+
+const brandAssetsSchema = z.object({
+  logoUrl: z.string().url().optional().nullable(),
+  paletteUrl: z.string().url().optional().nullable(),
 });
 
 const payloadSchema = z.object({
@@ -46,20 +77,14 @@ const payloadSchema = z.object({
   }),
   consultationId: z.string().optional(),
   uiMode: z.enum(["redirect", "embedded"]).optional(),
+  pendingUser: pendingUserSchema.optional(),
+  invoiceWanted: z.boolean().optional(),
+  invoice: invoiceSchema.optional(),
+  brandAssets: brandAssetsSchema.optional(),
 });
 
 function amountToMinorUnits(amount: number) {
   return Math.round(amount * 100);
-}
-
-function getSiteUrl(req: NextRequest) {
-  const envSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  if (envSiteUrl) return envSiteUrl.replace(/\/$/, "");
-
-  const origin = req.headers.get("origin");
-  if (origin) return origin.replace(/\/$/, "");
-
-  return "http://localhost:3000";
 }
 
 async function buildLineItems(
@@ -104,6 +129,7 @@ async function buildLineItems(
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
     const parsed = payloadSchema.safeParse(await req.json());
     if (!parsed.success) {
       return NextResponse.json(
@@ -138,7 +164,80 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No payable line items found." }, { status: 400 });
     }
 
-    const order = await createOrderInDb(parsed.data);
+    const customerEmail = parsed.data.customer.email.toLowerCase().trim();
+    const sessionUserId =
+      session?.user?.id &&
+      session.user.role !== "admin" &&
+      session.user.email?.toLowerCase() === customerEmail
+        ? session.user.id
+        : null;
+
+    let pendingUser: PendingCheckoutUser | null = null;
+    let postCheckoutToken: string | null = null;
+
+    if (!sessionUserId) {
+      const pu = parsed.data.pendingUser;
+      if (!pu) {
+        return NextResponse.json(
+          { error: "Липсват данни за акаунт или влезте в профила си." },
+          { status: 400 }
+        );
+      }
+      if (pu.email.toLowerCase().trim() !== customerEmail) {
+        return NextResponse.json(
+          { error: "Имейлът за акаунт трябва да съвпада с имейла за контакт." },
+          { status: 400 }
+        );
+      }
+      const passwordHash = await bcrypt.hash(pu.password, 12);
+      pendingUser = {
+        email: customerEmail,
+        passwordHash,
+        name: pu.name.trim(),
+        phone: pu.phone.trim(),
+        company: pu.company?.trim(),
+      };
+      postCheckoutToken = randomBytes(32).toString("hex");
+    }
+
+    const invoiceWanted = Boolean(parsed.data.invoiceWanted);
+    let invoiceData: InvoicePersistData | null = null;
+    if (invoiceWanted) {
+      const inv = parsed.data.invoice;
+      if (!inv) {
+        return NextResponse.json(
+          { error: "Попълнете данните за фактура." },
+          { status: 400 }
+        );
+      }
+      invoiceData = {
+        companyName: inv.companyName.trim(),
+        taxId: inv.taxId.trim(),
+        vatNumber: inv.vatNumber?.trim(),
+        addressLine1: inv.addressLine1.trim(),
+        mol: inv.mol.trim(),
+      };
+    }
+
+    const brandAssets = parsed.data.brandAssets
+      ? {
+          logoUrl: parsed.data.brandAssets.logoUrl ?? undefined,
+          paletteUrl: parsed.data.brandAssets.paletteUrl ?? undefined,
+        }
+      : null;
+
+    const order = await createOrderInDb({
+      cart: parsed.data.cart,
+      customer: parsed.data.customer,
+      consultationId: parsed.data.consultationId,
+      userId: sessionUserId,
+      pendingUser,
+      postCheckoutToken,
+      invoiceWanted,
+      invoiceData,
+      brandAssets,
+    });
+
     const stripe = getStripeServerClient();
     const siteUrl = getSiteUrl(req);
     const mode = parsed.data.cart.totalMonthly > 0 ? "subscription" : "payment";
@@ -148,9 +247,14 @@ export async function POST(req: NextRequest) {
       phone: parsed.data.customer.phone,
     });
 
+    if (invoiceData) {
+      await applyInvoiceDetailsToStripeCustomer({
+        stripeCustomerId: stripeCustomer.stripeCustomerId,
+        invoice: invoiceData,
+      });
+    }
+
     const uiMode = parsed.data.uiMode ?? "redirect";
-    // `payment_method_collection` is only valid when the session has recurring line items
-    // (subscription mode). One-time `payment` mode must omit it on API 2026-04-22.dahlia+.
     const sessionBase: Parameters<typeof stripe.checkout.sessions.create>[0] = {
       mode,
       line_items: lineItems,
@@ -161,6 +265,31 @@ export async function POST(req: NextRequest) {
       ...(mode === "subscription" ? { payment_method_collection: "always" as const } : {}),
     };
 
+    if (mode === "payment" && invoiceWanted && invoiceData) {
+      sessionBase.invoice_creation = {
+        enabled: true,
+        invoice_data: {
+          description: `DigiStart поръчка ${order.id}`,
+          metadata: { orderId: order.id },
+          custom_fields: [
+            { name: "ЕИК", value: invoiceData.taxId },
+            { name: "МОЛ", value: invoiceData.mol },
+          ],
+        },
+      };
+    }
+
+    if (mode === "subscription" && invoiceData) {
+      sessionBase.subscription_data = {
+        metadata: {
+          orderId: order.id,
+          companyName: invoiceData.companyName,
+          eik: invoiceData.taxId,
+          mol: invoiceData.mol,
+        },
+      };
+    }
+
     if (uiMode === "embedded") {
       sessionBase.ui_mode = "embedded_page";
       sessionBase.return_url = `${siteUrl}/checkout/success?id=${order.id}&session_id={CHECKOUT_SESSION_ID}`;
@@ -169,22 +298,22 @@ export async function POST(req: NextRequest) {
       sessionBase.cancel_url = `${siteUrl}/checkout`;
     }
 
-    const session = await stripe.checkout.sessions.create(sessionBase);
+    const checkoutSession = await stripe.checkout.sessions.create(sessionBase);
 
-    if (uiMode === "embedded" && !session.client_secret) {
+    if (uiMode === "embedded" && !checkoutSession.client_secret) {
       return NextResponse.json(
         { error: "Stripe embedded session has no client secret." },
         { status: 500 }
       );
     }
 
-    if (uiMode === "redirect" && !session.url) {
+    if (uiMode === "redirect" && !checkoutSession.url) {
       return NextResponse.json({ error: "Stripe session has no redirect URL." }, { status: 500 });
     }
 
     await setOrderStripeSessionInDb({
       orderId: order.id,
-      checkoutSessionId: session.id,
+      checkoutSessionId: checkoutSession.id,
       checkoutMode: mode,
       customerId: stripeCustomer.stripeCustomerId,
       metadata: {
@@ -193,8 +322,8 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({
-      checkoutUrl: session.url ?? null,
-      clientSecret: session.client_secret ?? null,
+      checkoutUrl: checkoutSession.url ?? null,
+      clientSecret: checkoutSession.client_secret ?? null,
       orderId: order.id,
     });
   } catch (error) {
@@ -204,4 +333,14 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+function getSiteUrl(req: NextRequest) {
+  const envSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (envSiteUrl) return envSiteUrl.replace(/\/$/, "");
+
+  const origin = req.headers.get("origin");
+  if (origin) return origin.replace(/\/$/, "");
+
+  return "http://localhost:3000";
 }

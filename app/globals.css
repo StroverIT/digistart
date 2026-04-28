@@ -160,3 +160,15 @@
 .glow-primary:hover {
   box-shadow: 0 0 30px oklch(0.65 0.22 250 / 0.5);
 }
+
+/* Mobile nav link clip animation (Strover-style) */
+.nav-link .digistart-nav-link-accent {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-link:hover .digistart-nav-link-accent,
+.nav-link-active .digistart-nav-link-accent {
+  transition: clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  clip-path: inset(0 0% 0 0);
+}

@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Price } from "@/components/ui/price";
 import type { Order } from "@/lib/types";
+import { getServiceById } from "@/lib/data/services";
 
 const statusOptions: { value: Order["status"]; label: string }[] = [
   { value: "pending", label: "Чакаща" },

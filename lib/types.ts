@@ -104,6 +104,9 @@ export interface Order {
   customer: CustomerInfo;
   consultation?: ConsultationBooking;
   status: "pending" | "paid" | "in_progress" | "completed" | "cancelled";
+  userId?: string | null;
+  /** Only returned by API when Stripe `session_id` matches the order checkout session. */
+  postCheckoutToken?: string | null;
   createdAt: string;
   updatedAt: string;
   stripe?: {

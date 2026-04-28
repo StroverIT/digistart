@@ -2,7 +2,11 @@ import type Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getStripeServerClient } from "@/lib/server/stripe";
-import { setOrderStripeSnapshotInDb } from "@/lib/server/orders";
+import {
+  linkOrderToUserInDb,
+  setOrderStripeSnapshotInDb,
+  setOrderSubscriptionRenewsAtInDb,
+} from "@/lib/server/orders";
 
 function getWebhookSecret() {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -15,6 +19,41 @@ function getWebhookSecret() {
 function toIsoDate(value?: number | null) {
   if (!value) return null;
   return new Date(value * 1000);
+}
+
+async function provisionGuestUserFromOrder(orderId: string) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: {
+      userId: true,
+      pendingUserEmail: true,
+      pendingUserPasswordHash: true,
+      pendingUserName: true,
+      pendingUserPhone: true,
+      pendingUserCompany: true,
+    },
+  });
+  if (!order) return;
+  if (!order.userId && order.pendingUserEmail && order.pendingUserPasswordHash) {
+    const existing = await prisma.user.findUnique({
+      where: { email: order.pendingUserEmail },
+    });
+    if (existing) {
+      await linkOrderToUserInDb(orderId, existing.id);
+    } else {
+      const user = await prisma.user.create({
+        data: {
+          email: order.pendingUserEmail,
+          passwordHash: order.pendingUserPasswordHash,
+          name: order.pendingUserName,
+          phone: order.pendingUserPhone,
+          company: order.pendingUserCompany,
+          role: "customer",
+        },
+      });
+      await linkOrderToUserInDb(orderId, user.id);
+    }
+  }
 }
 
 async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
@@ -49,6 +88,21 @@ async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
     paidAt,
     markAsPaid: session.payment_status === "paid",
   });
+
+  if (session.payment_status === "paid") {
+    await provisionGuestUserFromOrder(orderId);
+    if (subscriptionId) {
+      try {
+        const stripe = getStripeServerClient();
+        const sub = await stripe.subscriptions.retrieve(subscriptionId);
+        const cpe = "current_period_end" in sub ? (sub as { current_period_end?: number }).current_period_end : undefined;
+        const end = cpe ? new Date(cpe * 1000) : null;
+        await setOrderSubscriptionRenewsAtInDb(orderId, end);
+      } catch (e) {
+        console.error("subscription renew cache", e);
+      }
+    }
+  }
 }
 
 export async function POST(req: Request) {

@@ -1,14 +1,16 @@
 "use client";
 
 import TransitionLink from "@/components/transitions/TransitionLink";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { getCartItemCount } from "@/lib/store/cart";
 import { cn } from "@/lib/utils";
+import gsap from "gsap";
+import Hamburger from "hamburger-react";
+import { useSession, signOut } from "next-auth/react";
 
 const navLinks = [
   { href: "/", label: "Начало", paths: ["/"] },
@@ -41,12 +43,51 @@ function isPathActive(pathname: string, paths: readonly string[]) {
   return paths.some((p) => p === pathname || p === decoded);
 }
 
+function AnimatedNavLink({
+  href,
+  children,
+  isActive,
+  onNavigate,
+}: {
+  href: string;
+  children: string;
+  isActive: boolean;
+  onNavigate: () => void;
+}) {
+  return (
+    <TransitionLink
+      href={href}
+      onClick={onNavigate}
+      className={cn(
+        "block text-zinc-100 text-2xl md:text-3xl font-bold relative overflow-hidden nav-link py-1",
+        isActive && "nav-link-active"
+      )}
+    >
+      <span className="relative inline-block leading-none">
+        <span className="relative">{children}</span>
+        <span
+          className="absolute inset-0 z-10 digistart-nav-link-accent pointer-events-none text-primary whitespace-nowrap"
+          aria-hidden
+        >
+          {children}
+        </span>
+      </span>
+    </TransitionLink>
+  );
+}
+
 export function Header() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [cartCount, setCartCount] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const isHome = isPathActive(pathname, navLinks[0].paths);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
+  const linksRef = useRef<HTMLUListElement>(null);
+  const htmlOverflowRef = useRef<string | null>(null);
+
   const pathnameDecoded = (() => {
     try {
       return decodeURI(pathname);
@@ -57,220 +98,328 @@ export function Header() {
   const isCartPage = pathname === "/cart" || pathnameDecoded === "/cart";
 
   useEffect(() => {
-    // Initial cart count
+    if (menuRef.current) {
+      gsap.set(menuRef.current, { x: "100%" });
+    }
+  }, []);
+
+  useEffect(() => {
     setCartCount(getCartItemCount());
-
-    // Listen for cart updates
-    const handleCartUpdate = () => {
-      setCartCount(getCartItemCount());
-    };
-
+    const handleCartUpdate = () => setCartCount(getCartItemCount());
     window.addEventListener("cart-updated", handleCartUpdate);
-
-    // Handle scroll for header background
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
-
     return () => {
       window.removeEventListener("cart-updated", handleCartUpdate);
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
+  const closeMenu = useCallback(() => {
+    return new Promise<void>((resolve) => {
+      const tl = gsap.timeline({
+        onComplete: () => {
+          setIsOpen(false);
+          if (backdropRef.current) gsap.set(backdropRef.current, { display: "none" });
+          resolve();
+        },
+      });
+      if (linksRef.current) {
+        const listItems = linksRef.current.querySelectorAll("li");
+        tl.to(listItems, {
+          opacity: 0,
+          y: -24,
+          duration: 0.22,
+          stagger: 0.04,
+          ease: "power2.in",
+        });
+      }
+      if (menuRef.current) {
+        tl.to(
+          menuRef.current,
+          { x: "100%", skewX: 0, duration: 0.28, ease: "power3.in" },
+          "-=0.08"
+        );
+      }
+      if (backdropRef.current) {
+        tl.to(backdropRef.current, { opacity: 0, duration: 0.22, ease: "power2.in" }, "-=0.2");
+      }
+    });
+  }, []);
+
+  const openMenu = useCallback(() => {
+    setIsOpen(true);
+    const tl = gsap.timeline();
+    if (backdropRef.current) {
+      gsap.set(backdropRef.current, { display: "block", opacity: 0 });
+    }
+    if (menuRef.current) {
+      gsap.set(menuRef.current, { x: "100%", skewX: -5 });
+    }
+    if (backdropRef.current) {
+      tl.to(backdropRef.current, { opacity: 1, duration: 0.25, ease: "power2.out" });
+    }
+    if (menuRef.current) {
+      tl.to(
+        menuRef.current,
+        { x: 0, skewX: 0, duration: 0.3, ease: "power3.out" },
+        "-=0.15"
+      );
+    }
+    if (linksRef.current) {
+      const listItems = linksRef.current.querySelectorAll("li");
+      gsap.set(listItems, { opacity: 0, y: 28 });
+      tl.to(
+        listItems,
+        { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: "power3.out" },
+        "-=0.12"
+      );
+    }
+  }, []);
+
+  const toggleMenu = () => {
+    if (isOpen) void closeMenu();
+    else openMenu();
+  };
+
+  useEffect(() => {
+    const html = document.documentElement;
+    htmlOverflowRef.current = html.style.overflow;
+    if (isOpen) {
+      html.style.overflow = "hidden";
+    } else {
+      html.style.overflow = htmlOverflowRef.current ?? "";
+    }
+    return () => {
+      html.style.overflow = htmlOverflowRef.current ?? "";
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") void closeMenu();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen, closeMenu]);
+
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg"
-          : "bg-transparent"
-        }`}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+            ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg"
+            : "bg-transparent"
+          }`}
+      >
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16 md:h-20">
+            <TransitionLink href="/" className="flex items-center gap-2 group rounded-lg z-60 relative">
+              <Image
+                src="/logo.png"
+                alt="DigiStart logo"
+                width={32}
+                height={32}
+                className="h-8 w-8 transition-transform group-hover:scale-110"
+                priority
+              />
+              <span className="text-xl font-bold tracking-tight">
+                Digi<span className="text-primary">Start</span>
+              </span>
+            </TransitionLink>
 
-          <TransitionLink href="/" className="flex items-center gap-2 group rounded-lg">
-            <Image
-              src="/logo.png"
-              alt="DigiStart logo"
-              width={32}
-              height={32}
-              className="h-8 w-8 transition-transform group-hover:scale-110"
-              priority
-            />
-            <span className="text-xl font-bold tracking-tight">
-              Digi<span className="text-primary">Start</span>
-            </span>
-          </TransitionLink>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1" aria-label="Основна навигация">
-            {navLinks.map((link) => {
-              const active = isPathActive(pathname, link.paths);
-              return active ? (
-                <span
-                  key={link.href}
-                  aria-current="page"
-                  className={cn(
-                    "px-4 py-2 text-sm font-semibold rounded-lg cursor-default",
-                    "text-primary bg-primary/10 ring-1 ring-primary/20",
-                  )}
-                >
-                  {link.label}
-                </span>
-              ) : (
-                <TransitionLink
-                  key={link.href}
-                  href={link.href}
-                  className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50"
-                >
-                  {link.label}
-                </TransitionLink>
-              );
-            })}
-          </nav>
-
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-            {/* Cart Button */}
-            {isCartPage ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative bg-primary/10 ring-2 ring-primary/25 pointer-events-none"
-                tabIndex={-1}
-                aria-current="page"
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-                <span className="sr-only">Кошница (текуща страница)</span>
-              </Button>
-            ) : (
-              <TransitionLink href="/cart">
+            <div className="flex items-center gap-2 z-60 relative">
+              {isCartPage ? (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className={cn(
-                    "relative group rounded-xl transition-all duration-200 ease-out",
-                    "text-muted-foreground hover:text-primary",
-                    "hover:bg-primary/10 hover:ring-1 hover:ring-primary/20",
-                    "hover:shadow-[0_0_24px_-8px] hover:shadow-primary/30",
-                    "active:scale-[0.96] motion-reduce:active:scale-100",
-                  )}
+                  className="relative bg-primary/10 ring-2 ring-primary/25 pointer-events-none"
+                  tabIndex={-1}
+                  aria-current="page"
                 >
-                  <ShoppingCart className="h-5 w-5 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:scale-100" />
+                  <ShoppingCart className="h-5 w-5" />
                   {cartCount > 0 && (
                     <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
                       {cartCount}
                     </span>
                   )}
-                  <span className="sr-only">Кошница</span>
+                  <span className="sr-only">Кошница (текуща страница)</span>
                 </Button>
-              </TransitionLink>
-            )}
-
-            {/* CTA Button - Desktop */}
-            <TransitionLink href="/consultation" className="hidden md:block">
-              <Button className="glow-primary">Безплатна консултация</Button>
-            </TransitionLink>
-
-            {/* Mobile Menu */}
-            <Sheet>
-              <SheetTrigger asChild className="lg:hidden">
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6" />
-                  <span className="sr-only">Меню</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-80 bg-background border-border">
-                <div className="flex flex-col h-full">
-                  <div className="flex items-center justify-between mb-8">
-                    {isHome ? (
-                      <span className="flex items-center gap-2" aria-current="page">
-                        <Image
-                          src="/logo.png"
-                          alt="DigiStart logo"
-                          width={28}
-                          height={28}
-                          className="h-7 w-7"
-                          priority
-                        />
-                        <span className="text-lg font-bold">
-                          Digi<span className="text-primary">Start</span>
-                        </span>
-                      </span>
-                    ) : (
-                      <SheetClose asChild>
-                        <TransitionLink href="/" className="flex items-center gap-2">
-                          <Image
-                            src="/logo.png"
-                            alt="DigiStart logo"
-                            width={28}
-                            height={28}
-                            className="h-7 w-7"
-                            priority
-                          />
-                          <span className="text-lg font-bold">
-                            Digi<span className="text-primary">Start</span>
-                          </span>
-                        </TransitionLink>
-                      </SheetClose>
+              ) : (
+                <TransitionLink href="/cart">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "relative group rounded-xl transition-all duration-200 ease-out",
+                      "text-muted-foreground hover:text-primary",
+                      "hover:bg-primary/10 hover:ring-1 hover:ring-primary/20",
+                      "hover:shadow-[0_0_24px_-8px] hover:shadow-primary/30",
+                      "active:scale-[0.96] motion-reduce:active:scale-100"
                     )}
-                    <SheetClose asChild>
-                      <Button variant="ghost" size="icon">
-                        <X className="h-5 w-5" />
-                      </Button>
-                    </SheetClose>
-                  </div>
+                  >
+                    <ShoppingCart className="h-5 w-5 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:scale-100" />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                        {cartCount}
+                      </span>
+                    )}
+                    <span className="sr-only">Кошница</span>
+                  </Button>
+                </TransitionLink>
+              )}
 
-                  <nav className="flex flex-col gap-2" aria-label="Мобилна навигация">
-                    {navLinks.map((link) => {
-                      const active = isPathActive(pathname, link.paths);
-                      return active ? (
-                        <span
-                          key={link.href}
-                          aria-current="page"
-                          className={cn(
-                            "px-4 py-3 text-lg font-semibold rounded-lg cursor-default",
-                            "text-primary bg-primary/10 ring-1 ring-primary/20",
-                          )}
-                        >
-                          {link.label}
-                        </span>
-                      ) : (
-                        <SheetClose key={link.href} asChild>
-                          <TransitionLink
-                            href={link.href}
-                            className="px-4 py-3 text-lg font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-lg transition-colors"
-                          >
-                            {link.label}
-                          </TransitionLink>
-                        </SheetClose>
-                      );
-                    })}
-                  </nav>
+              <div className="flex items-center justify-center rounded-full bg-card border border-border w-12 h-12">
+                <Hamburger
+                  toggled={isOpen}
+                  toggle={toggleMenu}
+                  size={18}
+                  rounded
+                  label={isOpen ? "Затвори менюто" : "Отвори менюто"}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
 
-                  <div className="mt-auto pt-8">
-                    <SheetClose asChild>
-                      <TransitionLink href="/consultation" className="block">
-                        <Button className="w-full glow-primary" size="lg">
-                          Безплатна консултация
-                        </Button>
-                      </TransitionLink>
-                    </SheetClose>
-                  </div>
+      <div
+        ref={backdropRef}
+        className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-45 hidden"
+        aria-hidden
+        onClick={() => void closeMenu()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") void closeMenu();
+        }}
+        role="button"
+        tabIndex={0}
+      />
+
+      <div
+        ref={menuRef}
+        className="fixed top-0 right-0 h-dvh bg-zinc-900 text-zinc-50 shadow-xl z-55 w-screen sm:w-[min(100%,28rem)] md:w-[40%] overflow-y-auto will-change-transform"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Главно меню"
+        aria-hidden={!isOpen}
+      >
+        <div className="flex flex-col pb-10 px-6 min-h-full">
+          <div className="sticky top-0 -mx-6 px-6 bg-zinc-900/95 backdrop-blur-md border-b border-zinc-800 z-10">
+            <div className="flex items-center justify-between h-16 md:h-20">
+              <TransitionLink
+                href="/"
+                className="flex items-center gap-2 group rounded-lg"
+                onClick={() => void closeMenu()}
+              >
+                <Image
+                  src="/logo.png"
+                  alt="DigiStart logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 transition-transform group-hover:scale-110"
+                />
+                <span className="text-xl font-bold tracking-tight">
+                  Digi<span className="text-primary">Start</span>
+                </span>
+              </TransitionLink>
+
+              <div className="flex items-center gap-2">
+                <TransitionLink href="/cart" onClick={() => void closeMenu()}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "relative group rounded-xl transition-all duration-200 ease-out",
+                      "text-zinc-100 hover:text-primary",
+                      "hover:bg-primary/10 hover:ring-1 hover:ring-primary/20",
+                      "hover:shadow-[0_0_24px_-8px] hover:shadow-primary/30",
+                      "active:scale-[0.96] motion-reduce:active:scale-100"
+                    )}
+                    aria-label="Кошница"
+                  >
+                    <ShoppingCart className="h-5 w-5 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:scale-100" />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Button>
+                </TransitionLink>
+
+                <div className="flex items-center justify-center rounded-full bg-zinc-800 border border-zinc-700 w-12 h-12">
+                  <Hamburger
+                    toggled={isOpen}
+                    toggle={toggleMenu}
+                    size={18}
+                    rounded
+                    color="white"
+                    label={isOpen ? "Затвори менюто" : "Отвори менюто"}
+                  />
                 </div>
-              </SheetContent>
-            </Sheet>
+              </div>
+            </div>
+          </div>
+
+          <nav aria-label="Основна навигация" className="pt-8">
+            <ul ref={linksRef} className="flex flex-col gap-y-5 md:gap-y-7">
+              {navLinks.map((link) => {
+                const active = isPathActive(pathname, link.paths);
+                return (
+                  <li key={link.href}>
+                    <AnimatedNavLink
+                      href={link.href}
+                      isActive={active}
+                      onNavigate={() => void closeMenu()}
+                    >
+                      {link.label}
+                    </AnimatedNavLink>
+                  </li>
+                );
+              })}
+              <li>
+                <TransitionLink href="/consultation" onClick={() => void closeMenu()}>
+                  <Button className="w-full glow-primary mt-2" size="lg">
+                    Безплатна консултация
+                  </Button>
+                </TransitionLink>
+              </li>
+            </ul>
+          </nav>
+
+          <div className="mt-auto pt-10 border-t border-zinc-700 space-y-3">
+            {session?.user ? (
+              <>
+                {session.user.role === "customer" ? (
+                  <TransitionLink href="/user" onClick={() => void closeMenu()}>
+                    <Button variant="outline" className="w-full border-zinc-600 text-zinc-50 bg-transparent">
+                      Моят панел
+                    </Button>
+                  </TransitionLink>
+                ) : null}
+                <Button
+                  variant="secondary"
+                  className="w-full"
+                  onClick={() => {
+                    void closeMenu();
+                    void signOut({ callbackUrl: "/" });
+                  }}
+                >
+                  Изход
+                </Button>
+              </>
+            ) : (
+              <>
+                <TransitionLink href="/sign-in" onClick={() => void closeMenu()}>
+                  <Button className="w-full glow-primary">
+                    Вход
+                  </Button>
+                </TransitionLink>
+
+              </>
+            )}
           </div>
         </div>
       </div>
-    </header>
+    </>
   );
 }

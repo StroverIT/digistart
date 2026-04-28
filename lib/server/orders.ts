@@ -1,10 +1,16 @@
+import type { Prisma } from "@prisma/client";
 import type { Cart, ConsultationBooking, CustomerInfo, Order } from "@/lib/types";
 import { prisma } from "@/lib/prisma";
 import { getServiceByIdFromDb } from "@/lib/server/services";
 
-function mapOrder(order: Awaited<ReturnType<typeof prisma.order.findFirstOrThrow>>): Order {
+export type OrderWithItemsAndConsultation = Prisma.OrderGetPayload<{
+  include: { items: true; consultation: true };
+}>;
+
+function mapOrder(order: OrderWithItemsAndConsultation): Order {
   return {
     id: order.id,
+    userId: order.userId ?? undefined,
     cart: {
       items: order.items.map((item) => ({
         id: item.id,
@@ -13,7 +19,7 @@ function mapOrder(order: Awaited<ReturnType<typeof prisma.order.findFirstOrThrow
         selectedOptionId: item.selectedOptionId,
         selectedOptionName: item.selectedOptionName,
         basePrice: item.basePrice,
-        upsells: (item.upsells as Order["cart"]["items"][number]["upsells"]) ?? [],
+        upsells: (item.upsells as unknown as Order["cart"]["items"][number]["upsells"]) ?? [],
         totalPrice: item.totalPrice,
         totalOneTime: item.totalOneTime,
         totalMonthly: item.totalMonthly,
@@ -45,7 +51,10 @@ function mapOrder(order: Awaited<ReturnType<typeof prisma.order.findFirstOrThrow
     createdAt: order.createdAt.toISOString(),
     updatedAt: order.updatedAt.toISOString(),
     stripe: {
-      checkoutMode: order.stripeCheckoutMode ?? undefined,
+      checkoutMode:
+        order.stripeCheckoutMode === "payment" || order.stripeCheckoutMode === "subscription"
+          ? order.stripeCheckoutMode
+          : undefined,
       checkoutSessionId: order.stripeCheckoutSessionId ?? undefined,
       paymentIntentId: order.stripePaymentIntentId ?? undefined,
       subscriptionId: order.stripeSubscriptionId ?? undefined,
@@ -65,12 +74,44 @@ function mapOrder(order: Awaited<ReturnType<typeof prisma.order.findFirstOrThrow
   };
 }
 
+export type PendingCheckoutUser = {
+  email: string;
+  passwordHash: string;
+  name: string;
+  phone: string;
+  company?: string;
+};
+
+export type InvoicePersistData = {
+  companyName: string;
+  taxId: string;
+  vatNumber?: string;
+  addressLine1: string;
+  mol: string;
+};
+
 export async function createOrderInDb(params: {
   cart: Cart;
   customer: CustomerInfo;
   consultationId?: string;
+  userId?: string | null;
+  pendingUser?: PendingCheckoutUser | null;
+  postCheckoutToken?: string | null;
+  invoiceWanted?: boolean;
+  invoiceData?: InvoicePersistData | null;
+  brandAssets?: { logoUrl?: string | null; paletteUrl?: string | null } | null;
 }) {
-  const { cart, customer, consultationId } = params;
+  const {
+    cart,
+    customer,
+    consultationId,
+    userId,
+    pendingUser,
+    postCheckoutToken,
+    invoiceWanted = false,
+    invoiceData,
+    brandAssets,
+  } = params;
   const uniqueServiceIds = Array.from(new Set(cart.items.map((item) => item.serviceId)));
 
   for (const serviceId of uniqueServiceIds) {
@@ -109,6 +150,7 @@ export async function createOrderInDb(params: {
 
   const order = await prisma.order.create({
     data: {
+      userId: userId ?? undefined,
       customerName: customer.name,
       customerEmail: customer.email,
       customerPhone: customer.phone,
@@ -118,6 +160,15 @@ export async function createOrderInDb(params: {
       totalMonthly: cart.totalMonthly,
       status: "pending",
       consultationId,
+      pendingUserEmail: pendingUser?.email,
+      pendingUserPasswordHash: pendingUser?.passwordHash,
+      pendingUserName: pendingUser?.name,
+      pendingUserPhone: pendingUser?.phone,
+      pendingUserCompany: pendingUser?.company,
+      postCheckoutToken: postCheckoutToken ?? undefined,
+      invoiceWanted,
+      invoiceData: invoiceData ?? undefined,
+      brandAssets: brandAssets ?? undefined,
       items: {
         create: cart.items.map((item) => ({
           serviceId: item.serviceId,
@@ -129,7 +180,7 @@ export async function createOrderInDb(params: {
           totalOneTime: item.totalOneTime,
           totalMonthly: item.totalMonthly,
           isMonthly: item.isMonthly ?? false,
-          upsells: item.upsells,
+          upsells: item.upsells as object,
         })),
       },
     },
@@ -146,7 +197,7 @@ export async function createOrderInDb(params: {
     });
   }
 
-  return mapOrder(order);
+  return mapOrder(order as OrderWithItemsAndConsultation);
 }
 
 export async function listOrdersFromDb(): Promise<Order[]> {
@@ -240,4 +291,47 @@ export async function setOrderStripeSnapshotInDb(params: {
   });
 
   return mapOrder(updated);
+}
+
+export async function linkOrderToUserInDb(orderId: string, userId: string) {
+  await prisma.order.update({
+    where: { id: orderId },
+    data: {
+      userId,
+      pendingUserEmail: null,
+      pendingUserPasswordHash: null,
+      pendingUserName: null,
+      pendingUserPhone: null,
+      pendingUserCompany: null,
+    },
+  });
+}
+
+export async function clearPostCheckoutTokenInDb(orderId: string) {
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { postCheckoutToken: null },
+  });
+}
+
+export async function updateOrderBrandAssetsInDb(
+  orderId: string,
+  brandAssets: { logoUrl?: string | null; paletteUrl?: string | null }
+) {
+  const updated = await prisma.order.update({
+    where: { id: orderId },
+    data: { brandAssets },
+    include: { items: true, consultation: true },
+  });
+  return mapOrder(updated);
+}
+
+export async function setOrderSubscriptionRenewsAtInDb(
+  orderId: string,
+  subscriptionRenewsAt: Date | null
+) {
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { subscriptionRenewsAt },
+  });
 }

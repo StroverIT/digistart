@@ -6,6 +6,19 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  phone        String?
+  company      String?
+  role         String   @default("customer")
+  orders       Order[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 model Service {
   id               String          @id
   slug             String          @unique
@@ -65,6 +78,8 @@ model ServiceUpsell {
 
 model Order {
   id                     String               @id @default(cuid())
+  userId                 String?
+  user                   User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
   customerName           String
   customerEmail          String
   customerPhone          String
@@ -76,6 +91,16 @@ model Order {
   consultationId         String?              @unique
   consultation           ConsultationBooking? @relation("OrderConsultation", fields: [consultationId], references: [id], onDelete: SetNull)
   items                  OrderItem[]
+  pendingUserEmail       String?
+  pendingUserPasswordHash String?
+  pendingUserName        String?
+  pendingUserPhone       String?
+  pendingUserCompany     String?
+  postCheckoutToken      String?              @unique
+  invoiceWanted          Boolean              @default(false)
+  invoiceData            Json?
+  brandAssets            Json?
+  subscriptionRenewsAt  DateTime?
   stripeCheckoutMode     String?
   stripeCheckoutSessionId String?             @unique
   stripePaymentIntentId  String?

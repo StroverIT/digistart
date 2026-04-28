@@ -15,6 +15,10 @@ export default async function AdminDashboardLayout({
     redirect("/admin/login");
   }
 
+  if (session.user.role !== "admin") {
+    redirect("/");
+  }
+
   return (
     <div className="min-h-screen flex bg-background">
       <AdminSidebar user={session.user} />
