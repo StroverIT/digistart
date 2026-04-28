@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import TransitionLink from "@/components/transitions/TransitionLink";
 import { cn } from "@/lib/utils";
 
 export default async function UserLayout({
@@ -37,7 +37,7 @@ export default async function UserLayout({
     <div className="min-h-screen flex flex-col md:flex-row pt-16 md:pt-20">
       <aside className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-border bg-card/50">
         <nav className="p-4 space-y-1" aria-label="Потребителски панел">
-          <TransitionLink
+          <Link
             href="/user"
             className={cn(
               "block rounded-lg px-3 py-2 text-sm font-medium",
@@ -45,12 +45,12 @@ export default async function UserLayout({
             )}
           >
             Начало
-          </TransitionLink>
+          </Link>
           {navItems.length === 0 ? (
             <p className="text-xs text-muted-foreground px-3 py-2">Няма закупени услуги.</p>
           ) : (
             navItems.map((item) => (
-              <TransitionLink
+              <Link
                 key={item.id}
                 href={item.href}
                 className={cn(
@@ -59,7 +59,7 @@ export default async function UserLayout({
                 )}
               >
                 {item.label}
-              </TransitionLink>
+              </Link>
             ))
           )}
         </nav>
