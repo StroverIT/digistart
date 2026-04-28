@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { CalendarClock, PackageCheck, ReceiptText, Sparkles } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,15 +32,31 @@ export default async function UserServiceDetailPage({
   const renew = item.order.subscriptionRenewsAt;
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <div>
-        <h1 className="text-2xl font-bold">{item.serviceName}</h1>
-        <p className="text-muted-foreground">{item.selectedOptionName}</p>
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div className="rounded-3xl border border-border bg-card/80 p-6 shadow-sm backdrop-blur md:p-8">
+        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+          <div>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              <PackageCheck className="h-3.5 w-3.5" />
+              Активна услуга
+            </div>
+            <h1 className="text-2xl font-bold md:text-3xl">{item.serviceName}</h1>
+            <p className="mt-2 text-muted-foreground">{item.selectedOptionName}</p>
+          </div>
+          <div className="rounded-2xl bg-secondary/70 p-4 text-left md:min-w-56 md:text-right">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Общо позиция</p>
+            <Price value={item.totalPrice} className="mt-1 text-2xl font-bold text-primary" />
+          </div>
+        </div>
       </div>
 
-      <Card>
+      <div className="grid gap-4 md:grid-cols-2">
+      <Card className="border-border bg-card/80 shadow-sm">
         <CardHeader>
-          <CardTitle>Цена</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <ReceiptText className="h-5 w-5 text-primary" />
+            Цена
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <div className="flex justify-between">
@@ -62,9 +79,12 @@ export default async function UserServiceDetailPage({
       </Card>
 
       {renew ? (
-        <Card>
+        <Card className="border-border bg-card/80 shadow-sm">
           <CardHeader>
-            <CardTitle>Абонамент</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <CalendarClock className="h-5 w-5 text-primary" />
+              Абонамент
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">Следващо подновяване</p>
@@ -78,17 +98,36 @@ export default async function UserServiceDetailPage({
             </p>
           </CardContent>
         </Card>
-      ) : null}
+      ) : (
+        <Card className="border-border bg-card/80 shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <CalendarClock className="h-5 w-5 text-primary" />
+              Тип плащане
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">Еднократно закупена услуга</p>
+            <p className="mt-1 font-semibold">Без автоматично подновяване</p>
+          </CardContent>
+        </Card>
+      )}
+      </div>
 
-      <Card>
+      <Card className="border-border bg-card/80 shadow-sm">
         <CardHeader>
-          <CardTitle>Закупени добавки</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Sparkles className="h-5 w-5 text-primary" />
+            Закупени добавки
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {upsells.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Няма допълнителни модули.</p>
+            <div className="rounded-2xl border border-dashed border-border p-5 text-sm text-muted-foreground">
+              Няма допълнителни модули към тази услуга.
+            </div>
           ) : (
-            <ul className="space-y-2">
+            <ul className="grid gap-3 sm:grid-cols-2">
               {upsells.map((u) => {
                 const cfg = service?.upsells.find((x) => x.id === u.upsellId);
                 if (!cfg || u.quantity <= 0) return null;
@@ -97,12 +136,17 @@ export default async function UserServiceDetailPage({
                     ? cfg.choices?.find((c) => c.id === u.choiceId)?.name
                     : null;
                 return (
-                  <li key={u.upsellId} className="text-sm border-b border-border pb-2 last:border-0">
-                    <span className="font-medium">{cfg.name}</span>
-                    {choice ? ` — ${choice}` : null}
-                    {u.quantity > 1 ? ` ×${u.quantity}` : null}
+                  <li
+                    key={u.upsellId}
+                    className="rounded-2xl border border-border bg-secondary/40 p-4 text-sm"
+                  >
+                    <p className="font-medium">{cfg.name}</p>
+                    {choice ? <p className="mt-1 text-muted-foreground">{choice}</p> : null}
+                    {u.quantity > 1 ? (
+                      <p className="mt-2 text-xs text-muted-foreground">Количество: {u.quantity}</p>
+                    ) : null}
                     {cfg.isMonthly ? (
-                      <span className="text-muted-foreground"> (месечно)</span>
+                      <p className="mt-2 text-xs text-muted-foreground">Месечно таксуване</p>
                     ) : null}
                   </li>
                 );
