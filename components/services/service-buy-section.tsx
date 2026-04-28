@@ -91,10 +91,6 @@ export function ServiceBuySection({
           <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
             <h2 className="text-2xl font-bold mb-2">{title}</h2>
             <p className="text-muted-foreground mb-5">{description}</p>
-            <div className="mb-5 flex items-center gap-2">
-              <Price value={price} className="text-3xl text-primary" />
-              {monthlyLabel ? <span className="text-muted-foreground">{monthlyLabel}</span> : null}
-            </div>
             {isAdding ? (
               <div className="mb-6 space-y-3">
                 <Skeleton className="h-5 w-48" />
@@ -116,8 +112,8 @@ export function ServiceBuySection({
             ) : null}
           </div>
 
-          <aside className="hidden lg:block">
-            <div className="sticky top-24 rounded-2xl border border-border bg-card p-5">
+          <aside className="hidden self-start lg:sticky lg:top-24 lg:block">
+            <div className="rounded-2xl border border-border bg-card p-5">
               <p className="text-sm text-muted-foreground mb-2">Общо</p>
               <div className="mb-1 flex items-end gap-2">
                 <Price value={totalPrice} className="text-3xl text-primary" />

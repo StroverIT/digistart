@@ -26,16 +26,23 @@ function formatPriceWithBgn(value: number) {
 interface PriceProps extends React.ComponentProps<'span'> {
   /** Euro value used as source for conversion */
   value: number
+  /** Controls alignment between EUR and BGN values. */
+  layout?: 'horizontal' | 'vertical'
 }
 
-function Price({ value, className, ...props }: PriceProps) {
+function Price({ value, className, layout = 'horizontal', ...props }: PriceProps) {
   const euro = formatEuro(value)
   const bgn = formatBgn(value)
+  const isVertical = layout === 'vertical'
 
   return (
     <span
       data-slot="price"
-      className={cn('inline-flex items-center gap-2', className)}
+      className={cn(
+        'inline-flex',
+        isVertical ? 'flex-col items-start gap-1' : 'items-center gap-2',
+        className
+      )}
       {...props}
     >
       <span className="font-semibold tabular-nums">{euro}</span>
