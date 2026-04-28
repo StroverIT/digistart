@@ -335,3 +335,57 @@ export async function setOrderSubscriptionRenewsAtInDb(
     data: { subscriptionRenewsAt },
   });
 }
+
+export async function ensureGuestUserForOrderInDb(orderId: string): Promise<{
+  guestProvisioned: boolean;
+  userId: string | null;
+}> {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: {
+      userId: true,
+      pendingUserEmail: true,
+      pendingUserPasswordHash: true,
+      pendingUserName: true,
+      pendingUserPhone: true,
+      pendingUserCompany: true,
+    },
+  });
+
+  if (!order) {
+    return { guestProvisioned: false, userId: null };
+  }
+
+  if (order.userId) {
+    return { guestProvisioned: false, userId: order.userId };
+  }
+
+  if (!order.pendingUserEmail || !order.pendingUserPasswordHash) {
+    return { guestProvisioned: false, userId: null };
+  }
+
+  const existing = await prisma.user.findUnique({
+    where: { email: order.pendingUserEmail },
+    select: { id: true },
+  });
+
+  if (existing) {
+    await linkOrderToUserInDb(orderId, existing.id);
+    return { guestProvisioned: true, userId: existing.id };
+  }
+
+  const created = await prisma.user.create({
+    data: {
+      email: order.pendingUserEmail,
+      passwordHash: order.pendingUserPasswordHash,
+      name: order.pendingUserName,
+      phone: order.pendingUserPhone,
+      company: order.pendingUserCompany,
+      role: "customer",
+    },
+    select: { id: true },
+  });
+
+  await linkOrderToUserInDb(orderId, created.id);
+  return { guestProvisioned: true, userId: created.id };
+}

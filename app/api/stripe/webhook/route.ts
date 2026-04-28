@@ -2,8 +2,9 @@ import type Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getStripeServerClient } from "@/lib/server/stripe";
+import { sendGuestOrderSuccessEmails } from "@/lib/server/order-emails";
 import {
-  linkOrderToUserInDb,
+  ensureGuestUserForOrderInDb,
   setOrderStripeSnapshotInDb,
   setOrderSubscriptionRenewsAtInDb,
 } from "@/lib/server/orders";
@@ -25,35 +26,21 @@ async function provisionGuestUserFromOrder(orderId: string) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     select: {
-      userId: true,
-      pendingUserEmail: true,
-      pendingUserPasswordHash: true,
-      pendingUserName: true,
-      pendingUserPhone: true,
-      pendingUserCompany: true,
+      customerName: true,
+      customerEmail: true,
     },
   });
-  if (!order) return;
-  if (!order.userId && order.pendingUserEmail && order.pendingUserPasswordHash) {
-    const existing = await prisma.user.findUnique({
-      where: { email: order.pendingUserEmail },
-    });
-    if (existing) {
-      await linkOrderToUserInDb(orderId, existing.id);
-    } else {
-      const user = await prisma.user.create({
-        data: {
-          email: order.pendingUserEmail,
-          passwordHash: order.pendingUserPasswordHash,
-          name: order.pendingUserName,
-          phone: order.pendingUserPhone,
-          company: order.pendingUserCompany,
-          role: "customer",
-        },
-      });
-      await linkOrderToUserInDb(orderId, user.id);
-    }
+  if (!order) return { guestProvisioned: false as const };
+
+  const ensured = await ensureGuestUserForOrderInDb(orderId);
+  if (ensured.guestProvisioned) {
+    return {
+      guestProvisioned: true as const,
+      customerName: order.customerName,
+      customerEmail: order.customerEmail,
+    };
   }
+  return { guestProvisioned: false as const };
 }
 
 async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
@@ -90,7 +77,16 @@ async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
   });
 
   if (session.payment_status === "paid") {
-    await provisionGuestUserFromOrder(orderId);
+    const guestProvisionResult = await provisionGuestUserFromOrder(orderId);
+    if (guestProvisionResult.guestProvisioned) {
+      await sendGuestOrderSuccessEmails({
+        orderId,
+        customerName: guestProvisionResult.customerName,
+        customerEmail: guestProvisionResult.customerEmail,
+      }).catch((error) => {
+        console.error("guest order success emails", error);
+      });
+    }
     if (subscriptionId) {
       try {
         const stripe = getStripeServerClient();

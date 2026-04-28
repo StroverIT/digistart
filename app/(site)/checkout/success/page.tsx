@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState, Suspense, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import TransitionLink from "@/components/transitions/TransitionLink";
-import { CheckCircle2, ArrowRight, Mail, Phone, Home } from "lucide-react";
+import { CheckCircle2, ArrowRight, Mail, Phone, Home, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
@@ -13,7 +13,6 @@ import type { Order } from "@/lib/types";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const { data: session, status } = useSession();
   const orderId = searchParams.get("id");
   const sessionId = searchParams.get("session_id");
@@ -34,8 +33,13 @@ function SuccessContent() {
 
     const poll = async () => {
       if (cancelled) return;
-      const q = sessionId ? `?session_id=${encodeURIComponent(sessionId)}` : "";
-      const res = await fetch(`/api/checkout/orders/${orderId}${q}`);
+      const res = sessionId
+        ? await fetch(`/api/checkout/orders/${orderId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: sessionId }),
+        })
+        : await fetch(`/api/checkout/orders/${orderId}`);
       if (!res.ok || cancelled) return;
       const data = (await res.json()) as { order?: Order };
       const o = data.order ?? null;
@@ -56,9 +60,6 @@ function SuccessContent() {
         });
         if (!result?.error) {
           autoSignInDone.current = true;
-          router.replace("/user");
-          router.refresh();
-          return;
         }
       }
 
@@ -72,7 +73,7 @@ function SuccessContent() {
     return () => {
       cancelled = true;
     };
-  }, [mounted, orderId, sessionId, status, router]);
+  }, [mounted, orderId, sessionId, status]);
 
   if (!mounted) {
     return (
@@ -196,14 +197,6 @@ function SuccessContent() {
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-        {session?.user?.role === "customer" ? (
-          <TransitionLink href="/user">
-            <Button size="lg" className="glow-primary">
-              Към моя панел
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </TransitionLink>
-        ) : null}
         <TransitionLink href="/">
           <Button variant="outline" size="lg">
             <Home className="mr-2 h-5 w-5" />
@@ -216,6 +209,14 @@ function SuccessContent() {
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </TransitionLink>
+        {session?.user?.role === "customer" && order?.cart?.items?.[0]?.id ? (
+          <TransitionLink href={`/user/services/${order.cart.items[0].id}`}>
+            <Button size="lg" className="glow-primary">
+              Виж поръчката в панела
+              <User className="ml-2 h-5 w-5" />
+            </Button>
+          </TransitionLink>
+        ) : null}
       </div>
     </div>
   );
