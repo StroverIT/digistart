@@ -7,7 +7,6 @@ import {
   CircleX,
   ClipboardList,
   MonitorCheck,
-  Phone,
   Rocket,
   ShoppingCart,
   Smartphone,
@@ -55,17 +54,12 @@ const marketingSteps = [
     icon: ShoppingCart,
   },
   {
-    title: "Стъпка 2: Кратка консултация (до 15 мин)",
-    text: "Уточняваме гласа на бранда, ключовите продукти/услуги, идеалния клиент и бюджета за платена реклама.",
-    icon: Phone,
-  },
-  {
-    title: "Стъпка 3: Демо версия на стратегията",
+    title: "Стъпка 2: Демо версия на стратегията",
     text: "Изготвяме първоначален месечен план за постове, текстове, Reels идеи и рекламни стратегии за преглед и одобрение.",
     icon: MonitorCheck,
   },
   {
-    title: "Стъпка 4: Всичко е активно",
+    title: "Стъпка 3: Всичко е активно",
     text: "Стартираме органичното съдържание и платените реклами. Профилите ти започват да работят за теб 24/7.",
     icon: Rocket,
   },
@@ -221,7 +215,7 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
               Процес
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance">
-              Как да стартираме кампаниите? (Само 4 лесни стъпки)
+              Как да стартираме кампаниите? (Само 3 лесни стъпки)
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
               Ние поемаме тежката работа, за да можеш да се фокусираш върху бизнеса си.
@@ -229,7 +223,7 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
           </div>
           <div className="relative">
             <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-border to-transparent -translate-y-1/2" />
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {marketingSteps.map((step, index) => (
                 <div key={step.title} className="relative">
                   <Card className="group bg-card border-border hover:border-primary/50 transition-colors h-full">

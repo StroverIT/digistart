@@ -9,7 +9,6 @@ import {
   CircleX,
   ClipboardList,
   MonitorCheck,
-  Phone,
   Rocket,
   ShoppingCart,
   Zap,
@@ -57,21 +56,17 @@ const STEPS = [
     icon: ShoppingCart,
   },
   {
-    title: "Стъпка 2: Кратка консултация (до 15 мин)",
-    body: "Свързваме се с теб. Уточняваме продуктите, куриерите, методите на плащане и визията на твоя бранд. Нищо излишно.",
-    icon: Phone,
-  },
-  {
-    title: "Стъпка 3: Демо версия за преглед",
+    title: "Стъпка 2: Демо версия за преглед",
     body: "Изработваме магазина и ти показваме работна версия. Правим нужните конфигурации според твоите специфични нужди.",
     icon: MonitorCheck,
   },
   {
-    title: "Стъпка 4: Готов за продажби",
+    title: "Стъпка 3: Готов за продажби",
     body: "Магазинът е онлайн. Системата е тествана, клиентите могат да добавят в количката, а ти започваш да получаваш първите си поръчки.",
     icon: Rocket,
   },
 ] as const;
+
 
 interface ServiceDetailReadyStoreProps {
   headingFontClass?: string;
@@ -249,7 +244,7 @@ export function ServiceDetailReadyStore({
               Процес
             </span>
             <h2 className={cn(headingFontClass, "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance")}>
-              Как да стартираш продажбите? (Само 4 лесни стъпки)
+              Как да стартираш продажбите? (Само 3 лесни стъпки)
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
               Процесът е оптимизиран, за да започнеш да печелиш възможно най-бързо.
@@ -257,7 +252,7 @@ export function ServiceDetailReadyStore({
           </div>
           <div className="relative">
             <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-border to-transparent -translate-y-1/2" />
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {STEPS.map((step, index) => (
                 <div key={step.title} className="relative">
                   <div className="group bg-card border border-border hover:border-primary/50 transition-colors h-full rounded-xl">

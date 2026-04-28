@@ -8,7 +8,6 @@ import {
   ClipboardList,
   MessageCircle,
   MonitorCheck,
-  Phone,
   Rocket,
   ShoppingCart,
   Zap,
@@ -29,6 +28,7 @@ import { useTransitionRouter } from "@/components/transitions/useTransitionRoute
 import { cn } from "@/lib/utils";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import type { CartItemUpsell, Service } from "@/lib/types";
+import { Faq, type FaqItem } from "@/components/ui/faq";
 
 const painPoints = [
   {
@@ -63,21 +63,61 @@ const steps = [
     icon: ShoppingCart,
   },
   {
-    title: "Стъпка 2: Кратка консултация (до 15 мин)",
-    text: "Свързваме се с теб за бърз разговор. Уточняваме визията, цветовете и нуждите на бизнеса.",
-    icon: Phone,
-  },
-  {
-    title: "Стъпка 3: Демо версия за преглед",
+    title: "Стъпка 2: Демо версия за преглед",
     text: "Изработваме работна версия. Преглеждаш я и правим конфигурации, докато пасне идеално.",
     icon: MonitorCheck,
   },
   {
-    title: "Стъпка 4: Готов уебсайт онлайн",
+    title: "Стъпка 3: Готов уебсайт онлайн",
     text: "Качваме сайта на реален домейн и той започва да работи за теб веднага.",
     icon: Rocket,
   },
 ] as const;
+
+const FAQ_ITEMS: FaqItem[] = [
+  {
+    question: "1. Колко време отнема изработката на сайта?",
+    answer:
+      'Забрави за агенциите, които те мотаят с месеци. Нашият процес е максимално оптимизиран. Стандартната изработка отнема между 5 и 7 работни дни след получаване на материалите от твоя страна. Ако бързаш изключително много, предлагаме и опция за експресна изработка до 48 часа (виж добавките при плащане).',
+  },
+  {
+    question: "2. Има ли скрити такси към цената за изработка?",
+    answer:
+      "Не. Цената, която виждаш за изработката на сайта, е еднократна и окончателна. Единствените задължителни външни разходи, които всеки сайт има (независимо кой го прави), са домейн (името на сайта, напр. tvoitsait.bg) и хостинг (мястото, където стои сайтът). Ние ще ти помогнем да ги закупиш на твое име, за да си 100% собственик на бизнеса си.",
+  },
+  {
+    question: "3. Трябва ли да разбирам от програмиране, за да управлявам сайта си?",
+    answer:
+      "Не. Ако искаш ние да поемем всички промени, добави месечна поддръжка. Пишеш тикет в потребителския панел за 1 минута какво искаш да се промени, а ние се грижим за всичко останало - дизайн, програмиране и техническо изпълнение.",
+  },
+  {
+    question: "4. Кой подготвя текстовете и снимките за сайта?",
+    answer:
+      'За стандартния пакет, ти ни изпращаш текстовете за твоите услуги/продукти и снимки на твоя бизнес. Ако обаче нямаш време да пишеш или не знаеш как да формулираш посланията си, можеш да добавиш нашата услуга "Професионален Копирайтинг" – ние ще напишем грабващи и продаващи текстове вместо теб.',
+  },
+  {
+    question: "5. Ще изглежда ли сайтът ми добре на мобилен телефон?",
+    answer:
+      "Да, това е абсолютно задължително! Над 75% от потребителите днес влизат в интернет през телефоните си. Твоят сайт ще бъде със 100% адаптивен (responsive) дизайн – ще изглежда и ще работи перфектно на смартфони, таблети и настолни компютри.",
+  },
+  {
+    question: "6. Сайтът ми ще бъде ли видим в Google?",
+    answer:
+      'Всеки сайт, който изработваме, получава базова On-Page SEO оптимизация (правилна структура, заглавия и бързина на зареждане), за да може Google лесно да го "прочете". Ако искаш максимални резултати при локално търсене, препоръчваме да комбинираш сайта с нашия пакет "Google My Business".',
+  },
+  {
+    question:
+      "7. Какво се случва, след като сайтът е готов? Предлагате ли поддръжка?",
+    answer:
+      "След като одобриш финалния вид, сайтът е изцяло твой. Можеш да го управляваш сам, но ако не искаш да се занимаваш с технически актуализации, архивиране (backups) и защита от хакери, предлагаме месечен абонамент за поддръжка. Ние се грижим за сигурността, а ти за бизнеса си.",
+  },
+  {
+    question:
+      "8. Мога ли по-късно да превърна сайта си в онлайн магазин?",
+    answer:
+      "Да! Нашите сайтове са мащабируеми. Ако след време решиш, че искаш да продаваш продукти с количка и онлайн плащания, не е нужно да правим нов сайт от нулата – можем просто да надградим настоящия с нужните функционалности.",
+  },
+];
 
 interface ServiceDetailWebsiteProps {
   headingFontClass?: string;
@@ -285,7 +325,7 @@ export function ServiceDetailWebsite({
                 "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance"
               )}
             >
-              Как да започнем? (Само 4 лесни стъпки)
+              Как да започнем? (Само 3 лесни стъпки)
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
               Направихме процеса максимално бърз, за да не губиш време.
@@ -293,7 +333,7 @@ export function ServiceDetailWebsite({
           </div>
           <div className="relative">
             <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-border to-transparent -translate-y-1/2" />
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {steps.map((step, index) => (
                 <div key={step.title} className="relative">
                   <Card className="group bg-card border-border hover:border-primary/50 transition-colors h-full">
@@ -329,6 +369,30 @@ export function ServiceDetailWebsite({
               Цената е фиксирана и прозрачна. Получаваш ясна рамка, бърз процес и сайт, който е
               готов да работи за бизнеса ти.
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-20 bg-card/40">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+              FAQ
+            </span>
+            <h2
+              className={cn(
+                headingFontClass,
+                "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance"
+              )}
+            >
+              Често Задавани Въпроси
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Събрахме най-честите въпроси на едно място, за да вземеш решение по-бързо.
+            </p>
+          </div>
+          <div className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 sm:px-8 sm:py-4">
+            <Faq items={FAQ_ITEMS} />
           </div>
         </div>
       </section>

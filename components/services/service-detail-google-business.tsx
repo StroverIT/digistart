@@ -8,7 +8,6 @@ import {
   ClipboardList,
   MapPin,
   MonitorCheck,
-  Phone,
   Rocket,
   ShoppingCart,
 } from "lucide-react";
@@ -55,17 +54,12 @@ const googleSteps = [
     icon: ShoppingCart,
   },
   {
-    title: "Стъпка 2: Кратка консултация (до 15 мин)",
-    text: "Чуваме се за кратко, за да уточним адреса, работното време, контактите и услугите, които искаш да акцентираме.",
-    icon: Phone,
-  },
-  {
-    title: "Стъпка 3: Демо версия и настройка",
+    title: "Стъпка 2: Демо версия и настройка",
     text: "Изграждаме профила с всички данни, снимки и ключови думи. Преглеждаш го, за да потвърдиш, че отговаря на нуждите ти.",
     icon: MonitorCheck,
   },
   {
-    title: "Стъпка 4: Официално в Google",
+    title: "Стъпка 3: Официално в Google",
     text: "Завършваме верификацията и профилът ти е публичен. Вече си на картата и готов да събираш ревюта и обаждания.",
     icon: Rocket,
   },
@@ -219,7 +213,7 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
               Процес
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance">
-              Как да стартираш? (Само 4 лесни стъпки)
+              Как да стартираш? (Само 3 лесни стъпки)
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
               Улеснили сме процеса, за да не губиш излишно време в технически детайли.
@@ -227,7 +221,7 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
           </div>
           <div className="relative">
             <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-border to-transparent -translate-y-1/2" />
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {googleSteps.map((step, index) => (
                 <div key={step.title} className="relative">
                   <Card className="group bg-card border-border hover:border-primary/50 transition-colors h-full">
