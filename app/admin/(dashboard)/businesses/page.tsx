@@ -1,14 +1,4 @@
-import dynamic from "next/dynamic";
-
-const LeadTrackerMap = dynamic(
-  () => import("@/components/admin/lead-tracker-map").then((mod) => mod.LeadTrackerMap),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-[70vh] min-h-[560px] rounded-xl border border-border bg-card animate-pulse" />
-    ),
-  }
-);
+import { BusinessesPageClient } from "@/components/admin/businesses-page-client";
 
 export default function BusinessesPage() {
   return (
@@ -20,7 +10,7 @@ export default function BusinessesPage() {
         </p>
       </div>
 
-      <LeadTrackerMap />
+      <BusinessesPageClient />
     </div>
   );
 }

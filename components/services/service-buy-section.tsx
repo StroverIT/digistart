@@ -116,7 +116,7 @@ export function ServiceBuySection({
             <div className="rounded-2xl border border-border bg-card p-5">
               <p className="text-sm text-muted-foreground mb-2">Общо</p>
               <div className="mb-1 flex items-end gap-2">
-                <Price value={totalPrice} className="text-3xl text-primary" />
+                <Price value={totalPrice} layout="vertical" className="text-3xl text-primary" />
                 {monthlyLabel ? <span className="pb-1 text-muted-foreground">{monthlyLabel}</span> : null}
               </div>
               <p className="mb-5 text-xs text-muted-foreground">Включва избраните допълнителни услуги</p>
