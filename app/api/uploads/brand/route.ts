@@ -68,7 +68,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Непозволен тип файл." }, { status: 400 });
     }
     if (e instanceof Error && e.message.includes("Missing")) {
-      return NextResponse.json({ error: "Качването не е конфигурирано." }, { status: 503 });
+      return NextResponse.json({
+        logoUrl: null,
+        paletteUrl: null,
+        skipped: true,
+        warning: "Supabase Storage не е конфигуриран. Продължаваме без качване на файловете.",
+      });
     }
     return NextResponse.json({ error: "Качването не бе успешно." }, { status: 500 });
   }
