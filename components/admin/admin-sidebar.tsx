@@ -41,7 +41,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
     <aside className="w-64 bg-card border-r border-border flex flex-col shrink-0">
       {/* Logo */}
       <div className="h-16 flex items-center px-6 border-b border-border">
-        <Link href="/admin" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <Zap className="h-7 w-7 text-primary" />
           <span className="text-lg font-bold">
             Digi<span className="text-primary">Start</span>
