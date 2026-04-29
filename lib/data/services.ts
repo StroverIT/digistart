@@ -96,6 +96,18 @@ export const services: Service[] = [
         default: 0,
       },
       {
+        id: "pixel-analytics",
+        name: "Facebook Pixel + Google Analytics",
+        description:
+          "Инсталация и базова конфигурация за точно проследяване на трафик, събития и конверсии.",
+        kind: "toggle",
+        pricePerUnit: 30,
+        unit: "добавка",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+      {
         id: "more-pages",
         name: "Допълнителни страници",
         description:
@@ -229,6 +241,18 @@ export const services: Service[] = [
           "Интегрираме сигурна система за картови плащания, включително Apple Pay и Google Pay.",
         kind: "toggle",
         pricePerUnit: 90,
+        unit: "добавка",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+      {
+        id: "pixel-analytics",
+        name: "Facebook Pixel + Google Analytics",
+        description:
+          "Инсталация и базова конфигурация за точно проследяване на трафик, събития и конверсии.",
+        kind: "toggle",
+        pricePerUnit: 67,
         unit: "добавка",
         min: 0,
         max: 1,
@@ -432,6 +456,18 @@ export const services: Service[] = [
         description: "Всеки нов последовател получава автоматично топло лично съобщение.",
         kind: "toggle",
         pricePerUnit: 20,
+        unit: "добавка",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+      {
+        id: "chatbot-setup",
+        name: "Настройка на Чатбот",
+        description:
+          'В стандартния пакет ние модерираме коментарите и следим за спам. Отговарянето на конкретни търговски запитвания (напр. "Кога имате свободен час?" или "Имате ли този модел в червено?") остава твоя задача, тъй като ти познаваш наличностите и графика си най-добре. С тази добавка настройваме чатбот за автоматични отговори на типични запитвания.',
+        kind: "toggle",
+        pricePerUnit: 59,
         unit: "добавка",
         min: 0,
         max: 1,
