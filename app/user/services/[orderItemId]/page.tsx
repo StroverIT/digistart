@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import { getServiceById } from "@/lib/data/services";
+import { calculateItemTotal } from "@/lib/pricing/calculate-item-total";
 import type { CartItemUpsell } from "@/lib/types";
 
 export default async function UserServiceDetailPage({
@@ -30,6 +31,10 @@ export default async function UserServiceDetailPage({
 
   const upsells = (item.upsells as unknown as CartItemUpsell[]) ?? [];
   const service = getServiceById(item.serviceId);
+  const storedMonthly = Number(item.totalMonthly) || 0;
+  const derivedTotals = calculateItemTotal(item.serviceId, item.selectedOptionId, upsells);
+  const displayMonthly =
+    storedMonthly > 0 ? storedMonthly : derivedTotals.monthlyTotal;
   const renew = item.order.subscriptionRenewsAt;
   const brandAssets = (item.order.brandAssets as { logoUrl?: string | null; paletteUrl?: string | null } | null) ?? null;
   const logoUrl = brandAssets?.logoUrl ?? null;
@@ -69,11 +74,11 @@ export default async function UserServiceDetailPage({
             <span className="text-muted-foreground">Еднократно</span>
             <Price value={item.totalOneTime} className="font-medium" />
           </div>
-          {item.totalMonthly > 0 ? (
+          {displayMonthly > 0 ? (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Месечно</span>
               <span>
-                <Price value={item.totalMonthly} className="font-medium" /> /мес
+                <Price value={displayMonthly} className="font-medium" /> /мес
               </span>
             </div>
           ) : null}
