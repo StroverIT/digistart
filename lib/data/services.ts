@@ -182,6 +182,18 @@ export const services: Service[] = [
     ],
     upsells: [
       {
+        id: "pro-package",
+        name: "ПРО Пакет: Куриери + Плащания с карта",
+        description:
+          "Комбиниран пакет с интеграция на Еконт + Спиди и картови плащания на по-добра цена.",
+        kind: "toggle",
+        pricePerUnit: 160,
+        unit: "пакет",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+      {
         id: "monthly-maintenance",
         name: "Месечна поддръжка и сигурност",
         description:
@@ -195,12 +207,12 @@ export const services: Service[] = [
         default: 0,
       },
       {
-        id: "sales-booster",
-        name: 'Модул "Увеличи продажбите" (Upsell & Cross-sell)',
+        id: "online-payments",
+        name: "Онлайн плащания с карта (Stripe / MyPOS)",
         description:
-          "Функции като често купувани заедно и bundle оферти за по-висока средна стойност на поръчка.",
+          "Интегрираме сигурна система за картови плащания, включително Apple Pay и Google Pay.",
         kind: "toggle",
-        pricePerUnit: 85,
+        pricePerUnit: 90,
         unit: "добавка",
         min: 0,
         max: 1,
@@ -213,6 +225,18 @@ export const services: Service[] = [
           "Онлайн магазинът става основен приоритет с гарантиран старт до 48 часа след консултацията.",
         kind: "toggle",
         pricePerUnit: 120,
+        unit: "добавка",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+      {
+        id: "sales-booster",
+        name: 'Модул "Увеличи продажбите" (Upsell & Cross-sell)',
+        description:
+          "Функции като често купувани заедно и bundle оферти за по-висока средна стойност на поръчка.",
+        kind: "toggle",
+        pricePerUnit: 85,
         unit: "добавка",
         min: 0,
         max: 1,
@@ -234,18 +258,7 @@ export const services: Service[] = [
           { id: "both", name: "Еконт + Спиди", pricePerUnit: 140 },
         ],
       },
-      {
-        id: "online-payments",
-        name: "Онлайн плащания с карта (Stripe / MyPOS)",
-        description:
-          "Интегрираме сигурна система за картови плащания, включително Apple Pay и Google Pay.",
-        kind: "toggle",
-        pricePerUnit: 90,
-        unit: "добавка",
-        min: 0,
-        max: 1,
-        default: 0,
-      },
+
       {
         id: "pixel-analytics",
         name: "Facebook Pixel + Google Analytics",
@@ -259,18 +272,7 @@ export const services: Service[] = [
         default: 0,
       },
 
-      {
-        id: "pro-package",
-        name: "ПРО Пакет: Куриери + Плащания с карта",
-        description:
-          "Комбиниран пакет с интеграция на Еконт + Спиди и картови плащания на по-добра цена.",
-        kind: "toggle",
-        pricePerUnit: 140,
-        unit: "пакет",
-        min: 0,
-        max: 1,
-        default: 0,
-      },
+
       {
         id: "extra-products",
         name: "Допълнителни продукти над 500",

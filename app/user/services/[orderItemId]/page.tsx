@@ -36,6 +36,8 @@ export default async function UserServiceDetailPage({
   const displayMonthly =
     storedMonthly > 0 ? storedMonthly : derivedTotals.monthlyTotal;
   const renew = item.order.subscriptionRenewsAt;
+  const hasRecurringSubscription =
+    Boolean(item.order.stripeSubscriptionId) || displayMonthly > 0 || Boolean(renew);
   const brandAssets = (item.order.brandAssets as { logoUrl?: string | null; paletteUrl?: string | null } | null) ?? null;
   const logoUrl = brandAssets?.logoUrl ?? null;
   const paletteUrl = brandAssets?.paletteUrl ?? null;
@@ -89,7 +91,7 @@ export default async function UserServiceDetailPage({
         </CardContent>
       </Card>
 
-      {renew ? (
+      {hasRecurringSubscription ? (
         <Card className="border-border bg-card/80 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -98,15 +100,24 @@ export default async function UserServiceDetailPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">Следващо подновяване</p>
-            <p className="text-lg font-semibold">
-              {renew.toLocaleDateString("bg-BG", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </p>
+            {renew ? (
+              <>
+                <p className="text-sm text-muted-foreground">Следващо подновяване</p>
+                <p className="text-lg font-semibold">
+                  {renew.toLocaleDateString("bg-BG", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground">Абонаментът е активен</p>
+                <p className="text-base font-semibold">Очаква се синхронизация на датата за подновяване</p>
+              </>
+            )}
           </CardContent>
         </Card>
       ) : (

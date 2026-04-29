@@ -7,6 +7,7 @@ import {
   Zap,
   LayoutDashboard,
   ShoppingBag,
+  RefreshCw,
   CalendarDays,
   MapPin,
   LogOut,
@@ -26,6 +27,7 @@ interface AdminSidebarProps {
 const navItems = [
   { href: "/admin", label: "Табло", icon: LayoutDashboard },
   { href: "/admin/orders", label: "Поръчки", icon: ShoppingBag },
+  { href: "/admin/subscriptions", label: "Абонаменти", icon: RefreshCw },
   { href: "/admin/consultations", label: "Консултации", icon: CalendarDays },
   { href: "/admin/businesses", label: "Бизнеси", icon: MapPin },
 ] as const;
