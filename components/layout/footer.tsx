@@ -144,16 +144,22 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-6">
             <TransitionLink
-              href="/privacy"
+              href="/privacy-policy"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Поверителност
             </TransitionLink>
             <TransitionLink
-              href="/terms"
+              href="/terms-and-conditions"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Условия за ползване
+            </TransitionLink>
+            <TransitionLink
+              href="/cookies-policy"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              Бисквитки
             </TransitionLink>
           </div>
         </div>
