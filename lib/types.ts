@@ -102,6 +102,10 @@ export interface Order {
   id: string;
   cart: Cart;
   customer: CustomerInfo;
+  brandAssets?: {
+    logoUrl?: string | null;
+    paletteUrl?: string | null;
+  };
   consultation?: ConsultationBooking;
   status: "pending" | "paid" | "in_progress" | "completed" | "cancelled";
   userId?: string | null;

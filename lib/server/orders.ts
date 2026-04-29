@@ -35,6 +35,10 @@ function mapOrder(order: OrderWithItemsAndConsultation): Order {
       company: order.customerCompany ?? undefined,
       notes: order.customerNotes ?? undefined,
     },
+    brandAssets:
+      order.brandAssets && typeof order.brandAssets === "object"
+        ? (order.brandAssets as { logoUrl?: string | null; paletteUrl?: string | null })
+        : undefined,
     consultation: order.consultation
       ? {
           id: order.consultation.id,

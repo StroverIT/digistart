@@ -341,12 +341,19 @@ export default function CheckoutPage() {
     if (paletteFile) fd.append("palette", paletteFile);
     try {
       const res = await fetch("/api/uploads/brand", { method: "POST", body: fd });
-      const json = (await res.json()) as { logoUrl?: string; paletteUrl?: string; error?: string };
+      const json = (await res.json()) as {
+        logoUrl?: string | null;
+        paletteUrl?: string | null;
+        error?: string;
+      };
       if (!res.ok) {
         setCheckoutError(json.error ?? "Качването не бе успешно.");
         return false;
       }
-      const merged = { ...brandUrls, ...json };
+      const uploadedUrls: Record<string, string> = {};
+      if (typeof json.logoUrl === "string" && json.logoUrl) uploadedUrls.logoUrl = json.logoUrl;
+      if (typeof json.paletteUrl === "string" && json.paletteUrl) uploadedUrls.paletteUrl = json.paletteUrl;
+      const merged = { ...brandUrls, ...uploadedUrls };
       setBrandUrls(merged);
       return merged;
     } catch {

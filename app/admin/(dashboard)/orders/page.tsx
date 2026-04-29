@@ -387,6 +387,44 @@ export default function OrdersPage() {
                 </div>
               </div>
 
+              {selectedOrder.brandAssets?.logoUrl || selectedOrder.brandAssets?.paletteUrl ? (
+                <div>
+                  <h3 className="font-semibold mb-2">Бранд материали</h3>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {selectedOrder.brandAssets?.logoUrl ? (
+                      <a
+                        href={selectedOrder.brandAssets.logoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-lg border border-border bg-secondary/30 p-3"
+                      >
+                        <p className="mb-2 text-sm font-medium">Лого</p>
+                        <img
+                          src={`/api/uploads/brand/view?url=${encodeURIComponent(selectedOrder.brandAssets.logoUrl)}`}
+                          alt="Лого"
+                          className="h-40 w-full rounded-md border border-border bg-background object-contain p-2"
+                        />
+                      </a>
+                    ) : null}
+                    {selectedOrder.brandAssets?.paletteUrl ? (
+                      <a
+                        href={selectedOrder.brandAssets.paletteUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-lg border border-border bg-secondary/30 p-3"
+                      >
+                        <p className="mb-2 text-sm font-medium">Цветова палитра</p>
+                        <img
+                          src={`/api/uploads/brand/view?url=${encodeURIComponent(selectedOrder.brandAssets.paletteUrl)}`}
+                          alt="Цветова палитра"
+                          className="h-40 w-full rounded-md border border-border bg-background object-contain p-2"
+                        />
+                      </a>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+
               {/* Status & Total */}
               <div className="flex items-center justify-between pt-4 border-t border-border">
                 <div className="flex items-center gap-4">

@@ -30,6 +30,11 @@ export default async function UserServiceDetailPage({
   const upsells = (item.upsells as unknown as CartItemUpsell[]) ?? [];
   const service = getServiceById(item.serviceId);
   const renew = item.order.subscriptionRenewsAt;
+  const brandAssets = (item.order.brandAssets as { logoUrl?: string | null; paletteUrl?: string | null } | null) ?? null;
+  const logoUrl = brandAssets?.logoUrl ?? null;
+  const paletteUrl = brandAssets?.paletteUrl ?? null;
+  const logoPreviewUrl = logoUrl ? `/api/uploads/brand/view?url=${encodeURIComponent(logoUrl)}` : null;
+  const palettePreviewUrl = paletteUrl ? `/api/uploads/brand/view?url=${encodeURIComponent(paletteUrl)}` : null;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -113,6 +118,40 @@ export default async function UserServiceDetailPage({
         </Card>
       )}
       </div>
+
+      {(logoUrl || paletteUrl) ? (
+        <Card className="border-border bg-card/80 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg">Качени бранд материали</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            {logoUrl ? (
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Лого</p>
+                <a href={logoUrl} target="_blank" rel="noreferrer">
+                  <img
+                    src={logoPreviewUrl ?? logoUrl}
+                    alt="Качено лого"
+                    className="h-40 w-full rounded-xl border border-border object-contain bg-background p-2"
+                  />
+                </a>
+              </div>
+            ) : null}
+            {paletteUrl ? (
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Цветова палитра</p>
+                <a href={paletteUrl} target="_blank" rel="noreferrer">
+                  <img
+                    src={palettePreviewUrl ?? paletteUrl}
+                    alt="Качена цветова палитра"
+                    className="h-40 w-full rounded-xl border border-border object-contain bg-background p-2"
+                  />
+                </a>
+              </div>
+            ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card className="border-border bg-card/80 shadow-sm">
         <CardHeader>
