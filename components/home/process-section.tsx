@@ -4,30 +4,30 @@ const steps = [
   {
     icon: <MessageSquare className="h-6 w-6" />,
     number: "01",
-    title: "Консултация",
+    title: "Плащане",
     description:
-      "Обсъждаме вашите нужди, цели и визия. Анализираме текущото ви онлайн присъствие и конкуренцията.",
+      "След като уточним офертата, извършвате плащане и официално запазвате старта на проекта.",
   },
   {
     icon: <Lightbulb className="h-6 w-6" />,
     number: "02",
     title: "Стратегия",
     description:
-      "Разработваме персонализирана стратегия и представяме детайлно предложение с ясни срокове и цени.",
+      "Създаваме ясна стратегия с обхват, приоритети и план за изпълнение според вашите цели.",
   },
   {
     icon: <Code2 className="h-6 w-6" />,
     number: "03",
-    title: "Изпълнение",
+    title: "Демо",
     description:
-      "Работим по проекта с редовна комуникация. Получавате достъп до напредъка и можете да давате обратна връзка.",
+      "Показваме ви демо версия, за да прегледате визията и функционалностите преди същинската работа.",
   },
   {
     icon: <Rocket className="h-6 w-6" />,
     number: "04",
-    title: "Стартиране",
+    title: "Официален старт",
     description:
-      "Финализираме и стартираме проекта. Осигуряваме обучение и поддръжка за успешно използване.",
+      "След одобрение стартираме официално проекта и преминаваме към пълната реализация по плана.",
   },
 ];
 
@@ -52,7 +52,7 @@ export function ProcessSection() {
         {/* Process steps */}
         <div className="relative">
           {/* Connection line - desktop */}
-          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-border to-transparent -translate-y-1/2" />
+          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-border to-transparent -translate-y-1/2" />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, index) => (

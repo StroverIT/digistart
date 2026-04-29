@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import TransitionLink from "@/components/transitions/TransitionLink";
 import { Price } from "@/components/ui/price";
 import {
+  ArrowUpRight,
   ArrowRight,
   CheckCircle2,
   CircleX,
@@ -326,6 +328,65 @@ export function ServiceDetailReadyStore({
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-20 border-y border-border/70 bg-card/30">
+        <div className="container mx-auto px-4">
+          <div className="mb-12 text-center max-w-3xl mx-auto">
+            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+              Казус
+            </span>
+            <h2 className={cn(headingFontClass, "text-3xl sm:text-4xl md:text-5xl font-bold text-balance")}>
+              Как изглежда това в реален бизнес?
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
+            <div className="relative w-full aspect-4/3 overflow-hidden rounded-lg border border-border bg-background">
+              <Image
+                src="/what-we-offer/restyled-mock-up.png"
+                alt="Restyled case study"
+                fill
+                className="object-contain"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
+
+            <div className="space-y-6 sm:space-y-8">
+              <div>
+                <span className="text-xs sm:text-sm font-medium tracking-widest uppercase text-muted-foreground mb-2 block">
+                  Онлайн магазин
+                </span>
+                <h3 className={cn(headingFontClass, "text-2xl sm:text-3xl md:text-4xl mb-4 text-balance")}>
+                  Restyled
+                </h3>
+                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
+                  Реален пример как добре структуриран онлайн магазин помага на бранд да продава
+                  по-лесно, да представя продуктите си професионално и да увеличава поръчките.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6 sm:gap-8">
+                <div>
+                  <p className={cn(headingFontClass, "text-2xl sm:text-3xl md:text-4xl mb-1")}>Fashion</p>
+                  <p className="text-muted-foreground text-sm sm:text-base">Ниша</p>
+                </div>
+                <div>
+                  <p className={cn(headingFontClass, "text-2xl sm:text-3xl md:text-4xl mb-1")}>Mobile-first</p>
+                  <p className="text-muted-foreground text-sm sm:text-base">Фокус</p>
+                </div>
+              </div>
+
+              <TransitionLink
+                href="/case-study/restyled"
+                className="inline-flex items-center gap-2 text-primary text-base sm:text-lg font-medium group"
+              >
+                Виж казуса
+                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </TransitionLink>
             </div>
           </div>
         </div>

@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import {
+  ArrowUpRight,
   ArrowRight,
   CheckCircle2,
   CircleX,
@@ -369,6 +371,67 @@ export function ServiceDetailWebsite({
               Цената е фиксирана и прозрачна. Получаваш ясна рамка, бърз процес и сайт, който е
               готов да работи за бизнеса ти.
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-20 border-y border-border/70 bg-card/30">
+        <div className="container mx-auto px-4">
+          <div className="mb-12 text-center max-w-3xl mx-auto">
+            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+              Казус
+            </span>
+            <h2 className={cn(headingFontClass, "text-3xl sm:text-4xl md:text-5xl font-bold text-balance")}>
+              Реален резултат от услуга "Уебсайт"
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
+            <div className="relative w-full aspect-4/3 overflow-hidden rounded-lg border border-border bg-background">
+              <Image
+                src="/what-we-offer/reaz-mock-up.png"
+                alt="Reaz case study"
+                fill
+                className="object-contain"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
+
+            <div className="space-y-6 sm:space-y-8">
+              <div>
+                <span className="text-xs sm:text-sm font-medium tracking-widest uppercase text-muted-foreground mb-2 block">
+                  Уебсайт
+                </span>
+                <h3 className={cn(headingFontClass, "text-2xl sm:text-3xl md:text-4xl mb-4 text-balance")}>
+                  reaz.bg
+                </h3>
+                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
+                  Пример за фирмен сайт, който представя услугите ясно, комуникира доверие и
+                  насочва посетителя към бърза заявка чрез силна структура и ясен UX.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6 sm:gap-8">
+                <div>
+                  <p className={cn(headingFontClass, "text-2xl sm:text-3xl md:text-4xl mb-1")}>B2B</p>
+                  <p className="text-muted-foreground text-sm sm:text-base">Тип бизнес</p>
+                </div>
+                <div>
+                  <p className={cn(headingFontClass, "text-2xl sm:text-3xl md:text-4xl mb-1")}>Lead-gen</p>
+                  <p className="text-muted-foreground text-sm sm:text-base">Фокус</p>
+                </div>
+              </div>
+
+              <a
+                href="https://reaz.bg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary text-base sm:text-lg font-medium group hover:text-primary/90 transition-colors"
+              >
+                Виж сайта
+                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
+            </div>
           </div>
         </div>
       </section>
