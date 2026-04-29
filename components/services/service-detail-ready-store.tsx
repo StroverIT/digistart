@@ -23,6 +23,7 @@ import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServiceById } from "@/lib/data/services";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { Faq, type FaqItem } from "@/components/ui/faq";
+import Link from "next/link";
 
 const SERVICE_ID = "ready-store";
 const OPTION_ID = "standard";
@@ -345,7 +346,7 @@ export function ServiceDetailReadyStore({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
-            <div className="relative w-full aspect-4/3 overflow-hidden rounded-lg border border-border bg-background">
+            <div className="relative w-full aspect-4/3 overflow-hidden rounded-lg">
               <Image
                 src="/what-we-offer/restyled-mock-up.png"
                 alt="Restyled case study"
@@ -380,13 +381,13 @@ export function ServiceDetailReadyStore({
                 </div>
               </div>
 
-              <TransitionLink
-                href="/case-study/restyled"
+              <Link
+                href="https://restyled.bg"
                 className="inline-flex items-center gap-2 text-primary text-base sm:text-lg font-medium group"
               >
-                Виж казуса
+                Виж онлайн магазина
                 <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </TransitionLink>
+              </Link>
             </div>
           </div>
         </div>

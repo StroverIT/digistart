@@ -387,7 +387,7 @@ export function ServiceDetailWebsite({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
-            <div className="relative w-full aspect-4/3 overflow-hidden rounded-lg border border-border bg-background">
+            <div className="relative w-full aspect-4/3 overflow-hidden rounded-lg">
               <Image
                 src="/what-we-offer/reaz-mock-up.png"
                 alt="Reaz case study"
