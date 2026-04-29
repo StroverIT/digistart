@@ -317,6 +317,12 @@ export default function OrdersPage() {
                     {selectedOrder.customer.email}
                   </p>
                   <p>
+                    <span className="text-muted-foreground">Stripe Payment ID:</span>{" "}
+                    <span className="font-mono text-sm break-all">
+                      {selectedOrder.stripe?.paymentIntentId ?? "Няма"}
+                    </span>
+                  </p>
+                  <p>
                     <span className="text-muted-foreground">Телефон:</span>{" "}
                     {selectedOrder.customer.phone}
                   </p>
