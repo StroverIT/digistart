@@ -9,7 +9,26 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import { siteContact } from "@/lib/site-contact";
+import { clearCart } from "@/lib/store/cart";
 import type { Order } from "@/lib/types";
+
+const CHECKOUT_STATE_KEYS = [
+  "digistart-checkout-draft",
+  "digistart-checkout-brand-assets",
+  "digistart-checkout-consultation",
+  "digistart-checkout-invoice",
+  "digistart-checkout-step",
+];
+
+function clearCheckoutClientState() {
+  clearCart();
+  if (typeof window === "undefined") return;
+
+  for (const key of CHECKOUT_STATE_KEYS) {
+    window.localStorage.removeItem(key);
+    window.sessionStorage.removeItem(key);
+  }
+}
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -23,6 +42,11 @@ function SuccessContent() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!mounted || !orderId) return;
+    clearCheckoutClientState();
+  }, [mounted, orderId]);
 
   useEffect(() => {
     if (!mounted || !orderId) return;
