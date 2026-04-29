@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { getServerSession } from "next-auth";
 import { CalendarClock, PackageCheck, ReceiptText, Sparkles } from "lucide-react";
 import { authOptions } from "@/lib/auth";
@@ -129,9 +130,11 @@ export default async function UserServiceDetailPage({
               <div className="space-y-2">
                 <p className="text-sm font-medium">Лого</p>
                 <a href={logoUrl} target="_blank" rel="noreferrer">
-                  <img
+                  <Image
                     src={logoPreviewUrl ?? logoUrl}
                     alt="Качено лого"
+                    width={640}
+                    height={320}
                     className="h-40 w-full rounded-xl border border-border object-contain bg-background p-2"
                   />
                 </a>
@@ -141,9 +144,11 @@ export default async function UserServiceDetailPage({
               <div className="space-y-2">
                 <p className="text-sm font-medium">Цветова палитра</p>
                 <a href={paletteUrl} target="_blank" rel="noreferrer">
-                  <img
+                  <Image
                     src={palettePreviewUrl ?? paletteUrl}
                     alt="Качена цветова палитра"
+                    width={640}
+                    height={320}
                     className="h-40 w-full rounded-xl border border-border object-contain bg-background p-2"
                   />
                 </a>

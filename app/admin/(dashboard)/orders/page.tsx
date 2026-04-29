@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Search, Filter, Eye, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -399,9 +400,11 @@ export default function OrdersPage() {
                         className="rounded-lg border border-border bg-secondary/30 p-3"
                       >
                         <p className="mb-2 text-sm font-medium">Лого</p>
-                        <img
+                        <Image
                           src={`/api/uploads/brand/view?url=${encodeURIComponent(selectedOrder.brandAssets.logoUrl)}`}
                           alt="Лого"
+                          width={640}
+                          height={320}
                           className="h-40 w-full rounded-md border border-border bg-background object-contain p-2"
                         />
                       </a>
@@ -414,9 +417,11 @@ export default function OrdersPage() {
                         className="rounded-lg border border-border bg-secondary/30 p-3"
                       >
                         <p className="mb-2 text-sm font-medium">Цветова палитра</p>
-                        <img
+                        <Image
                           src={`/api/uploads/brand/view?url=${encodeURIComponent(selectedOrder.brandAssets.paletteUrl)}`}
                           alt="Цветова палитра"
+                          width={640}
+                          height={320}
                           className="h-40 w-full rounded-md border border-border bg-background object-contain p-2"
                         />
                       </a>

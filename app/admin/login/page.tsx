@@ -114,7 +114,7 @@ export default function AdminLoginPage() {
               Демо данни за вход:
             </p>
             <p className="text-xs text-muted-foreground text-center font-mono">
-              admin@digistart.bg / admin123
+              admin@digistart.bg / 238DWSDADWK23$$@DSAD21
             </p>
           </div>
         </CardContent>
