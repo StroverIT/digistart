@@ -17,7 +17,6 @@ export default async function UserServiceDetailPage({
   params: Promise<{ orderItemId: string }>;
 }) {
   const { orderItemId } = await params;
-  const runId = `service-detail-${orderItemId}-${Date.now()}`;
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) notFound();
 
@@ -39,48 +38,7 @@ export default async function UserServiceDetailPage({
     storedMonthly > 0 ? storedMonthly : derivedTotals.monthlyTotal;
   let renew = item.order.subscriptionRenewsAt;
 
-  // #region agent log
-  fetch("http://127.0.0.1:7562/ingest/27ce1d6c-483c-43a1-aa36-7afa28771441", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "5ed625" },
-    body: JSON.stringify({
-      sessionId: "5ed625",
-      runId,
-      hypothesisId: "H1",
-      location: "app/user/services/[orderItemId]/page.tsx:39",
-      message: "Initial subscription state before fallback sync",
-      data: {
-        orderItemId,
-        orderId: item.order.id,
-        hasStripeSubscriptionId: Boolean(item.order.stripeSubscriptionId),
-        stripeSubscriptionId: item.order.stripeSubscriptionId ?? null,
-        subscriptionRenewsAt: renew?.toISOString() ?? null,
-        displayMonthly,
-      },
-      timestamp: Date.now(),
-    }),
-  }).catch(() => {});
-  // #endregion
-
   if (!renew && item.order.stripeSubscriptionId) {
-    // #region agent log
-    fetch("http://127.0.0.1:7562/ingest/27ce1d6c-483c-43a1-aa36-7afa28771441", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "5ed625" },
-      body: JSON.stringify({
-        sessionId: "5ed625",
-        runId,
-        hypothesisId: "H2",
-        location: "app/user/services/[orderItemId]/page.tsx:42",
-        message: "Entering Stripe renewal fallback branch",
-        data: {
-          orderId: item.order.id,
-          stripeSubscriptionId: item.order.stripeSubscriptionId,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
     try {
       const stripe = getStripeServerClient();
       const subscription = await stripe.subscriptions.retrieve(item.order.stripeSubscriptionId);
@@ -93,124 +51,20 @@ export default async function UserServiceDetailPage({
       const cpe =
         rawSubscription.current_period_end ?? itemPeriodEnd ?? rawSubscription.billing_cycle_anchor;
 
-      // #region agent log
-      fetch("http://127.0.0.1:7562/ingest/27ce1d6c-483c-43a1-aa36-7afa28771441", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "5ed625" },
-        body: JSON.stringify({
-          sessionId: "5ed625",
-          runId,
-          hypothesisId: "H3",
-          location: "app/user/services/[orderItemId]/page.tsx:67",
-          message: "Stripe subscription response for renewal",
-          data: {
-            orderId: item.order.id,
-            stripeSubscriptionId: item.order.stripeSubscriptionId,
-            hasCurrentPeriodEnd: Boolean(cpe),
-            currentPeriodEndUnix: cpe ?? null,
-            stripeStatus: "status" in subscription ? subscription.status : null,
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
-
-      // #region agent log
-      fetch("http://127.0.0.1:7562/ingest/27ce1d6c-483c-43a1-aa36-7afa28771441", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "5ed625" },
-        body: JSON.stringify({
-          sessionId: "5ed625",
-          runId,
-          hypothesisId: "H6",
-          location: "app/user/services/[orderItemId]/page.tsx:85",
-          message: "Subscription renewal candidates by field",
-          data: {
-            orderId: item.order.id,
-            stripeSubscriptionId: item.order.stripeSubscriptionId,
-            rootCurrentPeriodEndUnix: rawSubscription.current_period_end ?? null,
-            itemCurrentPeriodEndUnix: itemPeriodEnd,
-            billingCycleAnchorUnix: rawSubscription.billing_cycle_anchor ?? null,
-            chosenRenewalUnix: cpe ?? null,
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
-
       if (cpe) {
         renew = new Date(cpe * 1000);
         await prisma.order.update({
           where: { id: item.order.id },
           data: { subscriptionRenewsAt: renew },
         });
-
-        // #region agent log
-        fetch("http://127.0.0.1:7562/ingest/27ce1d6c-483c-43a1-aa36-7afa28771441", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "5ed625" },
-          body: JSON.stringify({
-            sessionId: "5ed625",
-            runId,
-            hypothesisId: "H4",
-            location: "app/user/services/[orderItemId]/page.tsx:86",
-            message: "Persisted renewal date from Stripe into order",
-            data: {
-              orderId: item.order.id,
-              persistedRenewalIso: renew.toISOString(),
-            },
-            timestamp: Date.now(),
-          }),
-        }).catch(() => {});
-        // #endregion
       }
     } catch (error) {
-      // #region agent log
-      fetch("http://127.0.0.1:7562/ingest/27ce1d6c-483c-43a1-aa36-7afa28771441", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "5ed625" },
-        body: JSON.stringify({
-          sessionId: "5ed625",
-          runId,
-          hypothesisId: "H5",
-          location: "app/user/services/[orderItemId]/page.tsx:102",
-          message: "Stripe renewal fallback failed",
-          data: {
-            orderId: item.order.id,
-            stripeSubscriptionId: item.order.stripeSubscriptionId ?? null,
-            errorMessage: error instanceof Error ? error.message : "unknown",
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       console.error("Failed to sync subscription renewal date", error);
     }
   }
 
   const hasRecurringSubscription =
     Boolean(item.order.stripeSubscriptionId) || displayMonthly > 0 || Boolean(renew);
-
-  // #region agent log
-  fetch("http://127.0.0.1:7562/ingest/27ce1d6c-483c-43a1-aa36-7afa28771441", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "5ed625" },
-    body: JSON.stringify({
-      sessionId: "5ed625",
-      runId,
-      hypothesisId: "H1",
-      location: "app/user/services/[orderItemId]/page.tsx:118",
-      message: "Final subscription state used by UI",
-      data: {
-        orderId: item.order.id,
-        hasRecurringSubscription,
-        finalRenewalIso: renew?.toISOString() ?? null,
-        branch: renew ? "renew-date" : hasRecurringSubscription ? "sync-pending-message" : "one-time",
-      },
-      timestamp: Date.now(),
-    }),
-  }).catch(() => {});
-  // #endregion
   const brandAssets = (item.order.brandAssets as { logoUrl?: string | null; paletteUrl?: string | null } | null) ?? null;
   const logoUrl = brandAssets?.logoUrl ?? null;
   const paletteUrl = brandAssets?.paletteUrl ?? null;

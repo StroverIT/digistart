@@ -22,6 +22,19 @@ export default async function UserHomePage() {
     .filter((d): d is Date => d != null)
     .sort((a, b) => a.getTime() - b.getTime());
   const nextRenewal = renewDates[0] ?? null;
+  const nextRenewalServices = nextRenewal
+    ? Array.from(
+        new Set(
+          orders
+            .filter(
+              (o) =>
+                o.subscriptionRenewsAt &&
+                o.subscriptionRenewsAt.getTime() === nextRenewal.getTime()
+            )
+            .flatMap((o) => o.items.map((item) => item.serviceName))
+        )
+      )
+    : [];
 
   return (
     <div className="space-y-8">
@@ -70,6 +83,11 @@ export default async function UserHomePage() {
                     year: "numeric",
                   })
                 : "—"}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {nextRenewalServices.length > 0
+                ? `Услуга: ${nextRenewalServices.join(", ")}`
+                : "Няма активни абонаменти"}
             </p>
           </CardContent>
         </Card>
