@@ -412,7 +412,7 @@ export default function CheckoutPage() {
     const message =
       "Моля приемете Общите условия, Политиката за поверителност и Политиката за връщане.";
     setLegalConsentError(message);
-    toast(message);
+    toast.error(message);
   };
 
   const handleContinueFromAccount = async () => {
