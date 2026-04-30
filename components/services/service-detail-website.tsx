@@ -14,7 +14,8 @@ import {
   ShoppingCart,
   Zap,
 } from "lucide-react";
-import TransitionLink from "@/components/transitions/TransitionLink";
+import { trackCtaClick } from "@/lib/analytics/tracker";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
@@ -210,12 +211,13 @@ export function ServiceDetailWebsite({
         />
 
         <div className="container relative z-10 mx-auto px-4">
-          <TransitionLink
+          <TrackedCtaLink
             href="/#services"
+            ctaId="service_website_back_to_services"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
           >
             Към услугите
-          </TransitionLink>
+          </TrackedCtaLink>
 
           <div className="max-w-4xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
@@ -237,7 +239,12 @@ export function ServiceDetailWebsite({
             <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
               <Price value={selectedOption.price} className="text-3xl sm:text-4xl text-primary" />
               <Button
-                onClick={scrollToBuySection}
+                onClick={() => {
+                  trackCtaClick("/services/website", "service_website_scroll_to_buy");
+                  scrollToBuySection();
+                }}
+                analyticsCtaId="service_website_scroll_to_buy"
+                analyticsPage="/services/website"
                 size="lg"
                 className="h-14 px-8 text-lg bg-orange-500 hover:bg-orange-600 text-white"
               >
@@ -470,6 +477,8 @@ export function ServiceDetailWebsite({
         onUpsellsChange={setUpsells}
         onAddToCart={handleAddToCart}
         isAdding={isAdding}
+        ctaId="service_website_buy_section_add_to_cart"
+        ctaPage="/services/website"
       />
 
       <div className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/95 backdrop-blur px-4 py-3">
@@ -479,7 +488,12 @@ export function ServiceDetailWebsite({
             <Price value={selectedOption.price} className="font-semibold" />
           </div>
           <Button
-            onClick={handleAddToCart}
+            onClick={() => {
+              trackCtaClick("/services/website", "service_website_mobile_add_to_cart");
+              handleAddToCart();
+            }}
+            analyticsCtaId="service_website_mobile_add_to_cart"
+            analyticsPage="/services/website"
             disabled={isAdding}
             className="min-h-11 min-w-30 shrink-0 px-4 text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white"
           >

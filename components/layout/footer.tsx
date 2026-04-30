@@ -1,4 +1,4 @@
-import TransitionLink from "@/components/transitions/TransitionLink";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import Image from "next/image";
 import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
 import { siteContact } from "@/lib/site-contact";
@@ -25,7 +25,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <TransitionLink href="/" className="flex items-center gap-2 mb-4">
+            <TrackedCtaLink href="/" ctaId="footer_logo_home" className="flex items-center gap-2 mb-4">
               <Image
                 src="/logo.png"
                 alt="DigiStart logo"
@@ -36,7 +36,7 @@ export function Footer() {
               <span className="text-xl font-bold">
                 Digi<span className="text-primary">Start</span>
               </span>
-            </TransitionLink>
+            </TrackedCtaLink>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
               Изграждаме дигиталното бъдеще на вашия бизнес. Професионални уеб решения, които работят за вас.
             </p>
@@ -77,12 +77,13 @@ export function Footer() {
             <ul className="space-y-3">
               {services.map((service) => (
                 <li key={service.href}>
-                  <TransitionLink
+                  <TrackedCtaLink
                     href={service.href}
+                    ctaId={`footer_service_${service.href.replaceAll("/", "_")}`}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     {service.label}
-                  </TransitionLink>
+                  </TrackedCtaLink>
                 </li>
               ))}
             </ul>
@@ -94,12 +95,13 @@ export function Footer() {
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.href}>
-                  <TransitionLink
+                  <TrackedCtaLink
                     href={link.href}
+                    ctaId={`footer_quick_${link.href.replaceAll("/", "_").replaceAll("#", "")}`}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.label}
-                  </TransitionLink>
+                  </TrackedCtaLink>
                 </li>
               ))}
             </ul>
@@ -143,24 +145,27 @@ export function Footer() {
             &copy; {new Date().getFullYear()} DigiStart. Всички права запазени.
           </p>
           <div className="flex items-center gap-6">
-            <TransitionLink
+            <TrackedCtaLink
               href="/privacy-policy"
+              ctaId="footer_privacy_policy"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Поверителност
-            </TransitionLink>
-            <TransitionLink
+            </TrackedCtaLink>
+            <TrackedCtaLink
               href="/terms-and-conditions"
+              ctaId="footer_terms_conditions"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Условия за ползване
-            </TransitionLink>
-            <TransitionLink
+            </TrackedCtaLink>
+            <TrackedCtaLink
               href="/cookies-policy"
+              ctaId="footer_cookies_policy"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Бисквитки
-            </TransitionLink>
+            </TrackedCtaLink>
           </div>
         </div>
       </div>

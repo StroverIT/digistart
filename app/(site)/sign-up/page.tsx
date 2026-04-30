@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import TransitionLink from "@/components/transitions/TransitionLink";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -138,16 +137,17 @@ export default function SignUpPage() {
           </form>
           <p className="text-sm text-muted-foreground mt-4 text-center">
             Вече имате акаунт?{" "}
-            <Link href="/sign-in" className="text-primary hover:underline">
+            <TrackedCtaLink href="/sign-in" ctaId="signup_to_signin" className="text-primary hover:underline">
               Вход
-            </Link>
+            </TrackedCtaLink>
           </p>
-          <TransitionLink
+          <TrackedCtaLink
             href="/"
+            ctaId="signup_back_home"
             className="block text-center text-sm text-muted-foreground mt-2 hover:text-foreground"
           >
             Към началото
-          </TransitionLink>
+          </TrackedCtaLink>
         </CardContent>
       </Card>
     </div>

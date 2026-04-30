@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import TransitionLink from "@/components/transitions/TransitionLink";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { ArrowLeft, ArrowRight, ChevronDown, Package, ShoppingCart, Trash2 } from "lucide-react";
 import gsap from "gsap";
 import { Button } from "@/components/ui/button";
@@ -234,12 +234,12 @@ export default function CartPage() {
               <p className="text-muted-foreground mb-6">
                 Разгледайте нашите услуги и добавете нещо в кошницата.
               </p>
-              <TransitionLink href="/#services">
+              <TrackedCtaLink href="/#services" ctaId="cart_empty_to_services">
                 <Button className="glow-primary">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Към услугите
                 </Button>
-              </TransitionLink>
+              </TrackedCtaLink>
             </CardContent>
           </Card>
         ) : (
@@ -256,13 +256,14 @@ export default function CartPage() {
                 />
               ))}
 
-              <TransitionLink
+              <TrackedCtaLink
                 href="/#services"
+                ctaId="cart_continue_shopping"
                 className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mt-4"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Продължете с пазаруването
-              </TransitionLink>
+              </TrackedCtaLink>
             </div>
 
             {/* Order Summary */}
@@ -306,12 +307,12 @@ export default function CartPage() {
                     )}
                   </div>
 
-                  <TransitionLink href="/checkout" className="block">
+                  <TrackedCtaLink href="/checkout" ctaId="cart_to_checkout" className="block">
                     <Button size="lg" className="w-full glow-primary">
                       Продължи към поръчка
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
-                  </TransitionLink>
+                  </TrackedCtaLink>
 
                   <p className="text-xs text-muted-foreground text-center">
                     Плащането ще бъде извършено през Stripe

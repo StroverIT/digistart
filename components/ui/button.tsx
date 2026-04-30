@@ -1,8 +1,12 @@
-import * as React from 'react'
-import { Slot } from '@radix-ui/react-slot'
-import { cva, type VariantProps } from 'class-variance-authority'
+"use client";
 
-import { cn } from '@/lib/utils'
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { usePathname } from "next/navigation";
+import { useAnalyticsMode } from "@/components/analytics/analytics-mode-provider";
+
+import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -34,27 +38,61 @@ const buttonVariants = cva(
       size: 'default',
     },
   },
-)
+);
 
 function Button({
   className,
   variant,
   size,
   asChild = false,
+  analyticsCtaId,
+  analyticsPage,
   ...props
-}: React.ComponentProps<'button'> &
+}: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
+    asChild?: boolean;
+    analyticsCtaId?: string;
+    analyticsPage?: string;
   }) {
-  const Comp = asChild ? Slot : 'button'
+  const Comp = asChild ? Slot : "button";
+  const pathname = usePathname();
+  const { isAdmin, isAnalyticsMode, showAllCtaStats, ctaStats, pageStats } =
+    useAnalyticsMode();
+
+  const pageKey = analyticsPage ?? pathname ?? "/";
+  const ctaClicks = analyticsCtaId
+    ? ctaStats.find((item) => item.page === pageKey && item.ctaId === analyticsCtaId)
+        ?.clicks ?? 0
+    : 0;
+  const pageViews =
+    pageStats.find((item) => item.page === pageKey)?.views ??
+    pageStats.find((item) => item.page === "/")?.views ??
+    0;
+  const showAnalyticsBadge =
+    !asChild && isAdmin && isAnalyticsMode && Boolean(analyticsCtaId) && pageViews > 0;
 
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(
+        buttonVariants({ variant, size, className }),
+        showAnalyticsBadge && "relative group",
+      )}
       {...props}
-    />
-  )
+    >
+      {props.children}
+      {showAnalyticsBadge ? (
+        <span
+          className={cn(
+            "pointer-events-none absolute -top-2 right-0 rounded-full border border-primary/40 bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-foreground shadow-sm transition-opacity",
+            showAllCtaStats ? "opacity-100" : "opacity-0 group-hover:opacity-100",
+          )}
+        >
+          {pageViews} views / {ctaClicks} clicks
+        </span>
+      ) : null}
+    </Comp>
+  );
 }
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };

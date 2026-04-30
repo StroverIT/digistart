@@ -10,7 +10,7 @@ import {
   Share2,
   ShoppingCart,
 } from "lucide-react";
-import TransitionLink from "@/components/transitions/TransitionLink";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
@@ -35,13 +35,14 @@ export function ServiceDetailWithConfigurator({
   return (
     <div className="pt-24 pb-16">
       <div className="container mx-auto px-4">
-        <TransitionLink
+        <TrackedCtaLink
           href="/#services"
+          ctaId={`service_${service.slug}_back_to_services`}
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="h-4 w-4" />
           Обратно към услугите
-        </TransitionLink>
+        </TrackedCtaLink>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div>
@@ -90,11 +91,15 @@ export function ServiceDetailWithConfigurator({
                 {services
                   .filter((s) => s.id !== service.id)
                   .map((s) => (
-                    <TransitionLink key={s.id} href={`/services/${s.slug}`}>
+                    <TrackedCtaLink
+                      key={s.id}
+                      href={`/services/${s.slug}`}
+                      ctaId={`service_${service.slug}_other_${s.slug}`}
+                    >
                       <Button variant="outline" size="sm">
                         {s.name}
                       </Button>
-                    </TransitionLink>
+                    </TrackedCtaLink>
                   ))}
               </div>
             </div>

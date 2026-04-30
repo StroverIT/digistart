@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import TransitionLink from "@/components/transitions/TransitionLink";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -482,13 +482,14 @@ export default function CheckoutPage() {
   return (
     <div className="pt-24 pb-16">
       <div className="container mx-auto px-4">
-        <TransitionLink
+        <TrackedCtaLink
           href="/cart"
+          ctaId="checkout_back_to_cart"
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="h-4 w-4" />
           Обратно към кошницата
-        </TransitionLink>
+        </TrackedCtaLink>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div>

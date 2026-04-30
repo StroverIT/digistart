@@ -11,6 +11,7 @@ import {
   type UpsellEntryErrors,
 } from "@/components/services/upsell-validation";
 import type { CartItemUpsell, Service } from "@/lib/types";
+import { trackCtaClick } from "@/lib/analytics/tracker";
 
 interface ServiceBuySectionProps {
   service: Service;
@@ -23,6 +24,8 @@ interface ServiceBuySectionProps {
   onUpsellsChange: (nextUpsells: CartItemUpsell[]) => void;
   onAddToCart: () => void;
   isAdding: boolean;
+  ctaId?: string;
+  ctaPage?: string;
 }
 
 export function ServiceBuySection({
@@ -36,6 +39,8 @@ export function ServiceBuySection({
   onUpsellsChange,
   onAddToCart,
   isAdding,
+  ctaId,
+  ctaPage,
 }: ServiceBuySectionProps) {
   const [errors, setErrors] = useState<UpsellEntryErrors>({});
 
@@ -81,6 +86,9 @@ export function ServiceBuySection({
       toast.error("Моля попълни всички задължителни полета за избраните допълнителни услуги.");
       return;
     }
+    if (ctaId) {
+      trackCtaClick(ctaPage ?? `/services/${service.slug}`, ctaId);
+    }
     onAddToCart();
   };
 
@@ -107,6 +115,7 @@ export function ServiceBuySection({
                   value={upsells}
                   onChange={handleChange}
                   errors={errors}
+                  analyticsPage={ctaPage ?? `/services/${service.slug}`}
                 />
               </div>
             ) : null}
@@ -124,6 +133,8 @@ export function ServiceBuySection({
                 onClick={handleAddClick}
                 size="lg"
                 disabled={isAdding}
+                analyticsCtaId={ctaId}
+                analyticsPage={ctaPage ?? `/services/${service.slug}`}
                 className="h-12 w-full px-6 text-base bg-orange-500 hover:bg-orange-600 text-white"
               >
                 {isAdding ? "Обработка..." : ctaText}
@@ -146,6 +157,8 @@ export function ServiceBuySection({
             onClick={handleAddClick}
             size="lg"
             disabled={isAdding}
+            analyticsCtaId={ctaId}
+            analyticsPage={ctaPage ?? `/services/${service.slug}`}
             className="h-11 shrink-0 px-5 text-sm bg-orange-500 hover:bg-orange-600 text-white"
           >
             {isAdding ? "Обработка..." : ctaText}

@@ -60,6 +60,14 @@ export function trackAnalyticsEvent(
   scheduleFlush();
 }
 
+export function trackCtaClick(
+  page: string,
+  ctaId: string,
+  metadata?: Record<string, unknown>,
+): void {
+  trackAnalyticsEvent("cta_click", page, { cta_id: ctaId, ...metadata });
+}
+
 function serializeBatch(events: QueuedAnalyticsEvent[]): string {
   const payload: { events: AnalyticsEventPayload[] } = {
     events: events.map((event) => ({

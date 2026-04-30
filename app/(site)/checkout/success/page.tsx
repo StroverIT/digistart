@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
-import TransitionLink from "@/components/transitions/TransitionLink";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { CheckCircle2, ArrowRight, Mail, Phone, Home, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -221,25 +221,28 @@ function SuccessContent() {
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <TransitionLink href="/">
+        <TrackedCtaLink href="/" ctaId="checkout_success_home">
           <Button variant="outline" size="lg">
             <Home className="mr-2 h-5 w-5" />
             Към началото
           </Button>
-        </TransitionLink>
-        <TransitionLink href="/#services">
+        </TrackedCtaLink>
+        <TrackedCtaLink href="/#services" ctaId="checkout_success_more_services">
           <Button size="lg" variant="secondary">
             Разгледайте още услуги
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
-        </TransitionLink>
+        </TrackedCtaLink>
         {session?.user?.role === "customer" && order?.cart?.items?.[0]?.id ? (
-          <TransitionLink href={`/user/services/${order.cart.items[0].id}`}>
+          <TrackedCtaLink
+            href={`/user/services/${order.cart.items[0].id}`}
+            ctaId="checkout_success_open_user_panel_order"
+          >
             <Button size="lg" className="glow-primary">
               Виж поръчката в панела
               <User className="ml-2 h-5 w-5" />
             </Button>
-          </TransitionLink>
+          </TrackedCtaLink>
         ) : null}
       </div>
     </div>

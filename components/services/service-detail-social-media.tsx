@@ -11,7 +11,8 @@ import {
   ShoppingCart,
   Smartphone,
 } from "lucide-react";
-import TransitionLink from "@/components/transitions/TransitionLink";
+import { trackCtaClick } from "@/lib/analytics/tracker";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
@@ -151,12 +152,13 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
         />
 
         <div className="container relative z-10 mx-auto px-4">
-          <TransitionLink
+          <TrackedCtaLink
             href="/#services"
+            ctaId="service_social_media_back_to_services"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
           >
             Към услугите
-          </TransitionLink>
+          </TrackedCtaLink>
 
           <div className="max-w-4xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
@@ -179,7 +181,10 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
               />
               <span className="text-muted-foreground">/месец</span>
               <Button
-                onClick={scrollToBuySection}
+                onClick={() => {
+                  trackCtaClick("/services/social-media", "service_social_media_scroll_to_buy");
+                  scrollToBuySection();
+                }}
                 size="lg"
                 className="h-14 px-8 text-lg bg-orange-500 hover:bg-orange-600 text-white"
               >
@@ -321,6 +326,8 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
         onUpsellsChange={setUpsells}
         onAddToCart={handleMarketingCheckout}
         isAdding={isAdding}
+        ctaId="service_social_media_buy_section_add_to_cart"
+        ctaPage="/services/social-media"
       />
 
       <div className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/95 backdrop-blur px-4 py-3">
@@ -331,7 +338,10 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
             <p className="text-xs text-muted-foreground">/мес.</p>
           </div>
           <Button
-            onClick={handleMarketingCheckout}
+            onClick={() => {
+              trackCtaClick("/services/social-media", "service_social_media_mobile_add_to_cart");
+              handleMarketingCheckout();
+            }}
             disabled={isAdding}
             className="min-h-11 min-w-30 shrink-0 px-4 text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white"
           >

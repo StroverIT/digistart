@@ -1,6 +1,7 @@
 "use client";
 
 import { Minus, Plus } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,12 +16,15 @@ import {
 import { cn } from "@/lib/utils";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import type { UpsellEntryErrors } from "@/components/services/upsell-validation";
+import { useAnalyticsMode } from "@/components/analytics/analytics-mode-provider";
+import { trackCtaClick } from "@/lib/analytics/tracker";
 
 interface UpsellConfiguratorProps {
   service: Service;
   value: CartItemUpsell[];
   onChange: (nextValue: CartItemUpsell[]) => void;
   errors?: UpsellEntryErrors;
+  analyticsPage?: string;
 }
 
 function isMonthlyUnit(unit?: string): boolean {
@@ -46,7 +50,17 @@ function getUpsellAmount(service: Service, item: CartItemUpsell): number {
   return (upsell.pricePerUnit ?? 0) * billableUnits;
 }
 
-export function UpsellConfigurator({ service, value, onChange, errors }: UpsellConfiguratorProps) {
+export function UpsellConfigurator({
+  service,
+  value,
+  onChange,
+  errors,
+  analyticsPage,
+}: UpsellConfiguratorProps) {
+  const pathname = usePathname();
+  const { isAdmin, isAnalyticsMode, showAllCtaStats, ctaStats, pageStats } =
+    useAnalyticsMode();
+  const pageKey = analyticsPage ?? pathname ?? `/services/${service.slug}`;
   const byId = new Map(value.map((item) => [item.upsellId, item]));
 
   const setUpsell = (upsellId: string, next: CartItemUpsell | null) => {
@@ -68,6 +82,7 @@ export function UpsellConfigurator({ service, value, onChange, errors }: UpsellC
       setUpsell(upsellId, null);
       return;
     }
+    trackCtaClick(pageKey, `upsell_${service.slug}_${upsellId}`);
     setUpsell(upsellId, {
       upsellId,
       quantity: safeQuantity,
@@ -80,6 +95,7 @@ export function UpsellConfigurator({ service, value, onChange, errors }: UpsellC
   const updateChoice = (upsellId: string, choiceId: string) => {
     const current = byId.get(upsellId);
     const quantity = current?.quantity || 1;
+    trackCtaClick(pageKey, `upsell_${service.slug}_${upsellId}`);
     setUpsell(upsellId, {
       upsellId,
       quantity,
@@ -103,6 +119,12 @@ export function UpsellConfigurator({ service, value, onChange, errors }: UpsellC
         const amount = item ? getUpsellAmount(service, item) : 0;
         const min = upsell.min ?? 0;
         const max = upsell.max ?? 9999;
+        const upsellCtaId = `upsell_${service.slug}_${upsell.id}`;
+        const clicks =
+          ctaStats.find((entry) => entry.page === pageKey && entry.ctaId === upsellCtaId)
+            ?.clicks ?? 0;
+        const views = pageStats.find((entry) => entry.page === pageKey)?.views ?? 0;
+        const showBadge = isAdmin && isAnalyticsMode && views > 0;
 
         return (
           <div
@@ -114,7 +136,19 @@ export function UpsellConfigurator({ service, value, onChange, errors }: UpsellC
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
-                <Label className="font-semibold block mb-1">{upsell.name}</Label>
+                <div className="mb-1 flex items-center gap-2">
+                  <Label className="font-semibold">{upsell.name}</Label>
+                  {showBadge ? (
+                    <span
+                      className={cn(
+                        "rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold",
+                        showAllCtaStats ? "opacity-100" : "opacity-70",
+                      )}
+                    >
+                      {views} views / {clicks} clicks
+                    </span>
+                  ) : null}
+                </div>
                 <p className="text-sm text-muted-foreground">{upsell.description}</p>
                 {upsell.helperText ? (
                   <p className="text-xs text-muted-foreground mt-1">{upsell.helperText}</p>

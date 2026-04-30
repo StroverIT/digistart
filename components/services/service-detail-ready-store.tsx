@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import TransitionLink from "@/components/transitions/TransitionLink";
+import { trackCtaClick } from "@/lib/analytics/tracker";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { Price } from "@/components/ui/price";
 import {
   ArrowUpRight,
@@ -186,12 +187,13 @@ export function ServiceDetailReadyStore({
         />
 
         <div className="container relative z-10 mx-auto px-4">
-          <TransitionLink
+          <TrackedCtaLink
             href="/#services"
+            ctaId="service_ready_store_back_to_services"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
           >
             Към услугите
-          </TransitionLink>
+          </TrackedCtaLink>
 
           <div className="max-w-4xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
@@ -222,7 +224,10 @@ export function ServiceDetailReadyStore({
               />
               <button
                 type="button"
-                onClick={scrollToBuySection}
+                onClick={() => {
+                  trackCtaClick("/services/online-store", "service_ready_store_scroll_to_buy");
+                  scrollToBuySection();
+                }}
                 className="h-14 px-8 text-lg rounded-xl bg-orange-500 hover:bg-orange-600 text-white inline-flex items-center justify-center font-semibold"
               >
                 Купи сега
@@ -420,6 +425,8 @@ export function ServiceDetailReadyStore({
           onUpsellsChange={setUpsells}
           onAddToCart={handleCheckout}
           isAdding={isAdding}
+        ctaId="service_ready_store_buy_section_add_to_cart"
+        ctaPage="/services/online-store"
         />
       ) : null}
 
@@ -431,7 +438,10 @@ export function ServiceDetailReadyStore({
           </div>
           <button
             type="button"
-            onClick={handleCheckout}
+            onClick={() => {
+              trackCtaClick("/services/online-store", "service_ready_store_mobile_add_to_cart");
+              handleCheckout();
+            }}
             disabled={isAdding}
             className="min-h-11 min-w-30 shrink-0 rounded-lg bg-orange-500 px-4 text-sm font-bold text-white hover:bg-orange-600 disabled:opacity-70"
           >

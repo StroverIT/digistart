@@ -3,8 +3,7 @@
 import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import TransitionLink from "@/components/transitions/TransitionLink";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -89,16 +88,17 @@ function SignInForm() {
           </form>
           <p className="text-sm text-muted-foreground mt-4 text-center">
             Нямате акаунт?{" "}
-            <Link href="/sign-up" className="text-primary hover:underline">
+            <TrackedCtaLink href="/sign-up" ctaId="signin_to_signup" className="text-primary hover:underline">
               Регистрация
-            </Link>
+            </TrackedCtaLink>
           </p>
-          <TransitionLink
+          <TrackedCtaLink
             href="/"
+            ctaId="signin_back_home"
             className="block text-center text-sm text-muted-foreground mt-2 hover:text-foreground"
           >
             Към началото
-          </TransitionLink>
+          </TrackedCtaLink>
         </CardContent>
       </Card>
     </div>
