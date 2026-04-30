@@ -87,6 +87,16 @@ function amountToMinorUnits(amount: number) {
   return Math.round(amount * 100);
 }
 
+function extractStripeId(value: unknown): string | null {
+  if (!value) return null;
+  if (typeof value === "string") return value;
+  if (typeof value === "object" && "id" in value) {
+    const id = (value as { id?: unknown }).id;
+    return typeof id === "string" ? id : null;
+  }
+  return null;
+}
+
 async function buildLineItems(
   items: z.infer<typeof payloadSchema>["cart"]["items"]
 ): Promise<Array<{ price: string; quantity: number }>> {
@@ -298,7 +308,26 @@ export async function POST(req: NextRequest) {
       sessionBase.cancel_url = `${siteUrl}/checkout`;
     }
 
-    const checkoutSession = await stripe.checkout.sessions.create(sessionBase);
+    const checkoutSession = await stripe.checkout.sessions.create({
+      ...sessionBase,
+      expand: ["payment_intent", "subscription.latest_invoice.payment_intent"],
+    });
+
+    const directPaymentIntentId = extractStripeId(checkoutSession.payment_intent);
+    const subscriptionId = extractStripeId(checkoutSession.subscription);
+    const expandedSubscription =
+      typeof checkoutSession.subscription === "object" && checkoutSession.subscription
+        ? checkoutSession.subscription
+        : null;
+    const subscriptionPaymentIntentId =
+      expandedSubscription && typeof expandedSubscription === "object"
+        ? extractStripeId(
+            (expandedSubscription as { latest_invoice?: { payment_intent?: unknown } | null })
+              .latest_invoice?.payment_intent
+          )
+        : null;
+    const invoiceId = extractStripeId(checkoutSession.invoice);
+    const paymentIntentId = directPaymentIntentId ?? subscriptionPaymentIntentId ?? invoiceId;
 
     if (uiMode === "embedded" && !checkoutSession.client_secret) {
       return NextResponse.json(
@@ -315,7 +344,10 @@ export async function POST(req: NextRequest) {
       orderId: order.id,
       checkoutSessionId: checkoutSession.id,
       checkoutMode: mode,
+      paymentIntentId,
+      subscriptionId,
       customerId: stripeCustomer.stripeCustomerId,
+      paymentStatus: checkoutSession.payment_status ?? null,
       metadata: {
         orderId: order.id,
       },

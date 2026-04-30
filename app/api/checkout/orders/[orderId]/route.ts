@@ -78,6 +78,8 @@ export async function POST(
     typeof session.payment_intent === "string"
       ? session.payment_intent
       : session.payment_intent?.id;
+  const invoiceId =
+    typeof session.invoice === "string" ? session.invoice : session.invoice?.id;
   const subscriptionId =
     typeof session.subscription === "string"
       ? session.subscription
@@ -89,7 +91,7 @@ export async function POST(
   await setOrderStripeSnapshotInDb({
     orderId,
     checkoutSessionId: session.id,
-    paymentIntentId,
+    paymentIntentId: paymentIntentId ?? invoiceId,
     subscriptionId,
     customerId,
     paymentStatus: session.payment_status,

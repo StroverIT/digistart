@@ -242,7 +242,10 @@ export async function setOrderStripeSessionInDb(params: {
   orderId: string;
   checkoutSessionId: string;
   checkoutMode: "payment" | "subscription";
+  paymentIntentId?: string | null;
+  subscriptionId?: string | null;
   customerId?: string | null;
+  paymentStatus?: string | null;
   metadata?: Record<string, string>;
 }) {
   const updated = await prisma.order.update({
@@ -250,7 +253,10 @@ export async function setOrderStripeSessionInDb(params: {
     data: {
       stripeCheckoutSessionId: params.checkoutSessionId,
       stripeCheckoutMode: params.checkoutMode,
+      stripePaymentIntentId: params.paymentIntentId ?? undefined,
+      stripeSubscriptionId: params.subscriptionId ?? undefined,
       stripeCustomerId: params.customerId ?? undefined,
+      stripePaymentStatus: params.paymentStatus ?? undefined,
       stripeMetadata: params.metadata ?? undefined,
     },
     include: { items: true, consultation: true },

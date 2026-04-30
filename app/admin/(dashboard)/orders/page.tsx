@@ -63,6 +63,8 @@ export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [resolvedPaymentIntentId, setResolvedPaymentIntentId] = useState<string | null>(null);
+  const [isResolvingPaymentIntent, setIsResolvingPaymentIntent] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -71,6 +73,7 @@ export default function OrdersPage() {
       .then((response) => response.json())
       .then((data: { orders?: Order[] }) => {
         const allOrders = data.orders ?? [];
+
         setOrders(allOrders);
         setFilteredOrders(allOrders);
       })
@@ -116,6 +119,45 @@ export default function OrdersPage() {
       })
       .catch(() => undefined);
   };
+
+
+  useEffect(() => {
+    if (!selectedOrder) {
+      setResolvedPaymentIntentId(null);
+      setIsResolvingPaymentIntent(false);
+      return;
+    }
+
+    if (selectedOrder.stripe?.paymentIntentId) {
+      setResolvedPaymentIntentId(selectedOrder.stripe.paymentIntentId);
+      setIsResolvingPaymentIntent(false);
+      return;
+    }
+
+    if (!selectedOrder.stripe?.checkoutSessionId && !selectedOrder.stripe?.subscriptionId) {
+      setResolvedPaymentIntentId(null);
+      setIsResolvingPaymentIntent(false);
+      return;
+    }
+
+    setIsResolvingPaymentIntent(true);
+
+
+    fetch(`/api/checkout/orders/${selectedOrder.id}/stripe-payment-intent`)
+      .then((response) => response.json())
+      .then((data: { paymentIntentId?: string | null }) => {
+        setResolvedPaymentIntentId(data.paymentIntentId ?? null);
+
+      })
+      .catch(() => {
+        setResolvedPaymentIntentId(null);
+      })
+      .finally(() => {
+        setIsResolvingPaymentIntent(false);
+      });
+  }, [selectedOrder]);
+
+
 
   if (!mounted) {
     return (
@@ -319,7 +361,9 @@ export default function OrdersPage() {
                   <p>
                     <span className="text-muted-foreground">Stripe Payment ID:</span>{" "}
                     <span className="font-mono text-sm break-all">
-                      {selectedOrder.stripe?.paymentIntentId ?? "Няма"}
+                      {selectedOrder.stripe?.paymentIntentId ??
+                        resolvedPaymentIntentId ??
+                        (isResolvingPaymentIntent ? "Зареждане..." : "Няма")}
                     </span>
                   </p>
                   <p>
