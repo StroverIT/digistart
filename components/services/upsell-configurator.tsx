@@ -130,7 +130,7 @@ export function UpsellConfigurator({
           <div
             key={upsell.id}
             className={cn(
-              "rounded-lg border p-4 transition-colors",
+              "group rounded-lg border p-4 transition-colors",
               quantity > 0 ? "border-primary/50 bg-primary/5" : "border-border"
             )}
           >
@@ -141,8 +141,8 @@ export function UpsellConfigurator({
                   {showBadge ? (
                     <span
                       className={cn(
-                        "rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold",
-                        showAllCtaStats ? "opacity-100" : "opacity-70",
+                        "rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold transition-opacity",
+                        showAllCtaStats ? "opacity-100" : "opacity-0 group-hover:opacity-100",
                       )}
                     >
                       {views} views / {clicks} clicks
