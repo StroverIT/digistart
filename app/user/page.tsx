@@ -24,16 +24,16 @@ export default async function UserHomePage() {
   const nextRenewal = renewDates[0] ?? null;
   const nextRenewalServices = nextRenewal
     ? Array.from(
-        new Set(
-          orders
-            .filter(
-              (o) =>
-                o.subscriptionRenewsAt &&
-                o.subscriptionRenewsAt.getTime() === nextRenewal.getTime()
-            )
-            .flatMap((o) => o.items.map((item) => item.serviceName))
-        )
+      new Set(
+        orders
+          .filter(
+            (o) =>
+              o.subscriptionRenewsAt &&
+              o.subscriptionRenewsAt.getTime() === nextRenewal.getTime()
+          )
+          .flatMap((o) => o.items.map((item) => item.serviceName))
       )
+    )
     : [];
 
   return (
@@ -64,7 +64,7 @@ export default async function UserHomePage() {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">
-              <Price value={totalOneTime} />
+              <Price value={totalOneTime} layout="vertical" />
             </p>
           </CardContent>
         </Card>
@@ -78,10 +78,10 @@ export default async function UserHomePage() {
             <p className="text-lg font-semibold">
               {nextRenewal
                 ? nextRenewal.toLocaleDateString("bg-BG", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })
                 : "—"}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">

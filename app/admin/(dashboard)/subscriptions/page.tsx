@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { RefreshCw, History, CalendarClock } from "lucide-react";
+import { RefreshCw, History, CalendarClock, Wallet } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import type { Order } from "@/lib/types";
@@ -52,6 +52,10 @@ export default function AdminSubscriptionsPage() {
     );
   }, [recurringOrders]);
 
+  const totalSubscriptionsMonthly = useMemo(() => {
+    return recurringOrders.reduce((sum, order) => sum + order.cart.totalMonthly, 0);
+  }, [recurringOrders]);
+
   if (!mounted) {
     return (
       <div className="h-96 flex items-center justify-center">
@@ -69,7 +73,7 @@ export default function AdminSubscriptionsPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="bg-card border-border">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -117,6 +121,21 @@ export default function AdminSubscriptionsPage() {
             <p className="text-sm text-muted-foreground mt-1">
               Потвърдени като subscription в Stripe
             </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card border-border">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <Wallet className="h-4 w-4 text-primary" />
+              Обща сума абонаменти
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">
+              <Price value={totalSubscriptionsMonthly} layout="vertical" />
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">Сума на всички recurring месечни такси</p>
           </CardContent>
         </Card>
       </div>
