@@ -323,6 +323,14 @@ export default function OrdersPage() {
                     </span>
                   </p>
                   <p>
+                    <span className="text-muted-foreground">Stripe Reference ID:</span>{" "}
+                    <span className="font-mono text-sm break-all">
+                      {selectedOrder.stripe?.subscriptionId ??
+                        selectedOrder.stripe?.checkoutSessionId ??
+                        "Няма"}
+                    </span>
+                  </p>
+                  <p>
                     <span className="text-muted-foreground">Телефон:</span>{" "}
                     {selectedOrder.customer.phone}
                   </p>
