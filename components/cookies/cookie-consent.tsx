@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import gsap from "gsap";
 
 type CookieConsentState = {
   functional: true;
@@ -37,16 +38,26 @@ export function CookieConsent() {
   const [isOpen, setIsOpen] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
   const [adsEnabled, setAdsEnabled] = useState(false);
+  const bannerRef = useRef<HTMLDivElement | null>(null);
+  const preferencesOverlayRef = useRef<HTMLDivElement | null>(null);
+  const preferencesPanelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const consent = readConsent();
     if (consent) {
       setAdsEnabled(Boolean(consent.ads));
       setIsOpen(false);
+      setIsReady(true);
     } else {
-      setIsOpen(true);
+      const timerId = window.setTimeout(() => {
+        setIsOpen(true);
+        setIsReady(true);
+      }, 4000);
+
+      return () => {
+        window.clearTimeout(timerId);
+      };
     }
-    setIsReady(true);
   }, []);
 
   const consentPayload = useMemo(
@@ -58,27 +69,105 @@ export function CookieConsent() {
     [adsEnabled]
   );
 
+  useEffect(() => {
+    if (!isReady || !isOpen || !bannerRef.current) {
+      return;
+    }
+
+    gsap.fromTo(
+      bannerRef.current,
+      { yPercent: 100, autoAlpha: 0 },
+      { yPercent: 0, autoAlpha: 1, duration: 0.5, ease: "power3.out" }
+    );
+  }, [isReady, isOpen]);
+
+  useEffect(() => {
+    if (!showPreferences || !preferencesOverlayRef.current || !preferencesPanelRef.current) {
+      return;
+    }
+
+    gsap.set(preferencesOverlayRef.current, { autoAlpha: 0 });
+    gsap.set(preferencesPanelRef.current, { y: 24, autoAlpha: 0 });
+
+    const timeline = gsap.timeline();
+    timeline.to(preferencesOverlayRef.current, {
+      autoAlpha: 1,
+      duration: 0.2,
+      ease: "power2.out",
+    });
+    timeline.to(
+      preferencesPanelRef.current,
+      { y: 0, autoAlpha: 1, duration: 0.25, ease: "power3.out" },
+      "<"
+    );
+  }, [showPreferences]);
+
   if (!isReady || !isOpen) {
     return null;
   }
 
+  const closePreferences = (onComplete?: () => void) => {
+    if (!showPreferences || !preferencesOverlayRef.current || !preferencesPanelRef.current) {
+      setShowPreferences(false);
+      onComplete?.();
+      return;
+    }
+
+    const timeline = gsap.timeline({
+      onComplete: () => {
+        setShowPreferences(false);
+        onComplete?.();
+      },
+    });
+    timeline.to(preferencesPanelRef.current, {
+      y: 24,
+      autoAlpha: 0,
+      duration: 0.2,
+      ease: "power2.in",
+    });
+    timeline.to(
+      preferencesOverlayRef.current,
+      { autoAlpha: 0, duration: 0.2, ease: "power2.in" },
+      "<"
+    );
+  };
+
+  const closeBanner = (nextAds: boolean) => {
+    const next = { ...consentPayload, ads: nextAds };
+    const finish = () => {
+      saveConsent(next);
+      setAdsEnabled(nextAds);
+      setIsOpen(false);
+    };
+
+    if (!bannerRef.current) {
+      finish();
+      return;
+    }
+
+    gsap.to(bannerRef.current, {
+      yPercent: 100,
+      autoAlpha: 0,
+      duration: 0.35,
+      ease: "power2.in",
+      onComplete: finish,
+    });
+  };
+
   const handleAcceptAll = () => {
-    const next = { ...consentPayload, ads: true };
-    saveConsent(next);
-    setAdsEnabled(true);
-    setIsOpen(false);
-    setShowPreferences(false);
+    closePreferences(() => closeBanner(true));
   };
 
   const handleConfirmSelection = () => {
-    saveConsent(consentPayload);
-    setIsOpen(false);
-    setShowPreferences(false);
+    closePreferences(() => closeBanner(adsEnabled));
   };
 
   return (
     <>
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 backdrop-blur">
+      <div
+        ref={bannerRef}
+        className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 backdrop-blur"
+      >
         <div className="container mx-auto flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm text-foreground">
@@ -114,8 +203,14 @@ export function CookieConsent() {
       </div>
 
       {showPreferences ? (
-        <div className="fixed inset-0 z-60 flex items-end justify-center bg-foreground/40 p-4 sm:items-center">
-          <div className="w-full max-w-2xl rounded-xl border border-border bg-card p-6 shadow-xl">
+        <div
+          ref={preferencesOverlayRef}
+          className="fixed inset-0 z-60 flex items-end justify-center bg-foreground/40 p-4 sm:items-center"
+        >
+          <div
+            ref={preferencesPanelRef}
+            className="w-full max-w-2xl rounded-xl border border-border bg-card p-6 shadow-xl"
+          >
             <h3 className="text-xl font-semibold text-foreground">
               Настройки за бисквитки
             </h3>
@@ -173,7 +268,7 @@ export function CookieConsent() {
             <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                onClick={() => setShowPreferences(false)}
+                onClick={() => closePreferences()}
                 className="rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
               >
                 Назад
