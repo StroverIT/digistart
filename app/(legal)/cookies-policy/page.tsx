@@ -84,10 +84,10 @@ export default function CookiesPolicy() {
                   <p className="text-muted-foreground">
                     <strong>Имейл за контакт:</strong>{" "}
                     <Link
-                      href="mailto:stroverbg@gmail.com"
+                      href="mailto:digistartbg@gmail.com"
                       className="text-primary hover:text-primary/80 underline transition-colors"
                     >
-                      stroverbg@gmail.com
+                      digistartbg@gmail.com
                     </Link>
                   </p>
                 </div>

@@ -1,5 +1,4 @@
 import React from "react";
-import TransitionLink from "@/components/transitions/TransitionLink";
 import Link from "next/link";
 import type { Metadata } from "next";
 export const fetchCache = "force-cache";
@@ -103,10 +102,10 @@ export default function PrivacyPolicy() {
                   <p className="text-muted-foreground">
                     <strong>Имейл за контакт със собственика:</strong>{" "}
                     <Link
-                      href="mailto:stroverbg@gmail.com"
+                      href="mailto:digistartbg@gmail.com"
                       className="text-primary hover:text-primary/80 underline transition-colors"
                     >
-                      stroverbg@gmail.com
+                      digistartbg@gmail.com
                     </Link>
                   </p>
                 </div>
@@ -230,12 +229,12 @@ export default function PrivacyPolicy() {
                     Това приложение използва Тракери (бисквитки и подобни
                     технологии). За да научат повече, Потребителите могат да се
                     запознаят с отделната{" "}
-                    <TransitionLink
+                    <Link
                       href="/cookies-policy"
                       className="text-primary hover:text-primary/80 underline transition-colors"
                     >
                       Политика за бисквитки
-                    </TransitionLink>
+                    </Link>
                     .
                   </p>
                 </section>
@@ -385,10 +384,10 @@ export default function PrivacyPolicy() {
                     Исканията за упражняване на права могат да бъдат изпращани
                     до Собственика на{" "}
                     <Link
-                      href="mailto:stroverbg@gmail.com"
+                      href="mailto:digistartbg@gmail.com"
                       className="text-primary hover:text-primary/80 underline transition-colors"
                     >
-                      stroverbg@gmail.com
+                      digistartbg@gmail.com
                     </Link>
                     . Исканията са безплатни; Собственикът ще отговори възможно
                     най-рано и винаги в рамките на един месец, като предостави

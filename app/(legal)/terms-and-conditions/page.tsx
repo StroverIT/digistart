@@ -1,5 +1,4 @@
 import React from "react";
-import TransitionLink from "@/components/transitions/TransitionLink";
 import Link from "next/link";
 import type { Metadata } from "next";
 export const fetchCache = "force-cache";
@@ -163,12 +162,12 @@ export default function TermsAndConditions() {
                     Strover ЕООД използва бисквитки. С достъпа до нашия уебсайт
                     Вие се съгласявате с използването на бисквитки в
                     съответствие с нашата{" "}
-                    <TransitionLink
+                    <Link
                       href="/privacy-policy"
                       className="text-primary hover:text-primary/80 underline transition-colors"
                     >
                       Политика за поверителност
-                    </TransitionLink>
+                    </Link>
                     .
                   </p>
                 </section>
@@ -223,10 +222,10 @@ export default function TermsAndConditions() {
                   <p className="text-muted-foreground">
                     Други организации могат да поискат разрешение чрез имейл на:{" "}
                     <Link
-                      href="mailto:stroverbg@gmail.com"
-                    className="text-primary hover:text-primary/80 underline transition-colors"
+                      href="mailto:digistartbg@gmail.com"
+                      className="text-primary hover:text-primary/80 underline transition-colors"
                     >
-                      stroverbg@gmail.com
+                      digistartbg@gmail.com
                     </Link>
                     .
                   </p>
@@ -250,12 +249,12 @@ export default function TermsAndConditions() {
                   </h2>
                   <p className="text-muted-foreground">
                     Моля, запознайте се с нашата{" "}
-                    <TransitionLink
+                    <Link
                       href="/privacy-policy"
-                    className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-primary hover:text-primary/80 underline transition-colors"
                     >
                       Политика за поверителност
-                    </TransitionLink>
+                    </Link>
                     , която описва как събираме, използваме и защитаваме личните
                     Ви данни в съответствие с GDPR и българското
                     законодателство.
@@ -280,10 +279,10 @@ export default function TermsAndConditions() {
                     Заявка за връщане на средства може да бъде направена на
                     имейл:{" "}
                     <Link
-                      href="mailto:stroverbg@gmail.com"
-                    className="text-primary hover:text-primary/80 underline transition-colors"
+                      href="mailto:digistartbg@gmail.com"
+                      className="text-primary hover:text-primary/80 underline transition-colors"
                     >
-                      stroverbg@gmail.com
+                      digistartbg@gmail.com
                     </Link>
                     . След одобрение, сумата ще бъде възстановена в срок до 14
                     календарни дни.
@@ -335,10 +334,10 @@ export default function TermsAndConditions() {
                   <p>
                     <strong>Имейл за контакт:</strong>{" "}
                     <Link
-                      href="mailto:stroverbg@gmail.com"
+                      href="mailto:digistartbg@gmail.com"
                       className="text-primary hover:text-primary/80 underline transition-colors"
                     >
-                      stroverbg@gmail.com
+                      digistartbg@gmail.com
                     </Link>
                   </p>
                   <p>
