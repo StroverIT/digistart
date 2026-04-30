@@ -73,6 +73,7 @@ export async function POST(
 
   const stripe = getStripeServerClient();
   const session = await stripe.checkout.sessions.retrieve(sessionId);
+  const wasPaidBefore = row.status === "paid";
 
   const paymentIntentId =
     typeof session.payment_intent === "string"
@@ -102,13 +103,18 @@ export async function POST(
     metadata: session.metadata ?? {},
     checkoutCompletedAt: new Date(session.created * 1000),
     paidAt,
-    markAsPaid: session.payment_status === "paid",
+    markAsPaid: false,
   });
 
   if (session.payment_status === "paid") {
     const ensured = await ensureGuestUserForOrderInDb(orderId);
-    if (ensured.guestProvisioned) {
-      await sendGuestOrderSuccessEmails({
+    const statusTransition = await prisma.order.updateMany({
+      where: { id: orderId, status: { not: "paid" } },
+      data: { status: "paid" },
+    });
+    const shouldSendEmails = ensured.guestProvisioned || statusTransition.count > 0;
+    if (shouldSendEmails) {
+      void sendGuestOrderSuccessEmails({
         orderId,
         customerName: row.customerName,
         customerEmail: row.customerEmail,

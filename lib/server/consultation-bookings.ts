@@ -20,18 +20,38 @@ export interface ConsultationRecord {
   googleEventId?: string;
 }
 
-function transporter() {
+async function transporter() {
+  const gmailUser =
+    process.env.GOOGLE_EMAIL_USER ??
+    process.env.GMAIL_USER ??
+    process.env.SMTP_USER ??
+    process.env.CONSULTATION_NOTIFY_EMAIL;
+  const googleClientId = process.env.GOOGLE_CLIENT_ID;
+  const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const googleRefreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+  const redirectUri = process.env.REDIRECT_URI;
+  if (!gmailUser || !googleClientId || !googleClientSecret || !googleRefreshToken || !redirectUri) {
+    return null;
+  }
+
+  const oauth2Client = new google.auth.OAuth2(
+    googleClientId,
+    googleClientSecret,
+    redirectUri
+  );
+  oauth2Client.setCredentials({ refresh_token: googleRefreshToken });
+  const accessToken = await oauth2Client.getAccessToken();
+
   return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT ?? 587),
-    secure: false,
-    auth:
-      process.env.SMTP_USER && process.env.SMTP_PASSWORD
-        ? {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASSWORD,
-          }
-        : undefined,
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: gmailUser,
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
+      refreshToken: googleRefreshToken,
+      accessToken: accessToken.token ?? undefined,
+    },
   });
 }
 
@@ -40,7 +60,7 @@ export async function getConsultationBookings(): Promise<ConsultationRecord[]> {
     const rows = await prisma.consultationBooking.findMany({
       orderBy: { createdAt: "desc" },
     });
-    return rows.map((row) => ({
+    return rows.map((row: (typeof rows)[number]) => ({
       id: row.id,
       name: row.name,
       email: row.email,
@@ -105,12 +125,16 @@ async function createGoogleMeet(booking: ConsultationRecord) {
 }
 
 async function sendConsultationEmails(booking: ConsultationRecord) {
-  const smtpHost = process.env.SMTP_HOST;
-  const from = process.env.SMTP_FROM;
-  if (!smtpHost || !from) return;
+  const from =
+    process.env.SMTP_FROM ??
+    (process.env.CONSULTATION_NOTIFY_EMAIL
+      ? `DigiStart <${process.env.CONSULTATION_NOTIFY_EMAIL}>`
+      : undefined);
+  if (!from) return;
 
   const notifyEmail = process.env.CONSULTATION_NOTIFY_EMAIL || "digistartbg@gmail.com";
-  const mailer = transporter();
+  const mailer = await transporter();
+  if (!mailer) return;
   const commonText = `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.source}\nGoogle Meet: ${booking.meetUrl ?? "Ще бъде добавен допълнително"}`;
 
   await Promise.all([
@@ -168,7 +192,7 @@ export async function saveConsultationBooking(
   await sendConsultationEmails({
     ...booking,
     timezone: "Europe/Sofia",
-    meetUrl: meetData?.meetUrl,
-    googleEventId: meetData?.eventId,
+    meetUrl: meetData?.meetUrl ?? undefined,
+    googleEventId: meetData?.eventId ?? undefined,
   }).catch(() => undefined);
 }

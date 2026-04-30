@@ -2,7 +2,6 @@ import type Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getStripeServerClient } from "@/lib/server/stripe";
-import { sendGuestOrderSuccessEmails } from "@/lib/server/order-emails";
 import {
   ensureGuestUserForOrderInDb,
   setOrderStripeSnapshotInDb,
@@ -46,6 +45,12 @@ async function provisionGuestUserFromOrder(orderId: string) {
 async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
   const orderId = session.metadata?.orderId;
   if (!orderId) return;
+  const orderRow = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { status: true, customerName: true, customerEmail: true },
+  });
+  if (!orderRow) return;
+  const wasPaidBefore = orderRow.status === "paid";
 
   const paymentIntentId =
     typeof session.payment_intent === "string"
@@ -79,16 +84,7 @@ async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
   });
 
   if (session.payment_status === "paid") {
-    const guestProvisionResult = await provisionGuestUserFromOrder(orderId);
-    if (guestProvisionResult.guestProvisioned) {
-      await sendGuestOrderSuccessEmails({
-        orderId,
-        customerName: guestProvisionResult.customerName,
-        customerEmail: guestProvisionResult.customerEmail,
-      }).catch((error) => {
-        console.error("guest order success emails", error);
-      });
-    }
+    await provisionGuestUserFromOrder(orderId);
     if (subscriptionId) {
       try {
         const stripe = getStripeServerClient();

@@ -27,6 +27,7 @@ import { getServiceById } from "@/lib/data/services";
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "sonner";
+import Link from "next/link";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
 const PAYMENT_PREPARE_MAX_RETRIES = 3;
@@ -685,20 +686,32 @@ export default function CheckoutPage() {
                       />
                       <span className="text-sm text-muted-foreground">
                         Съгласен/на съм с{" "}
-                        <TransitionLink href="/terms-and-conditions" className="underline hover:text-foreground">
+                        <Link
+                          href="/terms-and-conditions"
+                          className="underline hover:text-foreground"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
                           Общите условия
-                        </TransitionLink>
+                        </Link>
                         ,{" "}
-                        <TransitionLink href="/privacy-policy" className="underline hover:text-foreground">
+                        <Link
+                          href="/privacy-policy"
+                          className="underline hover:text-foreground"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
                           Политиката за поверителност
-                        </TransitionLink>{" "}
+                        </Link>{" "}
                         и{" "}
-                        <TransitionLink
+                        <Link
                           href="/terms-and-conditions#refund-policy"
                           className="underline hover:text-foreground"
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
                           Политиката за връщане на суми
-                        </TransitionLink>
+                        </Link>
                         .
                       </span>
                     </label>
@@ -789,26 +802,32 @@ export default function CheckoutPage() {
                             />
                             <span className="text-sm text-muted-foreground">
                               Съгласен/на съм с{" "}
-                              <TransitionLink
+                              <Link
                                 href="/terms-and-conditions"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="underline hover:text-foreground"
                               >
                                 Общите условия
-                              </TransitionLink>
+                              </Link>
                               ,{" "}
-                              <TransitionLink
+                              <Link
                                 href="/privacy-policy"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="underline hover:text-foreground"
                               >
                                 Политиката за поверителност
-                              </TransitionLink>{" "}
+                              </Link>{" "}
                               и{" "}
-                              <TransitionLink
+                              <Link
                                 href="/terms-and-conditions#refund-policy"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="underline hover:text-foreground"
                               >
                                 Политиката за връщане на суми
-                              </TransitionLink>
+                              </Link>
                               .
                             </span>
                           </label>
@@ -899,15 +918,15 @@ export default function CheckoutPage() {
                           </EmbeddedCheckoutProvider>
                         </div>
                       ) : !hasPaymentPrepareFailed || isPreparingPayment ? (
-                          <div className="bg-secondary/50 rounded-lg p-6">
-                            <div className="space-y-3 animate-pulse">
-                              <div className="h-4 w-2/3 rounded bg-muted" />
-                              <div className="h-10 w-full rounded bg-muted" />
-                              <div className="h-10 w-full rounded bg-muted" />
-                              <div className="h-10 w-5/6 rounded bg-muted" />
-                            </div>
+                        <div className="bg-secondary/50 rounded-lg p-6">
+                          <div className="space-y-3 animate-pulse">
+                            <div className="h-4 w-2/3 rounded bg-muted" />
+                            <div className="h-10 w-full rounded bg-muted" />
+                            <div className="h-10 w-full rounded bg-muted" />
+                            <div className="h-10 w-5/6 rounded bg-muted" />
                           </div>
-                        ) : (
+                        </div>
+                      ) : (
                         <div className="bg-secondary/50 rounded-lg p-6 text-center">
                           <p className="text-muted-foreground text-sm mb-2">
                             Нещо се провали при подгодовката за формата за плащане...

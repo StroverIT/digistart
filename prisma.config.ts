@@ -1,4 +1,8 @@
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
+
+const fallbackDatabaseUrl = "postgresql://postgres:postgres@localhost:5432/postgres";
+const databaseUrl = process.env.DATABASE_URL ?? fallbackDatabaseUrl;
+const directUrl = process.env.DIRECT_URL ?? process.env.DATABASE_URL ?? fallbackDatabaseUrl;
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -6,7 +10,7 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: env("DATABASE_URL"),
-    directUrl: env("DIRECT_URL"),
+    url: databaseUrl,
+    directUrl,
   },
 });

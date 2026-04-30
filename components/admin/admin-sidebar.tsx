@@ -13,8 +13,17 @@ import {
   LogOut,
   ExternalLink,
   User,
+  Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 interface AdminSidebarProps {
@@ -39,8 +48,8 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
     signOut({ callbackUrl: "/admin/login" });
   };
 
-  return (
-    <aside className="w-64 bg-card border-r border-border flex flex-col shrink-0">
+  const sidebarContent = (
+    <>
       {/* Logo */}
       <div className="h-16 flex items-center px-6 border-b border-border">
         <Link href="/" className="flex items-center gap-2">
@@ -108,6 +117,37 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
           Изход
         </Button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      <header className="md:hidden h-16 px-4 border-b border-border bg-card sticky top-0 z-30 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <Zap className="h-6 w-6 text-primary" />
+          <span className="text-base font-bold">
+            Digi<span className="text-primary">Start</span>
+          </span>
+        </Link>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon" aria-label="Open navigation">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-72 p-0">
+            <SheetHeader className="sr-only">
+              <SheetTitle>Admin Navigation</SheetTitle>
+              <SheetDescription>Open admin navigation links</SheetDescription>
+            </SheetHeader>
+            <aside className="h-full bg-card flex flex-col">{sidebarContent}</aside>
+          </SheetContent>
+        </Sheet>
+      </header>
+
+      <aside className="hidden md:flex md:w-64 bg-card border-r border-border md:sticky md:top-0 md:h-screen md:overflow-y-auto shrink-0 flex-col">
+        {sidebarContent}
+      </aside>
+    </>
   );
 }

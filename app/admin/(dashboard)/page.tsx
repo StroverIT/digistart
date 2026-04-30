@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ShoppingBag,
   TrendingUp,
@@ -8,10 +8,13 @@ import {
   CreditCard,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Price } from "@/components/ui/price";
 import type { Order, DailyStats, ServiceStats } from "@/lib/types";
 import { RevenueChart } from "@/components/admin/revenue-chart";
 import { ServicesPieChart } from "@/components/admin/services-pie-chart";
+import { SubscriptionsChart } from "@/components/admin/subscriptions-chart";
 
 interface StatCardProps {
   title: string;
@@ -47,9 +50,12 @@ function StatCard({ title, value, description, icon, trend }: StatCardProps) {
 
 export default function AdminDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [dailyStats, setDailyStats] = useState<DailyStats[]>([]);
   const [serviceStats, setServiceStats] = useState<ServiceStats[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [revenueFromDate, setRevenueFromDate] = useState(() => getDateBefore(13));
+  const [revenueToDate, setRevenueToDate] = useState(() => getTodayDateKey());
+  const [subscriptionsFromDate, setSubscriptionsFromDate] = useState(() => getDateBefore(13));
+  const [subscriptionsToDate, setSubscriptionsToDate] = useState(() => getTodayDateKey());
 
   useEffect(() => {
     setMounted(true);
@@ -73,7 +79,6 @@ export default function AdminDashboard() {
           row.orders += 1;
           row.revenue += order.cart.totalOneTime + order.cart.totalMonthly;
         }
-        setDailyStats(Array.from(byDate.values()));
 
         const byService = new Map<string, ServiceStats>();
         for (const order of allOrders) {
@@ -93,10 +98,24 @@ export default function AdminDashboard() {
       })
       .catch(() => {
         setOrders([]);
-        setDailyStats([]);
         setServiceStats([]);
       });
   }, []);
+
+  const revenueStats = useMemo(
+    () => buildRevenueDailyStats(orders, revenueFromDate, revenueToDate),
+    [orders, revenueFromDate, revenueToDate]
+  );
+
+  const subscriptionsStats = useMemo(
+    () =>
+      buildSubscriptionDailyStats(
+        orders,
+        subscriptionsFromDate,
+        subscriptionsToDate
+      ),
+    [orders, subscriptionsFromDate, subscriptionsToDate]
+  );
 
   if (!mounted) {
     return (
@@ -155,11 +174,68 @@ export default function AdminDashboard() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle>Приходи (последни 14 дни)</CardTitle>
+          <CardHeader className="space-y-4">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <CardTitle>Приходи по дни</CardTitle>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="revenue-from">От</Label>
+                <Input
+                  id="revenue-from"
+                  type="date"
+                  value={revenueFromDate}
+                  max={revenueToDate}
+                  onChange={(event) => setRevenueFromDate(event.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="revenue-to">До</Label>
+                <Input
+                  id="revenue-to"
+                  type="date"
+                  value={revenueToDate}
+                  min={revenueFromDate}
+                  onChange={(event) => setRevenueToDate(event.target.value)}
+                />
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
-            <RevenueChart data={dailyStats} />
+            <RevenueChart data={revenueStats} />
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card border-border">
+          <CardHeader className="space-y-4">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <CardTitle>Абонаменти по дни</CardTitle>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="subscriptions-from">От</Label>
+                <Input
+                  id="subscriptions-from"
+                  type="date"
+                  value={subscriptionsFromDate}
+                  max={subscriptionsToDate}
+                  onChange={(event) => setSubscriptionsFromDate(event.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="subscriptions-to">До</Label>
+                <Input
+                  id="subscriptions-to"
+                  type="date"
+                  value={subscriptionsToDate}
+                  min={subscriptionsFromDate}
+                  onChange={(event) => setSubscriptionsToDate(event.target.value)}
+                />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <SubscriptionsChart data={subscriptionsStats} />
           </CardContent>
         </Card>
 
@@ -237,6 +313,91 @@ export default function AdminDashboard() {
       </Card>
     </div>
   );
+}
+
+function getTodayDateKey() {
+  return new Date().toISOString().split("T")[0];
+}
+
+function getDateBefore(daysBeforeToday: number) {
+  const date = new Date();
+  date.setDate(date.getDate() - daysBeforeToday);
+  return date.toISOString().split("T")[0];
+}
+
+function buildRevenueDailyStats(
+  orders: Order[],
+  fromDate: string,
+  toDate: string
+): DailyStats[] {
+  const byDate = new Map<string, DailyStats>();
+
+  for (const dateKey of listDateRange(fromDate, toDate)) {
+    byDate.set(dateKey, { date: dateKey, visits: 0, orders: 0, revenue: 0 });
+  }
+
+  for (const order of orders) {
+    const dateStr = order.createdAt.split("T")[0];
+    const row = byDate.get(dateStr);
+    if (!row) continue;
+    row.orders += 1;
+    row.revenue += order.cart.totalOneTime + order.cart.totalMonthly;
+  }
+
+  return Array.from(byDate.values());
+}
+
+interface DailySubscriptionStats {
+  date: string;
+  subscriptions: number;
+  monthlyRevenue: number;
+}
+
+function buildSubscriptionDailyStats(
+  orders: Order[],
+  fromDate: string,
+  toDate: string
+): DailySubscriptionStats[] {
+  const byDate = new Map<string, DailySubscriptionStats>();
+
+  for (const dateKey of listDateRange(fromDate, toDate)) {
+    byDate.set(dateKey, { date: dateKey, subscriptions: 0, monthlyRevenue: 0 });
+  }
+
+  for (const order of orders) {
+    if (!isSubscriptionOrder(order)) continue;
+    const dateStr = order.createdAt.split("T")[0];
+    const row = byDate.get(dateStr);
+    if (!row) continue;
+    row.subscriptions += 1;
+    row.monthlyRevenue += order.cart.totalMonthly;
+  }
+
+  return Array.from(byDate.values());
+}
+
+function isSubscriptionOrder(order: Order) {
+  return (
+    order.stripe?.checkoutMode === "subscription" ||
+    Boolean(order.stripe?.subscriptionId) ||
+    order.cart.totalMonthly > 0
+  );
+}
+
+function listDateRange(fromDate: string, toDate: string) {
+  if (!fromDate || !toDate) return [];
+  if (fromDate > toDate) return [];
+
+  const dates: string[] = [];
+  const current = new Date(fromDate);
+  const end = new Date(toDate);
+
+  while (current <= end) {
+    dates.push(current.toISOString().split("T")[0]);
+    current.setDate(current.getDate() + 1);
+  }
+
+  return dates;
 }
 
 function OrderStatusBadge({ status }: { status: Order["status"] }) {

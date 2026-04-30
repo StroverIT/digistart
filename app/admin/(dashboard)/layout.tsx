@@ -20,7 +20,7 @@ export default async function AdminDashboardLayout({
   }
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen md:h-screen flex flex-col md:flex-row bg-background">
       <AdminSidebar user={session.user} />
       <main className="flex-1 overflow-auto">
         <div className="p-6 md:p-8">{children}</div>
