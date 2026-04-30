@@ -30,7 +30,7 @@ export default function CookiesPolicy() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Aside Navigation */}
           <aside className="lg:w-64 shrink-0">
-            <div className="sticky top-8 rounded-lg border border-border bg-card p-6 shadow-sm">
+            <div className="sticky top-28 rounded-lg border border-border bg-card p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-foreground mb-4">
                 Съдържание
               </h3>
@@ -115,12 +115,12 @@ export default function CookiesPolicy() {
                   <p className="text-muted-foreground mb-4">
                     Нашият сайт{" "}
                     <Link
-                      href="https://strover.bg"
+                      href="https://digistart.bg"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:text-primary/80 underline transition-colors"
                     >
-                      strover.bg
+                      digistart.bg
                     </Link>{" "}
                     използва няколко основни типа бисквитки:
                   </p>

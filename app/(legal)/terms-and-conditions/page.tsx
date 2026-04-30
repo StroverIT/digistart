@@ -30,7 +30,7 @@ export default function TermsAndConditions() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Aside Navigation */}
           <aside className="lg:w-64 shrink-0">
-            <div className="sticky top-8 rounded-lg border border-border bg-card p-6 shadow-sm">
+            <div className="sticky top-28 rounded-lg border border-border bg-card p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-foreground mb-4">
                 Съдържание
               </h3>
@@ -122,12 +122,12 @@ export default function TermsAndConditions() {
                   ползване на уебсайта на <strong>Strover ЕООД</strong>,
                   достъпен на адрес{" "}
                   <Link
-                    href="https://strover.bg"
+                    href="https://digistart.bg"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:text-primary/80 underline transition-colors"
                   >
-                    https://strover.bg
+                    https://digistart.bg
                   </Link>
                   .
                 </p>
@@ -343,12 +343,12 @@ export default function TermsAndConditions() {
                   <p>
                     <strong>Уебсайт:</strong>{" "}
                     <Link
-                      href="https://strover.bg"
+                      href="https://digistart.bg"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:text-primary/80 underline transition-colors"
                     >
-                      https://strover.bg
+                      https://digistart.bg
                     </Link>
                   </p>
                 </div>
