@@ -1,13 +1,13 @@
-import TransitionLink from "@/components/transitions/TransitionLink";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { siteContact } from "@/lib/site-contact";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 
 export function CTASection() {
   return (
     <section id="contacts" className="py-20 md:py-28 relative overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-primary/5" />
+      <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-background to-primary/5" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/10 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 relative z-10">
@@ -28,17 +28,17 @@ export function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <TransitionLink href="/consultation">
+            <TrackedCtaLink href="/consultation" ctaId="bottom_free_consultation">
               <Button size="lg" className="glow-primary text-lg h-14 px-8">
                 Запази безплатна консултация
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </TransitionLink>
-            <TransitionLink href="/#services">
+            </TrackedCtaLink>
+            <TrackedCtaLink href="/#services" ctaId="bottom_view_services">
               <Button variant="outline" size="lg" className="text-lg h-14 px-8">
                 Разгледайте услугите
               </Button>
-            </TransitionLink>
+            </TrackedCtaLink>
           </div>
 
           <p className="text-sm text-muted-foreground mt-8">

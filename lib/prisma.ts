@@ -7,10 +7,10 @@ declare global {
   var prismaPool: Pool | undefined;
 }
 
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
 
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL is not defined.");
+  throw new Error("DIRECT_URL or DATABASE_URL must be defined.");
 }
 
 const pool =

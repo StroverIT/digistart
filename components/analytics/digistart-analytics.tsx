@@ -1,19 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { recordPageView } from "@/lib/store/site-analytics";
+import { usePageAnalytics } from "@/hooks/use-page-analytics";
 
 /**
- * Tracks SPA route changes into localStorage for the admin dashboard.
+ * Tracks SPA route changes through the server analytics pipeline.
  * Renders nothing.
  */
 export function DigiStartAnalytics() {
   const pathname = usePathname();
-
-  useEffect(() => {
-    if (pathname) recordPageView(pathname);
-  }, [pathname]);
+  const trackedPath = pathname?.startsWith("/admin") ? "" : pathname ?? "";
+  usePageAnalytics(trackedPath);
 
   return null;
 }

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { flushAnalyticsEventsAsync, trackAnalyticsEvent } from "@/lib/analytics/tracker";
 
 type SlotDay = {
   date: string;
@@ -152,6 +153,10 @@ export default function ConsultationBookingForm({
       }
 
       const booking = data.booking as BookedPayload;
+      trackAnalyticsEvent("cta_click", "/consultation", {
+        cta_id: source === "checkout" ? "checkout_consultation_submit" : "consultation_submit",
+      });
+      await flushAnalyticsEventsAsync();
       setSuccess("Консултацията е запазена успешно.");
       setLocallyDisabledSlots((prev) => {
         const next = { ...prev };

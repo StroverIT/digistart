@@ -17,20 +17,30 @@ CREATE TABLE "User" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AlterTable
-ALTER TABLE "Order" ADD COLUMN "userId" TEXT;
-ALTER TABLE "Order" ADD COLUMN "pendingUserEmail" TEXT;
-ALTER TABLE "Order" ADD COLUMN "pendingUserPasswordHash" TEXT;
-ALTER TABLE "Order" ADD COLUMN "pendingUserName" TEXT;
-ALTER TABLE "Order" ADD COLUMN "pendingUserPhone" TEXT;
-ALTER TABLE "Order" ADD COLUMN "pendingUserCompany" TEXT;
-ALTER TABLE "Order" ADD COLUMN "postCheckoutToken" TEXT;
-ALTER TABLE "Order" ADD COLUMN "invoiceWanted" BOOLEAN NOT NULL DEFAULT false;
-ALTER TABLE "Order" ADD COLUMN "invoiceData" JSONB;
-ALTER TABLE "Order" ADD COLUMN "brandAssets" JSONB;
-ALTER TABLE "Order" ADD COLUMN "subscriptionRenewsAt" TIMESTAMP(3);
+ALTER TABLE IF EXISTS "Order" ADD COLUMN "userId" TEXT;
+ALTER TABLE IF EXISTS "Order" ADD COLUMN "pendingUserEmail" TEXT;
+ALTER TABLE IF EXISTS "Order" ADD COLUMN "pendingUserPasswordHash" TEXT;
+ALTER TABLE IF EXISTS "Order" ADD COLUMN "pendingUserName" TEXT;
+ALTER TABLE IF EXISTS "Order" ADD COLUMN "pendingUserPhone" TEXT;
+ALTER TABLE IF EXISTS "Order" ADD COLUMN "pendingUserCompany" TEXT;
+ALTER TABLE IF EXISTS "Order" ADD COLUMN "postCheckoutToken" TEXT;
+ALTER TABLE IF EXISTS "Order" ADD COLUMN "invoiceWanted" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE IF EXISTS "Order" ADD COLUMN "invoiceData" JSONB;
+ALTER TABLE IF EXISTS "Order" ADD COLUMN "brandAssets" JSONB;
+ALTER TABLE IF EXISTS "Order" ADD COLUMN "subscriptionRenewsAt" TIMESTAMP(3);
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Order_postCheckoutToken_key" ON "Order"("postCheckoutToken");
+DO $$
+BEGIN
+  IF to_regclass('"Order"') IS NOT NULL THEN
+    CREATE UNIQUE INDEX IF NOT EXISTS "Order_postCheckoutToken_key" ON "Order"("postCheckoutToken");
+  END IF;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+DO $$
+BEGIN
+  IF to_regclass('"Order"') IS NOT NULL THEN
+    ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+  END IF;
+END $$;

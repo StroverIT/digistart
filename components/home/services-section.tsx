@@ -1,10 +1,10 @@
-import TransitionLink from "@/components/transitions/TransitionLink";
 import { Globe, ShoppingCart, MapPin, Share2, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/ui/price";
 import { services } from "@/lib/data/services";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 
 const iconMap: Record<string, React.ReactNode> = {
   Globe: <Globe className="h-8 w-8" />,
@@ -80,7 +80,10 @@ export function ServicesSection() {
                         {service.isMonthly && <span className="text-muted-foreground">/мес</span>}
                       </div>
                     </div>
-                    <TransitionLink href={`/services/${service.slug}`}>
+                    <TrackedCtaLink
+                      href={`/services/${service.slug}`}
+                      ctaId={`home_service_${service.slug}`}
+                    >
                       <Button
                         variant="ghost"
                         className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
@@ -88,7 +91,7 @@ export function ServicesSection() {
                         Научете повече
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
-                    </TransitionLink>
+                    </TrackedCtaLink>
                   </div>
                 </div>
               </CardContent>

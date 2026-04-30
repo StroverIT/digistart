@@ -15,6 +15,7 @@ import type { Order, DailyStats, ServiceStats } from "@/lib/types";
 import { RevenueChart } from "@/components/admin/revenue-chart";
 import { ServicesPieChart } from "@/components/admin/services-pie-chart";
 import { SubscriptionsChart } from "@/components/admin/subscriptions-chart";
+import type { AnalyticsAdminResponse } from "@/lib/analytics/types";
 
 interface StatCardProps {
   title: string;
@@ -52,6 +53,12 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [serviceStats, setServiceStats] = useState<ServiceStats[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [analytics, setAnalytics] = useState<AnalyticsAdminResponse>({
+    pageStats: [],
+    ctaStats: [],
+    totalClicks: 0,
+    dailyStats: [],
+  });
   const [revenueFromDate, setRevenueFromDate] = useState(() => getDateBefore(13));
   const [revenueToDate, setRevenueToDate] = useState(() => getTodayDateKey());
   const [subscriptionsFromDate, setSubscriptionsFromDate] = useState(() => getDateBefore(13));
@@ -59,26 +66,23 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     setMounted(true);
-    fetch("/api/checkout/orders")
-      .then((response) => response.json())
-      .then((data: { orders?: Order[] }) => {
-        const allOrders = data.orders ?? [];
+    Promise.all([
+      fetch("/api/checkout/orders").then((response) => response.json()),
+      fetch("/api/admin/analytics").then((response) =>
+        response.ok ? response.json() : Promise.resolve(null),
+      ),
+    ])
+      .then(([ordersData, analyticsData]: [{ orders?: Order[] }, AnalyticsAdminResponse | null]) => {
+        const allOrders = ordersData.orders ?? [];
         setOrders(allOrders);
-
-        const byDate = new Map<string, DailyStats>();
-        for (let i = 13; i >= 0; i--) {
-          const date = new Date();
-          date.setDate(date.getDate() - i);
-          const dateStr = date.toISOString().split("T")[0];
-          byDate.set(dateStr, { date: dateStr, visits: 0, orders: 0, revenue: 0 });
-        }
-        for (const order of allOrders) {
-          const dateStr = order.createdAt.split("T")[0];
-          const row = byDate.get(dateStr);
-          if (!row) continue;
-          row.orders += 1;
-          row.revenue += order.cart.totalOneTime + order.cart.totalMonthly;
-        }
+        setAnalytics(
+          analyticsData ?? {
+            pageStats: [],
+            ctaStats: [],
+            totalClicks: 0,
+            dailyStats: [],
+          },
+        );
 
         const byService = new Map<string, ServiceStats>();
         for (const order of allOrders) {
@@ -103,8 +107,9 @@ export default function AdminDashboard() {
   }, []);
 
   const revenueStats = useMemo(
-    () => buildRevenueDailyStats(orders, revenueFromDate, revenueToDate),
-    [orders, revenueFromDate, revenueToDate]
+    () =>
+      buildRevenueDailyStats(orders, analytics.dailyStats, revenueFromDate, revenueToDate),
+    [orders, analytics.dailyStats, revenueFromDate, revenueToDate]
   );
 
   const subscriptionsStats = useMemo(
@@ -162,6 +167,12 @@ export default function AdminDashboard() {
           value={completedOrders.toString()}
           description="Успешно доставени"
           icon={<TrendingUp className="h-6 w-6" />}
+        />
+        <StatCard
+          title="Общо посещения"
+          value={analytics.dailyStats.reduce((sum, row) => sum + row.visits, 0).toString()}
+          description="Реални page views"
+          icon={<Users className="h-6 w-6" />}
         />
         <StatCard
           title="Клиенти"
@@ -249,6 +260,65 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="bg-card border-border">
+          <CardHeader>
+            <CardTitle>Page Views и CTA</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analytics.pageStats.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Няма analytics данни за избрания период.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left py-2">Страница</th>
+                      <th className="text-right py-2">Views</th>
+                      <th className="text-right py-2">Сесии</th>
+                      <th className="text-right py-2">CTA</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {analytics.pageStats.slice(0, 10).map((stat) => (
+                      <tr key={stat.page} className="border-b border-border/50">
+                        <td className="py-2">{stat.page}</td>
+                        <td className="py-2 text-right">{stat.views}</td>
+                        <td className="py-2 text-right">{stat.uniqueSessions}</td>
+                        <td className="py-2 text-right">{stat.ctaClicks}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card border-border">
+          <CardHeader>
+            <CardTitle>Най-кликани CTA</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analytics.ctaStats.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Няма CTA кликове.</p>
+            ) : (
+              <div className="space-y-2">
+                {analytics.ctaStats.slice(0, 10).map((cta) => (
+                  <div key={`${cta.page}-${cta.ctaId}`} className="rounded-md border border-border p-3">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{cta.ctaId}</p>
+                      <p className="text-primary font-semibold">{cta.clicks} клика</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{cta.page}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Recent Orders */}
       <Card className="bg-card border-border">
         <CardHeader className="flex flex-row items-center justify-between">
@@ -327,13 +397,15 @@ function getDateBefore(daysBeforeToday: number) {
 
 function buildRevenueDailyStats(
   orders: Order[],
+  analyticsDays: { date: string; visits: number }[],
   fromDate: string,
   toDate: string
 ): DailyStats[] {
   const byDate = new Map<string, DailyStats>();
 
   for (const dateKey of listDateRange(fromDate, toDate)) {
-    byDate.set(dateKey, { date: dateKey, visits: 0, orders: 0, revenue: 0 });
+    const visits = analyticsDays.find((entry) => entry.date === dateKey)?.visits ?? 0;
+    byDate.set(dateKey, { date: dateKey, visits, orders: 0, revenue: 0 });
   }
 
   for (const order of orders) {

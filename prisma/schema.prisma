@@ -190,3 +190,17 @@ model StripeWebhookEvent {
   orderId       String?
   processedAt   DateTime @default(now())
 }
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  eventType String   @map("event_type")
+  page      String
+  metadata  Json?
+  sessionId String?  @map("session_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("analytics_events")
+  @@index([eventType, page], map: "analytics_events_event_type_page_idx")
+  @@index([createdAt], map: "analytics_events_created_at_idx")
+  @@index([sessionId], map: "analytics_events_session_id_idx")
+}

@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 import gsap from "gsap";
 import Hamburger from "hamburger-react";
 import { useSession, signOut } from "next-auth/react";
+import { AnalyticsToolbar } from "@/components/analytics/analytics-toolbar";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 
 const navLinks = [
   { href: "/", label: "Начало", paths: ["/"] },
@@ -229,6 +231,7 @@ export function Header() {
             </TransitionLink>
 
             <div className="flex items-center gap-2 z-60 relative">
+              <AnalyticsToolbar />
               {isCartPage ? (
                 <Button
                   variant="ghost"
@@ -377,11 +380,15 @@ export function Header() {
                 );
               })}
               <li>
-                <TransitionLink href="/consultation" onClick={() => void closeMenu()}>
+                <TrackedCtaLink
+                  href="/consultation"
+                  ctaId="menu_free_consultation"
+                  onClick={() => closeMenu()}
+                >
                   <Button className="w-full glow-primary mt-2" size="lg">
                     Безплатна консултация
                   </Button>
-                </TransitionLink>
+                </TrackedCtaLink>
               </li>
             </ul>
           </nav>
