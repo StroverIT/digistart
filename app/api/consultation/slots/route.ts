@@ -30,6 +30,7 @@ export async function GET() {
 
   const days: { date: string; availableTimes: string[] }[] = [];
   let cursor = new Date();
+  cursor.setDate(cursor.getDate() + 1);
 
   while (days.length < 10) {
     const dayOfWeek = cursor.getDay();

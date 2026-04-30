@@ -17,6 +17,10 @@ const bookingSchema = z.object({
   orderId: z.string().trim().optional(),
 });
 
+function formatDate(date: Date) {
+  return date.toISOString().split("T")[0];
+}
+
 export async function POST(req: Request) {
   try {
     const json = await req.json();
@@ -30,6 +34,14 @@ export async function POST(req: Request) {
     }
 
     const data = parsed.data;
+    const today = formatDate(new Date());
+    if (data.date <= today) {
+      return NextResponse.json(
+        { error: "Same-day consultations are not available." },
+        { status: 400 }
+      );
+    }
+
     const bookings = await getConsultationBookings();
     const slotTaken = bookings.some(
       (booking) =>
