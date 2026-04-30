@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getConsultationBookings } from "@/lib/server/consultation-bookings";
+import ConsultationsTable from "@/components/admin/ConsultationsTable";
 
 export default async function ConsultationsPage() {
   const consultations = await getConsultationBookings();
@@ -19,58 +20,7 @@ export default async function ConsultationsPage() {
           {consultations.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">Няма записани консултации</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                      Клиент
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                      Дата и час
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                      Източник
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                      Статус
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                      Meet
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {consultations.map((consultation) => (
-                    <tr key={consultation.id} className="border-b border-border last:border-0">
-                      <td className="py-3 px-4">
-                        <div className="font-medium">{consultation.name}</div>
-                        <div className="text-sm text-muted-foreground">{consultation.email}</div>
-                      </td>
-                      <td className="py-3 px-4 text-sm">
-                        {consultation.date} {consultation.time} ({consultation.timezone ?? "Europe/Sofia"})
-                      </td>
-                      <td className="py-3 px-4 text-sm">{consultation.source}</td>
-                      <td className="py-3 px-4 text-sm">{consultation.status}</td>
-                      <td className="py-3 px-4 text-sm">
-                        {consultation.meetUrl ? (
-                          <a
-                            href={consultation.meetUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-primary underline"
-                          >
-                            Отвори Meet
-                          </a>
-                        ) : (
-                          <span className="text-muted-foreground">Няма</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ConsultationsTable initialConsultations={consultations} />
           )}
         </CardContent>
       </Card>

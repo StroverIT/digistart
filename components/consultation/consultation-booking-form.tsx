@@ -61,6 +61,7 @@ export default function ConsultationBookingForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [locallyDisabledSlots, setLocallyDisabledSlots] = useState<Record<string, Set<string>>>({});
 
   const [formData, setFormData] = useState({
     name: initialValues?.name ?? "",
@@ -111,12 +112,16 @@ export default function ConsultationBookingForm({
     return days.find((day) => day.date === selectedDate)?.availableTimes ?? [];
   }, [days, selectedDate]);
 
+  const isTimeLocallyDisabled = (date: string, time: string) =>
+    locallyDisabledSlots[date]?.has(time) ?? false;
+
   useEffect(() => {
     if (!selectedDate) return;
-    if (!availableTimes.includes(selectedTime)) {
-      setSelectedTime(availableTimes[0] ?? "");
+    if (!availableTimes.includes(selectedTime) || isTimeLocallyDisabled(selectedDate, selectedTime)) {
+      const firstEnabledTime = availableTimes.find((time) => !isTimeLocallyDisabled(selectedDate, time));
+      setSelectedTime(firstEnabledTime ?? "");
     }
-  }, [availableTimes, selectedDate, selectedTime]);
+  }, [availableTimes, selectedDate, selectedTime, locallyDisabledSlots]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -148,6 +153,20 @@ export default function ConsultationBookingForm({
 
       const booking = data.booking as BookedPayload;
       setSuccess("Консултацията е запазена успешно.");
+      setLocallyDisabledSlots((prev) => {
+        const next = { ...prev };
+        const dateSlots = new Set(next[booking.date] ?? []);
+        dateSlots.add(booking.time);
+        next[booking.date] = dateSlots;
+        return next;
+      });
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        notes: "",
+      });
       onBooked?.(booking);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Неуспешно запазване.";
@@ -205,8 +224,11 @@ export default function ConsultationBookingForm({
                       "rounded-md border px-3 py-1.5 text-sm transition-colors",
                       selectedTime === time
                         ? "border-primary bg-primary/10 text-primary"
-                        : "border-border hover:border-primary/40"
+                        : "border-border hover:border-primary/40",
+                      isTimeLocallyDisabled(selectedDate, time) &&
+                        "opacity-50 cursor-not-allowed line-through hover:border-border"
                     )}
+                    disabled={isTimeLocallyDisabled(selectedDate, time)}
                   >
                     {time}
                   </button>
@@ -268,7 +290,8 @@ export default function ConsultationBookingForm({
                 isSubmitting ||
                 !selectedDate ||
                 !selectedTime ||
-                availableTimes.length === 0
+                availableTimes.length === 0 ||
+                isTimeLocallyDisabled(selectedDate, selectedTime)
               }
               className="w-full"
             >

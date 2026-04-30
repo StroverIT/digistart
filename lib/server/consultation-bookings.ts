@@ -1,5 +1,9 @@
 import { google } from "googleapis";
 import nodemailer from "nodemailer";
+import {
+  renderConsultationAdminEmailHtml,
+  renderConsultationCustomerEmailHtml,
+} from "@/lib/emails/consultation-emails";
 import { prisma } from "@/lib/prisma";
 
 export interface ConsultationRecord {
@@ -12,7 +16,7 @@ export interface ConsultationRecord {
   date: string;
   time: string;
   source: "public" | "checkout";
-  status: "scheduled" | "cancelled";
+  status: "scheduled" | "attended" | "absent" | "cancelled";
   orderId?: string;
   createdAt: string;
   timezone?: string;
@@ -20,8 +24,32 @@ export interface ConsultationRecord {
   googleEventId?: string;
 }
 
+export type ConsultationStatus = ConsultationRecord["status"];
+
+export class GoogleMeetCreationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "GoogleMeetCreationError";
+  }
+}
+
+const CONSULTATION_STATUSES = new Set<ConsultationStatus>([
+  "scheduled",
+  "attended",
+  "absent",
+  "cancelled",
+]);
+
+function normalizeConsultationStatus(status: string): ConsultationStatus {
+  if (CONSULTATION_STATUSES.has(status as ConsultationStatus)) {
+    return status as ConsultationStatus;
+  }
+  return "scheduled";
+}
+
 async function transporter() {
   const gmailUser =
+    process.env.NEXT_PUBLIC_GOOGLE_EMAIL_USER ??
     process.env.GOOGLE_EMAIL_USER ??
     process.env.GMAIL_USER ??
     process.env.SMTP_USER ??
@@ -70,7 +98,7 @@ export async function getConsultationBookings(): Promise<ConsultationRecord[]> {
       date: row.date,
       time: row.time,
       source: row.source as ConsultationRecord["source"],
-      status: row.status as ConsultationRecord["status"],
+      status: normalizeConsultationStatus(row.status),
       orderId: row.orderId ?? undefined,
       createdAt: row.createdAt.toISOString(),
       timezone: row.timezone,
@@ -82,117 +110,221 @@ export async function getConsultationBookings(): Promise<ConsultationRecord[]> {
   }
 }
 
+export async function updateConsultationBookingStatus(
+  id: string,
+  status: ConsultationStatus
+): Promise<ConsultationRecord | null> {
+  const updated = await prisma.consultationBooking.update({
+    where: { id },
+    data: { status },
+  });
+
+  return {
+    id: updated.id,
+    name: updated.name,
+    email: updated.email,
+    phone: updated.phone,
+    company: updated.company ?? undefined,
+    notes: updated.notes ?? undefined,
+    date: updated.date,
+    time: updated.time,
+    source: updated.source as ConsultationRecord["source"],
+    status: normalizeConsultationStatus(updated.status),
+    orderId: updated.orderId ?? undefined,
+    createdAt: updated.createdAt.toISOString(),
+    timezone: updated.timezone,
+    meetUrl: updated.meetUrl ?? undefined,
+    googleEventId: updated.googleEventId ?? undefined,
+  };
+}
+
+function resolveUtcOffsetMinutes(date: string, timezone: string): number {
+  const middayUtc = new Date(`${date}T12:00:00.000Z`);
+  const timezoneName = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    timeZoneName: "shortOffset",
+  })
+    .formatToParts(middayUtc)
+    .find((part) => part.type === "timeZoneName")?.value;
+
+  if (!timezoneName) return 0;
+  if (timezoneName === "GMT" || timezoneName === "UTC") return 0;
+
+  const offsetMatch = timezoneName.match(/^GMT([+-])(\d{1,2})(?::?(\d{2}))?$/);
+  if (!offsetMatch) return 0;
+
+  const sign = offsetMatch[1] === "-" ? -1 : 1;
+  const hours = Number(offsetMatch[2]);
+  const minutes = Number(offsetMatch[3] ?? "0");
+
+  return sign * (hours * 60 + minutes);
+}
+
+function buildDateInTimezone(date: string, time: string, timezone: string): Date {
+  const [year, month, day] = date.split("-").map(Number);
+  const [hour, minute] = time.split(":").map(Number);
+  const offsetMinutes = resolveUtcOffsetMinutes(date, timezone);
+  const utcMillis = Date.UTC(year, month - 1, day, hour, minute) - offsetMinutes * 60_000;
+  return new Date(utcMillis);
+}
+
 async function createGoogleMeet(booking: ConsultationRecord) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
   const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
   if (!clientId || !clientSecret || !refreshToken) {
-    return null;
+    throw new GoogleMeetCreationError("Google Calendar credentials are not configured.");
   }
 
-  const startDate = new Date(`${booking.date}T${booking.time}:00+03:00`);
+  const timezone = booking.timezone ?? "Europe/Sofia";
+  const startDate = buildDateInTimezone(booking.date, booking.time, timezone);
   const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
   const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret);
   oAuth2Client.setCredentials({ refresh_token: refreshToken });
 
   const calendar = google.calendar({ version: "v3", auth: oAuth2Client });
-  const response = await calendar.events.insert({
-    calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
-    conferenceDataVersion: 1,
-    requestBody: {
-      summary: `DigiStart consultation: ${booking.name}`,
-      description: `Source: ${booking.source}\nEmail: ${booking.email}\nPhone: ${booking.phone}`,
-      start: { dateTime: startDate.toISOString(), timeZone: "Europe/Sofia" },
-      end: { dateTime: endDate.toISOString(), timeZone: "Europe/Sofia" },
-      attendees: [{ email: booking.email }, { email: process.env.CONSULTATION_NOTIFY_EMAIL }],
-      conferenceData: {
-        createRequest: {
-          requestId: `digistart-${booking.id}`,
+  const attendees = [
+    booking.email,
+    process.env.NEXT_PUBLIC_GOOGLE_EMAIL_USER,
+    process.env.GOOGLE_EMAIL_USER,
+    process.env.CONSULTATION_NOTIFY_EMAIL,
+  ]
+    .filter((email): email is string => Boolean(email))
+    .map((email) => ({ email }));
+  const response = await calendar.events
+    .insert({
+      calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
+      conferenceDataVersion: 1,
+      requestBody: {
+        summary: `DigiStart consultation: ${booking.name}`,
+        description: `Source: ${booking.source}\nEmail: ${booking.email}\nPhone: ${booking.phone}`,
+        start: { dateTime: startDate.toISOString(), timeZone: timezone },
+        end: { dateTime: endDate.toISOString(), timeZone: timezone },
+        attendees,
+        conferenceData: {
+          createRequest: {
+            requestId: `digistart-${booking.id}`,
+          },
         },
       },
-    },
-  });
+    })
+    .catch((error) => {
+      const message = error instanceof Error ? error.message : "Google Calendar event creation failed.";
+      if (message.toLowerCase().includes("insufficient authentication scopes")) {
+        throw new GoogleMeetCreationError(
+          "Google Calendar OAuth token is missing Calendar event scopes."
+        );
+      }
+      throw error;
+    });
+
+  const meetUrl =
+    response.data.hangoutLink ??
+    response.data.conferenceData?.entryPoints?.find((item) => item.entryPointType === "video")
+      ?.uri;
+
+  if (!meetUrl) {
+    throw new GoogleMeetCreationError("Google Meet URL was not returned.");
+  }
 
   return {
     eventId: response.data.id ?? undefined,
-    meetUrl:
-      response.data.hangoutLink ??
-      response.data.conferenceData?.entryPoints?.find((item) => item.entryPointType === "video")
-        ?.uri,
+    meetUrl,
     startsAt: startDate.toISOString(),
     endsAt: endDate.toISOString(),
   };
 }
 
 async function sendConsultationEmails(booking: ConsultationRecord) {
+  const senderEmail =
+    process.env.NEXT_PUBLIC_GOOGLE_EMAIL_USER ??
+    process.env.GOOGLE_EMAIL_USER ??
+    process.env.GMAIL_USER ??
+    process.env.SMTP_USER ??
+    process.env.CONSULTATION_NOTIFY_EMAIL;
   const from =
-    process.env.SMTP_FROM ??
-    (process.env.CONSULTATION_NOTIFY_EMAIL
-      ? `DigiStart <${process.env.CONSULTATION_NOTIFY_EMAIL}>`
-      : undefined);
+    process.env.SMTP_FROM ?? (senderEmail ? `DigiStart <${senderEmail}>` : undefined);
   if (!from) return;
 
-  const notifyEmail = process.env.CONSULTATION_NOTIFY_EMAIL || "digistartbg@gmail.com";
+  const notifyEmail =
+    process.env.NEXT_PUBLIC_GOOGLE_EMAIL_USER ||
+    process.env.GOOGLE_EMAIL_USER ||
+    process.env.CONSULTATION_NOTIFY_EMAIL ||
+    "digistartbg@gmail.com";
   const mailer = await transporter();
   if (!mailer) return;
+  const customerHtml = await renderConsultationCustomerEmailHtml(booking);
+  const adminHtml = await renderConsultationAdminEmailHtml(booking);
   const commonText = `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.source}\nGoogle Meet: ${booking.meetUrl ?? "Ще бъде добавен допълнително"}`;
 
-  await Promise.all([
+  const sendResults = await Promise.allSettled([
     mailer.sendMail({
       from,
       to: booking.email,
       subject: "Потвърждение за консултация - DigiStart",
       text: `Здравейте, ${booking.name},\n\nВашата консултация е записана.\n${commonText}`,
+      html: customerHtml,
     }),
     mailer.sendMail({
       from,
       to: notifyEmail,
       subject: `Нова консултация: ${booking.name}`,
       text: `${commonText}\nИмейл: ${booking.email}\nКомпания: ${booking.company ?? "-"}`,
+      html: adminHtml,
     }),
   ]);
+
+  if (sendResults.some((result) => result.status === "rejected")) {
+    throw new Error("One or more consultation emails failed to send.");
+  }
 }
 
 export async function saveConsultationBooking(
   booking: ConsultationRecord
 ): Promise<void> {
-  const meetData = await createGoogleMeet(booking).catch(() => null);
+  const meetData = await createGoogleMeet({
+    ...booking,
+    timezone: "Europe/Sofia",
+  });
+  const bookingWithMeet: ConsultationRecord = {
+    ...booking,
+    timezone: "Europe/Sofia",
+    meetUrl: meetData.meetUrl,
+    googleEventId: meetData.eventId,
+  };
 
   await prisma.consultationBooking.upsert({
-    where: { id: booking.id },
+    where: { id: bookingWithMeet.id },
     create: {
-      id: booking.id,
-      name: booking.name,
-      email: booking.email,
-      phone: booking.phone,
-      company: booking.company,
-      notes: booking.notes,
-      date: booking.date,
-      time: booking.time,
-      source: booking.source,
-      status: booking.status,
-      orderId: booking.orderId,
-      timezone: "Europe/Sofia",
-      startsAt: meetData?.startsAt ? new Date(meetData.startsAt) : null,
-      endsAt: meetData?.endsAt ? new Date(meetData.endsAt) : null,
-      meetUrl: meetData?.meetUrl,
-      googleEventId: meetData?.eventId,
-      createdAt: new Date(booking.createdAt),
+      id: bookingWithMeet.id,
+      name: bookingWithMeet.name,
+      email: bookingWithMeet.email,
+      phone: bookingWithMeet.phone,
+      company: bookingWithMeet.company,
+      notes: bookingWithMeet.notes,
+      date: bookingWithMeet.date,
+      time: bookingWithMeet.time,
+      source: bookingWithMeet.source,
+      status: bookingWithMeet.status,
+      orderId: bookingWithMeet.orderId,
+      timezone: bookingWithMeet.timezone ?? "Europe/Sofia",
+      startsAt: new Date(meetData.startsAt),
+      endsAt: new Date(meetData.endsAt),
+      meetUrl: bookingWithMeet.meetUrl,
+      googleEventId: bookingWithMeet.googleEventId,
+      createdAt: new Date(bookingWithMeet.createdAt),
     },
     update: {
-      status: booking.status,
-      orderId: booking.orderId,
-      meetUrl: meetData?.meetUrl,
-      googleEventId: meetData?.eventId,
-      startsAt: meetData?.startsAt ? new Date(meetData.startsAt) : null,
-      endsAt: meetData?.endsAt ? new Date(meetData.endsAt) : null,
+      status: bookingWithMeet.status,
+      orderId: bookingWithMeet.orderId,
+      meetUrl: bookingWithMeet.meetUrl,
+      googleEventId: bookingWithMeet.googleEventId,
+      startsAt: new Date(meetData.startsAt),
+      endsAt: new Date(meetData.endsAt),
     },
   });
 
   await sendConsultationEmails({
-    ...booking,
-    timezone: "Europe/Sofia",
-    meetUrl: meetData?.meetUrl ?? undefined,
-    googleEventId: meetData?.eventId ?? undefined,
+    ...bookingWithMeet,
   }).catch(() => undefined);
 }

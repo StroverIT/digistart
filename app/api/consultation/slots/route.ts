@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getConsultationBookings } from "@/lib/server/consultation-bookings";
 
+const SLOT_BLOCKING_STATUSES = new Set(["scheduled", "attended", "absent"]);
+
 const SLOT_TIMES = [
   "10:00",
   "11:00",
@@ -21,7 +23,7 @@ export async function GET() {
   const bookedByDate = new Map<string, Set<string>>();
 
   for (const booking of bookings) {
-    if (booking.status !== "scheduled") continue;
+    if (!SLOT_BLOCKING_STATUSES.has(booking.status)) continue;
     if (!bookedByDate.has(booking.date)) {
       bookedByDate.set(booking.date, new Set<string>());
     }

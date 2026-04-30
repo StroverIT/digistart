@@ -92,7 +92,7 @@ export interface ConsultationBooking {
   date: string;
   time: string;
   source: "public" | "checkout";
-  status: "scheduled" | "cancelled";
+  status: "scheduled" | "attended" | "absent" | "cancelled";
   orderId?: string;
   timezone?: string;
   meetUrl?: string;
