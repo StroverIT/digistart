@@ -10,7 +10,6 @@ import {
   CreditCard,
   Eye,
   EyeOff,
-  Lock,
   Shield,
   XCircle,
 } from "lucide-react";
@@ -27,8 +26,12 @@ import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 import { getServiceById } from "@/lib/data/services";
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { toast } from "sonner";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
+const PAYMENT_PREPARE_MAX_RETRIES = 3;
+const PAYMENT_PREPARE_FAILED_MESSAGE =
+  "Нещо се провали при подготовката за формата за плащане. Опитайте отново.";
 
 const LOGO_UPSELL = "logo-design";
 const PALETTE_UPSELL = "color-palette";
@@ -44,6 +47,8 @@ export default function CheckoutPage() {
   const [cart, setCart] = useState<Cart>({ items: [], totalOneTime: 0, totalMonthly: 0 });
   const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPreparingPayment, setIsPreparingPayment] = useState(false);
+  const [hasPaymentPrepareFailed, setHasPaymentPrepareFailed] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [logicalStep, setLogicalStep] = useState(1);
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
@@ -52,6 +57,8 @@ export default function CheckoutPage() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [passwordFieldTouched, setPasswordFieldTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [acceptedCheckoutTerms, setAcceptedCheckoutTerms] = useState(false);
+  const [legalConsentError, setLegalConsentError] = useState("");
   const [invoiceWanted, setInvoiceWanted] = useState(false);
   const [invoiceCompany, setInvoiceCompany] = useState("");
   const [invoiceTaxId, setInvoiceTaxId] = useState("");
@@ -204,6 +211,29 @@ export default function CheckoutPage() {
     return { ok: true as const, checkoutUrl, clientSecret };
   };
 
+  const prepareStripeSessionWithRetries = async () => {
+    setHasPaymentPrepareFailed(false);
+    setIsPreparingPayment(true);
+    setCheckoutError("");
+    for (let attempt = 1; attempt <= PAYMENT_PREPARE_MAX_RETRIES; attempt += 1) {
+      const result = await createEmbeddedSession();
+      if (result.ok) {
+        setIsPreparingPayment(false);
+        return result;
+      }
+
+      if (attempt < PAYMENT_PREPARE_MAX_RETRIES) {
+        setCheckoutError("");
+        await new Promise((resolve) => setTimeout(resolve, 700));
+      }
+    }
+
+    setIsPreparingPayment(false);
+    setHasPaymentPrepareFailed(true);
+    setCheckoutError(PAYMENT_PREPARE_FAILED_MESSAGE);
+    return { ok: false as const };
+  };
+
   useEffect(() => {
     setMounted(true);
     const currentCart = getCart();
@@ -226,6 +256,7 @@ export default function CheckoutPage() {
   const paymentStepIndex = totalSteps;
 
   const canStartStripe = useMemo(() => {
+    if (!acceptedCheckoutTerms) return false;
     if (!invoiceWanted) return true;
     return Boolean(
       invoiceCompany.trim() &&
@@ -233,7 +264,7 @@ export default function CheckoutPage() {
       invoiceAddress.trim() &&
       invoiceMol.trim()
     );
-  }, [invoiceWanted, invoiceCompany, invoiceTaxId, invoiceAddress, invoiceMol]);
+  }, [acceptedCheckoutTerms, invoiceWanted, invoiceCompany, invoiceTaxId, invoiceAddress, invoiceMol]);
 
   useEffect(() => {
     if (logicalStep !== paymentStepIndex) {
@@ -252,7 +283,7 @@ export default function CheckoutPage() {
     paymentInitRef.current = true;
 
     let cancelled = false;
-    createEmbeddedSession()
+    prepareStripeSessionWithRetries()
       .then((result) => {
         if (cancelled) return;
         if (!result.ok) {
@@ -271,8 +302,9 @@ export default function CheckoutPage() {
       })
       .catch(() => {
         if (!cancelled) {
+          setIsPreparingPayment(false);
           paymentInitRef.current = false;
-          setCheckoutError("Възникна грешка при зареждане на плащането.");
+          setCheckoutError(PAYMENT_PREPARE_FAILED_MESSAGE);
         }
       });
 
@@ -376,12 +408,27 @@ export default function CheckoutPage() {
     return true;
   };
 
+  const notifyMissingLegalConsent = () => {
+    const message =
+      "Моля приемете Общите условия, Политиката за поверителност и Политиката за връщане.";
+    setLegalConsentError(message);
+    toast(message);
+  };
+
   const handleContinueFromAccount = async () => {
+    if (!acceptedCheckoutTerms) {
+      notifyMissingLegalConsent();
+      return;
+    }
     if (!(await validateAccount())) return;
     setLogicalStep(2);
   };
 
   const handleContinueFromAssets = async () => {
+    if (!acceptedCheckoutTerms) {
+      notifyMissingLegalConsent();
+      return;
+    }
     if (!validateAssetsAndContact()) return;
     const uploaded = await uploadBrandFiles();
     if (uploaded === false) return;
@@ -626,6 +673,39 @@ export default function CheckoutPage() {
                   >
                     Напред
                   </Button>
+                  <div className="rounded-lg border border-border p-4">
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <Checkbox
+                        checked={acceptedCheckoutTerms}
+                        onCheckedChange={(value) => {
+                          const isAccepted = value === true;
+                          setAcceptedCheckoutTerms(isAccepted);
+                          if (isAccepted) setLegalConsentError("");
+                        }}
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        Съгласен/на съм с{" "}
+                        <TransitionLink href="/terms-and-conditions" className="underline hover:text-foreground">
+                          Общите условия
+                        </TransitionLink>
+                        ,{" "}
+                        <TransitionLink href="/privacy-policy" className="underline hover:text-foreground">
+                          Политиката за поверителност
+                        </TransitionLink>{" "}
+                        и{" "}
+                        <TransitionLink
+                          href="/terms-and-conditions#refund-policy"
+                          className="underline hover:text-foreground"
+                        >
+                          Политиката за връщане на суми
+                        </TransitionLink>
+                        .
+                      </span>
+                    </label>
+                    {legalConsentError ? (
+                      <p className="mt-2 text-xs text-red-500">{legalConsentError}</p>
+                    ) : null}
+                  </div>
                 </>
               ) : null}
 
@@ -696,6 +776,48 @@ export default function CheckoutPage() {
                           <span>Цветова палитра и бранд гайд (+20 €)</span>
                         </label>
                       </div>
+                      {isLoggedInCustomer ? (
+                        <div className="rounded-lg border border-border p-4">
+                          <label className="flex items-start gap-3 cursor-pointer">
+                            <Checkbox
+                              checked={acceptedCheckoutTerms}
+                              onCheckedChange={(value) => {
+                                const isAccepted = value === true;
+                                setAcceptedCheckoutTerms(isAccepted);
+                                if (isAccepted) setLegalConsentError("");
+                              }}
+                            />
+                            <span className="text-sm text-muted-foreground">
+                              Съгласен/на съм с{" "}
+                              <TransitionLink
+                                href="/terms-and-conditions"
+                                className="underline hover:text-foreground"
+                              >
+                                Общите условия
+                              </TransitionLink>
+                              ,{" "}
+                              <TransitionLink
+                                href="/privacy-policy"
+                                className="underline hover:text-foreground"
+                              >
+                                Политиката за поверителност
+                              </TransitionLink>{" "}
+                              и{" "}
+                              <TransitionLink
+                                href="/terms-and-conditions#refund-policy"
+                                className="underline hover:text-foreground"
+                              >
+                                Политиката за връщане на суми
+                              </TransitionLink>
+                              .
+                            </span>
+                          </label>
+                          {legalConsentError ? (
+                            <p className="mt-2 text-xs text-red-500">{legalConsentError}</p>
+                          ) : null}
+                        </div>
+                      ) : null}
+
                     </CardContent>
                   </Card>
                   {checkoutError ? <p className="text-sm text-red-500">{checkoutError}</p> : null}
@@ -776,11 +898,19 @@ export default function CheckoutPage() {
                             <EmbeddedCheckout />
                           </EmbeddedCheckoutProvider>
                         </div>
-                      ) : (
+                      ) : !hasPaymentPrepareFailed || isPreparingPayment ? (
+                          <div className="bg-secondary/50 rounded-lg p-6">
+                            <div className="space-y-3 animate-pulse">
+                              <div className="h-4 w-2/3 rounded bg-muted" />
+                              <div className="h-10 w-full rounded bg-muted" />
+                              <div className="h-10 w-full rounded bg-muted" />
+                              <div className="h-10 w-5/6 rounded bg-muted" />
+                            </div>
+                          </div>
+                        ) : (
                         <div className="bg-secondary/50 rounded-lg p-6 text-center">
-                          <Lock className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
                           <p className="text-muted-foreground text-sm mb-2">
-                            Подготвяме защитената форма за плащане...
+                            Нещо се провали при подгодовката за формата за плащане...
                           </p>
                           {checkoutError ? (
                             <p className="text-xs text-red-500 mb-4">{checkoutError}</p>
@@ -790,11 +920,15 @@ export default function CheckoutPage() {
                             variant="outline"
                             disabled={isSubmitting}
                             onClick={async () => {
+                              if (!acceptedCheckoutTerms) {
+                                notifyMissingLegalConsent();
+                                return;
+                              }
                               if (!validateInvoice()) return;
                               setIsSubmitting(true);
                               setCheckoutError("");
                               paymentInitRef.current = false;
-                              const r = await createEmbeddedSession();
+                              const r = await prepareStripeSessionWithRetries();
                               setIsSubmitting(false);
                               if (r.ok && r.clientSecret) setStripeClientSecret(r.clientSecret);
                               else if (r.ok && r.checkoutUrl) {
@@ -812,15 +946,13 @@ export default function CheckoutPage() {
                         <Shield className="h-4 w-4" />
                         <span>Вашите данни са защитени с SSL криптиране</span>
                       </div>
+
                     </CardContent>
                   </Card>
 
-                  <div className="flex gap-3">
-                    <Button type="button" variant="outline" className="flex-1" onClick={handleBack}>
+                  <div>
+                    <Button type="button" variant="outline" className="w-full" onClick={handleBack}>
                       Назад
-                    </Button>
-                    <Button type="button" className="flex-1" disabled>
-                      Завършете плащането във формата
                     </Button>
                   </div>
                 </>
