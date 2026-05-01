@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -17,6 +19,8 @@ interface RevenueChartProps {
 }
 
 export function RevenueChart({ data }: RevenueChartProps) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+
   const chartData = data.map((d) => ({
     date: new Date(d.date).toLocaleDateString("bg-BG", {
       day: "numeric",
@@ -25,6 +29,19 @@ export function RevenueChart({ data }: RevenueChartProps) {
     revenue: d.revenue,
     visits: d.visits,
   }));
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el || chartData.length === 0) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        el,
+        { opacity: 0, scale: 0.97 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" },
+      );
+    }, el);
+    return () => ctx.revert();
+  }, [data.length]);
 
   if (chartData.length === 0) {
     return (
@@ -35,7 +52,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
   }
 
   return (
-    <div className="h-[300px]">
+    <div ref={wrapRef} className="h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={chartData}>
           <defs>

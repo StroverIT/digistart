@@ -7,12 +7,12 @@ export default async function ConsultationsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
         <h1 className="text-3xl font-bold mb-2">Консултации</h1>
         <p className="text-muted-foreground">Всички записани консултации и Meet връзки</p>
       </div>
 
-      <Card className="bg-card border-border">
+      <Card className="bg-card border-border animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 fill-mode-both">
         <CardHeader>
           <CardTitle>{consultations.length} записа</CardTitle>
         </CardHeader>

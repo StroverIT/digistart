@@ -28,6 +28,7 @@ import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe
 import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "sonner";
 import Link from "next/link";
+import gsap from "gsap";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
 const PAYMENT_PREPARE_MAX_RETRIES = 3;
@@ -75,6 +76,7 @@ export default function CheckoutPage() {
     paletteUrl?: string | null;
   } | null>(null);
   const paymentInitRef = useRef(false);
+  const checkoutRootRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState<CustomerInfo>({
     name: "",
@@ -253,6 +255,27 @@ export default function CheckoutPage() {
       router.replace("/cart");
     }
   }, [router]);
+
+  useEffect(() => {
+    if (!mounted || cart.items.length === 0) return;
+    const root = checkoutRootRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      const els = root.querySelectorAll<HTMLElement>("[data-checkout-reveal]");
+      if (!els.length) return;
+      gsap.set(els, { opacity: 0, y: 32 });
+      gsap.to(els, {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        stagger: 0.14,
+        ease: "back.out(1.25)",
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, [mounted, cart.items.length, logicalStep]);
 
   const paymentStepIndex = totalSteps;
 
@@ -480,19 +503,19 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="pt-24 pb-16">
+    <div ref={checkoutRootRef} className="pt-24 pb-16">
       <div className="container mx-auto px-4">
-        <TrackedCtaLink
-          href="/cart"
-          ctaId="checkout_back_to_cart"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Обратно към кошницата
-        </TrackedCtaLink>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div>
+          <div data-checkout-reveal className="opacity-0 translate-y-10">
+            <TrackedCtaLink
+              href="/cart"
+              ctaId="checkout_back_to_cart"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Обратно към кошницата
+            </TrackedCtaLink>
+
             <h1 className="text-2xl sm:text-3xl font-bold mb-6">Завършване на поръчка</h1>
 
             <div className="space-y-6">
@@ -980,7 +1003,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div>
+          <div data-checkout-reveal className="opacity-0 translate-y-10">
             <Card className="bg-card border-border sticky top-24">
               <CardHeader>
                 <CardTitle>Вашата поръчка</CardTitle>

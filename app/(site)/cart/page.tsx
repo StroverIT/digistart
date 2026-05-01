@@ -82,7 +82,7 @@ function CartItemCard({
   }, [hasUpsells, showUpsells]);
 
   return (
-    <Card className="bg-card border-border">
+    <Card data-cart-item className="bg-card border-border opacity-0 translate-y-10">
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Item info */}
@@ -163,6 +163,7 @@ export default function CartPage() {
   const [cart, setCart] = useState<Cart>({ items: [], totalOneTime: 0, totalMonthly: 0 });
   const [servicesById, setServicesById] = useState<Record<string, Service>>({});
   const [mounted, setMounted] = useState(false);
+  const cartRootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -194,6 +195,45 @@ export default function CartPage() {
     setCart(updatedCart);
   };
 
+  const isEmpty = cart.items.length === 0;
+
+  useEffect(() => {
+    if (!mounted) return;
+    const root = cartRootRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      if (isEmpty) {
+        const emptyCard = root.querySelector<HTMLElement>("[data-cart-empty]");
+        if (emptyCard) {
+          gsap.set(emptyCard, { opacity: 0, y: 40 });
+          gsap.to(emptyCard, { opacity: 1, y: 0, duration: 0.55, ease: "back.out(1.4)" });
+        }
+        return;
+      }
+
+      const header = root.querySelector<HTMLElement>("[data-cart-header]");
+      const items = root.querySelectorAll<HTMLElement>("[data-cart-item]");
+      const summary = root.querySelector<HTMLElement>("[data-cart-summary]");
+      const targets = [header, ...Array.from(items), summary].filter(Boolean) as HTMLElement[];
+      if (!targets.length) return;
+
+      gsap.set(targets, { opacity: 0, y: 36 });
+      const tl = gsap.timeline({ defaults: { ease: "back.out(1.3)" } });
+      if (header) tl.to(header, { opacity: 1, y: 0, duration: 0.45 }, 0);
+      if (items.length) {
+        tl.to(
+          items,
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.12 },
+          header ? "-=0.2" : 0,
+        );
+      }
+      if (summary) tl.to(summary, { opacity: 1, y: 0, duration: 0.5 }, "-=0.35");
+    }, root);
+
+    return () => ctx.revert();
+  }, [mounted, isEmpty, cart.items.length]);
+
   if (!mounted) {
     return (
       <div className="pt-24 pb-16">
@@ -206,13 +246,11 @@ export default function CartPage() {
     );
   }
 
-  const isEmpty = cart.items.length === 0;
-
   return (
-    <div className="pt-24 pb-16">
+    <div ref={cartRootRef} className="pt-24 pb-16">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div data-cart-header className="flex items-center gap-4 mb-8 opacity-0 translate-y-10">
           <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
             <ShoppingCart className="h-6 w-6" />
           </div>
@@ -227,7 +265,7 @@ export default function CartPage() {
         </div>
 
         {isEmpty ? (
-          <Card className="bg-card border-border">
+          <Card data-cart-empty className="bg-card border-border opacity-0 translate-y-10">
             <CardContent className="py-16 text-center">
               <Package className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
               <h2 className="text-xl font-semibold mb-2">Кошницата е празна</h2>
@@ -268,7 +306,10 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <Card className="bg-card border-border sticky top-24">
+              <Card
+                data-cart-summary
+                className="bg-card border-border sticky top-24 opacity-0 translate-y-10"
+              >
                 <CardHeader>
                   <CardTitle>Обобщение</CardTitle>
                 </CardHeader>

@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   CheckCircle2,
   CircleX,
@@ -20,6 +22,8 @@ import { useTransitionRouter } from "@/components/transitions/useTransitionRoute
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { Faq, type FaqItem } from "@/components/ui/faq";
 import { ServiceDetailHero } from "@/components/services/service-detail-hero";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const GOOGLE_PROFILE_PRICE = 50;
 const GOOGLE_PROFILE_OPTION_ID = "basic";
@@ -111,6 +115,55 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
+  const pageRootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const root = pageRootRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      const sections = root.querySelectorAll<HTMLElement>("[data-animate-section]");
+      sections.forEach((section) => {
+        const reveals = section.querySelectorAll<HTMLElement>("[data-animate-reveal]");
+        const cards = section.querySelectorAll<HTMLElement>("[data-animate-card]");
+
+        if (reveals.length) {
+          gsap.set(reveals, { opacity: 0, y: 40 });
+          gsap.to(reveals, {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            stagger: 0.1,
+            ease: "back.out(1.6)",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              toggleActions: "play none none none",
+            },
+          });
+        }
+
+        if (cards.length) {
+          gsap.set(cards, { opacity: 0, y: 50, scale: 0.95 });
+          gsap.to(cards, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            stagger: 0.15,
+            ease: "back.out(1.2)",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              toggleActions: "play none none none",
+            },
+          });
+        }
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, []);
 
   const scrollToBuySection = () => {
     document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -133,7 +186,7 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
   };
 
   return (
-    <div className="pt-16 pb-12 md:pt-20 md:pb-16">
+    <div ref={pageRootRef} className="pt-16 pb-12 md:pt-20 md:pb-16">
       <ServiceDetailHero
         badgeIcon={<MapPin className="h-4 w-4" />}
         badgeText="Достигни до повече клиенти с Google Maps"
@@ -158,16 +211,25 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
         backCtaId="service_google_business_back_to_services"
       />
 
-      <section className="py-8 md:py-20 bg-card/50">
+      <section data-animate-section className="py-8 md:py-20 bg-card/50">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+            <span
+              data-animate-reveal
+              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+            >
               Проблемът
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance">
+            <h2
+              data-animate-reveal
+              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10"
+            >
               Защо губиш клиенти, ако те няма в Google Maps?
             </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed">
+            <p
+              data-animate-reveal
+              className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
+            >
               Хората търсят услуги около тях всеки ден. Ако не те виждат, отиват при съседа.
             </p>
           </div>
@@ -175,7 +237,8 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
             {googlePainPoints.map((item) => (
               <Card
                 key={item.title}
-                className="group bg-card border-border hover:border-destructive/50 transition-all duration-300"
+                data-animate-card
+                className="group bg-card border-border hover:border-destructive/50 transition-all duration-300 opacity-0 translate-y-10"
               >
                 <CardContent className="p-6 md:p-7">
                   <CircleX className="h-5 w-5 text-red-500 mb-4" />
@@ -188,13 +251,19 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
         </div>
       </section>
 
-      <section className="py-8 md:py-20">
+      <section data-animate-section className="py-8 md:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+            <span
+              data-animate-reveal
+              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+            >
               Решението
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-balance">
+            <h2
+              data-animate-reveal
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-balance opacity-0 translate-y-10"
+            >
               Какво е включено в пакета "Google Профил"?
             </h2>
           </div>
@@ -202,7 +271,8 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
             {googleSolutionItems.map((item) => (
               <Card
                 key={item}
-                className="group border-border bg-card hover:border-primary/50 transition-all duration-300"
+                data-animate-card
+                className="group border-border bg-card hover:border-primary/50 transition-all duration-300 opacity-0 translate-y-10"
               >
                 <CardContent className="p-5 md:p-6 flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
@@ -214,16 +284,25 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
         </div>
       </section>
 
-      <section className="py-8 md:py-20">
+      <section data-animate-section className="py-8 md:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+            <span
+              data-animate-reveal
+              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+            >
               Процес
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance">
+            <h2
+              data-animate-reveal
+              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10"
+            >
               Как да стартираш? (Само 3 лесни стъпки)
             </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed">
+            <p
+              data-animate-reveal
+              className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
+            >
               Улеснили сме процеса, за да не губиш излишно време в технически детайли.
             </p>
           </div>
@@ -232,7 +311,10 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {googleSteps.map((step, index) => (
                 <div key={step.title} className="relative">
-                  <Card className="group bg-card border-border hover:border-primary/50 transition-colors h-full">
+                  <Card
+                    data-animate-card
+                    className="group bg-card border-border hover:border-primary/50 transition-colors h-full opacity-0 translate-y-10"
+                  >
                     <CardContent className="p-6">
                       <div className="flex items-center gap-3 mb-4">
                         <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
@@ -259,20 +341,32 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
         </div>
       </section>
 
-      <section className="py-8 md:py-20 bg-card/40">
+      <section data-animate-section className="py-8 md:py-20 bg-card/40">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+            <span
+              data-animate-reveal
+              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+            >
               FAQ
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance">
+            <h2
+              data-animate-reveal
+              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10"
+            >
               Често задавани въпроси
             </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed">
+            <p
+              data-animate-reveal
+              className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
+            >
               Събрахме най-честите въпроси, за да вземеш решение по-бързо и уверено.
             </p>
           </div>
-          <div className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 sm:px-8 sm:py-4">
+          <div
+            data-animate-card
+            className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 sm:px-8 sm:py-4 opacity-0 translate-y-10"
+          >
             <Faq items={FAQ_ITEMS} />
           </div>
         </div>

@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
+import gsap from "gsap";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
@@ -43,13 +45,34 @@ const navItems = [
 
 export function AdminSidebar({ user }: AdminSidebarProps) {
   const pathname = usePathname();
+  const sidebarInnerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const root = sidebarInnerRef.current;
+    if (!root) return;
+    const links = root.querySelectorAll<HTMLElement>("[data-admin-nav-link]");
+    if (!links.length) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(links, { opacity: 0, x: -12 });
+      gsap.to(links, {
+        opacity: 1,
+        x: 0,
+        duration: 0.4,
+        stagger: 0.06,
+        ease: "power2.out",
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, [pathname]);
 
   const handleSignOut = () => {
     signOut({ callbackUrl: "/admin/login" });
   };
 
   const sidebarContent = (
-    <>
+    <div ref={sidebarInnerRef} className="flex flex-col h-full min-h-0">
       {/* Logo */}
       <div className="h-16 flex items-center px-6 border-b border-border">
         <Link href="/" className="flex items-center gap-2">
@@ -67,9 +90,10 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
           return (
             <Link
               key={item.href}
+              data-admin-nav-link
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors opacity-0 -translate-x-3",
                 isActive
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground"
@@ -83,9 +107,10 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
 
         <div className="pt-4 mt-4 border-t border-border">
           <Link
+            data-admin-nav-link
             href="/"
             target="_blank"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors opacity-0 -translate-x-3"
           >
             <ExternalLink className="h-5 w-5" />
             Преглед на сайта
@@ -117,7 +142,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
           Изход
         </Button>
       </div>
-    </>
+    </div>
   );
 
   return (

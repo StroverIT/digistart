@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,6 +56,7 @@ export default function ConsultationBookingForm({
   orderId,
   onBooked,
 }: Props) {
+  const cardRef = useRef<HTMLDivElement>(null);
   const [days, setDays] = useState<SlotDay[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
@@ -124,6 +126,36 @@ export default function ConsultationBookingForm({
     }
   }, [availableTimes, selectedDate, selectedTime, locallyDisabledSlots]);
 
+  useEffect(() => {
+    if (isLoadingSlots) return;
+    const card = cardRef.current;
+    if (!card) return;
+
+    const ctx = gsap.context(() => {
+      const els = card.querySelectorAll<HTMLElement>("[data-consult-animate]");
+      if (!els.length) return;
+      gsap.set(els, { opacity: 0, y: 28 });
+      gsap.to(els, {
+        opacity: 1,
+        y: 0,
+        duration: 0.48,
+        stagger: 0.09,
+        ease: "back.out(1.3)",
+      });
+    }, card);
+
+    return () => ctx.revert();
+  }, [isLoadingSlots]);
+
+  useEffect(() => {
+    if (!success) return;
+    const card = cardRef.current;
+    if (!card) return;
+    const msg = card.querySelector<HTMLElement>("[data-consult-success]");
+    if (!msg) return;
+    gsap.fromTo(msg, { opacity: 0, y: 12, scale: 0.98 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.4)" });
+  }, [success]);
+
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -182,7 +214,7 @@ export default function ConsultationBookingForm({
   };
 
   return (
-    <Card className="bg-card border-border">
+    <Card ref={cardRef} className="bg-card border-border">
       <CardHeader>
         <CardTitle className="text-xl">{title}</CardTitle>
         <p className="text-sm text-muted-foreground">{description}</p>
@@ -194,7 +226,7 @@ export default function ConsultationBookingForm({
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="space-y-2">
+            <div data-consult-animate className="space-y-2 opacity-0 translate-y-10">
               <p className="text-sm font-medium">Изберете ден</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {days.map((day) => (
@@ -217,7 +249,7 @@ export default function ConsultationBookingForm({
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div data-consult-animate className="space-y-2 opacity-0 translate-y-10">
               <p className="text-sm font-medium">Изберете час</p>
               <div className="flex flex-wrap gap-2">
                 {availableTimes.map((time) => (
@@ -246,7 +278,10 @@ export default function ConsultationBookingForm({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div
+              data-consult-animate
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4 opacity-0 translate-y-10"
+            >
               <Input
                 name="name"
                 value={formData.name}
@@ -277,31 +312,39 @@ export default function ConsultationBookingForm({
               />
             </div>
 
-            <Textarea
-              name="notes"
-              value={formData.notes}
-              onChange={onInputChange}
-              placeholder="Допълнителни бележки (по избор)"
-              rows={3}
-            />
+            <div data-consult-animate className="opacity-0 translate-y-10">
+              <Textarea
+                name="notes"
+                value={formData.notes}
+                onChange={onInputChange}
+                placeholder="Допълнителни бележки (по избор)"
+                rows={3}
+              />
+            </div>
 
             {error ? <p className="text-sm text-red-500">{error}</p> : null}
-            {success ? <p className="text-sm text-green-600">{success}</p> : null}
+            {success ? (
+              <p data-consult-success className="text-sm text-green-600">
+                {success}
+              </p>
+            ) : null}
 
-            <Button
-              type="button"
-              onClick={() => void handleSubmit()}
-              disabled={
-                isSubmitting ||
-                !selectedDate ||
-                !selectedTime ||
-                availableTimes.length === 0 ||
-                isTimeLocallyDisabled(selectedDate, selectedTime)
-              }
-              className="w-full"
-            >
-              {isSubmitting ? "Запазване..." : submitLabel}
-            </Button>
+            <div data-consult-animate className="opacity-0 translate-y-10">
+              <Button
+                type="button"
+                onClick={() => void handleSubmit()}
+                disabled={
+                  isSubmitting ||
+                  !selectedDate ||
+                  !selectedTime ||
+                  availableTimes.length === 0 ||
+                  isTimeLocallyDisabled(selectedDate, selectedTime)
+                }
+                className="w-full"
+              >
+                {isSubmitting ? "Запазване..." : submitLabel}
+              </Button>
+            </div>
           </div>
         )}
       </CardContent>

@@ -1,4 +1,8 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import gsap from "gsap";
 import { Button } from "@/components/ui/button";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 
@@ -9,8 +13,42 @@ const benefits = [
 ];
 
 export function HeroSection() {
+  const containerRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subRef = useRef<HTMLParagraphElement>(null);
+  const benefitsRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const ctx = gsap.context(() => {
+      const benefitEls = benefitsRef.current?.children
+        ? Array.from(benefitsRef.current.children)
+        : [];
+
+      gsap.set(
+        [titleRef.current, subRef.current, ...benefitEls, ctaRef.current, scrollRef.current],
+        { opacity: 0, y: 40 },
+      );
+
+      const tl = gsap.timeline({ defaults: { ease: "back.out(1.6)" } });
+      tl.to(titleRef.current, { opacity: 1, y: 0, duration: 0.6 }, 0.05)
+        .to(subRef.current, { opacity: 1, y: 0, duration: 0.5 }, "-=0.25")
+        .to(benefitEls, { opacity: 1, y: 0, duration: 0.45, stagger: 0.08 }, "-=0.2")
+        .to(ctaRef.current, { opacity: 1, y: 0, duration: 0.5 }, "-=0.2")
+        .to(scrollRef.current, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, "-=0.15");
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <section
+      ref={containerRef}
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
+    >
       {/* Background gradient */}
       <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
 
@@ -26,29 +64,36 @@ export function HeroSection() {
         style={{
           backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
                            linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px'
+          backgroundSize: "60px 60px",
         }}
       />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           {/* Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl sm:leading-17 mb-6 text-balance">
-            Изградете{" "}
-            <span className="gradient-text">дигиталното бъдеще</span>{" "}
-            на вашия бизнес
+          <h1
+            ref={titleRef}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl sm:leading-17 mb-6 text-balance opacity-0 translate-y-10"
+          >
+            Изградете <span className="gradient-text">дигиталното бъдеще</span> на вашия бизнес
           </h1>
 
           {/* Subheadline */}
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed text-pretty">
-            Професионални уеб сайтове, онлайн магазини и дигитален маркетинг.
-            Превръщаме вашите идеи в работещи решения, които генерират приходи.
+          <p
+            ref={subRef}
+            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed text-pretty opacity-0 translate-y-10"
+          >
+            Професионални уеб сайтове, онлайн магазини и дигитален маркетинг. Превръщаме вашите идеи в
+            работещи решения, които генерират приходи.
           </p>
 
           {/* Benefits */}
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-10">
+          <div ref={benefitsRef} className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-10">
             {benefits.map((benefit) => (
-              <div key={benefit} className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div
+                key={benefit}
+                className="flex items-center gap-2 text-sm text-muted-foreground opacity-0 translate-y-10"
+              >
                 <CheckCircle2 className="h-4 w-4 text-primary" />
                 <span>{benefit}</span>
               </div>
@@ -56,39 +101,22 @@ export function HeroSection() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div ref={ctaRef} className="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 translate-y-10">
             <TrackedCtaLink href="/#services" ctaId="hero_view_services">
               <Button size="lg" className="glow-primary text-lg h-14 px-8">
                 Вижте услугите
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </TrackedCtaLink>
-            {/* <TransitionLink href="/#process">
-              <Button variant="outline" size="lg" className="text-lg h-14 px-8 border-border hover:bg-secondary/50">
-                <Play className="mr-2 h-5 w-5" />
-                Как работим
-              </Button>
-            </TransitionLink> */}
           </div>
-
-          {/* Trust indicators */}
-          {/* <div className="mt-16 pt-8 border-t border-border/50">
-            <p className="text-sm text-muted-foreground mb-6">Доверени от водещи компании в България</p>
-            <div className="flex flex-wrap items-center justify-center gap-8 opacity-50">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-8 w-24 bg-muted-foreground/20 rounded"
-                  aria-label={`Партньор ${i + 1}`}
-                />
-              ))}
-            </div>
-          </div> */}
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce max-sm:hidden">
+      <div
+        ref={scrollRef}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce max-sm:hidden opacity-0 translate-y-10"
+      >
         <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex items-start justify-center p-2">
           <div className="w-1 h-2 bg-muted-foreground/50 rounded-full animate-pulse" />
         </div>

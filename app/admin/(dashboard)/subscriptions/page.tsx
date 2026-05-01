@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
 import { RefreshCw, History, CalendarClock, Wallet } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
@@ -21,6 +22,7 @@ function isRecurringOrder(order: Order): RecurringOrder | null {
 }
 
 export default function AdminSubscriptionsPage() {
+  const pageRef = useRef<HTMLDivElement>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [mounted, setMounted] = useState(false);
 
@@ -35,6 +37,28 @@ export default function AdminSubscriptionsPage() {
         setOrders([]);
       });
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const root = pageRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      const els = root.querySelectorAll<HTMLElement>("[data-admin-animate]");
+      if (!els.length) return;
+      gsap.set(els, { opacity: 0, y: 28, scale: 0.99 });
+      gsap.to(els, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.45,
+        stagger: 0.07,
+        ease: "back.out(1.15)",
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, [mounted]);
 
   const recurringOrders = useMemo(() => {
     return orders.map(isRecurringOrder).filter((order): order is RecurringOrder => order !== null);
@@ -65,8 +89,8 @@ export default function AdminSubscriptionsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div ref={pageRef} className="space-y-6">
+      <div data-admin-animate className="opacity-0 translate-y-10">
         <h1 className="text-3xl font-bold mb-2">Recurring subscriptions</h1>
         <p className="text-muted-foreground">
           Проследяване на активни и исторически абонаментни поръчки
@@ -74,7 +98,10 @@ export default function AdminSubscriptionsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-card border-border">
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <RefreshCw className="h-4 w-4 text-primary" />
@@ -89,7 +116,10 @@ export default function AdminSubscriptionsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <History className="h-4 w-4 text-primary" />
@@ -104,7 +134,10 @@ export default function AdminSubscriptionsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <CalendarClock className="h-4 w-4 text-primary" />
@@ -124,7 +157,10 @@ export default function AdminSubscriptionsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Wallet className="h-4 w-4 text-primary" />
@@ -140,7 +176,10 @@ export default function AdminSubscriptionsPage() {
         </Card>
       </div>
 
-      <Card className="bg-card border-border">
+      <Card
+        data-admin-animate
+        className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+      >
         <CardHeader>
           <CardTitle>Последни recurring поръчки</CardTitle>
         </CardHeader>

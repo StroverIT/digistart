@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Minus, Plus } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -18,6 +21,19 @@ import type { CartItemUpsell, Service } from "@/lib/types";
 import type { UpsellEntryErrors } from "@/components/services/upsell-validation";
 import { useAnalyticsMode } from "@/components/analytics/analytics-mode-provider";
 import { trackCtaClick } from "@/lib/analytics/tracker";
+
+gsap.registerPlugin(ScrollTrigger);
+
+function pulseUpsellRow(upsellId: string) {
+  if (typeof document === "undefined") return;
+  const el = document.getElementById(`upsell-row-${upsellId}`);
+  if (!el) return;
+  gsap.fromTo(
+    el,
+    { scale: 1 },
+    { scale: 1.02, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.out" },
+  );
+}
 
 interface UpsellConfiguratorProps {
   service: Service;
@@ -57,11 +73,39 @@ export function UpsellConfigurator({
   errors,
   analyticsPage,
 }: UpsellConfiguratorProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { isAdmin, isAnalyticsMode, showAllCtaStats, ctaStats, pageStats } =
     useAnalyticsMode();
   const pageKey = analyticsPage ?? pathname ?? `/services/${service.slug}`;
   const byId = new Map(value.map((item) => [item.upsellId, item]));
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      const rows = root.querySelectorAll<HTMLElement>("[data-upsell-animate-row]");
+      if (!rows.length) return;
+
+      gsap.set(rows, { opacity: 0, y: 36, scale: 0.98 });
+      gsap.to(rows, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.55,
+        stagger: 0.1,
+        ease: "back.out(1.2)",
+        scrollTrigger: {
+          trigger: root,
+          start: "top 90%",
+          toggleActions: "play none none none",
+        },
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, [service.id, service.upsells.length]);
 
   const setUpsell = (upsellId: string, next: CartItemUpsell | null) => {
     const nextValue = value.filter((item) => item.upsellId !== upsellId);
@@ -83,6 +127,7 @@ export function UpsellConfigurator({
       return;
     }
     trackCtaClick(pageKey, `upsell_${service.slug}_${upsellId}`);
+    pulseUpsellRow(upsellId);
     setUpsell(upsellId, {
       upsellId,
       quantity: safeQuantity,
@@ -96,6 +141,7 @@ export function UpsellConfigurator({
     const current = byId.get(upsellId);
     const quantity = current?.quantity || 1;
     trackCtaClick(pageKey, `upsell_${service.slug}_${upsellId}`);
+    pulseUpsellRow(upsellId);
     setUpsell(upsellId, {
       upsellId,
       quantity,
@@ -112,7 +158,7 @@ export function UpsellConfigurator({
   };
 
   return (
-    <div className="space-y-4">
+    <div ref={rootRef} className="space-y-4">
       {service.upsells.map((upsell) => {
         const item = byId.get(upsell.id);
         const quantity = item?.quantity ?? 0;
@@ -128,10 +174,12 @@ export function UpsellConfigurator({
 
         return (
           <div
+            id={`upsell-row-${upsell.id}`}
             key={upsell.id}
+            data-upsell-animate-row
             className={cn(
-              "group rounded-lg border p-4 transition-colors",
-              quantity > 0 ? "border-primary/50 bg-primary/5" : "border-border"
+              "group rounded-lg border p-4 transition-colors will-change-transform opacity-0 translate-y-10",
+              quantity > 0 ? "border-primary/50 bg-primary/5" : "border-border",
             )}
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">

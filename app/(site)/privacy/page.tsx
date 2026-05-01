@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="pt-24 pb-16">
-      <div className="container mx-auto px-4 max-w-3xl">
+      <div className="container mx-auto px-4 max-w-3xl animate-in fade-in slide-in-from-bottom-5 duration-700 fill-mode-both">
         <h1 className="text-3xl font-bold mb-6">Политика за поверителност</h1>
         <p className="text-muted-foreground">
           Тази страница ще бъде допълнена с пълния текст на политиката за поверителност.

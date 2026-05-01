@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
 import {
   ResponsiveContainer,
   PieChart,
@@ -23,6 +25,22 @@ const COLORS = [
 ];
 
 export function ServicesPieChart({ data }: ServicesPieChartProps) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (data.length === 0) return;
+    const el = wrapRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        el,
+        { opacity: 0, scale: 0.97 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" },
+      );
+    }, el);
+    return () => ctx.revert();
+  }, [data.length]);
+
   if (data.length === 0) {
     return (
       <div className="h-[300px] flex items-center justify-center text-muted-foreground">
@@ -38,7 +56,7 @@ export function ServicesPieChart({ data }: ServicesPieChartProps) {
   }));
 
   return (
-    <div className="h-[300px]">
+    <div ref={wrapRef} className="h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie

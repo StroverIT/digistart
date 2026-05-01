@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
 import { ArrowDownUp, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -43,6 +44,7 @@ export default function ConsultationsTable({
 }: {
   initialConsultations: ConsultationItem[];
 }) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const [consultations, setConsultations] = useState<ConsultationItem[]>(initialConsultations);
   const [searchEmail, setSearchEmail] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | VisibleStatus>("all");
@@ -70,6 +72,34 @@ export default function ConsultationsTable({
     });
   }, [consultations, searchEmail, sortByDate, statusFilter]);
 
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      const toolbar = root.querySelector<HTMLElement>("[data-consult-toolbar]");
+      const rows = root.querySelectorAll<HTMLElement>("tbody tr");
+
+      if (toolbar) {
+        gsap.set(toolbar, { opacity: 0, y: 16 });
+        gsap.to(toolbar, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" });
+      }
+      if (rows.length) {
+        gsap.set(rows, { opacity: 0, y: 10 });
+        gsap.to(rows, {
+          opacity: 1,
+          y: 0,
+          duration: 0.35,
+          stagger: 0.04,
+          ease: "power2.out",
+          delay: 0.05,
+        });
+      }
+    }, root);
+
+    return () => ctx.revert();
+  }, [initialConsultations.length]);
+
   const onStatusChange = async (id: string, status: VisibleStatus) => {
     setSavingId(id);
     try {
@@ -93,8 +123,8 @@ export default function ConsultationsTable({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-3">
+    <div ref={rootRef} className="space-y-4">
+      <div data-consult-toolbar className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input

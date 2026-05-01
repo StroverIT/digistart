@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 import Image from "next/image";
 import { Search, Filter, Eye, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -66,6 +67,7 @@ export default function OrdersPage() {
   const [resolvedPaymentIntentId, setResolvedPaymentIntentId] = useState<string | null>(null);
   const [isResolvingPaymentIntent, setIsResolvingPaymentIntent] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const ordersPageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -157,7 +159,27 @@ export default function OrdersPage() {
       });
   }, [selectedOrder]);
 
+  useEffect(() => {
+    if (!mounted) return;
+    const root = ordersPageRef.current;
+    if (!root) return;
 
+    const ctx = gsap.context(() => {
+      const els = root.querySelectorAll<HTMLElement>("[data-admin-animate]");
+      if (!els.length) return;
+      gsap.set(els, { opacity: 0, y: 28, scale: 0.99 });
+      gsap.to(els, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.45,
+        stagger: 0.08,
+        ease: "back.out(1.15)",
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, [mounted]);
 
   if (!mounted) {
     return (
@@ -168,9 +190,9 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div ref={ordersPageRef} className="space-y-6">
       {/* Header */}
-      <div>
+      <div data-admin-animate className="opacity-0 translate-y-10">
         <h1 className="text-3xl font-bold mb-2">Поръчки</h1>
         <p className="text-muted-foreground">
           Управление на всички поръчки и тяхното състояние
@@ -178,7 +200,10 @@ export default function OrdersPage() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-card border-border">
+      <Card
+        data-admin-animate
+        className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+      >
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
@@ -209,7 +234,10 @@ export default function OrdersPage() {
       </Card>
 
       {/* Orders Table */}
-      <Card className="bg-card border-border">
+      <Card
+        data-admin-animate
+        className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+      >
         <CardHeader>
           <CardTitle>
             {filteredOrders.length} поръчки

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import gsap from "gsap";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
@@ -21,6 +22,21 @@ export default function SignUpPage() {
   const [password2, setPassword2] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const root = wrapRef.current;
+    if (!root) return;
+    const card = root.querySelector<HTMLElement>("[data-auth-card]");
+    if (!card) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(card, { opacity: 0, y: 40, scale: 0.97 });
+      gsap.to(card, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "back.out(1.5)" });
+    }, root);
+
+    return () => ctx.revert();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,8 +87,11 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="pt-24 pb-16 min-h-[70vh] flex items-center justify-center px-4">
-      <Card className="w-full max-w-md bg-card border-border">
+    <div
+      ref={wrapRef}
+      className="pt-24 pb-16 min-h-[70vh] flex items-center justify-center px-4"
+    >
+      <Card data-auth-card className="w-full max-w-md bg-card border-border opacity-0 translate-y-10">
         <CardHeader>
           <CardTitle>Регистрация</CardTitle>
         </CardHeader>

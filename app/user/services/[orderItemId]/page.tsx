@@ -73,7 +73,7 @@ export default async function UserServiceDetailPage({
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <div className="rounded-3xl border border-border bg-card/80 p-6 shadow-sm backdrop-blur md:p-8">
+      <div className="rounded-3xl border border-border bg-card/80 p-6 shadow-sm backdrop-blur md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
         <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div>
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
@@ -90,7 +90,7 @@ export default async function UserServiceDetailPage({
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 fill-mode-both">
       <Card className="border-border bg-card/80 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -164,7 +164,7 @@ export default async function UserServiceDetailPage({
       </div>
 
       {(logoUrl || paletteUrl) ? (
-        <Card className="border-border bg-card/80 shadow-sm">
+        <Card className="border-border bg-card/80 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-both">
           <CardHeader>
             <CardTitle className="text-lg">Качени бранд материали</CardTitle>
           </CardHeader>
@@ -201,7 +201,7 @@ export default async function UserServiceDetailPage({
         </Card>
       ) : null}
 
-      <Card className="border-border bg-card/80 shadow-sm">
+      <Card className="border-border bg-card/80 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200 fill-mode-both">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Sparkles className="h-5 w-5 text-primary" />

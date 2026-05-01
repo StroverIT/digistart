@@ -27,7 +27,7 @@ export default function TermsAndConditions() {
   return (
     <div className="min-h-screen bg-background py-8 pt-36 text-foreground">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-8 animate-in fade-in slide-in-from-bottom-5 duration-700 fill-mode-both">
           {/* Aside Navigation */}
           <aside className="lg:w-64 shrink-0">
             <div className="sticky top-28 rounded-lg border border-border bg-card p-6 shadow-sm">

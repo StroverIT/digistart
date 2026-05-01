@@ -38,14 +38,14 @@ export default async function UserHomePage() {
 
   return (
     <div className="space-y-8">
-      <div>
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
         <h1 className="text-2xl font-bold">Моят панел</h1>
         <p className="text-muted-foreground text-sm mt-1">
           Здравей{session?.user?.name ? `, ${session.user.name}` : ""}!
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 fill-mode-both">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">

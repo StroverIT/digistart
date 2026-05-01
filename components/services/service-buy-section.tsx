@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/ui/price";
@@ -13,6 +15,8 @@ import {
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { cn } from "@/lib/utils";
+
+gsap.registerPlugin(ScrollTrigger);
 
 let activeMobileStickyId: string | null = null;
 const mobileStickySubscribers = new Set<() => void>();
@@ -60,6 +64,9 @@ export function ServiceBuySection({
   const [errors, setErrors] = useState<UpsellEntryErrors>({});
   const [mobileStickyId] = useState(() => `service-buy-mobile-${Math.random().toString(36).slice(2)}`);
   const [isActiveMobileSticky, setIsActiveMobileSticky] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const mainPanelRef = useRef<HTMLDivElement>(null);
+  const asideRef = useRef<HTMLElement>(null);
 
   const hasUpsells = useMemo(() => service.upsells.length > 0, [service.upsells.length]);
   const ctaText = ctaLabel ?? "Промени в кошницата";
@@ -109,6 +116,55 @@ export function ServiceBuySection({
     onAddToCart();
   };
 
+  useEffect(() => {
+    const section = sectionRef.current;
+    const main = mainPanelRef.current;
+    const aside = asideRef.current;
+    if (!section || !main) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(main, { opacity: 0, y: 40 });
+      gsap.to(main, {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        ease: "back.out(1.6)",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 80%",
+          toggleActions: "play none none none",
+        },
+      });
+
+      if (aside) {
+        gsap.set(aside, { opacity: 0, y: 40 });
+        gsap.to(aside, {
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          ease: "back.out(1.6)",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+        });
+      }
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
+    const targets = sectionRef.current?.querySelectorAll<HTMLElement>("[data-total-pulse]");
+    if (!targets?.length) return;
+    gsap.fromTo(
+      targets,
+      { scale: 1.05 },
+      { scale: 1, duration: 0.25, ease: "power2.out" },
+    );
+  }, [totalPrice]);
+
   // Ensure only one mobile sticky footer is visible at a time, even during route transition overlaps.
   useEffect(() => {
     const sync = () => setIsActiveMobileSticky(activeMobileStickyId === mobileStickyId);
@@ -125,10 +181,13 @@ export function ServiceBuySection({
   }, [mobileStickyId]);
 
   return (
-    <section id="buy-now" className="py-12 md:py-16">
+    <section ref={sectionRef} id="buy-now" className="py-12 md:py-16">
       <div className="container mx-auto px-4">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-          <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+          <div
+            ref={mainPanelRef}
+            className="rounded-2xl border border-border bg-card p-5 sm:p-6 opacity-0 translate-y-10"
+          >
             <h2 className="text-2xl font-bold mb-2">{title}</h2>
             <p className="text-muted-foreground mb-5">{description}</p>
             {isAdding ? (
@@ -153,10 +212,13 @@ export function ServiceBuySection({
             ) : null}
           </div>
 
-          <aside className="hidden self-start lg:sticky lg:top-24 lg:block">
+          <aside
+            ref={asideRef}
+            className="hidden self-start lg:sticky lg:top-24 lg:block opacity-0 translate-y-10"
+          >
             <div className="rounded-2xl border border-border bg-card p-5">
               <p className="text-sm text-muted-foreground mb-2">Общо</p>
-              <div className="mb-1 flex items-end gap-2">
+              <div data-total-pulse className="mb-1 flex items-end gap-2">
                 <Price value={totalPrice} layout="vertical" className="text-3xl text-primary" />
                 {monthlyLabel ? <span className="pb-1 text-muted-foreground">{monthlyLabel}</span> : null}
               </div>
@@ -185,7 +247,7 @@ export function ServiceBuySection({
         <div className="container mx-auto flex items-center justify-between gap-3 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <div className="min-w-0">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Общо</p>
-            <div className="flex items-end gap-2">
+            <div data-total-pulse className="flex items-end gap-2">
               <Price
                 value={totalPrice}
                 layout="vertical"

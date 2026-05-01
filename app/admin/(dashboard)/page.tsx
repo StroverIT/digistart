@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
 import {
   ShoppingBag,
   TrendingUp,
@@ -27,7 +28,10 @@ interface StatCardProps {
 
 function StatCard({ title, value, description, icon, trend }: StatCardProps) {
   return (
-    <Card className="bg-card border-border">
+    <Card
+      data-admin-animate
+      className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+    >
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>
@@ -50,6 +54,7 @@ function StatCard({ title, value, description, icon, trend }: StatCardProps) {
 }
 
 export default function AdminDashboard() {
+  const dashboardRootRef = useRef<HTMLDivElement>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [serviceStats, setServiceStats] = useState<ServiceStats[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -122,6 +127,28 @@ export default function AdminDashboard() {
     [orders, subscriptionsFromDate, subscriptionsToDate]
   );
 
+  useEffect(() => {
+    if (!mounted) return;
+    const root = dashboardRootRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      const els = root.querySelectorAll<HTMLElement>("[data-admin-animate]");
+      if (!els.length) return;
+      gsap.set(els, { opacity: 0, y: 32, scale: 0.98 });
+      gsap.to(els, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.5,
+        stagger: 0.07,
+        ease: "back.out(1.2)",
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, [mounted]);
+
   if (!mounted) {
     return (
       <div className="h-96 flex items-center justify-center">
@@ -138,9 +165,9 @@ export default function AdminDashboard() {
   const completedOrders = orders.filter((o) => o.status === "completed").length;
 
   return (
-    <div className="space-y-8">
+    <div ref={dashboardRootRef} className="space-y-8">
       {/* Header */}
-      <div>
+      <div data-admin-animate className="opacity-0 translate-y-10">
         <h1 className="text-3xl font-bold mb-2">Табло</h1>
         <p className="text-muted-foreground">
           Преглед на вашия бизнес и последни поръчки
@@ -184,7 +211,10 @@ export default function AdminDashboard() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-card border-border">
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
           <CardHeader className="space-y-4">
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <CardTitle>Приходи по дни</CardTitle>
@@ -217,7 +247,10 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
           <CardHeader className="space-y-4">
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <CardTitle>Абонаменти по дни</CardTitle>
@@ -250,7 +283,10 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
           <CardHeader>
             <CardTitle>Поръчки по услуга</CardTitle>
           </CardHeader>
@@ -261,7 +297,10 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-card border-border">
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
           <CardHeader>
             <CardTitle>Page Views и CTA</CardTitle>
           </CardHeader>
@@ -295,7 +334,10 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
           <CardHeader>
             <CardTitle>Най-кликани CTA</CardTitle>
           </CardHeader>
@@ -320,7 +362,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Orders */}
-      <Card className="bg-card border-border">
+      <Card
+        data-admin-animate
+        className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+      >
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Последни поръчки</CardTitle>
         </CardHeader>

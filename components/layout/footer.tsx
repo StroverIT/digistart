@@ -1,7 +1,14 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import Image from "next/image";
 import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
 import { siteContact } from "@/lib/site-contact";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const services = [
   { href: "/services/website", label: "Уеб сайтове" },
@@ -19,12 +26,39 @@ const quickLinks = [
 ];
 
 export function Footer() {
+  const footerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const root = footerRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      const cols = root.querySelectorAll<HTMLElement>("[data-footer-column]");
+      if (!cols.length) return;
+      gsap.set(cols, { opacity: 0, y: 40 });
+      gsap.to(cols, {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        stagger: 0.12,
+        ease: "back.out(1.4)",
+        scrollTrigger: {
+          trigger: root,
+          start: "top 90%",
+          toggleActions: "play none none none",
+        },
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <footer className="bg-card border-t border-border">
+    <footer ref={footerRef} className="bg-card border-t border-border">
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
-          <div className="lg:col-span-1">
+          <div data-footer-column className="lg:col-span-1 opacity-0 translate-y-10">
             <TrackedCtaLink href="/" ctaId="footer_logo_home" className="flex items-center gap-2 mb-4">
               <Image
                 src="/logo.png"
@@ -72,7 +106,7 @@ export function Footer() {
           </div>
 
           {/* Services */}
-          <div>
+          <div data-footer-column className="opacity-0 translate-y-10">
             <h3 className="font-semibold text-foreground mb-4">Услуги</h3>
             <ul className="space-y-3">
               {services.map((service) => (
@@ -90,7 +124,7 @@ export function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div data-footer-column className="opacity-0 translate-y-10">
             <h3 className="font-semibold text-foreground mb-4">Бързи връзки</h3>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
@@ -108,7 +142,7 @@ export function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
+          <div data-footer-column className="opacity-0 translate-y-10">
             <h3 className="font-semibold text-foreground mb-4">Контакти</h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
@@ -131,16 +165,17 @@ export function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm text-muted-foreground">
-                  София, България
-                </span>
+                <span className="text-sm text-muted-foreground">София, България</span>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
+        <div
+          data-footer-column
+          className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 opacity-0 translate-y-10"
+        >
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} DigiStart. Всички права запазени.
           </p>

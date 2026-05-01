@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import gsap from "gsap";
 import { Check, Plus, Minus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,8 +22,30 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
   const [selectedOptionId, setSelectedOptionId] = useState(service.options[0].id);
   const [upsells, setUpsells] = useState<Record<string, number>>({});
   const [isAdding, setIsAdding] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const selectedOption = service.options.find((o) => o.id === selectedOptionId)!;
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      const blocks = root.querySelectorAll<HTMLElement>("[data-pricing-animate]");
+      if (!blocks.length) return;
+      gsap.set(blocks, { opacity: 0, y: 40 });
+      gsap.to(blocks, {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        stagger: 0.12,
+        ease: "back.out(1.4)",
+        delay: 0.05,
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, [service.id]);
 
   const totalPrice = useMemo(() => {
     let total = selectedOption.price;
@@ -37,6 +60,12 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
     return total;
   }, [selectedOption, upsells, service.upsells]);
 
+  useEffect(() => {
+    const el = rootRef.current?.querySelector<HTMLElement>("[data-total-pulse]");
+    if (!el) return;
+    gsap.fromTo(el, { scale: 1.05 }, { scale: 1, duration: 0.25, ease: "power2.out" });
+  }, [totalPrice]);
+
   const updateUpsell = (upsellId: string, delta: number) => {
     const upsell = service.upsells.find((u) => u.id === upsellId);
     if (!upsell) return;
@@ -49,6 +78,12 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
         return rest;
       }
       return { ...prev, [upsellId]: newValue };
+    });
+    gsap.delayedCall(0, () => {
+      const row = document.getElementById(`pricing-upsell-${upsellId}`);
+      if (row) {
+        gsap.fromTo(row, { scale: 1 }, { scale: 1.02, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.out" });
+      }
     });
   };
 
@@ -75,9 +110,9 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={rootRef} className="space-y-6">
       {/* Package Selection */}
-      <Card className="bg-card border-border">
+      <Card data-pricing-animate className="bg-card border-border opacity-0 translate-y-10">
         <CardHeader>
           <CardTitle className="text-lg">Изберете пакет</CardTitle>
         </CardHeader>
@@ -119,7 +154,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
 
       {/* Upsells */}
       {service.upsells.length > 0 && (
-        <Card className="bg-card border-border">
+        <Card data-pricing-animate className="bg-card border-border opacity-0 translate-y-10">
           <CardHeader>
             <CardTitle className="text-lg">Допълнителни услуги</CardTitle>
           </CardHeader>
@@ -130,9 +165,10 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
 
               return (
                 <div
+                  id={`pricing-upsell-${upsell.id}`}
                   key={upsell.id}
                   className={cn(
-                    "p-4 rounded-lg border transition-colors",
+                    "p-4 rounded-lg border transition-colors will-change-transform",
                     quantity > 0
                       ? "border-primary/50 bg-primary/5"
                       : "border-border"
@@ -195,11 +231,11 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
       )}
 
       {/* Total & Add to Cart */}
-      <Card className="bg-primary/5 border-primary/20">
+      <Card data-pricing-animate className="bg-primary/5 border-primary/20 opacity-0 translate-y-10">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
             <span className="text-lg font-medium">Обща цена</span>
-            <div className="text-right">
+            <div data-total-pulse className="text-right">
               <Price value={totalPrice} className="text-3xl gradient-text" />
               {selectedOption.isMonthly && (
                 <span className="text-muted-foreground ml-1">/мес</span>

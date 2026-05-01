@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import {
   ArrowUpRight,
@@ -30,6 +32,8 @@ import { ServiceBuySection } from "@/components/services/service-buy-section";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { Faq, type FaqItem } from "@/components/ui/faq";
 import { ServiceDetailHero } from "@/components/services/service-detail-hero";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const painPoints = [
   {
@@ -143,6 +147,55 @@ export function ServiceDetailWebsite({
   const selectedOption = service.options[0];
   const [existingCartItemId, setExistingCartItemId] = useState<string | null>(null);
   const isInCart = useMemo(() => Boolean(existingCartItemId), [existingCartItemId]);
+  const pageRootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const root = pageRootRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      const sections = root.querySelectorAll<HTMLElement>("[data-animate-section]");
+      sections.forEach((section) => {
+        const reveals = section.querySelectorAll<HTMLElement>("[data-animate-reveal]");
+        const cards = section.querySelectorAll<HTMLElement>("[data-animate-card]");
+
+        if (reveals.length) {
+          gsap.set(reveals, { opacity: 0, y: 40 });
+          gsap.to(reveals, {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            stagger: 0.1,
+            ease: "back.out(1.6)",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              toggleActions: "play none none none",
+            },
+          });
+        }
+
+        if (cards.length) {
+          gsap.set(cards, { opacity: 0, y: 50, scale: 0.95 });
+          gsap.to(cards, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            stagger: 0.15,
+            ease: "back.out(1.2)",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              toggleActions: "play none none none",
+            },
+          });
+        }
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, []);
 
   useEffect(() => {
     const syncFromCart = () => {
@@ -192,7 +245,7 @@ export function ServiceDetailWebsite({
   };
 
   return (
-    <div className={cn("pt-16 pb-12 md:pt-20 md:pb-16", bodyFontClass, className)}>
+    <div ref={pageRootRef} className={cn("pt-16 pb-12 md:pt-20 md:pb-16", bodyFontClass, className)}>
       <ServiceDetailHero
         badgeIcon={<Zap className="h-4 w-4" />}
         badgeText="Бързо, лесно и на ясна цена"
@@ -217,21 +270,28 @@ export function ServiceDetailWebsite({
         headingFontClass={headingFontClass}
       />
 
-      <section className="py-8 md:py-20 bg-card/50">
+      <section data-animate-section className="py-8 md:py-20 bg-card/50">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+            <span
+              data-animate-reveal
+              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+            >
               Проблемът
             </span>
             <h2
+              data-animate-reveal
               className={cn(
                 headingFontClass,
-                "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance"
+                "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10",
               )}
             >
               Защо бизнесът ти има нужда от уебсайт точно сега?
             </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed">
+            <p
+              data-animate-reveal
+              className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
+            >
               Всеки ден без сайт е подарен клиент на конкуренцията.
             </p>
           </div>
@@ -239,7 +299,8 @@ export function ServiceDetailWebsite({
             {painPoints.map((item) => (
               <Card
                 key={item.title}
-                className="group bg-card border-border hover:border-destructive/50 transition-all duration-300"
+                data-animate-card
+                className="group bg-card border-border hover:border-destructive/50 transition-all duration-300 opacity-0 translate-y-10"
               >
                 <CardContent className="p-6 md:p-7">
                   <CircleX className="h-5 w-5 text-red-500 mb-4" />
@@ -252,16 +313,20 @@ export function ServiceDetailWebsite({
         </div>
       </section>
 
-      <section className="py-8 md:py-20">
+      <section data-animate-section className="py-8 md:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+            <span
+              data-animate-reveal
+              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+            >
               Решението
             </span>
             <h2
+              data-animate-reveal
               className={cn(
                 headingFontClass,
-                "text-3xl sm:text-4xl md:text-5xl font-bold text-balance"
+                "text-3xl sm:text-4xl md:text-5xl font-bold text-balance opacity-0 translate-y-10",
               )}
             >
               Какво е включено в пакета?
@@ -271,7 +336,8 @@ export function ServiceDetailWebsite({
             {solutionItems.map((item) => (
               <Card
                 key={item}
-                className="group border-border bg-card hover:border-primary/50 transition-all duration-300"
+                data-animate-card
+                className="group border-border bg-card hover:border-primary/50 transition-all duration-300 opacity-0 translate-y-10"
               >
                 <CardContent className="p-5 md:p-6 flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
@@ -283,21 +349,28 @@ export function ServiceDetailWebsite({
         </div>
       </section>
 
-      <section className="py-8 md:py-20">
+      <section data-animate-section className="py-8 md:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+            <span
+              data-animate-reveal
+              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+            >
               Процес
             </span>
             <h2
+              data-animate-reveal
               className={cn(
                 headingFontClass,
-                "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance"
+                "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10",
               )}
             >
               Как да започнем? (Само 3 лесни стъпки)
             </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed">
+            <p
+              data-animate-reveal
+              className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
+            >
               Направихме процеса максимално бърз, за да не губиш време.
             </p>
           </div>
@@ -306,7 +379,10 @@ export function ServiceDetailWebsite({
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {steps.map((step, index) => (
                 <div key={step.title} className="relative">
-                  <Card className="group bg-card border-border hover:border-primary/50 transition-colors h-full">
+                  <Card
+                    data-animate-card
+                    className="group bg-card border-border hover:border-primary/50 transition-colors h-full opacity-0 translate-y-10"
+                  >
                     <CardContent className="p-6">
                       <div className="flex items-center gap-3 mb-4">
                         <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
@@ -331,9 +407,12 @@ export function ServiceDetailWebsite({
         </div>
       </section>
 
-      <section className="pb-6 md:pb-12">
+      <section data-animate-section className="pb-6 md:pb-12">
         <div className="container mx-auto px-4">
-          <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+          <div
+            data-animate-card
+            className="rounded-2xl border border-border bg-card p-5 sm:p-6 opacity-0 translate-y-10"
+          >
             <p className="text-sm sm:text-base flex items-start gap-2 text-muted-foreground">
               <MessageCircle className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
               Цената е фиксирана и прозрачна. Получаваш ясна рамка, бърз процес и сайт, който е
@@ -343,19 +422,31 @@ export function ServiceDetailWebsite({
         </div>
       </section>
 
-      <section className="py-8 md:py-20 border-y border-border/70 bg-card/30">
+      <section data-animate-section className="py-8 md:py-20 border-y border-border/70 bg-card/30">
         <div className="container mx-auto px-4">
           <div className="mb-8 md:mb-12 text-center max-w-3xl mx-auto">
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+            <span
+              data-animate-reveal
+              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+            >
               Казус
             </span>
-            <h2 className={cn(headingFontClass, "text-3xl sm:text-4xl md:text-5xl font-bold text-balance")}>
+            <h2
+              data-animate-reveal
+              className={cn(
+                headingFontClass,
+                "text-3xl sm:text-4xl md:text-5xl font-bold text-balance opacity-0 translate-y-10",
+              )}
+            >
               Реален резултат от услуга "Уебсайт"
             </h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
-            <div className="relative w-full aspect-4/3 overflow-hidden rounded-lg">
+            <div
+              data-animate-card
+              className="relative w-full aspect-4/3 overflow-hidden rounded-lg opacity-0 translate-y-10"
+            >
               <Image
                 src="/what-we-offer/reaz-mock-up.png"
                 alt="Reaz case study"
@@ -366,7 +457,7 @@ export function ServiceDetailWebsite({
             </div>
 
             <div className="space-y-6 sm:space-y-8">
-              <div>
+              <div data-animate-reveal className="opacity-0 translate-y-10">
                 <span className="text-xs sm:text-sm font-medium tracking-widest uppercase text-muted-foreground mb-2 block">
                   Уебсайт
                 </span>
@@ -379,7 +470,10 @@ export function ServiceDetailWebsite({
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 sm:gap-8">
+              <div
+                data-animate-reveal
+                className="grid grid-cols-2 gap-6 sm:gap-8 opacity-0 translate-y-10"
+              >
                 <div>
                   <p className={cn(headingFontClass, "text-2xl sm:text-3xl md:text-4xl mb-1")}>B2B</p>
                   <p className="text-muted-foreground text-sm sm:text-base">Тип бизнес</p>
@@ -391,10 +485,11 @@ export function ServiceDetailWebsite({
               </div>
 
               <a
+                data-animate-reveal
                 href="https://reaz.bg"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary text-base sm:text-lg font-medium group hover:text-primary/90 transition-colors"
+                className="inline-flex items-center gap-2 text-primary text-base sm:text-lg font-medium group hover:text-primary/90 transition-colors opacity-0 translate-y-10"
               >
                 Виж сайта
                 <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -404,25 +499,35 @@ export function ServiceDetailWebsite({
         </div>
       </section>
 
-      <section className="py-8 md:py-20 bg-card/40">
+      <section data-animate-section className="py-8 md:py-20 bg-card/40">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
+            <span
+              data-animate-reveal
+              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+            >
               FAQ
             </span>
             <h2
+              data-animate-reveal
               className={cn(
                 headingFontClass,
-                "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance"
+                "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10",
               )}
             >
               Често Задавани Въпроси
             </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed">
+            <p
+              data-animate-reveal
+              className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
+            >
               Събрахме най-честите въпроси на едно място, за да вземеш решение по-бързо.
             </p>
           </div>
-          <div className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 sm:px-8 sm:py-4">
+          <div
+            data-animate-card
+            className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 sm:px-8 sm:py-4 opacity-0 translate-y-10"
+          >
             <Faq items={FAQ_ITEMS} />
           </div>
         </div>

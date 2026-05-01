@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
 import {
   ResponsiveContainer,
   BarChart,
@@ -22,6 +24,8 @@ interface SubscriptionsChartProps {
 }
 
 export function SubscriptionsChart({ data }: SubscriptionsChartProps) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+
   const chartData = data.map((d) => ({
     date: new Date(d.date).toLocaleDateString("bg-BG", {
       day: "numeric",
@@ -30,6 +34,19 @@ export function SubscriptionsChart({ data }: SubscriptionsChartProps) {
     subscriptions: d.subscriptions,
     monthlyRevenue: d.monthlyRevenue,
   }));
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el || chartData.length === 0) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        el,
+        { opacity: 0, scale: 0.97 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" },
+      );
+    }, el);
+    return () => ctx.revert();
+  }, [data.length]);
 
   if (chartData.length === 0) {
     return (
@@ -40,7 +57,7 @@ export function SubscriptionsChart({ data }: SubscriptionsChartProps) {
   }
 
   return (
-    <div className="h-[300px]">
+    <div ref={wrapRef} className="h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0.01 260)" />

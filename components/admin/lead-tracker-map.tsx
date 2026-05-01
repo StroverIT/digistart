@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
 import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
 import L, { DivIcon } from "leaflet";
 import {
@@ -133,6 +134,7 @@ function getMarkerIcon(lead: Lead, active: boolean) {
 }
 
 export function LeadTrackerMap() {
+  const rootRef = useRef<HTMLDivElement>(null);
   const [leads, setLeads] = useState<Lead[]>(mockLeads);
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const [hideWebsites, setHideWebsites] = useState(false);
@@ -154,9 +156,30 @@ export function LeadTrackerMap() {
     );
   };
 
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      const filters = root.querySelector<HTMLElement>("[data-lead-filters]");
+      const mapEl = root.querySelector<HTMLElement>("[data-lead-map]");
+      const parts = [filters, mapEl].filter(Boolean) as HTMLElement[];
+      if (!parts.length) return;
+      gsap.set(parts, { opacity: 0, y: 24 });
+      if (filters) {
+        gsap.to(filters, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" });
+      }
+      if (mapEl) {
+        gsap.to(mapEl, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out", delay: filters ? 0.08 : 0 });
+      }
+    }, root);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="space-y-4">
-      <Card className="border-border bg-card">
+    <div ref={rootRef} className="space-y-4">
+      <Card data-lead-filters className="border-border bg-card opacity-0 translate-y-10">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <MapPinned className="h-5 w-5 text-blue-600" />
@@ -192,7 +215,10 @@ export function LeadTrackerMap() {
         </CardContent>
       </Card>
 
-      <div className="h-[70vh] min-h-[560px] overflow-hidden rounded-xl border border-border bg-white">
+      <div
+        data-lead-map
+        className="h-[70vh] min-h-[560px] overflow-hidden rounded-xl border border-border bg-white opacity-0 translate-y-10"
+      >
         <MapContainer
           center={[42.6977, 23.3219]}
           zoom={13}

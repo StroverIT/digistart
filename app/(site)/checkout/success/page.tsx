@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense, useRef } from "react";
+import gsap from "gsap";
 import { useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
@@ -38,10 +39,47 @@ function SuccessContent() {
   const [order, setOrder] = useState<Order | null>(null);
   const [mounted, setMounted] = useState(false);
   const autoSignInDone = useRef(false);
+  const successRootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const root = successRootRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      const iconWrap = root.querySelector<HTMLElement>("[data-success-icon]");
+      const title = root.querySelector<HTMLElement>("[data-success-title]");
+      const desc = root.querySelector<HTMLElement>("[data-success-desc]");
+      const blocks = root.querySelectorAll<HTMLElement>("[data-success-block]");
+      const actions = root.querySelector<HTMLElement>("[data-success-actions]");
+
+      const toReveal: HTMLElement[] = [];
+      if (iconWrap) toReveal.push(iconWrap);
+      if (title) toReveal.push(title);
+      if (desc) toReveal.push(desc);
+      blocks.forEach((el) => toReveal.push(el));
+      if (actions) toReveal.push(actions);
+      gsap.set(toReveal, { opacity: 0, y: 36 });
+
+      const tl = gsap.timeline({ defaults: { ease: "back.out(1.5)" } });
+      if (iconWrap) {
+        gsap.set(iconWrap, { scale: 0.85 });
+        tl.to(iconWrap, { opacity: 1, y: 0, scale: 1, duration: 0.55 }, 0.05);
+      }
+      if (title) tl.to(title, { opacity: 1, y: 0, duration: 0.5 }, "-=0.25");
+      if (desc) tl.to(desc, { opacity: 1, y: 0, duration: 0.45 }, "-=0.2");
+      if (blocks.length) {
+        tl.to(blocks, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 }, "-=0.15");
+      }
+      if (actions) tl.to(actions, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, "-=0.2");
+    }, root);
+
+    return () => ctx.revert();
+  }, [mounted]);
 
   useEffect(() => {
     if (!mounted || !orderId) return;
@@ -108,22 +146,30 @@ function SuccessContent() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto text-center">
-      <div className="relative mb-8">
+    <div ref={successRootRef} className="max-w-2xl mx-auto text-center">
+      <div data-success-icon className="relative mb-8 opacity-0 translate-y-10">
         <div className="h-24 w-24 mx-auto rounded-full bg-green-500/20 flex items-center justify-center">
           <CheckCircle2 className="h-12 w-12 text-green-500" />
         </div>
         <div className="absolute inset-0 h-24 w-24 mx-auto rounded-full bg-green-500/10 animate-ping" />
       </div>
 
-      <h1 className="text-3xl sm:text-4xl font-bold mb-4">Поръчката е успешна!</h1>
+      <h1 data-success-title className="text-3xl sm:text-4xl font-bold mb-4 opacity-0 translate-y-10">
+        Поръчката е успешна!
+      </h1>
 
-      <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">
+      <p
+        data-success-desc
+        className="text-lg text-muted-foreground mb-8 max-w-md mx-auto opacity-0 translate-y-10"
+      >
         Благодарим ви за доверието! Ще се свържем с вас в рамките на 24 часа за следващите стъпки.
       </p>
 
       {order && (
-        <p className="text-sm mb-6 text-muted-foreground">
+        <p
+          data-success-block
+          className="text-sm mb-6 text-muted-foreground opacity-0 translate-y-10"
+        >
           Статус на плащането:{" "}
           <span className="font-semibold text-foreground">
             {order.status === "paid" ? "Потвърдено" : "Обработва се"}
@@ -132,7 +178,10 @@ function SuccessContent() {
       )}
 
       {order && (
-        <Card className="bg-card border-border mb-8 text-left">
+        <Card
+          data-success-block
+          className="bg-card border-border mb-8 text-left opacity-0 translate-y-10"
+        >
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm text-muted-foreground">Номер на поръчка</span>
@@ -173,7 +222,10 @@ function SuccessContent() {
         </Card>
       )}
 
-      <Card className="bg-primary/5 border-primary/20 mb-8">
+      <Card
+        data-success-block
+        className="bg-primary/5 border-primary/20 mb-8 opacity-0 translate-y-10"
+      >
         <CardContent className="p-6">
           <h2 className="font-semibold mb-4">Какво следва?</h2>
           <ol className="text-left space-y-3">
@@ -203,7 +255,10 @@ function SuccessContent() {
         </CardContent>
       </Card>
 
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8 text-sm text-muted-foreground">
+      <div
+        data-success-block
+        className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8 text-sm text-muted-foreground opacity-0 translate-y-10"
+      >
         <a
           href={`mailto:${siteContact.email}`}
           className="flex items-center gap-2 hover:text-primary transition-colors"
@@ -220,7 +275,10 @@ function SuccessContent() {
         </a>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <div
+        data-success-actions
+        className="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 translate-y-10"
+      >
         <TrackedCtaLink href="/" ctaId="checkout_success_home">
           <Button variant="outline" size="lg">
             <Home className="mr-2 h-5 w-5" />
