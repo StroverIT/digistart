@@ -51,17 +51,17 @@ export function ServicesSection() {
                   {/* Sticker */}
                   <div className="-mt-8 -mx-8 mb-1 flex justify-center sm:-mt-10 sm:-mx-10 md:-mt-12 md:-mx-12">
                     <div className="group-hover:scale-105 transition-transform relative h-48 w-48 sm:h-56 sm:w-56 md:h-64 md:w-64 lg:h-72 lg:w-72">
-                    {stickerMap[service.id] ? (
-                      <Image
-                        src={stickerMap[service.id]}
-                        alt={`${service.name} sticker`}
-                        className="object-contain"
-                        fill
-                        sizes="(max-width: 640px) 12rem, (max-width: 768px) 14rem, (max-width: 1024px) 16rem, 18rem"
-                      />
-                    ) : (
-                      iconMap[service.icon]
-                    )}
+                      {stickerMap[service.id] ? (
+                        <Image
+                          src={stickerMap[service.id]}
+                          alt={`${service.name} sticker`}
+                          className="object-contain"
+                          fill
+                          sizes="(max-width: 640px) 12rem, (max-width: 768px) 14rem, (max-width: 1024px) 16rem, 18rem"
+                        />
+                      ) : (
+                        iconMap[service.icon]
+                      )}
                     </div>
                   </div>
 
@@ -72,13 +72,12 @@ export function ServicesSection() {
                   </p>
 
                   {/* Price & CTA */}
-                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                  <div className="flex flex-col sm:flex-row items-center sm:justify-between pt-4 border-t border-border">
                     <div>
                       <span className="text-sm text-muted-foreground">от</span>
                       <div className="flex items-baseline gap-1">
                         <Price
                           value={service.basePrice}
-                          layout="responsive"
                           className="text-xl sm:text-2xl text-primary"
                         />
                         {service.isMonthly && <span className="text-muted-foreground">/мес</span>}
@@ -90,7 +89,7 @@ export function ServicesSection() {
                     >
                       <Button
                         variant="ghost"
-                        className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                        className="max-sm:mt-4 bg-primary text-primary-foreground hover:bg-primary/90 sm:bg-transparent sm:text-foreground sm:hover:bg-primary sm:hover:text-primary-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                       >
                         Научете повече
                         <ArrowRight className="ml-2 h-4 w-4" />

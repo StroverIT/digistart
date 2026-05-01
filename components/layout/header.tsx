@@ -405,7 +405,7 @@ export function Header() {
                 ) : null}
                 <Button
                   variant="secondary"
-                  className="w-full"
+                  className="w-full mt-4"
                   onClick={() => {
                     void closeMenu();
                     void signOut({ callbackUrl: "/" });
