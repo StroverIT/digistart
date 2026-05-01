@@ -166,7 +166,7 @@ export function ServiceDetailReadyStore({
   return (
     <div
       className={cn(
-        "pt-20 pb-28 md:pb-16",
+        "pt-20 md:pb-16",
         bodyFontClass,
         className
       )}
@@ -425,8 +425,8 @@ export function ServiceDetailReadyStore({
           onUpsellsChange={setUpsells}
           onAddToCart={handleCheckout}
           isAdding={isAdding}
-        ctaId="service_ready_store_buy_section_add_to_cart"
-        ctaPage="/services/online-store"
+          ctaId="service_ready_store_buy_section_add_to_cart"
+          ctaPage="/services/online-store"
         />
       ) : null}
 

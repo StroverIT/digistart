@@ -93,7 +93,7 @@ export function ServiceBuySection({
   };
 
   return (
-    <section id="buy-now" className="py-12 pb-28 md:py-16">
+    <section id="buy-now" className="py-12 pb-24 md:py-16">
       <div className="container mx-auto px-4">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
@@ -149,7 +149,11 @@ export function ServiceBuySection({
           <div className="min-w-0">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Общо</p>
             <div className="flex items-end gap-2">
-              <Price value={totalPrice} className="text-2xl text-primary leading-none" />
+              <Price
+                value={totalPrice}
+                layout="vertical"
+                className="text-base sm:text-lg text-primary leading-none"
+              />
               {monthlyLabel ? <span className="text-xs text-muted-foreground">{monthlyLabel}</span> : null}
             </div>
           </div>
@@ -159,7 +163,7 @@ export function ServiceBuySection({
             disabled={isAdding}
             analyticsCtaId={ctaId}
             analyticsPage={ctaPage ?? `/services/${service.slug}`}
-            className="h-11 shrink-0 px-5 text-sm bg-orange-500 hover:bg-orange-600 text-white"
+            className="h-11 shrink-0 px-4 text-xs sm:text-sm bg-orange-500 hover:bg-orange-600 text-white"
           >
             {isAdding ? "Обработка..." : ctaText}
           </Button>

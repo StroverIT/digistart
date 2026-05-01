@@ -134,7 +134,7 @@ export function UpsellConfigurator({
               quantity > 0 ? "border-primary/50 bg-primary/5" : "border-border"
             )}
           >
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
               <div className="flex-1">
                 <div className="mb-1 flex items-center gap-2">
                   <Label className="font-semibold">{upsell.name}</Label>
@@ -168,7 +168,7 @@ export function UpsellConfigurator({
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
                 <Button
                   type="button"
                   variant="outline"
