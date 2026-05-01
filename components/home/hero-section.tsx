@@ -42,7 +42,7 @@ export function HeroSection() {
           </div>
 
           {/* Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-17 mb-6 text-balance">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl sm:leading-17 mb-6 text-balance">
             Изградете{" "}
             <span className="gradient-text">дигиталното бъдеще</span>{" "}
             на вашия бизнес
