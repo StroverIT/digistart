@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
   ArrowUpRight,
-  ArrowRight,
   CheckCircle2,
   CircleX,
   ClipboardList,
@@ -15,8 +14,6 @@ import {
   Zap,
 } from "lucide-react";
 import { trackCtaClick } from "@/lib/analytics/tracker";
-import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import {
@@ -32,6 +29,7 @@ import { cn } from "@/lib/utils";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { Faq, type FaqItem } from "@/components/ui/faq";
+import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 
 const painPoints = [
   {
@@ -194,67 +192,30 @@ export function ServiceDetailWebsite({
   };
 
   return (
-    <div className={cn("pt-16 md:pt-20 md:pb-16", bodyFontClass, className)}>
-      <section className="relative overflow-hidden pt-8 pb-10 md:pt-14 md:pb-18">
-        <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/3 -left-24 h-80 w-80 rounded-full bg-primary/10 blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 -right-24 h-72 w-72 rounded-full bg-primary/5 blur-3xl animate-pulse delay-1000" />
-        </div>
-        <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
-
-        <div className="container relative z-10 mx-auto px-4">
-          <TrackedCtaLink
-            href="/#services"
-            ctaId="service_website_back_to_services"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 md:mb-8"
-          >
-            Към услугите
-          </TrackedCtaLink>
-
-          <div className="max-w-4xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-              <Zap className="h-4 w-4" />
-              Бързо, лесно и на ясна цена
-            </span>
-            <h1
-              className={cn(
-                headingFontClass,
-                "mt-6 text-4xl sm:text-5xl leading-tight text-balance"
-              )}
-            >
-              Твоят професионален уебсайт <div className="gradient-text">Готов за броени дни</div>
-            </h1>
-            <p className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
-              Спри да губиш клиенти, защото те няма онлайн. Представи бизнеса си с модерен сайт
-              на предварително фиксирана цена. Без скрити такси, без чакане с месеци.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-              <Price value={selectedOption.price} className="text-3xl sm:text-4xl text-primary" />
-              <Button
-                onClick={() => {
-                  trackCtaClick("/services/website", "service_website_scroll_to_buy");
-                  scrollToBuySection();
-                }}
-                analyticsCtaId="service_website_scroll_to_buy"
-                analyticsPage="/services/website"
-                size="lg"
-                className="h-14 px-8 text-lg bg-orange-500 hover:bg-orange-600 text-white"
-              >
-                Купи сега
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className={cn("pt-16 pb-12 md:pt-20 md:pb-16", bodyFontClass, className)}>
+      <ServiceDetailHero
+        badgeIcon={<Zap className="h-4 w-4" />}
+        badgeText="Бързо, лесно и на ясна цена"
+        title={
+          <>
+            Твоят професионален уебсайт <div className="gradient-text">Готов за броени дни</div>
+          </>
+        }
+        description={
+          <>
+            Спри да губиш клиенти, защото те няма онлайн. Представи бизнеса си с модерен сайт на
+            предварително фиксирана цена. Без скрити такси, без чакане с месеци.
+          </>
+        }
+        priceSlot={<Price value={selectedOption.price} className="text-3xl sm:text-4xl text-primary" />}
+        primaryLabel="Купи сега"
+        onPrimaryClick={() => {
+          trackCtaClick("/services/website", "service_website_scroll_to_buy");
+          scrollToBuySection();
+        }}
+        backCtaId="service_website_back_to_services"
+        headingFontClass={headingFontClass}
+      />
 
       <section className="py-8 md:py-20 bg-card/50">
         <div className="container mx-auto px-4">

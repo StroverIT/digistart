@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import {
-  ArrowRight,
   CheckCircle2,
   CircleX,
   ClipboardList,
@@ -12,8 +11,6 @@ import {
   Smartphone,
 } from "lucide-react";
 import { trackCtaClick } from "@/lib/analytics/tracker";
-import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import { addToCart, CART_DUPLICATE_SERVICE_MESSAGE } from "@/lib/store/cart";
@@ -22,6 +19,7 @@ import type { CartItemUpsell, Service } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { Faq, type FaqItem } from "@/components/ui/faq";
+import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 
 const MARKETING_START_PRICE = 200;
 
@@ -136,65 +134,35 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
 
   return (
     <div className="pt-16 pb-12 md:pt-20 md:pb-16">
-      <section className="relative overflow-hidden pt-8 pb-10 md:pt-14 md:pb-18">
-        <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/3 -left-24 h-80 w-80 rounded-full bg-primary/10 blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 -right-24 h-72 w-72 rounded-full bg-primary/5 blur-3xl animate-pulse delay-1000" />
-        </div>
-        <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
-
-        <div className="container relative z-10 mx-auto px-4">
-          <TrackedCtaLink
-            href="/#services"
-            ctaId="service_social_media_back_to_services"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 md:mb-8"
-          >
-            Към услугите
-          </TrackedCtaLink>
-
-          <div className="max-w-4xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-              <Smartphone className="h-4 w-4" />
-              Пълно дигитално присъствие
-            </span>
-            <h1 className="mt-6 text-4xl sm:text-5xl leading-tight text-balance">
-              Управление на Социални Мрежи и Реклама
-              <div className="gradient-text">Ние поемаме контрола, ти броиш продажбите</div>
-            </h1>
-            <p className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
-              Забрави за стреса от постоянното мислене какво да публикувам днес. Ние създаваме
-              грабващи Reels, сторита и постове, и управляваме печеливши реклами в Meta, Google
-              и TikTok. Всичко на една ясна, фиксирана цена.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-              <Price
-                value={MARKETING_START_PRICE}
-                className="text-3xl sm:text-4xl text-primary"
-              />
-              <span className="text-muted-foreground">/месец</span>
-              <Button
-                onClick={() => {
-                  trackCtaClick("/services/social-media", "service_social_media_scroll_to_buy");
-                  scrollToBuySection();
-                }}
-                size="lg"
-                className="h-14 px-8 text-lg bg-orange-500 hover:bg-orange-600 text-white"
-              >
-                Купи сега
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
+      <ServiceDetailHero
+        badgeIcon={<Smartphone className="h-4 w-4" />}
+        badgeText="Пълно дигитално присъствие"
+        title={
+          <>
+            Управление на Социални Мрежи и Реклама
+            <div className="gradient-text">Ние поемаме контрола, ти броиш продажбите</div>
+          </>
+        }
+        description={
+          <>
+            Забрави за стреса от постоянното мислене какво да публикувам днес. Ние създаваме
+            грабващи Reels, сторита и постове, и управляваме печеливши реклами в Meta, Google и
+            TikTok. Всичко на една ясна, фиксирана цена.
+          </>
+        }
+        priceSlot={
+          <div className="flex items-baseline gap-2">
+            <Price value={MARKETING_START_PRICE} className="text-3xl sm:text-4xl text-primary" />
+            <span className="text-muted-foreground">/месец</span>
           </div>
-        </div>
-      </section>
+        }
+        primaryLabel="Купи сега"
+        onPrimaryClick={() => {
+          trackCtaClick("/services/social-media", "service_social_media_scroll_to_buy");
+          scrollToBuySection();
+        }}
+        backCtaId="service_social_media_back_to_services"
+      />
 
       <section className="py-8 md:py-20 bg-card/50">
         <div className="container mx-auto px-4">

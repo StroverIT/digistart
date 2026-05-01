@@ -3,11 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { trackCtaClick } from "@/lib/analytics/tracker";
-import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { Price } from "@/components/ui/price";
 import {
   ArrowUpRight,
-  ArrowRight,
   CheckCircle2,
   CircleX,
   ClipboardList,
@@ -25,6 +23,7 @@ import { getServiceById } from "@/lib/data/services";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { Faq, type FaqItem } from "@/components/ui/faq";
 import Link from "next/link";
+import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 
 const SERVICE_ID = "ready-store";
 const OPTION_ID = "standard";
@@ -171,72 +170,39 @@ export function ServiceDetailReadyStore({
         className
       )}
     >
-      <section className="relative overflow-hidden pt-8 pb-10 md:pt-14 md:pb-18">
-        <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/3 -left-24 h-80 w-80 rounded-full bg-primary/10 blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 -right-24 h-72 w-72 rounded-full bg-primary/5 blur-3xl animate-pulse delay-1000" />
-        </div>
-        <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
-
-        <div className="container relative z-10 mx-auto px-4">
-          <TrackedCtaLink
-            href="/#services"
-            ctaId="service_ready_store_back_to_services"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 md:mb-8"
-          >
-            Към услугите
-          </TrackedCtaLink>
-
-          <div className="max-w-4xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-              <ShoppingCart className="h-4 w-4" />
-              Продавай 24/7 без ограничения
-            </span>
-            <h1
-              className={cn(
-                headingFontClass,
-                "mt-6 text-4xl sm:text-5xl leading-tight text-balance"
-              )}
-            >
-              Готов Онлайн Магазин
-              <div className="gradient-text">Твоят бизнес, отворен денонощно</div>
-            </h1>
-            <p className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
-              Излез на онлайн пазара бързо и без стрес. Получаваш професионален, напълно
-              функциониращ електронен магазин на фиксирана цена. Ти осигуряваш продуктите, ние се
-              грижим за всичко останало.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-              <Price
-                value={total}
-                className={cn(
-                  headingFontClass,
-                  "text-3xl sm:text-4xl text-primary"
-                )}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  trackCtaClick("/services/online-store", "service_ready_store_scroll_to_buy");
-                  scrollToBuySection();
-                }}
-                className="h-14 px-8 text-lg rounded-xl bg-orange-500 hover:bg-orange-600 text-white inline-flex items-center justify-center font-semibold"
-              >
-                Купи сега
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ServiceDetailHero
+        badgeIcon={<ShoppingCart className="h-4 w-4" />}
+        badgeText="Продавай 24/7 без ограничения"
+        title={
+          <>
+            Готов Онлайн Магазин
+            <div className="gradient-text">Твоят бизнес, отворен денонощно</div>
+          </>
+        }
+        description={
+          <>
+            Излез на онлайн пазара бързо и без стрес. Получаваш професионален, напълно
+            функциониращ електронен магазин на фиксирана цена. Ти осигуряваш продуктите, ние се
+            грижим за всичко останало.
+          </>
+        }
+        priceSlot={
+          <Price
+            value={total}
+            className={cn(
+              headingFontClass,
+              "text-3xl sm:text-4xl text-primary"
+            )}
+          />
+        }
+        primaryLabel="Купи сега"
+        onPrimaryClick={() => {
+          trackCtaClick("/services/online-store", "service_ready_store_scroll_to_buy");
+          scrollToBuySection();
+        }}
+        backCtaId="service_ready_store_back_to_services"
+        headingFontClass={headingFontClass}
+      />
 
       <section className="py-8 md:py-20 bg-card/50">
         <div className="container mx-auto px-4">
