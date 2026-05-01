@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/ui/price";
@@ -12,6 +12,21 @@ import {
 } from "@/components/services/upsell-validation";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { trackCtaClick } from "@/lib/analytics/tracker";
+import { cn } from "@/lib/utils";
+
+let activeMobileStickyId: string | null = null;
+const mobileStickySubscribers = new Set<() => void>();
+
+function notifyMobileStickySubscribers() {
+  for (const subscriber of mobileStickySubscribers) {
+    subscriber();
+  }
+}
+
+function setActiveMobileSticky(id: string | null) {
+  activeMobileStickyId = id;
+  notifyMobileStickySubscribers();
+}
 
 interface ServiceBuySectionProps {
   service: Service;
@@ -43,6 +58,8 @@ export function ServiceBuySection({
   ctaPage,
 }: ServiceBuySectionProps) {
   const [errors, setErrors] = useState<UpsellEntryErrors>({});
+  const [mobileStickyId] = useState(() => `service-buy-mobile-${Math.random().toString(36).slice(2)}`);
+  const [isActiveMobileSticky, setIsActiveMobileSticky] = useState(false);
 
   const hasUpsells = useMemo(() => service.upsells.length > 0, [service.upsells.length]);
   const ctaText = ctaLabel ?? "Промени в кошницата";
@@ -91,6 +108,21 @@ export function ServiceBuySection({
     }
     onAddToCart();
   };
+
+  // Ensure only one mobile sticky footer is visible at a time, even during route transition overlaps.
+  useEffect(() => {
+    const sync = () => setIsActiveMobileSticky(activeMobileStickyId === mobileStickyId);
+    mobileStickySubscribers.add(sync);
+    setActiveMobileSticky(mobileStickyId);
+    sync();
+
+    return () => {
+      mobileStickySubscribers.delete(sync);
+      if (activeMobileStickyId === mobileStickyId) {
+        setActiveMobileSticky(null);
+      }
+    };
+  }, [mobileStickyId]);
 
   return (
     <section id="buy-now" className="py-12 pb-24 md:py-16">
@@ -144,7 +176,12 @@ export function ServiceBuySection({
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80 lg:hidden">
+      <div
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80 lg:hidden",
+          !isActiveMobileSticky && "hidden"
+        )}
+      >
         <div className="container mx-auto flex items-center justify-between gap-3 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <div className="min-w-0">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Общо</p>

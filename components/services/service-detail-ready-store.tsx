@@ -166,12 +166,12 @@ export function ServiceDetailReadyStore({
   return (
     <div
       className={cn(
-        "pt-20 md:pb-16",
+        "pt-16 pb-12 md:pt-20 md:pb-16",
         bodyFontClass,
         className
       )}
     >
-      <section className="relative overflow-hidden pt-10 pb-14 md:pt-14 md:pb-18">
+      <section className="relative overflow-hidden pt-8 pb-10 md:pt-14 md:pb-18">
         <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-1/3 -left-24 h-80 w-80 rounded-full bg-primary/10 blur-3xl animate-pulse" />
@@ -190,7 +190,7 @@ export function ServiceDetailReadyStore({
           <TrackedCtaLink
             href="/#services"
             ctaId="service_ready_store_back_to_services"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 md:mb-8"
           >
             Към услугите
           </TrackedCtaLink>
@@ -238,9 +238,9 @@ export function ServiceDetailReadyStore({
         </div>
       </section>
 
-      <section className="py-16 md:py-20 bg-card/50">
+      <section className="py-8 md:py-20 bg-card/50">
         <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
             <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
               Проблемът
             </span>
@@ -268,9 +268,9 @@ export function ServiceDetailReadyStore({
         </div>
       </section>
 
-      <section className="py-16 md:py-20">
+      <section className="py-8 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
             <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
               Решението
             </span>
@@ -294,9 +294,9 @@ export function ServiceDetailReadyStore({
         </div>
       </section>
 
-      <section className="py-16 md:py-20">
+      <section className="py-8 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
             <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
               Процес
             </span>
@@ -339,9 +339,9 @@ export function ServiceDetailReadyStore({
         </div>
       </section>
 
-      <section className="py-16 md:py-20 border-y border-border/70 bg-card/30">
+      <section className="py-8 md:py-20 border-y border-border/70 bg-card/30">
         <div className="container mx-auto px-4">
-          <div className="mb-12 text-center max-w-3xl mx-auto">
+          <div className="mb-8 md:mb-12 text-center max-w-3xl mx-auto">
             <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
               Казус
             </span>
@@ -398,9 +398,9 @@ export function ServiceDetailReadyStore({
         </div>
       </section>
 
-      <section className="py-16 md:py-20 bg-card/40">
+      <section className="py-8 md:py-20 bg-card/40">
         <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
             <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">FAQ</span>
             <h2 className={cn(headingFontClass, "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance")}>
               Често задавани въпроси
@@ -430,25 +430,6 @@ export function ServiceDetailReadyStore({
         />
       ) : null}
 
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/95 backdrop-blur px-4 py-3">
-        <div className="mx-auto flex items-center justify-between gap-3">
-          <div>
-            <p className="text-xs text-muted-foreground">Пакет "Онлайн Магазин"</p>
-            <Price value={total} className={cn(headingFontClass, "font-semibold")} />
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              trackCtaClick("/services/online-store", "service_ready_store_mobile_add_to_cart");
-              handleCheckout();
-            }}
-            disabled={isAdding}
-            className="min-h-11 min-w-30 shrink-0 rounded-lg bg-orange-500 px-4 text-sm font-bold text-white hover:bg-orange-600 disabled:opacity-70"
-          >
-            {isAdding ? "Добавяне..." : "Добави в кошницата"}
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
