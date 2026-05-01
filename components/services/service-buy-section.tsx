@@ -125,7 +125,7 @@ export function ServiceBuySection({
   }, [mobileStickyId]);
 
   return (
-    <section id="buy-now" className="py-12 pb-24 md:py-16">
+    <section id="buy-now" className="py-12 md:py-16">
       <div className="container mx-auto px-4">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
