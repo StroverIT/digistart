@@ -4,6 +4,8 @@
 
 - Set `IS_COMING_SOON=true` to show the launch page and block normal page content.
 - Accepted truthy values: `true`, `1`, `yes`, `on`.
+- `/admin` (including login) stays available; other page routes show the launch screen. Public APIs return `503` except `POST /api/newsletter/subscribe`, NextAuth, and Stripe webhooks.
+- After pulling, run `npx prisma migrate deploy` (or `prisma migrate dev`) so the `newsletter_subscribers` table exists.
 
 ## Stripe setup
 

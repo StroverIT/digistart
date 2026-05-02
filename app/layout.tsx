@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Montserrat } from "next/font/google";
+import { headers } from "next/headers";
 import { DigiStartAnalytics } from "@/components/analytics/digistart-analytics";
 import { ComingSoonPage } from "@/components/coming-soon-page";
 import { MetaPixelEvents } from "@/components/analytics/meta-pixel-events";
 import { Providers } from "@/components/providers";
+import { shouldRenderComingSoonInLayout } from "@/lib/coming-soon";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -66,26 +69,25 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-function isComingSoonEnabled() {
-  return ["1", "true", "yes", "on"].includes(
-    (process.env.IS_COMING_SOON ?? "").trim().toLowerCase(),
-  );
-}
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isComingSoon = isComingSoonEnabled();
+  const headerList = await headers();
+  const pathname = headerList.get("x-pathname") ?? "/";
+  const showComingSoon = shouldRenderComingSoonInLayout(pathname);
 
   return (
     <html lang="bg" className="bg-background">
       <body
         className={`${inter.variable} ${montserrat.variable} font-sans antialiased overflow-x-hidden`}
       >
-        {isComingSoon ? (
-          <ComingSoonPage />
+        {showComingSoon ? (
+          <>
+            <ComingSoonPage />
+            <Toaster richColors position="top-center" />
+          </>
         ) : (
           <>
             <DigiStartAnalytics />

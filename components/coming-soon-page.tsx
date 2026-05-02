@@ -10,6 +10,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { siteContact } from "@/lib/site-contact";
+import { NewsletterSignupForm } from "@/components/newsletter/newsletter-signup-form";
 
 const launchHighlights = [
   "Професионални уеб сайтове",
@@ -75,7 +76,7 @@ export function ComingSoonPage() {
               създадени да превръщат добрите идеи в реални резултати.
             </p>
 
-            <div className="mb-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:justify-start">
+            <div className="mb-5 flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:justify-start">
               {launchHighlights.map((highlight) => (
                 <div key={highlight} className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CheckCircle2 className="h-4 w-4 text-primary" />
@@ -84,21 +85,8 @@ export function ComingSoonPage() {
               ))}
             </div>
 
-            <div className="flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
-              <a
-                href={`mailto:${siteContact.email}`}
-                className="glow-primary inline-flex h-14 w-full items-center justify-center gap-2 rounded-md bg-primary px-8 text-lg font-medium text-primary-foreground transition-all hover:bg-primary/90 sm:w-auto"
-              >
-                Пишете ни
-                <ArrowRight className="h-5 w-5" />
-              </a>
-              <a
-                href={siteContact.phoneHref}
-                className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-md border border-border bg-background/75 px-8 text-lg font-medium text-foreground shadow-sm backdrop-blur transition-all hover:bg-accent hover:text-accent-foreground sm:w-auto"
-              >
-                <Phone className="h-5 w-5 text-primary" />
-                {siteContact.phoneLabel}
-              </a>
+            <div className="flex w-full flex-col items-center lg:items-start">
+              <NewsletterSignupForm />
             </div>
 
             <div className="mt-8 flex flex-col items-center gap-3 lg:items-start">

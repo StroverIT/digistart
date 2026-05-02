@@ -2,6 +2,10 @@ import { NextFetchEvent, NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { withAuth } from "next-auth/middleware";
 import { getToken } from "next-auth/jwt";
+import {
+  isComingSoonEnabled,
+  isComingSoonAllowedApiPath,
+} from "@/lib/coming-soon";
 
 const authMiddleware = withAuth({
   callbacks: {
@@ -23,6 +27,15 @@ const authMiddleware = withAuth({
 
 export default async function middleware(req: NextRequest, event: NextFetchEvent) {
   const path = req.nextUrl.pathname;
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-pathname", path);
+
+  if (isComingSoonEnabled() && path.startsWith("/api") && !isComingSoonAllowedApiPath(path)) {
+    return NextResponse.json(
+      { error: "Услугата е временно недостъпна." },
+      { status: 503 },
+    );
+  }
 
   if (path.startsWith("/user")) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -37,14 +50,27 @@ export default async function middleware(req: NextRequest, event: NextFetchEvent
       url.searchParams.set("callbackUrl", path);
       return NextResponse.redirect(url);
     }
-    return NextResponse.next();
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   if (path.startsWith("/admin")) {
-    return authMiddleware(req as never, event);
+    const adminResult = await authMiddleware(req as never, event);
+    if (!adminResult) {
+      return NextResponse.next({ request: { headers: requestHeaders } });
+    }
+    if (adminResult.status >= 300 && adminResult.status < 400) {
+      return adminResult;
+    }
+    const next = NextResponse.next({ request: { headers: requestHeaders } });
+    adminResult.headers.forEach((value, key) => {
+      if (key.toLowerCase() === "set-cookie") {
+        next.headers.append(key, value);
+      }
+    });
+    return next;
   }
 
-  return NextResponse.next();
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {

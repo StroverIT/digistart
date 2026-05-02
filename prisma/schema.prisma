@@ -204,3 +204,13 @@ model AnalyticsEvent {
   @@index([createdAt], map: "analytics_events_created_at_idx")
   @@index([sessionId], map: "analytics_events_session_id_idx")
 }
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String   @default("coming-soon")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("newsletter_subscribers")
+}
