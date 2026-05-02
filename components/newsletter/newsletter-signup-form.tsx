@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Loader2, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { trackMetaLead } from "@/lib/analytics/meta-pixel";
 
 const COPY =
   "Запишете се за бюлетина ни — при официалния старт ви изпращаме 10% отстъпка върху всички наши услуги.";
 
 export function NewsletterSignupForm() {
+  const pathname = usePathname();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -44,6 +47,12 @@ export function NewsletterSignupForm() {
         toast.info("Вече сте записани за бюлетина с този имейл.");
         return;
       }
+
+      trackMetaLead({
+        content_name: "DigiStart — Бюлетин (очаквайте скоро)",
+        page_path: pathname && pathname.length > 0 ? pathname : "/",
+        lead_source: "coming_soon_newsletter",
+      });
 
       if (data.emailSent === false) {
         toast.success("Записахте се успешно! Имейлът за потвърждение може да закъснее — проверете настройките за изпращане.");

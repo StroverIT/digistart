@@ -11,6 +11,9 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:push": "prisma db push",
     "prisma:seed": "tsx prisma/seed.ts",
+    "db:generate:production": "node ./scripts/prisma-generate-production.mjs",
+    "db:migrate:production": "node ./scripts/prisma-migrate-production.mjs",
+    "db:seed:production": "node ./scripts/prisma-seed-production.mjs",
     "stripe-webhook": "stripe listen --forward-to localhost:3000/api/stripe/webhook"
   },
   "dependencies": {
@@ -90,6 +93,7 @@
     "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^16.4.5",
     "eslint": "^10.2.1",
     "postcss": "^8.5",
     "prisma": "^7.8.0",

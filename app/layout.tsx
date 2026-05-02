@@ -86,6 +86,7 @@ export default async function RootLayout({
         {showComingSoon ? (
           <>
             <ComingSoonPage />
+            <MetaPixelEvents />
             <Toaster richColors position="top-center" />
           </>
         ) : (

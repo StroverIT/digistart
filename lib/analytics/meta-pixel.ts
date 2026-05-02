@@ -2,6 +2,8 @@
  * Meta Pixel + dataLayer helpers for browser events with deduplication-friendly `event_id`.
  * Use the same `event_id` server-side (Stape / sGTM) for matching events.
  *
+ * Standard events: PageView, AddToCart, Purchase, Lead (e.g. newsletter signup).
+ *
  * Env:
  * - NEXT_PUBLIC_META_PIXEL_ID — Facebook Pixel ID (optional; fbq skipped if unset)
  * - NEXT_PUBLIC_META_CURRENCY — ISO 4217, default EUR
@@ -94,7 +96,7 @@ export function ensureMetaPixelInitialized(): void {
 
 export type MetaPixelEventPayload = {
   event_id: string;
-  event_name: "PageView" | "AddToCart" | "Purchase";
+  event_name: "PageView" | "AddToCart" | "Purchase" | "Lead";
   currency: string;
   value?: number;
   content_ids: string[];
@@ -103,6 +105,9 @@ export type MetaPixelEventPayload = {
   items: MetaPixelLineItem[];
   page_path?: string;
   order_id?: string;
+  /** Lead / custom context for dataLayer & Stape */
+  content_name?: string;
+  lead_source?: string;
 };
 
 function buildContentsFromItems(items: MetaPixelLineItem[]): MetaPixelEventPayload["contents"] {
@@ -164,7 +169,7 @@ function optionalStapeFetch(payload: MetaPixelEventPayload): void {
 type FbqTrackOptions = { eventID: string };
 
 function fbqTrack(
-  eventName: "PageView" | "AddToCart" | "Purchase",
+  eventName: "PageView" | "AddToCart" | "Purchase" | "Lead",
   params: Record<string, unknown>,
   eventId: string,
 ): void {
@@ -194,6 +199,46 @@ export function trackMetaPageView(pagePath?: string): string {
   pushDataLayer(payload);
   optionalStapeFetch(payload);
   fbqTrack("PageView", {}, event_id);
+  return event_id;
+}
+
+/**
+ * Lead — e.g. newsletter signup (standard Meta event for lead campaigns).
+ */
+export function trackMetaLead(params: {
+  content_name: string;
+  page_path?: string;
+  /** Optional: Stape / GTM context */
+  lead_source?: string;
+}): string {
+  const event_id = generateMetaEventId("Lead");
+  const items: MetaPixelLineItem[] = [];
+  const content_ids = ["newsletter"];
+  const payload: MetaPixelEventPayload = {
+    event_id,
+    event_name: "Lead",
+    currency: META_CURRENCY,
+    content_ids,
+    content_type: "product",
+    contents: [],
+    items,
+    page_path: params.page_path,
+    content_name: params.content_name,
+    ...(params.lead_source ? { lead_source: params.lead_source } : {}),
+  };
+
+  ensureMetaPixelInitialized();
+  pushDataLayer(payload);
+  optionalStapeFetch(payload);
+  fbqTrack(
+    "Lead",
+    {
+      content_name: params.content_name,
+      currency: META_CURRENCY,
+      ...(params.lead_source ? { content_category: params.lead_source } : {}),
+    },
+    event_id,
+  );
   return event_id;
 }
 
