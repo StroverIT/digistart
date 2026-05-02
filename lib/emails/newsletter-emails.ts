@@ -172,7 +172,7 @@ async function renderSubscriberEmailHtml(params: { email: string }) {
                   color: colors.muted,
                 },
               },
-              `Записахме имейла ви: ${params.email}. При официалния старт ще ви изпратим 10% отстъпка върху всички наши услуги; детайлите идват със старта.`,
+              `Записахме имейла ви: ${params.email}. При старта ще получите 10% ексклузивна отстъпка за първата си услуга при нас — без код в този имейл; детайлите изпращаме със старта.`,
             ),
           ),
           React.createElement(
@@ -337,7 +337,7 @@ export async function sendNewsletterSignupEmails(params: {
       from,
       to: params.email,
       subject: "Благодарим за записването в бюлетина – DigiStart",
-      text: `Здравейте,\n\nПотвърждаваме записването ви за бюлетина на DigiStart (${params.email}). При официалния старт ще получите 10% отстъпка върху всички наши услуги — детайлите изпращаме със старта.\n\nПоздрави,\nDigiStart`,
+      text: `Здравейте,\n\nПотвърждаваме записването ви за бюлетина на DigiStart (${params.email}). При старта ще получите 10% ексклузивна отстъпка за първата си услуга при нас — детайлите изпращаме със старта.\n\nПоздрави,\nDigiStart`,
       html: subscriberHtml,
     }),
     mailer.sendMail({

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { trackMetaLead } from "@/lib/analytics/meta-pixel";
 
 const COPY =
-  "Запишете се за бюлетина ни - при официалния старт ви изпращаме код за 10% отстъпка върху всички наши услуги.";
+  "🎁 Готов ли си за дигитален скок? Остави имейла си сега и бъди сред първите, които ще научат за старта ни. Като бонус получаваш 10% ексклузивна отстъпка за първата си услуга при нас!";
 
 export function NewsletterSignupForm() {
   const pathname = usePathname();
@@ -68,8 +68,8 @@ export function NewsletterSignupForm() {
   }
 
   return (
-    <div className="mt-10 w-full max-w-xl rounded-2xl border border-border bg-card/80 p-5 text-left shadow-sm backdrop-blur lg:mx-0">
-      <p className="text-sm font-semibold leading-relaxed text-foreground">{COPY}</p>
+    <div className="mt-2 w-full max-w-xl rounded-2xl border border-border bg-card/80 p-5 text-left shadow-sm backdrop-blur lg:mx-0">
+      <p className="text-sm font-semibold leading-relaxed text-foreground sm:text-[0.9375rem]">{COPY}</p>
       <form onSubmit={onSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-stretch">
         <div className="relative flex-1">
           <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -77,7 +77,7 @@ export function NewsletterSignupForm() {
             type="email"
             name="email"
             autoComplete="email"
-            placeholder="вашият@имейл.bg"
+            placeholder="твоят@имейл.bg"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="h-12 pl-10"
@@ -92,7 +92,7 @@ export function NewsletterSignupForm() {
               Изпращане...
             </>
           ) : (
-            "Запиши се"
+            "Искам отстъпката"
           )}
         </Button>
       </form>

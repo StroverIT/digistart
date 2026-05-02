@@ -1,21 +1,13 @@
 import Image from "next/image";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Facebook,
-  Instagram,
-  Linkedin,
-  Mail,
-  Phone,
-  Sparkles,
-} from "lucide-react";
+import { CheckCircle2, Facebook, Instagram, Linkedin, Mail, Sparkles } from "lucide-react";
 import { siteContact } from "@/lib/site-contact";
 import { NewsletterSignupForm } from "@/components/newsletter/newsletter-signup-form";
 
 const launchHighlights = [
-  "Професионални уеб сайтове",
-  "Онлайн магазини, готови за продажби",
-  "Google Business и социални мрежи",
+  "Достъпни уебсайтове",
+  "Готови онлайн магазини",
+  "Google Business (Локално SEO)",
+  "Социални мрежи и реклама",
 ];
 
 const socialLinks = [
@@ -23,6 +15,12 @@ const socialLinks = [
   { href: siteContact.instagram, label: "Instagram", Icon: Instagram },
   { href: siteContact.linkedin, label: "LinkedIn", Icon: Linkedin },
 ];
+
+const launchSteps = [
+  ["01", "Избираш пакет", "Ясни дигитални услуги с предварително обявени, прозрачни цени."],
+  ["02", "Бърза изработка", "Създаваме твоя уебсайт или онлайн магазин за дни, не за месеци."],
+  ["03", "Растеж и продажби", "Поемаме рекламата и Google профила ти, за да започнеш да печелиш."],
+] as const;
 
 export function ComingSoonPage() {
   return (
@@ -49,7 +47,9 @@ export function ComingSoonPage() {
         <div className="mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="text-center lg:text-left">
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary shadow-sm">
-              <Sparkles className="h-4 w-4" />
+              <span className="select-none" aria-hidden>
+                ⚡️
+              </span>
               Очаквайте скоро
             </div>
 
@@ -68,18 +68,25 @@ export function ComingSoonPage() {
             </a>
 
             <h1 className="mx-auto mb-6 max-w-4xl text-balance text-4xl leading-tight sm:text-5xl md:text-6xl lg:mx-0 lg:text-7xl">
-              Подготвяме <span className="gradient-text">дигитален старт</span>, който работи за вашия бизнес
+              Слагаме край на <span className="text-primary">хаоса</span> в дигиталното{" "}
+              <span className="text-primary">пространство</span>. Много скоро.{" "}
+              <span className="whitespace-nowrap" aria-hidden>
+                🚀
+              </span>
             </h1>
 
             <p className="mx-auto mb-8 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl lg:mx-0">
-              Скоро стартираме с професионални уеб решения, онлайн магазини и маркетинг услуги,
-              създадени да превръщат добрите идеи в реални резултати.
+              Всичко за твоя бизнес на едно място. Без безкрайни срещи, без скрити такси и без дълги
+              договори. Плащаш и стартираме.
             </p>
 
-            <div className="mb-5 flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:justify-start">
+            <div className="mb-8 flex flex-col items-center gap-3 sm:gap-4 lg:items-start">
               {launchHighlights.map((highlight) => (
-                <div key={highlight} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                <div
+                  key={highlight}
+                  className="flex w-full max-w-xl items-start gap-3 text-left text-sm text-muted-foreground sm:text-base"
+                >
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                   <span>{highlight}</span>
                 </div>
               ))}
@@ -114,26 +121,24 @@ export function ComingSoonPage() {
               <div className="mb-8 flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm font-semibold text-primary">DigiStart Launch</p>
-                  <h2 className="mt-1 text-2xl">Създаваме нещо специално</h2>
+                  <h2 className="mt-1 text-2xl leading-snug sm:text-[1.375rem] md:text-2xl">
+                    Всичко накуп. Без усложнения.
+                  </h2>
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                   <Sparkles className="h-6 w-6" />
                 </div>
               </div>
 
               <div className="space-y-4">
-                {[
-                  ["01", "Стратегия", "Изясняваме посоката и целите."],
-                  ["02", "Дизайн", "Създаваме модерно и ясно преживяване."],
-                  ["03", "Растеж", "Подготвяме основа за продажби и видимост."],
-                ].map(([step, title, text]) => (
+                {launchSteps.map(([step, title, text]) => (
                   <div key={step} className="rounded-2xl border border-border bg-background/70 p-4">
                     <div className="flex items-start gap-4">
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
                         {step}
                       </span>
                       <div>
-                        <h3 className="text-base">{title}</h3>
+                        <h3 className="text-base font-semibold">{title}</h3>
                         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{text}</p>
                       </div>
                     </div>
@@ -142,12 +147,14 @@ export function ComingSoonPage() {
               </div>
 
               <div className="mt-8 rounded-2xl bg-zinc-900 p-5 text-zinc-50">
-                <p className="mb-3 text-sm font-semibold text-zinc-300">Искате да започнем преди официалния старт?</p>
+                <p className="mb-4 text-sm font-semibold leading-snug text-zinc-100">
+                  Искаш да стартираме работа преди официалния старт?
+                </p>
                 <a
                   href={`mailto:${siteContact.email}`}
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+                  className="inline-flex items-center gap-2 break-all text-sm font-semibold text-primary transition-colors hover:text-primary/90"
                 >
-                  <Mail className="h-4 w-4" />
+                  <span aria-hidden>📧</span>
                   {siteContact.email}
                 </a>
                 <div className="mt-5 flex items-center gap-3">
