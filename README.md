@@ -1,5 +1,10 @@
 # digistart
 
+## Coming soon mode
+
+- Set `IS_COMING_SOON=true` to show the launch page and block normal page content.
+- Accepted truthy values: `true`, `1`, `yes`, `on`.
+
 ## Stripe setup
 
 - Add Stripe keys to `.env` / `.env.production` using `.env.example` as a template.
