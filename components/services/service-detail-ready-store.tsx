@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
+import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { Price } from "@/components/ui/price";
 import {
@@ -208,6 +209,12 @@ export function ServiceDetailReadyStore({
         toast(CART_DUPLICATE_SERVICE_MESSAGE);
       }
       return;
+    }
+    const addedItem = result.cart.items.find(
+      (i) => i.serviceId === SERVICE_ID && i.selectedOptionId === OPTION_ID,
+    );
+    if (addedItem) {
+      trackMetaAddToCart([cartItemToMetaLineItem(addedItem)], { page_path: "/services/online-store" });
     }
     setTimeout(() => {
       setIsAdding(false);

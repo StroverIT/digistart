@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   Smartphone,
 } from "lucide-react";
+import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
@@ -171,13 +172,20 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
 
   const handleMarketingCheckout = () => {
     setIsAdding(true);
-    const result = addToCart(service.id, service.options[0].id, upsells);
+    const optionId = service.options[0].id;
+    const result = addToCart(service.id, optionId, upsells);
     if (!result.added) {
       setIsAdding(false);
       if (result.reason === "duplicate") {
         toast(CART_DUPLICATE_SERVICE_MESSAGE);
       }
       return;
+    }
+    const addedItem = result.cart.items.find(
+      (i) => i.serviceId === service.id && i.selectedOptionId === optionId,
+    );
+    if (addedItem) {
+      trackMetaAddToCart([cartItemToMetaLineItem(addedItem)], { page_path: "/services/social-media" });
     }
     setTimeout(() => {
       setIsAdding(false);

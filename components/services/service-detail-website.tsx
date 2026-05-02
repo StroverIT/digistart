@@ -15,6 +15,7 @@ import {
   ShoppingCart,
   Zap,
 } from "lucide-react";
+import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
@@ -236,6 +237,13 @@ export function ServiceDetailWebsite({
         toast(CART_DUPLICATE_SERVICE_MESSAGE);
       }
       return;
+    }
+
+    const addedItem = result.cart.items.find(
+      (i) => i.serviceId === service.id && i.selectedOptionId === selectedOption.id,
+    );
+    if (addedItem) {
+      trackMetaAddToCart([cartItemToMetaLineItem(addedItem)], { page_path: "/services/website" });
     }
 
     setTimeout(() => {

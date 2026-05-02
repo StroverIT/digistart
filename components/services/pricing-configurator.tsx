@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Price } from "@/components/ui/price";
 import { cn } from "@/lib/utils";
 import type { Service, CartItemUpsell } from "@/lib/types";
+import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { addToCart, CART_DUPLICATE_SERVICE_MESSAGE } from "@/lib/store/cart";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { toast } from "sonner";
@@ -101,6 +102,15 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
         toast(CART_DUPLICATE_SERVICE_MESSAGE);
       }
       return;
+    }
+
+    const addedItem = result.cart.items.find(
+      (i) => i.serviceId === service.id && i.selectedOptionId === selectedOptionId,
+    );
+    if (addedItem) {
+      trackMetaAddToCart([cartItemToMetaLineItem(addedItem)], {
+        page_path: `/services/${service.slug}`,
+      });
     }
 
     setTimeout(() => {

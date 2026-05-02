@@ -12,6 +12,7 @@ import {
   Rocket,
   ShoppingCart,
 } from "lucide-react";
+import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
@@ -178,6 +179,12 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
         toast(CART_DUPLICATE_SERVICE_MESSAGE);
       }
       return;
+    }
+    const addedItem = result.cart.items.find(
+      (i) => i.serviceId === service.id && i.selectedOptionId === GOOGLE_PROFILE_OPTION_ID,
+    );
+    if (addedItem) {
+      trackMetaAddToCart([cartItemToMetaLineItem(addedItem)], { page_path: "/services/google-business" });
     }
     setTimeout(() => {
       setIsAdding(false);

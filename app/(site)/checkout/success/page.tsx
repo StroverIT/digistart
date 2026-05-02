@@ -10,8 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import { siteContact } from "@/lib/site-contact";
+import { cartItemToMetaLineItem, trackMetaPurchase } from "@/lib/analytics/meta-pixel";
 import { clearCart } from "@/lib/store/cart";
 import type { Order } from "@/lib/types";
+
+const META_PURCHASE_STORAGE_PREFIX = "digistart_meta_purchase_";
+/** Dedupes Purchase in React Strict Mode when sessionStorage is blocked. Clears on full reload. */
+const metaPurchaseFiredOrderIds = new Set<string>();
 
 const CHECKOUT_STATE_KEYS = [
   "digistart-checkout-draft",
@@ -40,6 +45,7 @@ function SuccessContent() {
   const [mounted, setMounted] = useState(false);
   const autoSignInDone = useRef(false);
   const successRootRef = useRef<HTMLDivElement>(null);
+  const metaPurchaseFiredRef = useRef(false);
 
   useEffect(() => {
     setMounted(true);
@@ -136,6 +142,45 @@ function SuccessContent() {
       cancelled = true;
     };
   }, [mounted, orderId, sessionId, status]);
+
+  useEffect(() => {
+    if (!order || order.status !== "paid" || !orderId) return;
+    if (metaPurchaseFiredRef.current) return;
+
+    const storageKey = `${META_PURCHASE_STORAGE_PREFIX}${orderId}`;
+    try {
+      if (typeof window !== "undefined" && sessionStorage.getItem(storageKey)) {
+        metaPurchaseFiredRef.current = true;
+        return;
+      }
+    } catch {
+      // ignore
+    }
+
+    if (metaPurchaseFiredOrderIds.has(orderId)) {
+      metaPurchaseFiredRef.current = true;
+      return;
+    }
+
+    metaPurchaseFiredRef.current = true;
+    metaPurchaseFiredOrderIds.add(orderId);
+    try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(storageKey, "1");
+      }
+    } catch {
+      // ignore
+    }
+
+    const lineItems = order.cart.items.map((item) => cartItemToMetaLineItem(item));
+    const value = order.cart.totalOneTime + order.cart.totalMonthly;
+    trackMetaPurchase({
+      lineItems,
+      value,
+      orderId,
+      page_path: "/checkout/success",
+    });
+  }, [order, orderId]);
 
   if (!mounted) {
     return (

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import { DigiStartAnalytics } from "@/components/analytics/digistart-analytics";
+import { MetaPixelEvents } from "@/components/analytics/meta-pixel-events";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
@@ -75,6 +76,7 @@ export default function RootLayout({
         className={`${inter.variable} ${montserrat.variable} font-sans antialiased overflow-x-hidden`}
       >
         <DigiStartAnalytics />
+        <MetaPixelEvents />
         <Providers>{children}</Providers>
       </body>
     </html>
