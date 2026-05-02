@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { trackMetaLead } from "@/lib/analytics/meta-pixel";
 
 const COPY =
-  "Запишете се за бюлетина ни — при официалния старт ви изпращаме 10% отстъпка върху всички наши услуги.";
+  "Запишете се за бюлетина ни - при официалния старт ви изпращаме код за 10% отстъпка върху всички наши услуги.";
 
 export function NewsletterSignupForm() {
   const pathname = usePathname();
