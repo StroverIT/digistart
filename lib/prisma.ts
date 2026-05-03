@@ -7,10 +7,11 @@ declare global {
   var prismaPool: Pool | undefined;
 }
 
-const databaseUrl = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
+// Runtime: prefer pooled DATABASE_URL when both exist (Supabase). Migrations use DIRECT_URL via prisma.config.ts only.
+const databaseUrl = process.env.DATABASE_URL ?? process.env.DIRECT_URL;
 
 if (!databaseUrl) {
-  throw new Error("DIRECT_URL or DATABASE_URL must be defined.");
+  throw new Error("DATABASE_URL or DIRECT_URL must be defined.");
 }
 
 const pool =
