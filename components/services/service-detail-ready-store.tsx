@@ -479,6 +479,7 @@ export function ServiceDetailReadyStore({
 
               <Link
                 data-animate-reveal
+                target="_blank"
                 href="https://restyled.bg"
                 className="inline-flex items-center gap-2 text-primary text-base sm:text-lg font-medium group opacity-0 translate-y-10"
               >
