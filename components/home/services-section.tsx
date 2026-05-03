@@ -14,14 +14,12 @@ import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 gsap.registerPlugin(ScrollTrigger);
 
 const iconMap: Record<string, React.ReactNode> = {
-  Globe: <Globe className="h-8 w-8" />,
   ShoppingCart: <ShoppingCart className="h-8 w-8" />,
   MapPin: <MapPin className="h-8 w-8" />,
   Share2: <Share2 className="h-8 w-8" />,
 };
 
 const stickerMap: Record<string, string> = {
-  websites: "/stickers/website.png",
   "ready-store": "/stickers/online-shop.png",
   "google-business": "/stickers/my-business.png",
   "social-media": "/stickers/social-media.png",

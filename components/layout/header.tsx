@@ -16,7 +16,6 @@ import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 
 const navLinks = [
   { href: "/", label: "Начало", paths: ["/"] },
-  { href: "/services/website", label: "Уебсайт", paths: ["/услуги/уебсайт", "/services/website"] },
   {
     href: "/services/online-store",
     label: "Онлайн магазин",
