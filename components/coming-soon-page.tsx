@@ -4,7 +4,7 @@ import { siteContact } from "@/lib/site-contact";
 import { NewsletterSignupForm } from "@/components/newsletter/newsletter-signup-form";
 
 const launchHighlights = [
-  "Готови онлайн магазини",
+  "Oнлайн магазини",
   "Google Business (локално SEO)",
   "Социални мрежи и реклама",
   "Прозрачни пакети и цени",
