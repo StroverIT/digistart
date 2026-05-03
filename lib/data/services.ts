@@ -137,8 +137,6 @@ export const services: Service[] = [
         max: 1,
         default: 0,
       },
-
-
       {
         id: "extra-products",
         name: "Допълнителни продукти над 500",
@@ -149,6 +147,18 @@ export const services: Service[] = [
         unit: "продукт",
         min: 0,
         max: 50000,
+        default: 0,
+      },
+      {
+        id: "ecommerce-legal-package",
+        name: "Правен пакет за Електронна Търговия",
+        description:
+          "Шаблони и настройка на общи условия, политика за поверителност и бисквитки за онлайн магазин.",
+        kind: "toggle",
+        pricePerUnit: 90,
+        unit: "пакет",
+        min: 0,
+        max: 1,
         default: 0,
       },
       ...brandUpsells,
@@ -230,9 +240,9 @@ export const services: Service[] = [
         id: "digital-menu",
         name: "Дигитално меню / продуктов каталог",
         description:
-          "Включва въвеждане до 15 продукта/услуги. След това се таксуват по 0.20 евро на артикул.",
+          "Включва въвеждане до 15 продукта или 3 услуги. След това се таксуват по 0.25 евро на артикул или услуга.",
         kind: "quantity",
-        pricePerUnit: 0.2,
+        pricePerUnit: 0.25,
         unit: "продукт",
         min: 0,
         max: 10000,

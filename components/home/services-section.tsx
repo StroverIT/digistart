@@ -97,7 +97,7 @@ export function ServicesSection() {
             ref={descRef}
             className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
           >
-            От онлайн магазини и Google Business до пълно управление на социални мрежи — предлагаме
+            От онлайн магазин и Google Business до пълно управление на социални мрежи - предлагаме
             комплексни решения за дигиталното присъствие на вашия бизнес.
           </p>
         </div>
