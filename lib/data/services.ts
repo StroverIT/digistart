@@ -90,7 +90,7 @@ export const services: Service[] = [
         description:
           "Онлайн магазинът става основен приоритет с гарантиран старт до 48 часа след поръчката.",
         kind: "toggle",
-        pricePerUnit: 120,
+        pricePerUnit: 200,
         unit: "добавка",
         min: 0,
         max: 1,
