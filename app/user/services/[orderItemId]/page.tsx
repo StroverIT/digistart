@@ -9,7 +9,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import { getServiceById } from "@/lib/data/services";
 import { calculateItemTotal } from "@/lib/pricing/calculate-item-total";
+import { getServiceByIdFromDb } from "@/lib/server/services";
 import type { CartItemUpsell } from "@/lib/types";
+
+/** Last-resort label when no catalog/DB name exists (kebab-case → words). */
+function humanizeUpsellId(id: string): string {
+  return id
+    .split(/[-_]/g)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+}
+
+function parseOrderItemUpsells(raw: unknown): CartItemUpsell[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(
+    (entry): entry is CartItemUpsell =>
+      typeof entry === "object" &&
+      entry !== null &&
+      typeof (entry as CartItemUpsell).upsellId === "string" &&
+      typeof (entry as CartItemUpsell).quantity === "number"
+  );
+}
 
 export default async function UserServiceDetailPage({
   params,
@@ -30,8 +51,10 @@ export default async function UserServiceDetailPage({
 
   if (!item) notFound();
 
-  const upsells = (item.upsells as unknown as CartItemUpsell[]) ?? [];
-  const service = getServiceById(item.serviceId);
+  const upsells = parseOrderItemUpsells(item.upsells);
+  /** Static catalog in `lib/data/services.ts` — preferred for titles and copy. */
+  const catalogService = getServiceById(item.serviceId);
+  const dbService = await getServiceByIdFromDb(item.serviceId);
   const storedMonthly = Number(item.totalMonthly) || 0;
   const derivedTotals = calculateItemTotal(item.serviceId, item.selectedOptionId, upsells);
   const displayMonthly =
@@ -216,23 +239,51 @@ export default async function UserServiceDetailPage({
           ) : (
             <ul className="grid gap-3 sm:grid-cols-2">
               {upsells.map((u) => {
-                const cfg = service?.upsells.find((x) => x.id === u.upsellId);
-                if (!cfg || u.quantity <= 0) return null;
-                const choice =
-                  cfg.kind === "choice" && u.choiceId
-                    ? cfg.choices?.find((c) => c.id === u.choiceId)?.name
-                    : null;
+                if (u.quantity <= 0) return null;
+                const catalogCfg = catalogService?.upsells.find((x) => x.id === u.upsellId);
+                const dbCfg = dbService?.upsells.find((x) => x.id === u.upsellId);
+                const cfg = catalogCfg ?? dbCfg;
+                const choiceParent = catalogCfg ?? dbCfg;
+                const choiceDef =
+                  choiceParent?.kind === "choice" && u.choiceId
+                    ? choiceParent.choices?.find((c) => c.id === u.choiceId)
+                    : undefined;
+                const title =
+                  catalogCfg?.name ?? dbCfg?.name ?? humanizeUpsellId(u.upsellId);
+                const description = catalogCfg?.description ?? dbCfg?.description;
+                const isMonthly = catalogCfg?.isMonthly ?? dbCfg?.isMonthly ?? false;
+                const missingInCatalog = !catalogCfg && !dbCfg;
                 return (
                   <li
                     key={u.upsellId}
                     className="rounded-2xl border border-border bg-secondary/40 p-4 text-sm"
                   >
-                    <p className="font-medium">{cfg.name}</p>
-                    {choice ? <p className="mt-1 text-muted-foreground">{choice}</p> : null}
+                    <p className="font-medium">{title}</p>
+                    {description ? (
+                      <p className="mt-2 text-muted-foreground leading-relaxed">{description}</p>
+                    ) : null}
+                    {missingInCatalog ? (
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        Няма пълно описание за тази добавка в каталога.
+                      </p>
+                    ) : null}
+                    {choiceDef ? (
+                      <div className="mt-3 rounded-xl border border-border/80 bg-background/50 px-3 py-2">
+                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                          Избор
+                        </p>
+                        <p className="mt-0.5 font-medium">{choiceDef.name}</p>
+                        {choiceDef.description ? (
+                          <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                            {choiceDef.description}
+                          </p>
+                        ) : null}
+                      </div>
+                    ) : null}
                     {u.quantity > 1 ? (
                       <p className="mt-2 text-xs text-muted-foreground">Количество: {u.quantity}</p>
                     ) : null}
-                    {cfg.isMonthly ? (
+                    {isMonthly ? (
                       <p className="mt-2 text-xs text-muted-foreground">Месечно таксуване</p>
                     ) : null}
                   </li>
