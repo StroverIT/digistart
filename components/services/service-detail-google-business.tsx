@@ -21,12 +21,12 @@ import { toast } from "sonner";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
+import { getServicePlanPrice } from "@/lib/data/services";
 import { Faq, type FaqItem } from "@/components/ui/faq";
 import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const GOOGLE_PROFILE_PRICE = 50;
 const GOOGLE_PROFILE_OPTION_ID = "basic";
 
 const googlePainPoints = [
@@ -170,6 +170,8 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
     document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const planPrice = getServicePlanPrice(service, GOOGLE_PROFILE_OPTION_ID);
+
   const handleGoogleCheckout = () => {
     setIsAdding(true);
     const result = addToCart(service.id, GOOGLE_PROFILE_OPTION_ID, upsells);
@@ -209,7 +211,7 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
             оптимизираме твоя бизнес профил в Google на еднократна, фиксирана цена.
           </>
         }
-        priceSlot={<Price value={GOOGLE_PROFILE_PRICE} className="text-3xl sm:text-4xl text-primary" />}
+        priceSlot={<Price value={planPrice} className="text-3xl sm:text-4xl text-primary" />}
         primaryLabel="Купи сега"
         onPrimaryClick={() => {
           trackCtaClick("/services/google-business", "service_google_business_scroll_to_buy");
@@ -383,7 +385,7 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
         service={service}
         title="Купи сега"
         description="Избери добавки и добави услугата в кошницата."
-        price={GOOGLE_PROFILE_PRICE}
+        price={planPrice}
         upsells={upsells}
         onUpsellsChange={setUpsells}
         onAddToCart={handleGoogleCheckout}

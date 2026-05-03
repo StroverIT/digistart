@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
-import { getServiceById } from "@/lib/data/services";
+import { getServiceById, getServicePlanPrice } from "@/lib/data/services";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { Faq, type FaqItem } from "@/components/ui/faq";
 import Link from "next/link";
@@ -49,13 +49,13 @@ const PAIN_POINTS = [
 
 const SOLUTION_ITEMS = [
   "Индивидуален дизайн: Модерна визия, съобразена с твоя бранд, която вдъхва доверие и стимулира покупките.",
-  "Мобилна версия (Responsive): Магазинът изглежда и работи перфектно на всяко мобилно устройство.",
-  "Методи за плащане: Настройка на наложен платеж, банков път или интеграция за плащане с карта (Stripe/MyPOS).",
+  "Мобилна версия (Responsive): Магазинът изглежда и работи перфектно на всяко устройство, като телефон, таблет и компютър.",
   "Лесен панел за управление: Добавяш продукти, променяш цени и следиш поръчки без сложни кодове.",
   "Качване на първоначални продукти: Качваме първите ти продукти (например до 20 бр.), за да стартираш веднага.",
-  "Интеграция с куриери (Еконт / Спиди): Подготовка за лесно генериране на товарителници директно от системата.",
+  "Можеш да добавяш и управляваш до 500 артикула през панела за управление.",
   "Безплатен SSL сертификат: Сигурна връзка и доверие за всеки посетител.",
   "Безплатен хостинг за 1 година: Стартираш без допълнителни разходи още от първия ден.",
+  "Безплатна поддръжка и сигурност за един месец: Ще ние се грижим за всичко останало, за да работиш безпроблемно."
 ] as const;
 
 const STEPS = [
@@ -194,7 +194,7 @@ export function ServiceDetailReadyStore({
 
   if (!service) return null;
 
-  const total = 499;
+  const planPrice = getServicePlanPrice(service, OPTION_ID);
 
   const scrollToBuySection = () => {
     document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -249,7 +249,7 @@ export function ServiceDetailReadyStore({
         }
         priceSlot={
           <Price
-            value={total}
+            value={planPrice}
             className={cn(
               headingFontClass,
               "text-3xl sm:text-4xl text-primary"
@@ -518,7 +518,7 @@ export function ServiceDetailReadyStore({
           service={service}
           title="Купи сега"
           description="Конфигурирай магазина и го добави в кошницата."
-          price={total}
+          price={planPrice}
           upsells={upsells}
           onUpsellsChange={setUpsells}
           onAddToCart={handleCheckout}

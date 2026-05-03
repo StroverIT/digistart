@@ -36,14 +36,14 @@ export const services: Service[] = [
     fullDescription:
       "Продуктизиран пакет за бърз старт: индивидуален дизайн, продукти, плащания и мобилна версия — до 48 часа до първи клиенти.",
     icon: "ShoppingCart",
-    basePrice: 499,
+    basePrice: 750,
     options: [
       {
         id: "standard",
         name: "Онлайн Магазин",
         description:
           "Пълен пакет: дизайн с лого, продукти, плащания, SEO и хостинг за първия месец",
-        price: 499,
+        price: 750,
       },
     ],
     upsells: [
@@ -386,4 +386,14 @@ export function getServiceBySlug(slug: string): Service | undefined {
 
 export function getServiceById(id: string): Service | undefined {
   return services.find((s) => s.id === id);
+}
+
+/** Base plan price for marketing UI: matches the selected option when provided, otherwise the first option, else `basePrice`. */
+export function getServicePlanPrice(service: Service, optionId?: string): number {
+  if (optionId) {
+    const match = service.options.find((o) => o.id === optionId);
+    if (match) return match.price;
+  }
+  const first = service.options[0];
+  return first?.price ?? service.basePrice;
 }

@@ -21,12 +21,11 @@ import { toast } from "sonner";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
+import { getServicePlanPrice } from "@/lib/data/services";
 import { Faq, type FaqItem } from "@/components/ui/faq";
 import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const MARKETING_START_PRICE = 200;
 
 const marketingPainPoints = [
   {
@@ -170,6 +169,8 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
     document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const planPrice = getServicePlanPrice(service);
+
   const handleMarketingCheckout = () => {
     setIsAdding(true);
     const optionId = service.options[0].id;
@@ -213,7 +214,7 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
         }
         priceSlot={
           <div className="flex items-baseline gap-2">
-            <Price value={MARKETING_START_PRICE} className="text-3xl sm:text-4xl text-primary" />
+            <Price value={planPrice} className="text-3xl sm:text-4xl text-primary" />
             <span className="text-muted-foreground">/месец</span>
           </div>
         }
@@ -390,7 +391,7 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
         service={service}
         title="Купи сега"
         description="Конфигурирай плана и добави услугата в кошницата."
-        price={MARKETING_START_PRICE}
+        price={planPrice}
         monthlyLabel="/месец"
         upsells={upsells}
         onUpsellsChange={setUpsells}
