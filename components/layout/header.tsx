@@ -31,6 +31,7 @@ const navLinks = [
     label: "Социални мрежи",
     paths: ["/услуги/социални-мрежи", "/services/social-media"],
   },
+
 ] as const;
 
 function isPathActive(pathname: string, paths: readonly string[]) {

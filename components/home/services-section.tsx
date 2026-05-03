@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Globe, ShoppingCart, MapPin, Share2, ArrowRight } from "lucide-react";
+import { ShoppingCart, MapPin, Share2, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -97,8 +97,8 @@ export function ServicesSection() {
             ref={descRef}
             className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
           >
-            От професионални уеб сайтове до пълно управление на социални мрежи - предлагаме комплексни
-            решения за дигиталното присъствие на вашия бизнес.
+            От онлайн магазини и Google Business до пълно управление на социални мрежи — предлагаме
+            комплексни решения за дигиталното присъствие на вашия бизнес.
           </p>
         </div>
 

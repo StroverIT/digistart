@@ -11,7 +11,6 @@ import { siteContact } from "@/lib/site-contact";
 gsap.registerPlugin(ScrollTrigger);
 
 const services = [
-  { href: "/services/website", label: "Уеб сайтове" },
   { href: "/services/online-store", label: "Онлайн магазин" },
   { href: "/services/google-business", label: "Google Business" },
   { href: "/services/social-media", label: "Социални мрежи" },
@@ -72,7 +71,7 @@ export function Footer() {
               </span>
             </TrackedCtaLink>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              Изграждаме дигиталното бъдеще на вашия бизнес. Професионални уеб решения, които работят за вас.
+              Изграждаме дигиталното бъдеще на вашия бизнес. Дигитални решения, които работят за вас.
             </p>
             <div className="flex items-center gap-3">
               <a

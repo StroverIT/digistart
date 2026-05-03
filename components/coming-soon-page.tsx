@@ -4,10 +4,10 @@ import { siteContact } from "@/lib/site-contact";
 import { NewsletterSignupForm } from "@/components/newsletter/newsletter-signup-form";
 
 const launchHighlights = [
-  "Достъпни уебсайтове",
   "Готови онлайн магазини",
-  "Google Business (Локално SEO)",
+  "Google Business (локално SEO)",
   "Социални мрежи и реклама",
+  "Прозрачни пакети и цени",
 ];
 
 const socialLinks = [
@@ -18,7 +18,7 @@ const socialLinks = [
 
 const launchSteps = [
   ["01", "Избираш пакет", "Ясни дигитални услуги с предварително обявени, прозрачни цени."],
-  ["02", "Бърза изработка", "Създаваме твоя уебсайт или онлайн магазин за дни, не за месеци."],
+  ["02", "Бърза изработка", "Стартираме онлайн магазина и дигиталното ти присъствие за дни, не за месеци."],
   ["03", "Растеж и продажби", "Поемаме рекламата и Google профила ти, за да започнеш да печелиш."],
 ] as const;
 

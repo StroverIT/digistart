@@ -83,8 +83,8 @@ export function HeroSection() {
             ref={subRef}
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed text-pretty opacity-0 translate-y-10"
           >
-            Професионални уеб сайтове, онлайн магазини и дигитален маркетинг. Превръщаме вашите идеи в
-            работещи решения, които генерират приходи.
+            Онлайн магазини, Google Business, социални мрежи и дигитален маркетинг. Превръщаме вашите
+            идеи в работещи решения, които генерират приходи.
           </p>
 
           {/* Benefits */}

@@ -5,7 +5,6 @@ import {
   ArrowLeft,
   Check,
   Clock,
-  Globe,
   MapPin,
   Share2,
   ShoppingCart,
@@ -23,7 +22,6 @@ import type { Service } from "@/lib/types";
 gsap.registerPlugin(ScrollTrigger);
 
 const iconMap: Record<string, ReactNode> = {
-  Globe: <Globe className="h-12 w-12" />,
   ShoppingCart: <ShoppingCart className="h-12 w-12" />,
   MapPin: <MapPin className="h-12 w-12" />,
   Share2: <Share2 className="h-12 w-12" />,

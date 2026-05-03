@@ -18,12 +18,12 @@ export function getCart(): Cart {
   if (typeof window === "undefined") {
     return { items: [], totalOneTime: 0, totalMonthly: 0 };
   }
-  
+
   const stored = localStorage.getItem(CART_STORAGE_KEY);
   if (!stored) {
     return { items: [], totalOneTime: 0, totalMonthly: 0 };
   }
-  
+
   try {
     const parsed = JSON.parse(stored) as Cart;
     parsed.items = (parsed.items ?? []).map((item) => {

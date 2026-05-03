@@ -9,10 +9,6 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: "/услуги/уебсайт",
-        destination: "/services/website",
-      },
-      {
         source: "/услуги/онлайн-магазин",
         destination: "/services/online-store",
       },
