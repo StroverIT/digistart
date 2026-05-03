@@ -172,7 +172,7 @@ async function renderSubscriberEmailHtml(params: { email: string }) {
                   color: colors.muted,
                 },
               },
-              `Записахме имейла ви: ${params.email}. При старта ще получите 10% ексклузивна отстъпка за първата си услуга при нас; детайлите изпращаме със старта.`,
+              `Записахме имейла ви: ${params.email}. При старта ще получите 10% ексклузивна отстъпка за първата си услуга при нас.`,
             ),
           ),
           React.createElement(
