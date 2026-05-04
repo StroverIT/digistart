@@ -12,7 +12,10 @@ import {
   Rocket,
   ShoppingCart,
 } from "lucide-react";
-import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
+import {
+  cartItemToMetaLineItem,
+  trackMetaAddToCart,
+} from "@/lib/analytics/meta-pixel";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
@@ -24,6 +27,7 @@ import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServicePlanPrice } from "@/lib/data/services";
 import { Faq, type FaqItem } from "@/components/ui/faq";
 import { ServiceDetailHero } from "@/components/services/service-detail-hero";
+import { ServicePageBackground } from "@/components/services/service-page-background";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -35,24 +39,24 @@ const googlePainPoints = [
     text: "Хората извън квартала не знаят, че магазинът ти съществува. Оптимизираният профил те показва при локални търсения в целия град.",
   },
   {
-    title: 'Изпускаш „горещите“ търсения',
-    text: 'Когато хората търсят специфични продукти („обувки близо до мен“), ти просто не се показваш.',
+    title: "Изпускаш „горещите“ търсения",
+    text: "Когато хората търсят специфични продукти („обувки близо до мен“), ти просто не се показваш.",
   },
   {
     title: "AI търсачките те игнорират",
-    text: 'Ако потребител попита изкуствения интелект за „магазин, който работи сега“, AI няма да препоръча твоя магазин, ако профилът ти не е оптимизиран.',
+    text: "Ако потребител попита изкуствения интелект за „магазин, който работи сега“, AI няма да препоръча твоя магазин, ако профилът ти не е оптимизиран.",
   },
   {
     title: "Губиш хората по пътя",
     text: "Клиентите се лутат и се отказват, защото навигацията ги праща на грешно място заради неточен пин (маркер).",
   },
   {
-    title: 'Клиентите „целуват вратата“',
+    title: "Клиентите „целуват вратата“",
     text: "Ако имаш старо или грешно работно време в интернет, клиентите идват, когато е затворено, и си тръгват разочаровани.",
   },
   {
     title: "Губиш обаждания",
-    text: 'Никой не ти звъни за запитвания, защото нямаш добавен актуален бутон „Обади се“ директно в търсачката.',
+    text: "Никой не ти звъни за запитвания, защото нямаш добавен актуален бутон „Обади се“ директно в търсачката.",
   },
 ] as const;
 
@@ -84,7 +88,8 @@ const googleSteps = [
 
 const FAQ_ITEMS: FaqItem[] = [
   {
-    question: "1. Защо ми е Google профил, ако вече имам силна Facebook страница?",
+    question:
+      "1. Защо ми е Google профил, ако вече имам силна Facebook страница?",
     answer:
       'Защото хората използват двете платформи с различна цел. Във Facebook хората разглеждат за забавление. В Google хората търсят, когато имат спешна нужда да купят. Когато на някого му се счупи колата или търси добър ресторант за довечера, той пише в Google Maps "автосервиз близо до мен". Ако те няма там - губиш най-горещите си клиенти.',
   },
@@ -104,7 +109,8 @@ const FAQ_ITEMS: FaqItem[] = [
       "Самата изработка и оптимизация от наша страна отнема няколко дни. След това следва процесът на верификация от Google (доказване, че бизнесът е твой). Този процес може да отнеме от 1 до 14 дни в зависимост от метода, който Google изисква за твоя конкретен бизнес (видео верификация, телефонно обаждане или писмо по пощата).",
   },
   {
-    question: "5. Можете ли да изтриете фалшиви негативни ревюта от конкуренти?",
+    question:
+      "5. Можете ли да изтриете фалшиви негативни ревюта от конкуренти?",
     answer:
       "Никой не може да изтрие ревю директно, освен самия Google. Ние обаче предлагаме специализирана добавка (виж в стъпката за плащане), чрез която подготвяме и подаваме официални, добре аргументирани рапорти към съпорта на Google за премахване на злонамерени и фалшиви отзиви.",
   },
@@ -119,7 +125,9 @@ interface ServiceDetailGoogleBusinessProps {
   service: Service;
 }
 
-export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusinessProps) {
+export function ServiceDetailGoogleBusiness({
+  service,
+}: ServiceDetailGoogleBusinessProps) {
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
@@ -130,10 +138,16 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
     if (!root) return;
 
     const ctx = gsap.context(() => {
-      const sections = root.querySelectorAll<HTMLElement>("[data-animate-section]");
+      const sections = root.querySelectorAll<HTMLElement>(
+        "[data-animate-section]",
+      );
       sections.forEach((section) => {
-        const reveals = section.querySelectorAll<HTMLElement>("[data-animate-reveal]");
-        const cards = section.querySelectorAll<HTMLElement>("[data-animate-card]");
+        const reveals = section.querySelectorAll<HTMLElement>(
+          "[data-animate-reveal]",
+        );
+        const cards = section.querySelectorAll<HTMLElement>(
+          "[data-animate-card]",
+        );
 
         if (reveals.length) {
           gsap.set(reveals, { opacity: 0, y: 40 });
@@ -174,7 +188,9 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
   }, []);
 
   const scrollToBuySection = () => {
-    document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById("buy-now")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const planPrice = getServicePlanPrice(service, GOOGLE_PROFILE_OPTION_ID);
@@ -190,10 +206,14 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
       return;
     }
     const addedItem = result.cart.items.find(
-      (i) => i.serviceId === service.id && i.selectedOptionId === GOOGLE_PROFILE_OPTION_ID,
+      (i) =>
+        i.serviceId === service.id &&
+        i.selectedOptionId === GOOGLE_PROFILE_OPTION_ID,
     );
     if (addedItem) {
-      trackMetaAddToCart([cartItemToMetaLineItem(addedItem)], { page_path: "/services/google-business" });
+      trackMetaAddToCart([cartItemToMetaLineItem(addedItem)], {
+        page_path: "/services/google-business",
+      });
     }
     setTimeout(() => {
       setIsAdding(false);
@@ -202,205 +222,228 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
   };
 
   return (
-    <div ref={pageRootRef} className="pt-16 pb-12 md:pt-20 md:pb-16">
-      <ServiceDetailHero
-        badgeIcon={<MapPin className="h-4 w-4" />}
-        badgeText="Достигни до повече клиенти с Google Maps"
-        title={
-          <>
-            Професионален Google Бизнес Профил
-            <div className="gradient-text">Излез пред конкуренцията</div>
-          </>
-        }
-        description={
-          <>
-            Направи така, че клиентите в твоя град да намират първо теб. Изграждаме и
-            оптимизираме твоя бизнес профил в Google на еднократна, фиксирана цена.
-          </>
-        }
-        priceSlot={<Price value={planPrice} className="text-3xl sm:text-4xl text-primary" />}
-        primaryLabel="Купи сега"
-        onPrimaryClick={() => {
-          trackCtaClick("/services/google-business", "service_google_business_scroll_to_buy");
-          scrollToBuySection();
-        }}
-        backCtaId="service_google_business_back_to_services"
-      />
+    <div
+      ref={pageRootRef}
+      className="relative isolate pt-16 pb-12 md:pt-20 md:pb-16"
+    >
+      <ServicePageBackground />
+      <div className="relative z-10">
+        <ServiceDetailHero
+          badgeIcon={<MapPin className="h-4 w-4" />}
+          badgeText="Достигни до повече клиенти с Google Maps"
+          title={
+            <>
+              Професионален Google Бизнес Профил
+              <div className="gradient-text">Излез пред конкуренцията</div>
+            </>
+          }
+          description={
+            <>
+              Направи така, че клиентите в твоя град да намират първо теб.
+              Изграждаме и оптимизираме твоя бизнес профил в Google на
+              еднократна, фиксирана цена.
+            </>
+          }
+          priceSlot={
+            <Price
+              value={planPrice}
+              className="text-3xl sm:text-4xl text-primary"
+            />
+          }
+          primaryLabel="Купи сега"
+          onPrimaryClick={() => {
+            trackCtaClick(
+              "/services/google-business",
+              "service_google_business_scroll_to_buy",
+            );
+            scrollToBuySection();
+          }}
+          backCtaId="service_google_business_back_to_services"
+        />
 
-      <section data-animate-section className="py-8 md:py-20 bg-card/50">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-            <span
-              data-animate-reveal
-              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
-            >
-              Проблемът
-            </span>
-            <h2
-              data-animate-reveal
-              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10"
-            >
-              Защо губиш клиенти, ако те няма в Google Maps?
-            </h2>
-            <p
-              data-animate-reveal
-              className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
-            >
-              Хората търсят услуги около тях всеки ден. Ако не те виждат, отиват при съседа.
-            </p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {googlePainPoints.map((item) => (
-              <Card
-                key={item.title}
-                data-animate-card
-                className="group bg-card border-border hover:border-destructive/50 transition-all duration-300 opacity-0 translate-y-10"
+        <section data-animate-section className="py-8 md:py-20 bg-card/50">
+          <div className="container mx-auto px-4">
+            <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
+              <span
+                data-animate-reveal
+                className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
               >
-                <CardContent className="p-6 md:p-7">
-                  <CircleX className="h-5 w-5 text-red-500 mb-4" />
-                  <h3 className="font-bold text-lg mb-3">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section data-animate-section className="py-8 md:py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-            <span
-              data-animate-reveal
-              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
-            >
-              Решението
-            </span>
-            <h2
-              data-animate-reveal
-              className="text-3xl sm:text-4xl md:text-5xl font-bold text-balance opacity-0 translate-y-10"
-            >
-              Какво е включено в пакета "Google Профил"?
-            </h2>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {googleSolutionItems.map((item) => (
-              <Card
-                key={item}
-                data-animate-card
-                className="group border-border bg-card hover:border-primary/50 transition-all duration-300 opacity-0 translate-y-10"
+                Проблемът
+              </span>
+              <h2
+                data-animate-reveal
+                className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10"
               >
-                <CardContent className="p-5 md:p-6 flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
-                  <p className="text-muted-foreground leading-relaxed">{item}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section data-animate-section className="py-8 md:py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-            <span
-              data-animate-reveal
-              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
-            >
-              Процес
-            </span>
-            <h2
-              data-animate-reveal
-              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10"
-            >
-              Как да стартираш? (Само 3 лесни стъпки)
-            </h2>
-            <p
-              data-animate-reveal
-              className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
-            >
-              Улеснили сме процеса, за да не губиш излишно време в технически детайли.
-            </p>
-          </div>
-          <div className="relative">
-            <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-border to-transparent -translate-y-1/2" />
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {googleSteps.map((step, index) => (
-                <div key={step.title} className="relative">
-                  <Card
-                    data-animate-card
-                    className="group bg-card border-border hover:border-primary/50 transition-colors h-full opacity-0 translate-y-10"
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                          <step.icon className="h-5 w-5" />
-                        </div>
-                        <span className="text-3xl font-bold text-muted-foreground/30">
-                          0{index + 1}
-                        </span>
-                        <ClipboardList className="ml-auto h-5 w-5 text-muted-foreground" />
-                      </div>
-                      <h3 className="font-semibold mb-2">{step.title}</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{step.text}</p>
-                    </CardContent>
-                  </Card>
-                  {index < googleSteps.length - 1 && (
-                    <div className="lg:hidden flex justify-center my-4">
-                      <div className="h-8 w-0.5 bg-border" />
-                    </div>
-                  )}
-                </div>
+                Защо губиш клиенти, ако те няма в Google Maps?
+              </h2>
+              <p
+                data-animate-reveal
+                className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
+              >
+                Хората търсят услуги около тях всеки ден. Ако не те виждат,
+                отиват при съседа.
+              </p>
+            </div>
+            <div className="grid gap-6 md:grid-cols-3">
+              {googlePainPoints.map((item) => (
+                <Card
+                  key={item.title}
+                  data-animate-card
+                  className="group bg-card border-border hover:border-destructive/50 transition-all duration-300 opacity-0 translate-y-10"
+                >
+                  <CardContent className="p-6 md:p-7">
+                    <CircleX className="h-5 w-5 text-red-500 mb-4" />
+                    <h3 className="font-bold text-lg mb-3">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {item.text}
+                    </p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section data-animate-section className="py-8 md:py-20 bg-card/40">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-            <span
-              data-animate-reveal
-              className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
-            >
-              FAQ
-            </span>
-            <h2
-              data-animate-reveal
-              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10"
-            >
-              Често задавани въпроси
-            </h2>
-            <p
-              data-animate-reveal
-              className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
-            >
-              Събрахме най-честите въпроси, за да вземеш решение по-бързо и уверено.
-            </p>
+        <section data-animate-section className="py-8 md:py-20">
+          <div className="container mx-auto px-4">
+            <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
+              <span
+                data-animate-reveal
+                className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+              >
+                Решението
+              </span>
+              <h2
+                data-animate-reveal
+                className="text-3xl sm:text-4xl md:text-5xl font-bold text-balance opacity-0 translate-y-10"
+              >
+                Какво е включено в пакета "Google Профил"?
+              </h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {googleSolutionItems.map((item) => (
+                <Card
+                  key={item}
+                  data-animate-card
+                  className="group border-border bg-card hover:border-primary/50 transition-all duration-300 opacity-0 translate-y-10"
+                >
+                  <CardContent className="p-5 md:p-6 flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                    <p className="text-muted-foreground leading-relaxed">
+                      {item}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-          <div
-            data-animate-card
-            className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 sm:px-8 sm:py-4 opacity-0 translate-y-10"
-          >
-            <Faq items={FAQ_ITEMS} />
+        </section>
+
+        <section data-animate-section className="py-8 md:py-20">
+          <div className="container mx-auto px-4">
+            <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
+              <span
+                data-animate-reveal
+                className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+              >
+                Процес
+              </span>
+              <h2
+                data-animate-reveal
+                className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10"
+              >
+                Как да стартираш? (Само 3 лесни стъпки)
+              </h2>
+              <p
+                data-animate-reveal
+                className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
+              >
+                Улеснили сме процеса, за да не губиш излишно време в технически
+                детайли.
+              </p>
+            </div>
+            <div className="relative">
+              <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-border to-transparent -translate-y-1/2" />
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {googleSteps.map((step, index) => (
+                  <div key={step.title} className="relative">
+                    <Card
+                      data-animate-card
+                      className="group bg-card border-border hover:border-primary/50 transition-colors h-full opacity-0 translate-y-10"
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                            <step.icon className="h-5 w-5" />
+                          </div>
+                          <span className="text-3xl font-bold text-muted-foreground/30">
+                            0{index + 1}
+                          </span>
+                          <ClipboardList className="ml-auto h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <h3 className="font-semibold mb-2">{step.title}</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {step.text}
+                        </p>
+                      </CardContent>
+                    </Card>
+                    {index < googleSteps.length - 1 && (
+                      <div className="lg:hidden flex justify-center my-4">
+                        <div className="h-8 w-0.5 bg-border" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <ServiceBuySection
-        service={service}
-        title="Купи сега"
-        description="Избери добавки и добави услугата в кошницата."
-        price={planPrice}
-        upsells={upsells}
-        onUpsellsChange={setUpsells}
-        onAddToCart={handleGoogleCheckout}
-        isAdding={isAdding}
-        ctaId="service_google_business_buy_section_add_to_cart"
-        ctaPage="/services/google-business"
-      />
+        <section data-animate-section className="py-8 md:py-20 bg-card/40">
+          <div className="container mx-auto px-4">
+            <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
+              <span
+                data-animate-reveal
+                className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+              >
+                FAQ
+              </span>
+              <h2
+                data-animate-reveal
+                className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10"
+              >
+                Често задавани въпроси
+              </h2>
+              <p
+                data-animate-reveal
+                className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
+              >
+                Събрахме най-честите въпроси, за да вземеш решение по-бързо и
+                уверено.
+              </p>
+            </div>
+            <div
+              data-animate-card
+              className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 sm:px-8 sm:py-4 opacity-0 translate-y-10"
+            >
+              <Faq items={FAQ_ITEMS} />
+            </div>
+          </div>
+        </section>
 
+        <ServiceBuySection
+          service={service}
+          title="Купи сега"
+          description="Избери добавки и добави услугата в кошницата."
+          price={planPrice}
+          upsells={upsells}
+          onUpsellsChange={setUpsells}
+          onAddToCart={handleGoogleCheckout}
+          isAdding={isAdding}
+          ctaId="service_google_business_buy_section_add_to_cart"
+          ctaPage="/services/google-business"
+        />
+      </div>
     </div>
   );
 }

@@ -175,7 +175,7 @@
   clip-path: inset(0 0% 0 0);
 }
 
-/* Home: soft gradient blobs (primary → chart-4) */
+/* Coming soon: soft gradient blobs (uses home-blobs* classes) */
 .home-blobs {
   pointer-events: none;
   position: absolute;
@@ -216,77 +216,4 @@
   left: 20%;
   transform: rotate(8deg);
   opacity: 0.3;
-}
-
-.home-blobs__blob--4 {
-  width: min(30rem, 72vw);
-  height: min(30rem, 72vw);
-  top: 52%;
-  left: -20%;
-  transform: rotate(22deg);
-  opacity: 0.22;
-}
-
-/* Hero: extra palette orbs (primary → chart-4), scoped to hero section */
-.hero-blobs {
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  z-index: 0;
-}
-
-.hero-blobs__orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(68px);
-}
-
-.hero-blobs__orb--1 {
-  width: min(28rem, 72vw);
-  height: min(28rem, 72vw);
-  top: -10%;
-  left: 4%;
-  opacity: 0.36;
-  background: linear-gradient(135deg, var(--primary), var(--chart-6));
-}
-
-.hero-blobs__orb--2 {
-  width: min(22rem, 58vw);
-  height: min(22rem, 58vw);
-  top: 32%;
-  right: -14%;
-  opacity: 0.3;
-  background: linear-gradient(200deg, var(--primary), var(--chart-6));
-}
-
-.hero-blobs__orb--3 {
-  width: min(26rem, 68vw);
-  height: min(20rem, 52vw);
-  bottom: 2%;
-  left: -10%;
-  opacity: 0.26;
-  background: linear-gradient(165deg, var(--primary), var(--chart-6));
-}
-
-.hero-blobs__orb--4 {
-  width: min(20rem, 50vw);
-  height: min(20rem, 50vw);
-  top: 12%;
-  left: 38%;
-  opacity: 0.16;
-  background: radial-gradient(
-    circle at 35% 35%,
-    color-mix(in oklch, var(--primary) 55%, transparent),
-    color-mix(in oklch, var(--chart-6) 45%, transparent)
-  );
-}
-
-.hero-blobs__orb--5 {
-  width: min(18rem, 44vw);
-  height: min(24rem, 55vw);
-  bottom: 18%;
-  right: 18%;
-  opacity: 0.2;
-  background: linear-gradient(320deg, var(--primary), var(--chart-6));
 }

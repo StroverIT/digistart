@@ -60,12 +60,8 @@ export function ServiceDetailHero({
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden pt-8 pb-10 md:pt-14 md:pb-18">
+    <section ref={sectionRef} className="relative isolate overflow-hidden pt-8 pb-10 md:pt-14 md:pb-18">
       <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/3 -left-24 h-80 w-80 rounded-full bg-primary/10 blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 -right-24 h-72 w-72 rounded-full bg-primary/5 blur-3xl animate-pulse delay-1000" />
-      </div>
       <div
         className="absolute inset-0 opacity-[0.02]"
         style={{
