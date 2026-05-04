@@ -27,10 +27,10 @@ export function ComingSoonPage() {
     <main className="relative min-h-dvh overflow-hidden bg-background text-foreground">
       <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
 
-      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute left-1/2 top-0 h-80 w-80 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl sm:h-120 sm:w-120" />
-        <div className="absolute -left-24 top-1/4 h-80 w-80 rounded-full bg-primary/10 blur-3xl animate-pulse" />
-        <div className="absolute -right-24 bottom-1/4 h-96 w-96 rounded-full bg-[oklch(0.75_0.18_280/0.14)] blur-3xl animate-pulse delay-1000" />
+      <div className="home-blobs" aria-hidden>
+        <div className="home-blobs__blob home-blobs__blob--1" />
+        <div className="home-blobs__blob home-blobs__blob--2" />
+        <div className="home-blobs__blob home-blobs__blob--3" />
       </div>
 
       <div

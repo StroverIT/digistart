@@ -52,10 +52,19 @@ export function HeroSection() {
       {/* Background gradient */}
       <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
 
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse delay-1000" />
+      {/* Secondary ambient wash (chart tones) */}
+      <div
+        className="absolute inset-0 z-0 bg-linear-to-tr from-transparent via-primary/6 to-chart-4/9"
+        aria-hidden
+      />
+
+      {/* Hero-only palette orbs */}
+      <div className="hero-blobs" aria-hidden>
+        <div className="hero-blobs__orb hero-blobs__orb--1" />
+        <div className="hero-blobs__orb hero-blobs__orb--2 animate-pulse" />
+        <div className="hero-blobs__orb hero-blobs__orb--3" />
+        <div className="hero-blobs__orb hero-blobs__orb--4" />
+        <div className="hero-blobs__orb hero-blobs__orb--5" />
       </div>
 
       {/* Grid pattern overlay */}
