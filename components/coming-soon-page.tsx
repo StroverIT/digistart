@@ -1,28 +1,19 @@
-import Image from "next/image";
-import { CheckCircle2, Facebook, Instagram, Linkedin, Mail, Sparkles } from "lucide-react";
-import { siteContact } from "@/lib/site-contact";
+import { Check } from "lucide-react";
+import {
+  COMING_SOON_MAX_SPOTS,
+  getComingSoonSpotsRemaining,
+} from "@/lib/server/newsletter";
 import { NewsletterSignupForm } from "@/components/newsletter/newsletter-signup-form";
 
-const launchHighlights = [
-  "Oнлайн магазини",
-  "Google Business (локално SEO)",
-  "Социални мрежи и реклама",
-  "Прозрачни пакети и цени",
-];
-
-const socialLinks = [
-  { href: siteContact.facebook, label: "Facebook", Icon: Facebook },
-  { href: siteContact.instagram, label: "Instagram", Icon: Instagram },
-  { href: siteContact.linkedin, label: "LinkedIn", Icon: Linkedin },
-];
-
-const launchSteps = [
-  ["01", "Избираш пакет", "Ясни дигитални услуги с предварително обявени, прозрачни цени."],
-  ["02", "Бърза изработка", "Стартираме онлайн магазина и дигиталното ти присъствие за дни, не за месеци."],
-  ["03", "Растеж и продажби", "Поемаме рекламата и Google профила ти, за да започнеш да печелиш."],
+const offerBullets = [
+  "Едно от 20-те места (преди да обявим старта публично).",
+  "10% отстъпка за първия ти цялостен пакет при нас.",
+  "Спокойствието, че най-после някой друг движи дигиталните неща вместо теб.",
 ] as const;
 
-export function ComingSoonPage() {
+export async function ComingSoonPage() {
+  const spotsRemaining = await getComingSoonSpotsRemaining();
+
   return (
     <main className="relative min-h-dvh overflow-hidden bg-background text-foreground">
       <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
@@ -44,136 +35,50 @@ export function ComingSoonPage() {
       />
 
       <section className="container relative z-10 mx-auto flex min-h-dvh items-center px-4 py-10 sm:py-14">
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary shadow-sm">
-              <span className="select-none" aria-hidden>
-                ⚡️
-              </span>
-              Очаквайте скоро
-            </div>
-
-            <a href="/" className="mx-auto mb-8 flex w-fit items-center gap-3 rounded-2xl lg:mx-0">
-              <Image
-                src="/logo.png"
-                alt="DigiStart logo"
-                width={44}
-                height={44}
-                className="h-11 w-11"
-                priority
-              />
-              <span className="text-2xl font-bold tracking-tight">
-                Digi<span className="text-primary">Start</span>
-              </span>
-            </a>
-
-            <h1 className="mx-auto mb-6 max-w-4xl text-balance text-4xl leading-tight sm:text-5xl md:text-6xl lg:mx-0 lg:text-7xl">
-              Слагаме край на <span className="text-primary">хаоса</span> в дигиталното{" "}
-              <span className="text-primary">пространство</span>. Много скоро.{" "}
-              <span className="whitespace-nowrap" aria-hidden>
-                🚀
-              </span>
+        <div className="mx-auto w-full max-w-4xl">
+          <div className="text-center">
+            <h1 className="mb-6 text-balance text-4xl sm:text-5xl md:text-6xl lg:text-7xl sm:leading-17">
+              Само за собственици на физически магазини
+              <br />
+              {spotsRemaining > 0 ? (
+                <span className="gradient-text">
+                  Остават само {spotsRemaining} места
+                </span>
+              ) : (
+                <span className="gradient-text">Всички {COMING_SOON_MAX_SPOTS} места са заети</span>
+              )}
             </h1>
 
-            <p className="mx-auto mb-8 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl lg:mx-0">
-              Всичко за твоя бизнес на едно място. Без безкрайни срещи, без скрити такси и без дълги
-              договори. Плащаш и стартираме.
+            <p className="mx-auto mb-10 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl">
+              Забрави за дългите срещи, неразбираемите IT термини и координирането на 3 различни фирми. Ние
+              изработваме твоя онлайн магазин, вадим те на първо място в Google и пускаме рекламите ти. Ние вършим
+              черната работа, ти просто приемаш поръчките.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-border bg-card/60 p-6 shadow-sm backdrop-blur sm:p-8">
+            <h2 className="text-xl font-bold leading-snug sm:text-2xl">
+              <span aria-hidden>🔥 </span>Защо стартираме само с 20 магазина?
+            </h2>
+            <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">
+              Защото не правим сайтове на конвейер. Искаме да работим лично с всеки от първите ни 20 клиента, за да
+              сме сигурни, че инвестицията им ще се върне в пъти още през първия месец.
             </p>
 
-            <div className="mb-8 flex flex-col items-center gap-3 sm:gap-4 lg:items-start">
-              {launchHighlights.map((highlight) => (
-                <div
-                  key={highlight}
-                  className="flex w-full max-w-xl items-start gap-3 text-left text-sm text-muted-foreground sm:text-base"
-                >
-                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                  <span>{highlight}</span>
-                </div>
+            <p className="mt-6 font-semibold text-foreground">Запиши се в списъка на чакащите днес и си гарантирай:</p>
+            <ul className="mt-4 space-y-3">
+              {offerBullets.map((line) => (
+                <li key={line} className="flex gap-3 text-muted-foreground">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                    <Check className="h-3.5 w-3.5" strokeWidth={3} aria-hidden />
+                  </span>
+                  <span className="leading-relaxed">{line}</span>
+                </li>
               ))}
-            </div>
-
-            <div className="flex w-full flex-col items-center lg:items-start">
-              <NewsletterSignupForm />
-            </div>
-
-            <div className="mt-8 flex flex-col items-center gap-3 lg:items-start">
-              <p className="text-sm font-semibold text-muted-foreground">Последвайте ни</p>
-              <div className="flex items-center gap-3">
-                {socialLinks.map(({ href, label, Icon }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary hover:text-primary-foreground hover:shadow-lg hover:shadow-primary/20"
-                    aria-label={label}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </a>
-                ))}
-              </div>
-            </div>
+            </ul>
           </div>
 
-          <div className="relative mx-auto w-full max-w-xl">
-            <div className="absolute -inset-6 rounded-4xl bg-primary/10 blur-3xl" aria-hidden="true" />
-            <div className="relative overflow-hidden rounded-4xl border border-border bg-card/90 p-6 shadow-2xl shadow-primary/10 backdrop-blur md:p-8">
-              <div className="mb-8 flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-sm font-semibold text-primary">DigiStart Launch</p>
-                  <h2 className="mt-1 text-2xl leading-snug sm:text-[1.375rem] md:text-2xl">
-                    Всичко накуп. Без усложнения.
-                  </h2>
-                </div>
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                  <Sparkles className="h-6 w-6" />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {launchSteps.map(([step, title, text]) => (
-                  <div key={step} className="rounded-2xl border border-border bg-background/70 p-4">
-                    <div className="flex items-start gap-4">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                        {step}
-                      </span>
-                      <div>
-                        <h3 className="text-base font-semibold">{title}</h3>
-                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{text}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-8 rounded-2xl bg-zinc-900 p-5 text-zinc-50">
-                <p className="mb-4 text-sm font-semibold leading-snug text-zinc-100">
-                  Искаш да стартираме работа преди официалния старт?
-                </p>
-                <a
-                  href={`mailto:${siteContact.email}`}
-                  className="inline-flex items-center gap-2 break-all text-sm font-semibold text-primary transition-colors hover:text-primary/90"
-                >
-                  <span aria-hidden>📧</span>
-                  {siteContact.email}
-                </a>
-                <div className="mt-5 flex items-center gap-3">
-                  {socialLinks.map(({ href, label, Icon }) => (
-                    <a
-                      key={label}
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-800 text-zinc-300 transition-colors hover:bg-primary hover:text-primary-foreground"
-                      aria-label={label}
-                    >
-                      <Icon className="h-5 w-5" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <NewsletterSignupForm spotsRemaining={spotsRemaining} totalSpots={COMING_SOON_MAX_SPOTS} />
         </div>
       </section>
     </main>

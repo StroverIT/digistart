@@ -19,6 +19,16 @@ export async function POST(req: Request) {
 
     const result = await subscribeToNewsletter(parsed.data.email, "coming-soon");
 
+    if (result.status === "full") {
+      return NextResponse.json(
+        {
+          error:
+            "Всички места в списъка за ранен достъп са заети. Благодарим за интереса!",
+        },
+        { status: 403 },
+      );
+    }
+
     return NextResponse.json({
       ok: true,
       alreadySubscribed: result.alreadySubscribed,

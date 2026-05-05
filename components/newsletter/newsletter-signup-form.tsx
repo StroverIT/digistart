@@ -1,23 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Loader2, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { trackMetaLead } from "@/lib/analytics/meta-pixel";
 
-const COPY =
-  "🎁 Готов ли си за дигитален скок? Остави имейла си сега и бъди сред първите, които ще научат за старта ни. Като бонус получаваш 10% ексклузивна отстъпка за първата си услуга при нас!";
+type NewsletterSignupFormProps = {
+  spotsRemaining: number;
+  totalSpots: number;
+};
 
-export function NewsletterSignupForm() {
+export function NewsletterSignupForm({ spotsRemaining, totalSpots }: NewsletterSignupFormProps) {
+  const router = useRouter();
   const pathname = usePathname();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const isFull = spotsRemaining <= 0;
+  const disabled = loading || isFull;
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (isFull) return;
+
     const trimmed = email.trim();
     if (!trimmed) {
       toast.error("Моля, въведете имейл.");
@@ -38,6 +46,12 @@ export function NewsletterSignupForm() {
         error?: string;
       };
 
+      if (res.status === 403) {
+        toast.error(data.error ?? "Няма свободни места.");
+        router.refresh();
+        return;
+      }
+
       if (!res.ok) {
         toast.error(data.error ?? "Неуспешно записване.");
         return;
@@ -55,11 +69,14 @@ export function NewsletterSignupForm() {
       });
 
       if (data.emailSent === false) {
-        toast.success("Записахте се успешно! Имейлът за потвърждение може да закъснее — проверете настройките за изпращане.");
+        toast.success(
+          "Записахте се успешно! Имейлът за потвърждение може да закъснее — проверете настройките за изпращане.",
+        );
       } else {
         toast.success("Благодарим! Проверете пощата си за потвърждение.");
       }
       setEmail("");
+      router.refresh();
     } catch {
       toast.error("Мрежова грешка. Опитайте отново.");
     } finally {
@@ -68,34 +85,44 @@ export function NewsletterSignupForm() {
   }
 
   return (
-    <div className="mt-2 w-full max-w-xl rounded-2xl border border-border bg-card/80 p-5 text-left shadow-sm backdrop-blur lg:mx-0">
-      <p className="text-sm font-semibold leading-relaxed text-foreground sm:text-[0.9375rem]">{COPY}</p>
-      <form onSubmit={onSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-        <div className="relative flex-1">
-          <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="email"
-            name="email"
-            autoComplete="email"
-            placeholder="твоят@имейл.bg"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="h-12 pl-10"
-            disabled={loading}
-            aria-label="Имейл за бюлетин"
-          />
-        </div>
-        <Button type="submit" size="lg" className="glow-primary h-12 shrink-0 px-6" disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Изпращане...
-            </>
-          ) : (
-            "Искам отстъпката"
-          )}
-        </Button>
-      </form>
+    <div className="mt-8 w-full rounded-2xl border border-border bg-card/80 p-5 text-left shadow-sm backdrop-blur">
+      {isFull ? (
+        <p className="text-center text-sm font-medium text-muted-foreground">
+          Всички места са заети. Благодарим за интереса!
+        </p>
+      ) : (
+        <>
+          <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+            <div className="relative flex-1">
+              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="email"
+                name="email"
+                autoComplete="email"
+                placeholder="Имейл..."
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-12 pl-10"
+                disabled={disabled}
+                aria-label="Имейл за записване в списъка"
+              />
+            </div>
+            <Button type="submit" size="lg" className="glow-primary h-12 shrink-0 px-6" disabled={disabled}>
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Изпращане...
+                </>
+              ) : (
+                "Запази ми място и 10% отстъпка 👇"
+              )}
+            </Button>
+          </form>
+          <p className="mt-3 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+            Остават само {spotsRemaining} места. Записването не те задължава да плащаш нищо.
+          </p>
+        </>
+      )}
     </div>
   );
 }
