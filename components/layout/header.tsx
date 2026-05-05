@@ -4,7 +4,7 @@ import TransitionLink from "@/components/transitions/TransitionLink";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCartItemCount } from "@/lib/store/cart";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ import Hamburger from "hamburger-react";
 import { useSession, signOut } from "next-auth/react";
 import { AnalyticsToolbar } from "@/components/analytics/analytics-toolbar";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
+import { useSpotCapacityOptional } from "@/components/layout/spot-capacity-context";
 
 const navLinks = [
   { href: "/", label: "Начало", paths: ["/"] },
@@ -43,6 +44,74 @@ function isPathActive(pathname: string, paths: readonly string[]) {
     }
   })();
   return paths.some((p) => p === pathname || p === decoded);
+}
+
+function HeaderSpotsBadge() {
+  const capacity = useSpotCapacityOptional();
+  if (!capacity) return null;
+
+  const { remaining, limit, isFull } = capacity;
+  const isLow = !isFull && remaining > 0 && remaining <= 5;
+  const pct = limit > 0 ? Math.min(100, (remaining / limit) * 100) : 0;
+
+  return (
+    <div
+      className={cn(
+        "flex max-w-[min(100%,20rem)] flex-col gap-1 rounded-2xl border px-3 py-2 shadow-sm backdrop-blur-sm sm:max-w-none sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-2",
+        isFull && "border-border/80 bg-muted/40 text-muted-foreground",
+        !isFull && !isLow && "border-primary/25 bg-primary/5 text-foreground",
+        isLow &&
+          "border-orange-500/50 bg-orange-500/10 text-orange-950 dark:border-orange-400/45 dark:bg-orange-500/15 dark:text-orange-100"
+      )}
+      role="status"
+      aria-live="polite"
+    >
+      <div className="flex items-center gap-2">
+        <span
+          className={cn(
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+            isFull && "bg-muted text-muted-foreground",
+            !isFull && !isLow && "bg-primary/15 text-primary",
+            isLow && "bg-orange-500/25 text-orange-800 dark:text-orange-100"
+          )}
+        >
+          <Users className="h-4 w-4" aria-hidden />
+        </span>
+        <p className="min-w-0 text-left text-xs font-semibold leading-snug sm:text-sm">
+          {isFull ? (
+            "Няма свободни места"
+          ) : (
+            <>
+              <span className="sm:hidden" aria-hidden>
+                Остават{" "}
+                <span className="tabular-nums text-primary">{remaining}</span> /{" "}
+                <span className="tabular-nums">{limit}</span>
+              </span>
+              <span className="hidden sm:inline">
+                Остават{" "}
+                <span className="tabular-nums text-primary">{remaining}</span> от{" "}
+                <span className="tabular-nums">{limit}</span> места
+              </span>
+            </>
+          )}
+        </p>
+      </div>
+      {!isFull ? (
+        <div
+          className="h-1 w-full overflow-hidden rounded-full bg-background/60 sm:max-w-28"
+          aria-hidden
+        >
+          <div
+            className={cn(
+              "h-full rounded-full transition-[width] duration-500 ease-out",
+              isLow ? "bg-orange-500 dark:bg-orange-400" : "bg-primary"
+            )}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 function AnimatedNavLink({
@@ -215,8 +284,11 @@ export function Header() {
           }`}
       >
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16 md:h-20">
-            <TransitionLink href="/" className="flex items-center gap-2 group rounded-lg z-60 relative">
+          <div className="flex h-16 items-center gap-2 md:h-20 md:gap-3">
+            <TransitionLink
+              href="/"
+              className="flex shrink-0 items-center gap-2 group rounded-lg z-60 relative"
+            >
               <Image
                 src="/logo.png"
                 alt="DigiStart logo"
@@ -230,7 +302,11 @@ export function Header() {
               </span>
             </TransitionLink>
 
-            <div className="flex items-center gap-2 z-60 relative">
+            <div className="flex min-w-0 flex-1 justify-center px-0 sm:px-2">
+              <HeaderSpotsBadge />
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2 z-60 relative">
               <AnalyticsToolbar />
               {isCartPage ? (
                 <Button

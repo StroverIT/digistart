@@ -15,6 +15,7 @@ import {
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { cn } from "@/lib/utils";
+import { useSpotCapacityOptional } from "@/components/layout/spot-capacity-context";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -61,6 +62,8 @@ export function ServiceBuySection({
   ctaId,
   ctaPage,
 }: ServiceBuySectionProps) {
+  const spotCapacity = useSpotCapacityOptional();
+  const soldOut = spotCapacity?.isFull ?? false;
   const [errors, setErrors] = useState<UpsellEntryErrors>({});
   const [mobileStickyId] = useState(() => `service-buy-mobile-${Math.random().toString(36).slice(2)}`);
   const [isActiveMobileSticky, setIsActiveMobileSticky] = useState(false);
@@ -69,7 +72,7 @@ export function ServiceBuySection({
   const asideRef = useRef<HTMLElement>(null);
 
   const hasUpsells = useMemo(() => service.upsells.length > 0, [service.upsells.length]);
-  const ctaText = ctaLabel ?? "Промени в кошницата";
+  const ctaText = soldOut ? "Няма свободни места" : (ctaLabel ?? "Промени в кошницата");
 
   const totalPrice = useMemo(() => {
     let total = price;
@@ -104,6 +107,7 @@ export function ServiceBuySection({
   };
 
   const handleAddClick = () => {
+    if (soldOut) return;
     const validation = validateUpsellEntries(service.upsells, upsells);
     setErrors(validation.errors);
     if (!validation.isValid) {
@@ -201,13 +205,20 @@ export function ServiceBuySection({
             {hasUpsells && !isAdding ? (
               <div className="mb-6">
                 <h3 className="font-semibold mb-3">Допълнителни услуги</h3>
-                <UpsellConfigurator
-                  service={service}
-                  value={upsells}
-                  onChange={handleChange}
-                  errors={errors}
-                  analyticsPage={ctaPage ?? `/services/${service.slug}`}
-                />
+                {soldOut ? (
+                  <p className="mb-3 text-sm text-muted-foreground">
+                    В момента няма свободни места за нови поръчки. Допълненията не могат да се променят.
+                  </p>
+                ) : null}
+                <fieldset disabled={soldOut} className="min-w-0 border-0 p-0 m-0 disabled:opacity-60">
+                  <UpsellConfigurator
+                    service={service}
+                    value={upsells}
+                    onChange={handleChange}
+                    errors={errors}
+                    analyticsPage={ctaPage ?? `/services/${service.slug}`}
+                  />
+                </fieldset>
               </div>
             ) : null}
           </div>
@@ -226,10 +237,10 @@ export function ServiceBuySection({
               <Button
                 onClick={handleAddClick}
                 size="lg"
-                disabled={isAdding}
+                disabled={isAdding || soldOut}
                 analyticsCtaId={ctaId}
                 analyticsPage={ctaPage ?? `/services/${service.slug}`}
-                className="h-12 w-full px-6 text-base bg-orange-500 hover:bg-orange-600 text-white"
+                className="h-12 w-full px-6 text-base bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-60"
               >
                 {isAdding ? "Обработка..." : ctaText}
               </Button>
@@ -259,10 +270,10 @@ export function ServiceBuySection({
           <Button
             onClick={handleAddClick}
             size="lg"
-            disabled={isAdding}
+            disabled={isAdding || soldOut}
             analyticsCtaId={ctaId}
             analyticsPage={ctaPage ?? `/services/${service.slug}`}
-            className="h-11 shrink-0 px-4 text-xs sm:text-sm bg-orange-500 hover:bg-orange-600 text-white"
+            className="h-11 shrink-0 px-4 text-xs sm:text-sm bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-60"
           >
             {isAdding ? "Обработка..." : ctaText}
           </Button>
