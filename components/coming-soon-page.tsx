@@ -1,9 +1,11 @@
+import Image from "next/image";
 import { Check } from "lucide-react";
 import {
   COMING_SOON_MAX_SPOTS,
   getComingSoonSpotsRemaining,
 } from "@/lib/server/newsletter";
 import { NewsletterSignupForm } from "@/components/newsletter/newsletter-signup-form";
+import TransitionLink from "@/components/transitions/TransitionLink";
 
 const offerBullets = [
   "Едно от 20-те места (преди да обявим старта публично).",
@@ -37,6 +39,20 @@ export async function ComingSoonPage() {
       <section className="container relative z-10 mx-auto flex min-h-dvh items-center px-4 py-10 sm:py-14">
         <div className="mx-auto w-full max-w-4xl">
           <div className="text-center">
+            <div className="mb-8 flex justify-center">
+              <Image
+                src="/logo.png"
+                alt="DigiStart logo"
+                width={40}
+                height={40}
+                className="h-10 w-10 transition-transform group-hover:scale-110"
+                priority
+              />
+              <span className="text-3xl font-bold tracking-tight ml-2">
+                Digi<span className="text-primary">Start</span>
+              </span>
+            </div>
+
             <h1 className="mb-6 text-balance text-4xl sm:text-5xl md:text-6xl lg:text-7xl sm:leading-17">
               Само за собственици на физически магазини
               <br />
