@@ -126,14 +126,9 @@ export default function AdminLoginPage() {
             </FieldGroup>
           </form>
 
-          <div className="mt-6 p-4 bg-secondary/50 rounded-lg">
-            <p className="text-sm text-muted-foreground text-center mb-2">
-              Демо данни за вход:
-            </p>
-            <p className="text-xs text-muted-foreground text-center font-mono">
-              admin@digistart.bg / 238DWSDADWK23$$@DSAD21
-            </p>
-          </div>
+          {/* <div className="mt-6 p-4 bg-secondary/50 rounded-lg">
+
+          </div> */}
         </CardContent>
       </Card>
     </div>
