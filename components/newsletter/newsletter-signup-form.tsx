@@ -66,6 +66,7 @@ export function NewsletterSignupForm({ spotsRemaining, totalSpots }: NewsletterS
         content_name: "DigiStart — Бюлетин (очаквайте скоро)",
         page_path: pathname && pathname.length > 0 ? pathname : "/",
         lead_source: "coming_soon_newsletter",
+        user: { email: trimmed },
       });
 
       if (data.emailSent === false) {

@@ -2,12 +2,15 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import { headers } from "next/headers";
 import { DigiStartAnalytics } from "@/components/analytics/digistart-analytics";
+import { MetaPixelScript } from "@/components/analytics/meta-pixel-script";
 import { ComingSoonPage } from "@/components/coming-soon-page";
 import { MetaPixelEvents } from "@/components/analytics/meta-pixel-events";
 import { Providers } from "@/components/providers";
 import { shouldRenderComingSoonInLayout } from "@/lib/coming-soon";
 import { Toaster } from "sonner";
 import "./globals.css";
+
+const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "";
 
 const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
@@ -81,6 +84,7 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} ${montserrat.variable} font-sans antialiased overflow-x-hidden`}
       >
+        <MetaPixelScript pixelId={META_PIXEL_ID} />
         {showComingSoon ? (
           <>
             <ComingSoonPage />

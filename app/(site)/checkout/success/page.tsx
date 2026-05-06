@@ -174,11 +174,22 @@ function SuccessContent() {
 
     const lineItems = order.cart.items.map((item) => cartItemToMetaLineItem(item));
     const value = order.cart.totalOneTime + order.cart.totalMonthly;
+    const fullName = (order.customer?.name ?? "").trim();
+    const firstSpace = fullName.indexOf(" ");
+    const firstName = firstSpace > 0 ? fullName.slice(0, firstSpace) : fullName || undefined;
+    const lastName = firstSpace > 0 ? fullName.slice(firstSpace + 1).trim() : undefined;
     trackMetaPurchase({
       lineItems,
       value,
       orderId,
       page_path: "/checkout/success",
+      user: {
+        email: order.customer?.email,
+        phone: order.customer?.phone,
+        firstName,
+        lastName,
+        externalId: order.userId ?? undefined,
+      },
     });
   }, [order, orderId]);
 

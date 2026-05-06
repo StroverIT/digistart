@@ -1,13 +1,15 @@
 /**
  * Meta Pixel + dataLayer helpers for browser events with deduplication-friendly `event_id`.
- * Use the same `event_id` server-side (Stape / sGTM) for matching events.
  *
- * Standard events: PageView, AddToCart, Purchase, Lead (e.g. newsletter signup).
+ * The same `event_id` is reused on the server-side mirror (`/api/meta/capi`)
+ * which forwards Meta CAPI events through Stape CAPIG. Meta dedupes by
+ * `event_name` + `event_id`.
+ *
+ * Standard events: PageView, AddToCart, Purchase, Lead.
  *
  * Env:
- * - NEXT_PUBLIC_META_PIXEL_ID — Facebook Pixel ID (optional; fbq skipped if unset)
+ * - NEXT_PUBLIC_META_PIXEL_ID — Facebook Pixel ID (browser pixel disabled if unset)
  * - NEXT_PUBLIC_META_CURRENCY — ISO 4217, default EUR
- * - NEXT_PUBLIC_STAPE_EVENT_ENDPOINT — optional POST URL to mirror payloads for server-side forwarding
  */
 
 declare global {
@@ -25,9 +27,17 @@ export type MetaPixelLineItem = {
   quantity: number;
 };
 
+export type MetaPixelUserInfo = {
+  email?: string | null;
+  phone?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  externalId?: string | null;
+};
+
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "";
 const META_CURRENCY = process.env.NEXT_PUBLIC_META_CURRENCY ?? "EUR";
-const STAPE_ENDPOINT = process.env.NEXT_PUBLIC_STAPE_EVENT_ENDPOINT ?? "";
+const SERVER_CAPI_ENDPOINT = "/api/meta/capi";
 
 let metaPixelInitStarted = false;
 
@@ -156,12 +166,81 @@ function pushDataLayer(payload: MetaPixelEventPayload): void {
   });
 }
 
-function optionalStapeFetch(payload: MetaPixelEventPayload): void {
-  if (!STAPE_ENDPOINT || typeof fetch === "undefined") return;
-  void fetch(STAPE_ENDPOINT, {
+type ServerCapiBody = {
+  eventName: MetaPixelEventPayload["event_name"];
+  eventId: string;
+  eventSourceUrl?: string;
+  user?: MetaPixelUserInfo;
+  customData?: {
+    currency?: string;
+    value?: number;
+    content_ids?: string[];
+    content_type?: "product";
+    contents?: Array<{ id: string; quantity: number; item_price?: number }>;
+    content_name?: string;
+    num_items?: number;
+    order_id?: string;
+  };
+};
+
+function buildCustomDataFromPayload(payload: MetaPixelEventPayload): ServerCapiBody["customData"] {
+  const customData: NonNullable<ServerCapiBody["customData"]> = {
+    currency: payload.currency,
+    content_type: payload.content_type,
+  };
+  if (typeof payload.value === "number") customData.value = payload.value;
+  if (payload.content_ids.length > 0) customData.content_ids = payload.content_ids;
+  if (payload.contents.length > 0) customData.contents = payload.contents;
+  if (payload.content_name) customData.content_name = payload.content_name;
+  if (payload.order_id) customData.order_id = payload.order_id;
+  if (payload.items.length > 0) {
+    customData.num_items = payload.items.reduce((n, i) => n + i.quantity, 0);
+  }
+  return customData;
+}
+
+function getEventSourceUrl(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  return window.location.href;
+}
+
+function cleanUser(user: MetaPixelUserInfo | undefined): MetaPixelUserInfo | undefined {
+  if (!user) return undefined;
+  const cleaned: MetaPixelUserInfo = {};
+  if (user.email) cleaned.email = user.email.trim();
+  if (user.phone) cleaned.phone = user.phone.trim();
+  if (user.firstName) cleaned.firstName = user.firstName.trim();
+  if (user.lastName) cleaned.lastName = user.lastName.trim();
+  if (user.externalId) cleaned.externalId = user.externalId.trim();
+  return Object.keys(cleaned).length > 0 ? cleaned : undefined;
+}
+
+function mirrorEventToServer(payload: MetaPixelEventPayload, user?: MetaPixelUserInfo): void {
+  if (typeof window === "undefined") return;
+
+  const body: ServerCapiBody = {
+    eventName: payload.event_name,
+    eventId: payload.event_id,
+    customData: buildCustomDataFromPayload(payload),
+  };
+  const sourceUrl = getEventSourceUrl();
+  if (sourceUrl) body.eventSourceUrl = sourceUrl;
+  const cleanedUser = cleanUser(user);
+  if (cleanedUser) body.user = cleanedUser;
+
+  const serialized = JSON.stringify(body);
+
+  if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
+    const blob = new Blob([serialized], { type: "application/json" });
+    const sent = navigator.sendBeacon(SERVER_CAPI_ENDPOINT, blob);
+    if (sent) return;
+  }
+
+  if (typeof fetch === "undefined") return;
+  void fetch(SERVER_CAPI_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: serialized,
     keepalive: true,
   }).catch(() => undefined);
 }
@@ -179,7 +258,7 @@ function fbqTrack(
 }
 
 /**
- * PageView with unique event_id (for dedupe if you also send PageView from server).
+ * PageView with unique event_id (deduped against the server-side CAPI mirror).
  */
 export function trackMetaPageView(pagePath?: string): string {
   const event_id = generateMetaEventId("PageView");
@@ -197,7 +276,7 @@ export function trackMetaPageView(pagePath?: string): string {
 
   ensureMetaPixelInitialized();
   pushDataLayer(payload);
-  optionalStapeFetch(payload);
+  mirrorEventToServer(payload);
   fbqTrack("PageView", {}, event_id);
   return event_id;
 }
@@ -210,6 +289,7 @@ export function trackMetaLead(params: {
   page_path?: string;
   /** Optional: Stape / GTM context */
   lead_source?: string;
+  user?: MetaPixelUserInfo;
 }): string {
   const event_id = generateMetaEventId("Lead");
   const items: MetaPixelLineItem[] = [];
@@ -229,7 +309,7 @@ export function trackMetaLead(params: {
 
   ensureMetaPixelInitialized();
   pushDataLayer(payload);
-  optionalStapeFetch(payload);
+  mirrorEventToServer(payload, params.user);
   fbqTrack(
     "Lead",
     {
@@ -245,7 +325,10 @@ export function trackMetaLead(params: {
 /**
  * AddToCart — one or more line items (e.g. configured service rows).
  */
-export function trackMetaAddToCart(lineItems: MetaPixelLineItem[], extra?: { page_path?: string }): string {
+export function trackMetaAddToCart(
+  lineItems: MetaPixelLineItem[],
+  extra?: { page_path?: string; user?: MetaPixelUserInfo },
+): string {
   const items = normalizeLineItems(lineItems);
   const value = sumLineItemsValue(items);
   const event_id = generateMetaEventId("AddToCart");
@@ -265,7 +348,7 @@ export function trackMetaAddToCart(lineItems: MetaPixelLineItem[], extra?: { pag
 
   ensureMetaPixelInitialized();
   pushDataLayer(payload);
-  optionalStapeFetch(payload);
+  mirrorEventToServer(payload, extra?.user);
   fbqTrack(
     "AddToCart",
     {
@@ -289,6 +372,7 @@ export function trackMetaPurchase(params: {
   value: number;
   orderId?: string;
   page_path?: string;
+  user?: MetaPixelUserInfo;
 }): string {
   const items = normalizeLineItems(params.lineItems);
   const event_id = generateMetaEventId("Purchase");
@@ -309,7 +393,7 @@ export function trackMetaPurchase(params: {
 
   ensureMetaPixelInitialized();
   pushDataLayer(payload);
-  optionalStapeFetch(payload);
+  mirrorEventToServer(payload, params.user);
   fbqTrack(
     "Purchase",
     {
@@ -325,4 +409,4 @@ export function trackMetaPurchase(params: {
   return event_id;
 }
 
-export { META_CURRENCY };
+export { META_CURRENCY, META_PIXEL_ID };
