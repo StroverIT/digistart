@@ -5,6 +5,7 @@ import { DigiStartAnalytics } from "@/components/analytics/digistart-analytics";
 import { MetaPixelScript } from "@/components/analytics/meta-pixel-script";
 import { ComingSoonPage } from "@/components/coming-soon-page";
 import { MetaPixelEvents } from "@/components/analytics/meta-pixel-events";
+import { UtmTracker } from "@/components/analytics/utm-tracker";
 import { Providers } from "@/components/providers";
 import { shouldRenderComingSoonInLayout } from "@/lib/coming-soon";
 import { Toaster } from "sonner";
@@ -87,12 +88,14 @@ export default async function RootLayout({
         <MetaPixelScript pixelId={META_PIXEL_ID} />
         {showComingSoon ? (
           <>
+            <UtmTracker />
             <ComingSoonPage />
             <MetaPixelEvents />
             <Toaster richColors position="top-center" />
           </>
         ) : (
           <>
+            <UtmTracker />
             <DigiStartAnalytics />
             <MetaPixelEvents />
             <Providers>{children}</Providers>

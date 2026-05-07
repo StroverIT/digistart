@@ -16,6 +16,8 @@ import type { Order, DailyStats, ServiceStats } from "@/lib/types";
 import { RevenueChart } from "@/components/admin/revenue-chart";
 import { ServicesPieChart } from "@/components/admin/services-pie-chart";
 import { SubscriptionsChart } from "@/components/admin/subscriptions-chart";
+import { UtmDailyViewsChart } from "@/components/admin/utm-daily-views-chart";
+import { UtmMonthlyViewsChart } from "@/components/admin/utm-monthly-views-chart";
 import type { AnalyticsAdminResponse } from "@/lib/analytics/types";
 
 interface StatCardProps {
@@ -63,6 +65,12 @@ export default function AdminDashboard() {
     ctaStats: [],
     totalClicks: 0,
     dailyStats: [],
+    utmDailyStats: [],
+    utmMonthlyStats: [],
+    utmSources: [],
+    utmMediums: [],
+    utmCampaigns: [],
+    utmLandingUrls: [],
   });
   const [revenueFromDate, setRevenueFromDate] = useState(() => getDateBefore(13));
   const [revenueToDate, setRevenueToDate] = useState(() => getTodayDateKey());
@@ -86,6 +94,12 @@ export default function AdminDashboard() {
             ctaStats: [],
             totalClicks: 0,
             dailyStats: [],
+            utmDailyStats: [],
+            utmMonthlyStats: [],
+            utmSources: [],
+            utmMediums: [],
+            utmCampaigns: [],
+            utmLandingUrls: [],
           },
         );
 
@@ -215,6 +229,98 @@ export default function AdminDashboard() {
           data-admin-animate
           className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
         >
+          <CardHeader>
+            <CardTitle>UTM Sources</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analytics.utmSources.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Няма source данни.</p>
+            ) : (
+              <div className="space-y-2">
+                {analytics.utmSources.slice(0, 10).map((entry) => (
+                  <div key={entry.key} className="flex items-center justify-between rounded-md border border-border p-3">
+                    <p className="font-medium">{entry.key}</p>
+                    <p className="text-primary font-semibold">{entry.views} views</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
+          <CardHeader>
+            <CardTitle>UTM Mediums</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analytics.utmMediums.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Няма medium данни.</p>
+            ) : (
+              <div className="space-y-2">
+                {analytics.utmMediums.slice(0, 10).map((entry) => (
+                  <div key={entry.key} className="flex items-center justify-between rounded-md border border-border p-3">
+                    <p className="font-medium">{entry.key}</p>
+                    <p className="text-primary font-semibold">{entry.views} views</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
+          <CardHeader>
+            <CardTitle>UTM Campaigns</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analytics.utmCampaigns.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Няма campaign данни.</p>
+            ) : (
+              <div className="space-y-2">
+                {analytics.utmCampaigns.slice(0, 10).map((entry) => (
+                  <div key={entry.key} className="flex items-center justify-between rounded-md border border-border p-3">
+                    <p className="font-medium">{entry.key}</p>
+                    <p className="text-primary font-semibold">{entry.views} views</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
+          <CardHeader>
+            <CardTitle>UTM Landing URLs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analytics.utmLandingUrls.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Няма landing URL данни.</p>
+            ) : (
+              <div className="space-y-2">
+                {analytics.utmLandingUrls.slice(0, 10).map((entry) => (
+                  <div key={entry.key} className="rounded-md border border-border p-3">
+                    <p className="font-medium break-all">{entry.key}</p>
+                    <p className="text-primary font-semibold">{entry.views} views</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
           <CardHeader className="space-y-4">
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <CardTitle>Приходи по дни</CardTitle>
@@ -294,9 +400,66 @@ export default function AdminDashboard() {
             <ServicesPieChart data={serviceStats} />
           </CardContent>
         </Card>
+
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
+          <CardHeader>
+            <CardTitle>UTM views по месеци</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <UtmMonthlyViewsChart data={analytics.utmMonthlyStats} />
+          </CardContent>
+        </Card>
+
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)] lg:col-span-2"
+        >
+          <CardHeader>
+            <CardTitle>UTM views по дни и събития</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <UtmDailyViewsChart data={analytics.utmDailyStats} />
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
+          <CardHeader>
+            <CardTitle>UTM event breakdown</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analytics.utmDailyStats.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Няма UTM събития.</p>
+            ) : (
+              <div className="space-y-2">
+                {analytics.utmDailyStats.slice(0, 10).map((entry) => (
+                  <div
+                    key={`${entry.date}-${entry.utmSource}-${entry.utmMedium}-${entry.utmCampaign}`}
+                    className="rounded-md border border-border p-3"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <p className="font-medium">
+                        {entry.utmSource} / {entry.utmMedium}
+                      </p>
+                      <p className="text-primary font-semibold">{entry.views} views</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {entry.date} - {entry.utmCampaign}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <Card
           data-admin-animate
           className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"

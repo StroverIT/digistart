@@ -46,4 +46,35 @@ export type AnalyticsAdminResponse = {
   ctaStats: CtaAnalyticsStats[];
   totalClicks: number;
   dailyStats: DailyAnalyticsStats[];
+  utmDailyStats: UtmDailyStats[];
+  utmMonthlyStats: UtmMonthlyStats[];
+  utmSources: UtmDimensionStats[];
+  utmMediums: UtmDimensionStats[];
+  utmCampaigns: UtmDimensionStats[];
+  utmLandingUrls: UtmDimensionStats[];
+};
+
+export type UtmLandingEventPayload = {
+  page: string;
+  fullUrl: string;
+  utmPayload: Record<string, string>;
+  dedupeKey: string;
+};
+
+export type UtmDailyStats = {
+  date: string;
+  utmSource: string;
+  utmMedium: string;
+  utmCampaign: string;
+  views: number;
+};
+
+export type UtmMonthlyStats = {
+  month: string;
+  views: number;
+};
+
+export type UtmDimensionStats = {
+  key: string;
+  views: number;
 };

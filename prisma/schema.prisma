@@ -214,3 +214,22 @@ model NewsletterSubscriber {
 
   @@map("newsletter_subscribers")
 }
+
+model UtmLandingEvent {
+  id          String   @id @default(cuid())
+  page        String
+  landingUrl  String   @map("landing_url")
+  utmSource   String?  @map("utm_source")
+  utmMedium   String?  @map("utm_medium")
+  utmCampaign String?  @map("utm_campaign")
+  utmPayload  Json     @map("utm_payload")
+  dedupeKey   String   @unique @map("dedupe_key")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("utm_landing_events")
+  @@index([createdAt], map: "utm_landing_events_created_at_idx")
+  @@index([utmSource], map: "utm_landing_events_utm_source_idx")
+  @@index([utmMedium], map: "utm_landing_events_utm_medium_idx")
+  @@index([utmCampaign], map: "utm_landing_events_utm_campaign_idx")
+}

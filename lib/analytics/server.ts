@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   ANALYTICS_EVENT_TYPES,
@@ -7,6 +7,10 @@ import {
   type CtaAnalyticsStats,
   type DailyAnalyticsStats,
   type PageAnalyticsStats,
+  type UtmDimensionStats,
+  type UtmDailyStats,
+  type UtmLandingEventPayload,
+  type UtmMonthlyStats,
 } from "@/lib/analytics/types";
 
 const MAX_INGEST_BATCH_SIZE = 100;
@@ -49,6 +53,31 @@ export async function storeAnalyticsEvents(events: AnalyticsEventPayload[]) {
 
   const result = await prisma.analyticsEvent.createMany({ data: validEvents });
   return result.count;
+}
+
+export async function storeUtmLandingEvent(event: UtmLandingEventPayload) {
+  const payload = event.utmPayload;
+  if (!event.page || !event.dedupeKey || Object.keys(payload).length === 0) {
+    return { inserted: false };
+  }
+
+  const utmSource = typeof payload.utm_source === "string" ? payload.utm_source : null;
+  const utmMedium = typeof payload.utm_medium === "string" ? payload.utm_medium : null;
+  const utmCampaign = typeof payload.utm_campaign === "string" ? payload.utm_campaign : null;
+
+  try {
+    const insertedCount = await prisma.$executeRaw`
+      INSERT INTO "utm_landing_events"
+        ("id", "page", "landing_url", "utm_source", "utm_medium", "utm_campaign", "utm_payload", "dedupe_key", "created_at", "updated_at")
+      VALUES
+        (${crypto.randomUUID()}, ${event.page}, ${event.fullUrl}, ${utmSource}, ${utmMedium}, ${utmCampaign}, ${JSON.stringify(payload)}::jsonb, ${event.dedupeKey}, NOW(), NOW())
+      ON CONFLICT ("dedupe_key") DO NOTHING
+    `;
+
+    return { inserted: insertedCount > 0 };
+  } catch (error) {
+    throw error;
+  }
 }
 
 function buildPageStats(rows: AnalyticsRow[]): PageAnalyticsStats[] {
@@ -171,17 +200,83 @@ function buildDailyStats(rows: AnalyticsRow[]): DailyAnalyticsStats[] {
     .sort((a, b) => a.date.localeCompare(b.date));
 }
 
+function buildUtmDailyStats(
+  rows: {
+    createdAt: Date;
+    utmSource: string | null;
+    utmMedium: string | null;
+    utmCampaign: string | null;
+  }[],
+): UtmDailyStats[] {
+  const byKey = new Map<string, UtmDailyStats>();
+  for (const row of rows) {
+    const date = row.createdAt.toISOString().split("T")[0];
+    const utmSource = row.utmSource ?? "(not set)";
+    const utmMedium = row.utmMedium ?? "(not set)";
+    const utmCampaign = row.utmCampaign ?? "(not set)";
+    const key = `${date}::${utmSource}::${utmMedium}::${utmCampaign}`;
+    const current = byKey.get(key);
+    if (current) {
+      current.views += 1;
+      continue;
+    }
+    byKey.set(key, { date, utmSource, utmMedium, utmCampaign, views: 1 });
+  }
+
+  return Array.from(byKey.values()).sort((a, b) => {
+    if (a.date === b.date) return b.views - a.views;
+    return a.date.localeCompare(b.date);
+  });
+}
+
+function buildUtmMonthlyStats(
+  rows: {
+    createdAt: Date;
+  }[],
+): UtmMonthlyStats[] {
+  const byMonth = new Map<string, number>();
+  for (const row of rows) {
+    const month = row.createdAt.toISOString().slice(0, 7);
+    byMonth.set(month, (byMonth.get(month) ?? 0) + 1);
+  }
+  return Array.from(byMonth.entries())
+    .map(([month, views]) => ({ month, views }))
+    .sort((a, b) => a.month.localeCompare(b.month));
+}
+
+function buildUtmDimensionStats(
+  rows: {
+    utmSource: string | null;
+    utmMedium: string | null;
+    utmCampaign: string | null;
+    landingUrl: string;
+  }[],
+  key: "utmSource" | "utmMedium" | "utmCampaign" | "landingUrl",
+): UtmDimensionStats[] {
+  const byValue = new Map<string, number>();
+  for (const row of rows) {
+    const value = row[key] && row[key].trim().length > 0 ? row[key] : "(not set)";
+    byValue.set(value, (byValue.get(value) ?? 0) + 1);
+  }
+  return Array.from(byValue.entries())
+    .map(([item, views]) => ({ key: item, views }))
+    .sort((a, b) => b.views - a.views);
+}
+
 export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<AnalyticsAdminResponse> {
+  const createdAtFilter =
+    from || to
+      ? {
+          createdAt: {
+            ...(from ? { gte: from } : {}),
+            ...(to ? { lte: to } : {}),
+          },
+        }
+      : {};
+
   const rows = await prisma.analyticsEvent.findMany({
     where: {
-      ...(from || to
-        ? {
-            createdAt: {
-              ...(from ? { gte: from } : {}),
-              ...(to ? { lte: to } : {}),
-            },
-          }
-        : {}),
+      ...createdAtFilter,
     },
     select: {
       eventType: true,
@@ -193,11 +288,51 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     orderBy: { createdAt: "desc" },
   });
 
+  const fromDate = from ?? null;
+  const toDate = to ?? null;
+  const utmRows = await prisma.$queryRaw<
+    {
+      createdAt: Date;
+      utmSource: string | null;
+      utmMedium: string | null;
+      utmCampaign: string | null;
+      landingUrl: string;
+    }[]
+  >`
+    SELECT
+      "created_at" AS "createdAt",
+      "utm_source" AS "utmSource",
+      "utm_medium" AS "utmMedium",
+      "utm_campaign" AS "utmCampaign",
+      "landing_url" AS "landingUrl"
+    FROM "utm_landing_events"
+    WHERE (${fromDate}::timestamp IS NULL OR "created_at" >= ${fromDate}::timestamp)
+      AND (${toDate}::timestamp IS NULL OR "created_at" <= ${toDate}::timestamp)
+    ORDER BY "created_at" DESC
+  `;
+
   const pageStats = buildPageStats(rows);
   const { stats: ctaStats, totalClicks } = buildCtaStats(rows);
   const dailyStats = buildDailyStats(rows);
+  const utmDailyStats = buildUtmDailyStats(utmRows);
+  const utmMonthlyStats = buildUtmMonthlyStats(utmRows);
+  const utmSources = buildUtmDimensionStats(utmRows, "utmSource");
+  const utmMediums = buildUtmDimensionStats(utmRows, "utmMedium");
+  const utmCampaigns = buildUtmDimensionStats(utmRows, "utmCampaign");
+  const utmLandingUrls = buildUtmDimensionStats(utmRows, "landingUrl");
 
-  return { pageStats, ctaStats, totalClicks, dailyStats };
+  return {
+    pageStats,
+    ctaStats,
+    totalClicks,
+    dailyStats,
+    utmDailyStats,
+    utmMonthlyStats,
+    utmSources,
+    utmMediums,
+    utmCampaigns,
+    utmLandingUrls,
+  };
 }
 
 export { MAX_INGEST_BATCH_SIZE };

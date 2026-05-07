@@ -14,6 +14,8 @@ export function isComingSoonBypassPath(pathname: string): boolean {
   const path = pathname || "/";
   if (path.startsWith("/admin")) return true;
   if (path.startsWith("/api/auth")) return true;
+  if (path.startsWith("/api/admin/analytics")) return true;
+  if (path.startsWith("/api/analytics/utm")) return true;
   if (path.startsWith("/api/newsletter/subscribe")) return true;
   if (path.startsWith("/api/stripe/webhook")) return true;
   return false;
@@ -23,6 +25,8 @@ export function isComingSoonBypassPath(pathname: string): boolean {
 export function isComingSoonAllowedApiPath(pathname: string): boolean {
   const path = pathname || "/";
   if (path.startsWith("/api/auth")) return true;
+  if (path.startsWith("/api/admin/analytics")) return true;
+  if (path.startsWith("/api/analytics/utm")) return true;
   if (path.startsWith("/api/newsletter/subscribe")) return true;
   if (path.startsWith("/api/stripe/webhook")) return true;
   return false;
