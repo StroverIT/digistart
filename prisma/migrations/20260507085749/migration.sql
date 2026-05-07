@@ -1,2 +1,3 @@
--- AlterTable
-ALTER TABLE "utm_landing_events" ALTER COLUMN "landing_url" DROP DEFAULT;
+-- No-op migration.
+-- `landing_url` is introduced in a later migration (20260507090500_add_utm_landing_url),
+-- so dropping its default here is invalid due to migration ordering.
