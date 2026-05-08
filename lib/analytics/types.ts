@@ -52,6 +52,19 @@ export type AnalyticsAdminResponse = {
   utmMediums: UtmDimensionStats[];
   utmCampaigns: UtmDimensionStats[];
   utmLandingUrls: UtmDimensionStats[];
+  cartAdditions: {
+    allTimeTotalAdds: number;
+    lastDaysTotalAdds: number;
+    dailyTotals: { date: string; totalAdds: number }[];
+    byService: { serviceId: string; serviceName: string; count: number }[];
+    byCombo: {
+      comboKey: string;
+      serviceId: string;
+      serviceName: string;
+      comboLabel: string;
+      count: number;
+    }[];
+  };
 };
 
 export type UtmLandingEventPayload = {

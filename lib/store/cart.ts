@@ -3,6 +3,7 @@
 import type { Cart, CartItem, CartItemUpsell } from "@/lib/types";
 import { getServiceById } from "@/lib/data/services";
 import { calculateItemTotal } from "@/lib/pricing/calculate-item-total";
+import { recordCartAddition } from "@/lib/store/cart-analytics";
 
 const CART_STORAGE_KEY = "digistart-cart";
 
@@ -86,6 +87,7 @@ export function addToCart(
   cart.items.push(newItem);
   recalculateTotals(cart);
   saveCart(cart);
+  recordCartAddition(serviceId, service.name, upsells);
 
   return { cart, added: true };
 }

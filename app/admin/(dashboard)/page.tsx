@@ -19,6 +19,7 @@ import { SubscriptionsChart } from "@/components/admin/subscriptions-chart";
 import { UtmDailyViewsChart } from "@/components/admin/utm-daily-views-chart";
 import { UtmMonthlyViewsChart } from "@/components/admin/utm-monthly-views-chart";
 import type { AnalyticsAdminResponse } from "@/lib/analytics/types";
+import { CartAdditionsChart } from "@/components/admin/cart-additions-chart";
 
 interface StatCardProps {
   title: string;
@@ -71,6 +72,13 @@ export default function AdminDashboard() {
     utmMediums: [],
     utmCampaigns: [],
     utmLandingUrls: [],
+    cartAdditions: {
+      allTimeTotalAdds: 0,
+      lastDaysTotalAdds: 0,
+      dailyTotals: [],
+      byService: [],
+      byCombo: [],
+    },
   });
   const [revenueFromDate, setRevenueFromDate] = useState(() => getDateBefore(13));
   const [revenueToDate, setRevenueToDate] = useState(() => getTodayDateKey());
@@ -100,6 +108,13 @@ export default function AdminDashboard() {
             utmMediums: [],
             utmCampaigns: [],
             utmLandingUrls: [],
+            cartAdditions: {
+              allTimeTotalAdds: 0,
+              lastDaysTotalAdds: 0,
+              dailyTotals: [],
+              byService: [],
+              byCombo: [],
+            },
           },
         );
 
@@ -220,6 +235,18 @@ export default function AdminDashboard() {
           value={new Set(orders.map((o) => o.customer.email)).size.toString()}
           description="Уникални клиенти"
           icon={<Users className="h-6 w-6" />}
+        />
+        <StatCard
+          title="Добавяния в кошницата"
+          value={analytics.cartAdditions.allTimeTotalAdds.toString()}
+          description="Всички времена"
+          icon={<ShoppingBag className="h-6 w-6" />}
+        />
+        <StatCard
+          title="Добавяния (30 дни)"
+          value={analytics.cartAdditions.lastDaysTotalAdds.toString()}
+          description="Последните 30 дни"
+          icon={<TrendingUp className="h-6 w-6" />}
         />
       </div>
 
@@ -394,6 +421,44 @@ export default function AdminDashboard() {
           className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
         >
           <CardHeader>
+            <CardTitle>Добавяния в кошницата (30 дни)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CartAdditionsChart data={analytics.cartAdditions.dailyTotals} />
+          </CardContent>
+        </Card>
+
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
+          <CardHeader>
+            <CardTitle>Добавяния по услуга (общо)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analytics.cartAdditions.byService.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Няма локални данни.</p>
+            ) : (
+              <div className="space-y-2">
+                {analytics.cartAdditions.byService.slice(0, 12).map((entry) => (
+                  <div
+                    key={entry.serviceId}
+                    className="flex items-center justify-between rounded-md border border-border p-3"
+                  >
+                    <p className="font-medium">{entry.serviceName}</p>
+                    <p className="text-primary font-semibold">{entry.count} пъти</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+        >
+          <CardHeader>
             <CardTitle>Поръчки по услуга</CardTitle>
           </CardHeader>
           <CardContent>
@@ -410,6 +475,32 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <UtmMonthlyViewsChart data={analytics.utmMonthlyStats} />
+          </CardContent>
+        </Card>
+
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)] lg:col-span-2"
+        >
+          <CardHeader>
+            <CardTitle>Комбинации услуга + upsell (общо)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analytics.cartAdditions.byCombo.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Няма локални данни.</p>
+            ) : (
+              <div className="space-y-2">
+                {analytics.cartAdditions.byCombo.slice(0, 20).map((entry) => (
+                  <div key={entry.comboKey} className="rounded-md border border-border p-3">
+                    <div className="flex items-center justify-between gap-4">
+                      <p className="font-medium">{entry.serviceName}</p>
+                      <p className="text-primary font-semibold">{entry.count} пъти</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">{entry.comboLabel}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -602,6 +693,7 @@ function getDateBefore(daysBeforeToday: number) {
   date.setDate(date.getDate() - daysBeforeToday);
   return date.toISOString().split("T")[0];
 }
+
 
 function buildRevenueDailyStats(
   orders: Order[],

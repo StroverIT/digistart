@@ -22,6 +22,20 @@ type AnalyticsRow = {
   createdAt: Date;
 };
 
+type CartAdditionAggregate = {
+  allTimeTotalAdds: number;
+  lastDaysTotalAdds: number;
+  dailyTotals: { date: string; totalAdds: number }[];
+  byService: { serviceId: string; serviceName: string; count: number }[];
+  byCombo: {
+    comboKey: string;
+    serviceId: string;
+    serviceName: string;
+    comboLabel: string;
+    count: number;
+  }[];
+};
+
 export function isValidAnalyticsBatch(events: unknown): events is AnalyticsEventPayload[] {
   if (!Array.isArray(events) || events.length === 0 || events.length > MAX_INGEST_BATCH_SIZE) {
     return false;
@@ -263,6 +277,75 @@ function buildUtmDimensionStats(
     .sort((a, b) => b.views - a.views);
 }
 
+function buildCartAdditionStats(rows: AnalyticsRow[], days = 30): CartAdditionAggregate {
+  const cartRows = rows.filter((row) => row.eventType === "cart_addition");
+  const dailyMap = new Map<string, number>();
+  const byService = new Map<string, { serviceId: string; serviceName: string; count: number }>();
+  const byCombo = new Map<
+    string,
+    {
+      comboKey: string;
+      serviceId: string;
+      serviceName: string;
+      comboLabel: string;
+      count: number;
+    }
+  >();
+
+  const now = new Date();
+  for (let i = days - 1; i >= 0; i -= 1) {
+    const day = new Date(now);
+    day.setDate(now.getDate() - i);
+    dailyMap.set(day.toISOString().split("T")[0], 0);
+  }
+
+  for (const row of cartRows) {
+    const metadata = (row.metadata ?? {}) as Record<string, unknown>;
+    const serviceId = String(metadata.service_id ?? "");
+    const serviceName = String(metadata.service_name ?? "Unknown service");
+    const comboKey = String(metadata.combo_key ?? "unknown");
+    const comboLabel = String(metadata.combo_label ?? "Unknown combo");
+
+    const date = row.createdAt.toISOString().split("T")[0];
+    if (dailyMap.has(date)) {
+      dailyMap.set(date, (dailyMap.get(date) ?? 0) + 1);
+    }
+
+    if (serviceId) {
+      const existingService = byService.get(serviceId) ?? {
+        serviceId,
+        serviceName,
+        count: 0,
+      };
+      existingService.count += 1;
+      byService.set(serviceId, existingService);
+    }
+
+    const existingCombo = byCombo.get(comboKey) ?? {
+      comboKey,
+      serviceId,
+      serviceName,
+      comboLabel,
+      count: 0,
+    };
+    existingCombo.count += 1;
+    byCombo.set(comboKey, existingCombo);
+  }
+
+  const dailyTotals = Array.from(dailyMap.entries()).map(([date, totalAdds]) => ({
+    date,
+    totalAdds,
+  }));
+
+  return {
+    allTimeTotalAdds: cartRows.length,
+    lastDaysTotalAdds: dailyTotals.reduce((sum, row) => sum + row.totalAdds, 0),
+    dailyTotals,
+    byService: Array.from(byService.values()).sort((a, b) => b.count - a.count),
+    byCombo: Array.from(byCombo.values()).sort((a, b) => b.count - a.count),
+  };
+}
+
 export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<AnalyticsAdminResponse> {
   const createdAtFilter =
     from || to
@@ -320,6 +403,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
   const utmMediums = buildUtmDimensionStats(utmRows, "utmMedium");
   const utmCampaigns = buildUtmDimensionStats(utmRows, "utmCampaign");
   const utmLandingUrls = buildUtmDimensionStats(utmRows, "landingUrl");
+  const cartAdditions = buildCartAdditionStats(rows, 30);
 
   return {
     pageStats,
@@ -332,6 +416,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     utmMediums,
     utmCampaigns,
     utmLandingUrls,
+    cartAdditions,
   };
 }
 
