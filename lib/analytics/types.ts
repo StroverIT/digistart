@@ -56,6 +56,7 @@ export type AnalyticsAdminResponse = {
     allTimeTotalAdds: number;
     lastDaysTotalAdds: number;
     dailyTotals: { date: string; totalAdds: number }[];
+    dailyByCombo: { date: string; comboKey: string; count: number }[];
     byService: { serviceId: string; serviceName: string; count: number }[];
     byCombo: {
       comboKey: string;

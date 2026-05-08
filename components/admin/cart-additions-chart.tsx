@@ -4,28 +4,67 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import {
   ResponsiveContainer,
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
 } from "recharts";
 
 interface CartAdditionsChartProps {
-  data: { date: string; totalAdds: number }[];
+  dailyTotals: { date: string; totalAdds: number }[];
+  dailyByCombo: { date: string; comboKey: string; count: number }[];
+  combos: { comboKey: string; serviceName: string; comboLabel: string; count: number }[];
 }
 
-export function CartAdditionsChart({ data }: CartAdditionsChartProps) {
-  const wrapRef = useRef<HTMLDivElement>(null);
+const COLORS = [
+  "oklch(0.66 0.2 160)",
+  "oklch(0.65 0.22 250)",
+  "oklch(0.7 0.18 180)",
+  "oklch(0.75 0.15 140)",
+  "oklch(0.65 0.2 300)",
+  "oklch(0.72 0.16 80)",
+];
 
-  const chartData = data.map((row) => ({
-    date: new Date(row.date).toLocaleDateString("bg-BG", {
-      day: "numeric",
-      month: "short",
-    }),
-    totalAdds: row.totalAdds,
-  }));
+export function CartAdditionsChart({ dailyTotals, dailyByCombo, combos }: CartAdditionsChartProps) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const topCombos = combos.slice(0, 6);
+  const comboLabels = new Map(
+    topCombos.map((combo) => [
+      combo.comboKey,
+      `${combo.serviceName} - ${combo.comboLabel}`,
+    ]),
+  );
+  const topComboKeys = new Set(topCombos.map((combo) => combo.comboKey));
+
+  const chartData = dailyTotals.map((row) => {
+    const formatted = {
+      date: new Date(row.date).toLocaleDateString("bg-BG", {
+        day: "numeric",
+        month: "short",
+      }),
+      totalAdds: row.totalAdds,
+    } as Record<string, string | number>;
+
+    for (const comboKey of topComboKeys) {
+      formatted[comboKey] = 0;
+    }
+    formatted.other = 0;
+    return formatted;
+  });
+  const dateIndex = new Map(dailyTotals.map((row, index) => [row.date, index]));
+
+  for (const row of dailyByCombo) {
+    const idx = dateIndex.get(row.date) ?? -1;
+    if (idx === -1) continue;
+    if (topComboKeys.has(row.comboKey)) {
+      chartData[idx][row.comboKey] = Number(chartData[idx][row.comboKey] ?? 0) + row.count;
+    } else {
+      chartData[idx].other = Number(chartData[idx].other ?? 0) + row.count;
+    }
+  }
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -40,7 +79,7 @@ export function CartAdditionsChart({ data }: CartAdditionsChartProps) {
     return () => ctx.revert();
   }, [chartData.length]);
 
-  if (chartData.length === 0) {
+  if (dailyTotals.length === 0) {
     return (
       <div className="h-[300px] flex items-center justify-center text-muted-foreground">
         Няма данни
@@ -51,13 +90,7 @@ export function CartAdditionsChart({ data }: CartAdditionsChartProps) {
   return (
     <div ref={wrapRef} className="h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={chartData}>
-          <defs>
-            <linearGradient id="colorCartAdds" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="oklch(0.66 0.2 160)" stopOpacity={0.35} />
-              <stop offset="95%" stopColor="oklch(0.66 0.2 160)" stopOpacity={0} />
-            </linearGradient>
-          </defs>
+        <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0.01 260)" />
           <XAxis
             dataKey="date"
@@ -80,17 +113,26 @@ export function CartAdditionsChart({ data }: CartAdditionsChartProps) {
               borderRadius: "8px",
               color: "oklch(0.13 0.005 260)",
             }}
-            formatter={(value: number) => [value, "Добавяния"]}
+            formatter={(value: number, name: string) => {
+              if (name === "other") return [value, "Други комбинации"];
+              return [value, comboLabels.get(name) ?? name];
+            }}
           />
-          <Area
-            type="monotone"
-            dataKey="totalAdds"
-            stroke="oklch(0.66 0.2 160)"
-            strokeWidth={2}
-            fillOpacity={1}
-            fill="url(#colorCartAdds)"
+          <Legend
+            formatter={(value: string) =>
+              value === "other" ? "Други комбинации" : (comboLabels.get(value) ?? value)
+            }
           />
-        </AreaChart>
+          {topCombos.map((combo, index) => (
+            <Bar
+              key={combo.comboKey}
+              dataKey={combo.comboKey}
+              stackId="cartAdditions"
+              fill={COLORS[index % COLORS.length]}
+            />
+          ))}
+          <Bar dataKey="other" stackId="cartAdditions" fill="oklch(0.78 0.01 260)" />
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );

@@ -76,6 +76,7 @@ export default function AdminDashboard() {
       allTimeTotalAdds: 0,
       lastDaysTotalAdds: 0,
       dailyTotals: [],
+      dailyByCombo: [],
       byService: [],
       byCombo: [],
     },
@@ -112,6 +113,7 @@ export default function AdminDashboard() {
               allTimeTotalAdds: 0,
               lastDaysTotalAdds: 0,
               dailyTotals: [],
+              dailyByCombo: [],
               byService: [],
               byCombo: [],
             },
@@ -424,7 +426,11 @@ export default function AdminDashboard() {
             <CardTitle>Добавяния в кошницата (30 дни)</CardTitle>
           </CardHeader>
           <CardContent>
-            <CartAdditionsChart data={analytics.cartAdditions.dailyTotals} />
+            <CartAdditionsChart
+              dailyTotals={analytics.cartAdditions.dailyTotals}
+              dailyByCombo={analytics.cartAdditions.dailyByCombo}
+              combos={analytics.cartAdditions.byCombo}
+            />
           </CardContent>
         </Card>
 
@@ -437,7 +443,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             {analytics.cartAdditions.byService.length === 0 ? (
-              <p className="text-muted-foreground text-sm">Няма локални данни.</p>
+              <p className="text-muted-foreground text-sm">Няма данни за добавяния.</p>
             ) : (
               <div className="space-y-2">
                 {analytics.cartAdditions.byService.slice(0, 12).map((entry) => (
@@ -487,7 +493,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             {analytics.cartAdditions.byCombo.length === 0 ? (
-              <p className="text-muted-foreground text-sm">Няма локални данни.</p>
+              <p className="text-muted-foreground text-sm">Няма данни за upsell комбинации.</p>
             ) : (
               <div className="space-y-2">
                 {analytics.cartAdditions.byCombo.slice(0, 20).map((entry) => (

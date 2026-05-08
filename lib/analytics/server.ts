@@ -26,6 +26,7 @@ type CartAdditionAggregate = {
   allTimeTotalAdds: number;
   lastDaysTotalAdds: number;
   dailyTotals: { date: string; totalAdds: number }[];
+  dailyByCombo: { date: string; comboKey: string; count: number }[];
   byService: { serviceId: string; serviceName: string; count: number }[];
   byCombo: {
     comboKey: string;
@@ -280,6 +281,7 @@ function buildUtmDimensionStats(
 function buildCartAdditionStats(rows: AnalyticsRow[], days = 30): CartAdditionAggregate {
   const cartRows = rows.filter((row) => row.eventType === "cart_addition");
   const dailyMap = new Map<string, number>();
+  const dailyComboMap = new Map<string, number>();
   const byService = new Map<string, { serviceId: string; serviceName: string; count: number }>();
   const byCombo = new Map<
     string,
@@ -301,25 +303,35 @@ function buildCartAdditionStats(rows: AnalyticsRow[], days = 30): CartAdditionAg
 
   for (const row of cartRows) {
     const metadata = (row.metadata ?? {}) as Record<string, unknown>;
-    const serviceId = String(metadata.service_id ?? "");
-    const serviceName = String(metadata.service_name ?? "Unknown service");
-    const comboKey = String(metadata.combo_key ?? "unknown");
-    const comboLabel = String(metadata.combo_label ?? "Unknown combo");
+    const rawServiceId = String(metadata.service_id ?? "").trim();
+    const rawServiceName = String(metadata.service_name ?? "").trim();
+    const rawComboKey = String(metadata.combo_key ?? "").trim();
+    const rawComboLabel = String(metadata.combo_label ?? "").trim();
+    const fallbackServiceName =
+      rawServiceName ||
+      (rawComboKey.includes("__") ? rawComboKey.split("__")[0] : "") ||
+      "Unknown service";
+    const serviceId = rawServiceId || `service:${fallbackServiceName.toLowerCase()}`;
+    const serviceName = fallbackServiceName;
+    const comboKey = rawComboKey || `${serviceId}__unknown`;
+    const comboLabel =
+      rawComboLabel ||
+      (comboKey.endsWith("__none") ? "Без допълнителни услуги" : "Комбинация не е налична");
 
     const date = row.createdAt.toISOString().split("T")[0];
     if (dailyMap.has(date)) {
       dailyMap.set(date, (dailyMap.get(date) ?? 0) + 1);
+      const dailyComboKey = `${date}::${comboKey}`;
+      dailyComboMap.set(dailyComboKey, (dailyComboMap.get(dailyComboKey) ?? 0) + 1);
     }
 
-    if (serviceId) {
-      const existingService = byService.get(serviceId) ?? {
-        serviceId,
-        serviceName,
-        count: 0,
-      };
-      existingService.count += 1;
-      byService.set(serviceId, existingService);
-    }
+    const existingService = byService.get(serviceId) ?? {
+      serviceId,
+      serviceName,
+      count: 0,
+    };
+    existingService.count += 1;
+    byService.set(serviceId, existingService);
 
     const existingCombo = byCombo.get(comboKey) ?? {
       comboKey,
@@ -336,11 +348,16 @@ function buildCartAdditionStats(rows: AnalyticsRow[], days = 30): CartAdditionAg
     date,
     totalAdds,
   }));
+  const dailyByCombo = Array.from(dailyComboMap.entries()).map(([key, count]) => {
+    const [date, comboKey] = key.split("::");
+    return { date, comboKey, count };
+  });
 
   return {
     allTimeTotalAdds: cartRows.length,
     lastDaysTotalAdds: dailyTotals.reduce((sum, row) => sum + row.totalAdds, 0),
     dailyTotals,
+    dailyByCombo,
     byService: Array.from(byService.values()).sort((a, b) => b.count - a.count),
     byCombo: Array.from(byCombo.values()).sort((a, b) => b.count - a.count),
   };
