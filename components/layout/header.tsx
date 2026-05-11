@@ -16,8 +16,6 @@ import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 
 const navLinks = [
   { href: "/", label: "Начало", paths: ["/"] },
-  { href: "/about", label: "За нас", paths: ["/about"] },
-  { href: "/blog", label: "Блог", paths: ["/blog"] },
   {
     href: "/services/online-store",
     label: "Онлайн магазин",
@@ -30,9 +28,11 @@ const navLinks = [
   },
   {
     href: "/services/social-media",
-    label: "Социални мрежи",
+    label: "Социални Мрежи",
     paths: ["/услуги/социални-мрежи", "/services/social-media"],
   },
+  { href: "/about", label: "За нас", paths: ["/about"] },
+  { href: "/blog", label: "Блог", paths: ["/blog"] },
 
 ] as const;
 
