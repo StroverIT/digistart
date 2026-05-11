@@ -48,7 +48,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   if (!post) notFound();
 
   return (
-    <article className="rounded-2xl border border-border bg-card p-6 sm:p-8 md:p-10 space-y-8">
+    <article className="p-6 sm:p-8 md:p-10 space-y-8">
       <header className="space-y-4">
         <TransitionLink
           href="/blog"
@@ -65,9 +65,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </p>
       </header>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {post.content.map((section) => (
-          <section key={section.heading} className="space-y-4">
+          <section
+            key={section.heading}
+            className="space-y-4 rounded-2xl border border-border bg-background p-5 sm:p-6"
+          >
             <h2 className="text-2xl font-semibold tracking-tight">
               {section.heading}
             </h2>
