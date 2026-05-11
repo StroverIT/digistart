@@ -17,6 +17,7 @@ import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 const navLinks = [
   { href: "/", label: "Начало", paths: ["/"] },
   { href: "/about", label: "За нас", paths: ["/about"] },
+  { href: "/blog", label: "Блог", paths: ["/blog"] },
   {
     href: "/services/online-store",
     label: "Онлайн магазин",
@@ -43,7 +44,14 @@ function isPathActive(pathname: string, paths: readonly string[]) {
       return pathname;
     }
   })();
-  return paths.some((p) => p === pathname || p === decoded);
+  return paths.some((p) => {
+    const isExactMatch = p === pathname || p === decoded;
+    if (isExactMatch) return true;
+
+    if (p === "/") return false;
+
+    return pathname.startsWith(`${p}/`) || decoded.startsWith(`${p}/`);
+  });
 }
 
 function AnimatedNavLink({
