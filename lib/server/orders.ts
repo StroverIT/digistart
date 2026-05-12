@@ -86,14 +86,6 @@ export type PendingCheckoutUser = {
   company?: string;
 };
 
-export type InvoicePersistData = {
-  companyName: string;
-  taxId: string;
-  vatNumber?: string;
-  addressLine1: string;
-  mol: string;
-};
-
 export async function createOrderInDb(params: {
   cart: Cart;
   customer: CustomerInfo;
@@ -101,8 +93,6 @@ export async function createOrderInDb(params: {
   userId?: string | null;
   pendingUser?: PendingCheckoutUser | null;
   postCheckoutToken?: string | null;
-  invoiceWanted?: boolean;
-  invoiceData?: InvoicePersistData | null;
   brandAssets?: { logoUrl?: string | null; paletteUrl?: string | null } | null;
 }) {
   const {
@@ -112,8 +102,6 @@ export async function createOrderInDb(params: {
     userId,
     pendingUser,
     postCheckoutToken,
-    invoiceWanted = false,
-    invoiceData,
     brandAssets,
   } = params;
   const uniqueServiceIds = Array.from(new Set(cart.items.map((item) => item.serviceId)));
@@ -170,8 +158,6 @@ export async function createOrderInDb(params: {
       pendingUserPhone: pendingUser?.phone,
       pendingUserCompany: pendingUser?.company,
       postCheckoutToken: postCheckoutToken ?? undefined,
-      invoiceWanted,
-      invoiceData: invoiceData ?? undefined,
       brandAssets: brandAssets ?? undefined,
       items: {
         create: cart.items.map((item) => ({

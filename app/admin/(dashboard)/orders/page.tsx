@@ -368,7 +368,7 @@ export default function OrdersPage() {
 
       {/* Order Detail Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[min(90vh,800px)] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Детайли за поръчка {selectedOrder?.id}</DialogTitle>
           </DialogHeader>

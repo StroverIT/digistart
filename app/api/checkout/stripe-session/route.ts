@@ -7,7 +7,6 @@ import { authOptions } from "@/lib/auth";
 import {
   createOrderInDb,
   setOrderStripeSessionInDb,
-  type InvoicePersistData,
   type PendingCheckoutUser,
 } from "@/lib/server/orders";
 import type { CartItemUpsell } from "@/lib/types";
@@ -17,7 +16,6 @@ import {
   resolveOrCreateCatalogPrice,
   resolveOrCreateStripeCustomer,
 } from "@/lib/server/stripe-catalog";
-import { applyInvoiceDetailsToStripeCustomer } from "@/lib/server/stripe-invoice";
 
 const upsellSchema: z.ZodType<CartItemUpsell> = z.object({
   upsellId: z.string(),
@@ -25,14 +23,6 @@ const upsellSchema: z.ZodType<CartItemUpsell> = z.object({
   choiceId: z.string().optional(),
   entries: z.array(z.string()).optional(),
   note: z.string().optional(),
-});
-
-const invoiceSchema = z.object({
-  companyName: z.string().min(2),
-  taxId: z.string().min(4),
-  vatNumber: z.string().optional(),
-  addressLine1: z.string().min(4),
-  mol: z.string().min(2),
 });
 
 const pendingUserSchema = z.object({
@@ -78,8 +68,6 @@ const payloadSchema = z.object({
   consultationId: z.string().optional(),
   uiMode: z.enum(["redirect", "embedded"]).optional(),
   pendingUser: pendingUserSchema.optional(),
-  invoiceWanted: z.boolean().optional(),
-  invoice: invoiceSchema.optional(),
   brandAssets: brandAssetsSchema.optional(),
 });
 
@@ -210,25 +198,6 @@ export async function POST(req: NextRequest) {
       postCheckoutToken = randomBytes(32).toString("hex");
     }
 
-    const invoiceWanted = Boolean(parsed.data.invoiceWanted);
-    let invoiceData: InvoicePersistData | null = null;
-    if (invoiceWanted) {
-      const inv = parsed.data.invoice;
-      if (!inv) {
-        return NextResponse.json(
-          { error: "Попълнете данните за фактура." },
-          { status: 400 }
-        );
-      }
-      invoiceData = {
-        companyName: inv.companyName.trim(),
-        taxId: inv.taxId.trim(),
-        vatNumber: inv.vatNumber?.trim(),
-        addressLine1: inv.addressLine1.trim(),
-        mol: inv.mol.trim(),
-      };
-    }
-
     const brandAssets = parsed.data.brandAssets
       ? {
           logoUrl: parsed.data.brandAssets.logoUrl ?? undefined,
@@ -243,8 +212,6 @@ export async function POST(req: NextRequest) {
       userId: sessionUserId,
       pendingUser,
       postCheckoutToken,
-      invoiceWanted,
-      invoiceData,
       brandAssets,
     });
 
@@ -257,13 +224,6 @@ export async function POST(req: NextRequest) {
       phone: parsed.data.customer.phone,
     });
 
-    if (invoiceData) {
-      await applyInvoiceDetailsToStripeCustomer({
-        stripeCustomerId: stripeCustomer.stripeCustomerId,
-        invoice: invoiceData,
-      });
-    }
-
     const uiMode = parsed.data.uiMode ?? "redirect";
     const sessionBase: Parameters<typeof stripe.checkout.sessions.create>[0] = {
       mode,
@@ -275,28 +235,9 @@ export async function POST(req: NextRequest) {
       ...(mode === "subscription" ? { payment_method_collection: "always" as const } : {}),
     };
 
-    if (mode === "payment" && invoiceWanted && invoiceData) {
-      sessionBase.invoice_creation = {
-        enabled: true,
-        invoice_data: {
-          description: `DigiStart поръчка ${order.id}`,
-          metadata: { orderId: order.id },
-          custom_fields: [
-            { name: "ЕИК", value: invoiceData.taxId },
-            { name: "МОЛ", value: invoiceData.mol },
-          ],
-        },
-      };
-    }
-
-    if (mode === "subscription" && invoiceData) {
+    if (mode === "subscription") {
       sessionBase.subscription_data = {
-        metadata: {
-          orderId: order.id,
-          companyName: invoiceData.companyName,
-          eik: invoiceData.taxId,
-          mol: invoiceData.mol,
-        },
+        metadata: { orderId: order.id },
       };
     }
 

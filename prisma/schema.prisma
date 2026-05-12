@@ -94,8 +94,6 @@ model Order {
   pendingUserPhone             String?
   pendingUserCompany           String?
   postCheckoutToken            String?              @unique
-  invoiceWanted                Boolean              @default(false)
-  invoiceData                  Json?
   brandAssets                  Json?
   subscriptionRenewsAt         DateTime?
   stripeCheckoutMode           String?

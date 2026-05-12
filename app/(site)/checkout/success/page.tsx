@@ -22,7 +22,6 @@ const CHECKOUT_STATE_KEYS = [
   "digistart-checkout-draft",
   "digistart-checkout-brand-assets",
   "digistart-checkout-consultation",
-  "digistart-checkout-invoice",
   "digistart-checkout-step",
 ];
 

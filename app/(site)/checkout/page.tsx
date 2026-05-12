@@ -16,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Price } from "@/components/ui/price";
@@ -61,12 +60,6 @@ export default function CheckoutPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [acceptedCheckoutTerms, setAcceptedCheckoutTerms] = useState(false);
   const [legalConsentError, setLegalConsentError] = useState("");
-  const [invoiceWanted, setInvoiceWanted] = useState(false);
-  const [invoiceCompany, setInvoiceCompany] = useState("");
-  const [invoiceTaxId, setInvoiceTaxId] = useState("");
-  const [invoiceVat, setInvoiceVat] = useState("");
-  const [invoiceAddress, setInvoiceAddress] = useState("");
-  const [invoiceMol, setInvoiceMol] = useState("");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [paletteFile, setPaletteFile] = useState<File | null>(null);
   const [brandUrls, setBrandUrls] = useState<{ logoUrl?: string; paletteUrl?: string }>({});
@@ -170,17 +163,6 @@ export default function CheckoutPage() {
         }
         : undefined;
 
-    const invoice =
-      invoiceWanted
-        ? {
-          companyName: invoiceCompany.trim(),
-          taxId: invoiceTaxId.trim(),
-          vatNumber: invoiceVat.trim() || undefined,
-          addressLine1: invoiceAddress.trim(),
-          mol: invoiceMol.trim(),
-        }
-        : undefined;
-
     const response = await fetch("/api/checkout/stripe-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -195,8 +177,6 @@ export default function CheckoutPage() {
         },
         uiMode: "embedded",
         pendingUser,
-        invoiceWanted,
-        invoice,
         brandAssets,
       }),
     });
@@ -279,23 +259,12 @@ export default function CheckoutPage() {
 
   const paymentStepIndex = totalSteps;
 
-  const canStartStripe = useMemo(() => {
-    if (!acceptedCheckoutTerms) return false;
-    if (!invoiceWanted) return true;
-    return Boolean(
-      invoiceCompany.trim() &&
-      invoiceTaxId.trim() &&
-      invoiceAddress.trim() &&
-      invoiceMol.trim()
-    );
-  }, [acceptedCheckoutTerms, invoiceWanted, invoiceCompany, invoiceTaxId, invoiceAddress, invoiceMol]);
-
   useEffect(() => {
     if (logicalStep !== paymentStepIndex) {
       paymentInitRef.current = false;
       return;
     }
-    if (!canStartStripe) {
+    if (!acceptedCheckoutTerms) {
       paymentInitRef.current = false;
       return;
     }
@@ -344,7 +313,7 @@ export default function CheckoutPage() {
     paymentStepIndex,
     sessionStatus,
     stripeBrandPayload,
-    canStartStripe,
+    acceptedCheckoutTerms,
   ]);
 
   const handleInputChange = (
@@ -416,20 +385,6 @@ export default function CheckoutPage() {
       setCheckoutError("Качването не бе успешно.");
       return false;
     }
-  };
-
-  const validateInvoice = () => {
-    if (!invoiceWanted) return true;
-    if (
-      !invoiceCompany.trim() ||
-      !invoiceTaxId.trim() ||
-      !invoiceAddress.trim() ||
-      !invoiceMol.trim()
-    ) {
-      setCheckoutError("Попълнете всички полета за фактура.");
-      return false;
-    }
-    return true;
   };
 
   const notifyMissingLegalConsent = () => {
@@ -891,47 +846,6 @@ export default function CheckoutPage() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <Checkbox
-                          id="invoice"
-                          checked={invoiceWanted}
-                          onCheckedChange={(v) => setInvoiceWanted(v === true)}
-                        />
-                        <div>
-                          <Label htmlFor="invoice" className="cursor-pointer">
-                            Искам фактура
-                          </Label>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Попълнете данните за фирмата по-долу.
-                          </p>
-                        </div>
-                      </div>
-
-                      {invoiceWanted ? (
-                        <FieldGroup className="border border-border rounded-lg p-4">
-                          <Field>
-                            <FieldLabel>Фирма *</FieldLabel>
-                            <Input value={invoiceCompany} onChange={(e) => setInvoiceCompany(e.target.value)} />
-                          </Field>
-                          <Field>
-                            <FieldLabel>ЕИК *</FieldLabel>
-                            <Input value={invoiceTaxId} onChange={(e) => setInvoiceTaxId(e.target.value)} />
-                          </Field>
-                          <Field>
-                            <FieldLabel>ДДС № (по избор)</FieldLabel>
-                            <Input value={invoiceVat} onChange={(e) => setInvoiceVat(e.target.value)} />
-                          </Field>
-                          <Field>
-                            <FieldLabel>Адрес *</FieldLabel>
-                            <Input value={invoiceAddress} onChange={(e) => setInvoiceAddress(e.target.value)} />
-                          </Field>
-                          <Field>
-                            <FieldLabel>МОЛ *</FieldLabel>
-                            <Input value={invoiceMol} onChange={(e) => setInvoiceMol(e.target.value)} />
-                          </Field>
-                        </FieldGroup>
-                      ) : null}
-
                       {stripeClientSecret ? (
                         <div className="bg-secondary/30 rounded-lg p-2">
                           <EmbeddedCheckoutProvider
@@ -967,14 +881,14 @@ export default function CheckoutPage() {
                                 notifyMissingLegalConsent();
                                 return;
                               }
-                              if (!validateInvoice()) return;
                               setIsSubmitting(true);
                               setCheckoutError("");
                               paymentInitRef.current = false;
                               const r = await prepareStripeSessionWithRetries();
                               setIsSubmitting(false);
-                              if (r.ok && r.clientSecret) setStripeClientSecret(r.clientSecret);
-                              else if (r.ok && r.checkoutUrl) {
+                              if (r.ok && r.clientSecret) {
+                                setStripeClientSecret(r.clientSecret);
+                              } else if (r.ok && r.checkoutUrl) {
                                 clearCart();
                                 window.location.assign(r.checkoutUrl!);
                               }
