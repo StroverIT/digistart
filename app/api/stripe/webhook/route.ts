@@ -22,6 +22,19 @@ function toIsoDate(value?: number | null) {
   return new Date(value * 1000);
 }
 
+function companyVatFromCheckoutSession(session: Stripe.Checkout.Session): string | null {
+  const fields = session.custom_fields;
+  if (!Array.isArray(fields)) return null;
+  for (const field of fields) {
+    if (field.key !== "companyvat") continue;
+    if (field.type === "text" && field.text?.value) {
+      const v = String(field.text.value).trim();
+      return v.length > 0 ? v : null;
+    }
+  }
+  return null;
+}
+
 async function provisionGuestUserFromOrder(orderId: string) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
@@ -66,6 +79,13 @@ async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
     typeof session.customer === "string" ? session.customer : session.customer?.id;
   const paidAt = session.payment_status === "paid" ? new Date() : null;
 
+  const vat = companyVatFromCheckoutSession(session);
+  const baseMeta =
+    session.metadata && typeof session.metadata === "object"
+      ? { ...(session.metadata as Record<string, string>) }
+      : {};
+  if (vat) baseMeta.companyVat = vat;
+
   await setOrderStripeSnapshotInDb({
     orderId,
     checkoutSessionId: session.id,
@@ -77,7 +97,7 @@ async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
     amountSubtotal: session.amount_subtotal,
     amountTotal: session.amount_total,
     amountTax: session.total_details?.amount_tax ?? null,
-    metadata: session.metadata ?? {},
+    metadata: baseMeta,
     checkoutCompletedAt: toIsoDate(session.created),
     paidAt,
     markAsPaid: session.payment_status === "paid",

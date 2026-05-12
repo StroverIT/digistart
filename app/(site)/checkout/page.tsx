@@ -550,8 +550,8 @@ export default function CheckoutPage() {
                               }}
                             />
                             <span className="text-sm text-muted-foreground leading-snug">
-                              Закупувам като фирма — във формата за плащане ще може да въведете VAT / ДДС номер
-                              за фактуриране.
+                              Закупувам като фирма — във формата за плащане на Stripe ще има задължително поле
+                              „VAT / ДДС номер (фирма)“.
                             </span>
                           </label>
                           <Field>
@@ -769,8 +769,8 @@ export default function CheckoutPage() {
                                 }}
                               />
                               <span className="text-sm text-muted-foreground leading-snug">
-                                Закупувам като фирма — във формата за плащане ще може да въведете VAT / ДДС номер
-                                за фактуриране.
+                                Закупувам като фирма — във формата за плащане на Stripe ще има задължително поле
+                                „VAT / ДДС номер (фирма)“.
                               </span>
                             </label>
                             <Field>

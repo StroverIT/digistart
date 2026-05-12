@@ -244,12 +244,21 @@ export async function POST(req: NextRequest) {
         orderId: order.id,
         ...(purchaseAsBusiness ? { purchaseAsBusiness: "true" } : {}),
       },
-      billing_address_collection: "auto",
+      // Tax ID collection is often hidden (e.g. Customer already has a tax ID, or Stripe UI
+      // heuristics). Custom fields always render in embedded Checkout for collectable VAT.
+      billing_address_collection: purchaseAsBusiness ? "required" : "auto",
       locale: "bg",
       ...(purchaseAsBusiness
         ? {
-            tax_id_collection: { enabled: true },
-            customer_update: { address: "auto", name: "auto" },
+            custom_fields: [
+              {
+                key: "companyvat",
+                label: { type: "custom", custom: "VAT / ДДС номер (фирма)" },
+                type: "text",
+                text: { minimum_length: 4, maximum_length: 32 },
+                optional: false,
+              },
+            ],
           }
         : {}),
       ...(mode === "subscription" ? { payment_method_collection: "always" as const } : {}),
