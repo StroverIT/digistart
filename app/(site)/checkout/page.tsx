@@ -59,6 +59,7 @@ export default function CheckoutPage() {
   const [passwordFieldTouched, setPasswordFieldTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [acceptedCheckoutTerms, setAcceptedCheckoutTerms] = useState(false);
+  const [purchaseAsBusiness, setPurchaseAsBusiness] = useState(false);
   const [legalConsentError, setLegalConsentError] = useState("");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [paletteFile, setPaletteFile] = useState<File | null>(null);
@@ -178,6 +179,7 @@ export default function CheckoutPage() {
         uiMode: "embedded",
         pendingUser,
         brandAssets,
+        purchaseAsBusiness,
       }),
     });
 
@@ -314,6 +316,8 @@ export default function CheckoutPage() {
     sessionStatus,
     stripeBrandPayload,
     acceptedCheckoutTerms,
+    purchaseAsBusiness,
+    formData.company,
   ]);
 
   const handleInputChange = (
@@ -337,6 +341,10 @@ export default function CheckoutPage() {
       setCheckoutError("Паролите не съвпадат.");
       return false;
     }
+    if (purchaseAsBusiness && !formData.company?.trim()) {
+      setCheckoutError("При закупуване като фирма въведете име на фирмата.");
+      return false;
+    }
     const res = await fetch("/api/checkout/account/precheck", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -354,6 +362,10 @@ export default function CheckoutPage() {
     setCheckoutError("");
     if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
       setCheckoutError("Моля попълнете име, имейл и телефон.");
+      return false;
+    }
+    if (purchaseAsBusiness && !formData.company?.trim()) {
+      setCheckoutError("При закупуване като фирма въведете име на фирмата.");
       return false;
     }
     return true;
@@ -527,16 +539,35 @@ export default function CheckoutPage() {
                             />
                           </Field>
                         </div>
-                        <Field>
-                          <FieldLabel htmlFor="company">Фирма (по избор)</FieldLabel>
-                          <Input
-                            id="company"
-                            name="company"
-                            value={formData.company}
-                            onChange={handleInputChange}
-                            placeholder="Име на фирма"
-                          />
-                        </Field>
+                        <div className="rounded-lg border border-border p-4 space-y-3">
+                          <label className="flex items-start gap-3 cursor-pointer">
+                            <Checkbox
+                              checked={purchaseAsBusiness}
+                              onCheckedChange={(value) => {
+                                const on = value === true;
+                                setPurchaseAsBusiness(on);
+                                if (!on) setCheckoutError("");
+                              }}
+                            />
+                            <span className="text-sm text-muted-foreground leading-snug">
+                              Закупувам като фирма — във формата за плащане ще може да въведете VAT / ДДС номер
+                              за фактуриране.
+                            </span>
+                          </label>
+                          <Field>
+                            <FieldLabel htmlFor="company">
+                              {purchaseAsBusiness ? "Име на фирмата *" : "Фирма (по избор)"}
+                            </FieldLabel>
+                            <Input
+                              id="company"
+                              name="company"
+                              value={formData.company}
+                              onChange={handleInputChange}
+                              placeholder="Име на фирма"
+                              required={purchaseAsBusiness}
+                            />
+                          </Field>
+                        </div>
                         <Field>
                           <FieldLabel htmlFor="password">Парола *</FieldLabel>
                           <div className="relative">
@@ -709,22 +740,53 @@ export default function CheckoutPage() {
                     </CardHeader>
                     <CardContent className="space-y-6">
                       {isLoggedInCustomer ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <Field>
-                            <FieldLabel>Имейл</FieldLabel>
-                            <Input value={formData.email} disabled className="opacity-80" />
-                          </Field>
-                          <Field>
-                            <FieldLabel htmlFor="phone2">Телефон *</FieldLabel>
-                            <Input
-                              id="phone2"
-                              name="phone"
-                              type="tel"
-                              value={formData.phone}
-                              onChange={handleInputChange}
-                              required
-                            />
-                          </Field>
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Field>
+                              <FieldLabel>Имейл</FieldLabel>
+                              <Input value={formData.email} disabled className="opacity-80" />
+                            </Field>
+                            <Field>
+                              <FieldLabel htmlFor="phone2">Телефон *</FieldLabel>
+                              <Input
+                                id="phone2"
+                                name="phone"
+                                type="tel"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                required
+                              />
+                            </Field>
+                          </div>
+                          <div className="rounded-lg border border-border p-4 space-y-3">
+                            <label className="flex items-start gap-3 cursor-pointer">
+                              <Checkbox
+                                checked={purchaseAsBusiness}
+                                onCheckedChange={(value) => {
+                                  const on = value === true;
+                                  setPurchaseAsBusiness(on);
+                                  if (!on) setCheckoutError("");
+                                }}
+                              />
+                              <span className="text-sm text-muted-foreground leading-snug">
+                                Закупувам като фирма — във формата за плащане ще може да въведете VAT / ДДС номер
+                                за фактуриране.
+                              </span>
+                            </label>
+                            <Field>
+                              <FieldLabel htmlFor="companyLoggedIn">
+                                {purchaseAsBusiness ? "Име на фирмата *" : "Фирма (по избор)"}
+                              </FieldLabel>
+                              <Input
+                                id="companyLoggedIn"
+                                name="company"
+                                value={formData.company ?? ""}
+                                onChange={handleInputChange}
+                                placeholder="Име на фирма"
+                                required={purchaseAsBusiness}
+                              />
+                            </Field>
+                          </div>
                         </div>
                       ) : null}
 

@@ -69,6 +69,7 @@ const payloadSchema = z.object({
   uiMode: z.enum(["redirect", "embedded"]).optional(),
   pendingUser: pendingUserSchema.optional(),
   brandAssets: brandAssetsSchema.optional(),
+  purchaseAsBusiness: z.boolean().optional(),
 });
 
 function amountToMinorUnits(amount: number) {
@@ -128,10 +129,20 @@ async function buildLineItems(
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    const parsed = payloadSchema.safeParse(await req.json());
+    const rawBody = await req.json();
+    const parsed = payloadSchema.safeParse(rawBody);
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Invalid checkout payload", issues: parsed.error.issues },
+        { status: 400 }
+      );
+    }
+
+    const purchaseAsBusiness = parsed.data.purchaseAsBusiness === true;
+    const companyTrimmed = parsed.data.customer.company?.trim() ?? "";
+    if (purchaseAsBusiness && companyTrimmed.length < 2) {
+      return NextResponse.json(
+        { error: "При закупуване като фирма въведете име на фирмата (поне 2 символа)." },
         { status: 400 }
       );
     }
@@ -229,15 +240,27 @@ export async function POST(req: NextRequest) {
       mode,
       line_items: lineItems,
       customer: stripeCustomer.stripeCustomerId,
-      metadata: { orderId: order.id },
+      metadata: {
+        orderId: order.id,
+        ...(purchaseAsBusiness ? { purchaseAsBusiness: "true" } : {}),
+      },
       billing_address_collection: "auto",
       locale: "bg",
+      ...(purchaseAsBusiness
+        ? {
+            tax_id_collection: { enabled: true },
+            customer_update: { address: "auto", name: "auto" },
+          }
+        : {}),
       ...(mode === "subscription" ? { payment_method_collection: "always" as const } : {}),
     };
 
     if (mode === "subscription") {
       sessionBase.subscription_data = {
-        metadata: { orderId: order.id },
+        metadata: {
+          orderId: order.id,
+          ...(purchaseAsBusiness ? { purchaseAsBusiness: "true" } : {}),
+        },
       };
     }
 
