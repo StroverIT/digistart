@@ -88,6 +88,26 @@ function SuccessContent() {
   }, [mounted]);
 
   useEffect(() => {
+    if (!mounted || !order?.id || !successRootRef.current) return;
+    const root = successRootRef.current;
+    const orderBlocks = root.querySelectorAll<HTMLElement>("[data-success-order-block]");
+    if (!orderBlocks.length) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(orderBlocks, { opacity: 0, y: 36 });
+      gsap.to(orderBlocks, {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: "back.out(1.5)",
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, [mounted, order?.id]);
+
+  useEffect(() => {
     if (!mounted || !orderId) return;
     clearCheckoutClientState();
   }, [mounted, orderId]);
@@ -223,7 +243,7 @@ function SuccessContent() {
 
       {order && (
         <p
-          data-success-block
+          data-success-order-block
           className="text-sm mb-6 text-muted-foreground opacity-0 translate-y-10"
         >
           Статус на плащането:{" "}
@@ -235,7 +255,7 @@ function SuccessContent() {
 
       {order && (
         <Card
-          data-success-block
+          data-success-order-block
           className="bg-card border-border mb-8 text-left opacity-0 translate-y-10"
         >
           <CardContent className="p-6">

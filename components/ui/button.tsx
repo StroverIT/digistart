@@ -80,17 +80,23 @@ function Button({
       )}
       {...props}
     >
-      {props.children}
-      {showAnalyticsBadge ? (
-        <span
-          className={cn(
-            "pointer-events-none absolute -top-2 right-0 rounded-full border border-primary/40 bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-foreground shadow-sm transition-opacity",
-            showAllCtaStats ? "opacity-100" : "opacity-0 group-hover:opacity-100",
-          )}
-        >
-          {pageViews} views / {ctaClicks} clicks
-        </span>
-      ) : null}
+      {asChild ? (
+        props.children
+      ) : (
+        <>
+          {props.children}
+          {showAnalyticsBadge ? (
+            <span
+              className={cn(
+                "pointer-events-none absolute -top-2 right-0 rounded-full border border-primary/40 bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-foreground shadow-sm transition-opacity",
+                showAllCtaStats ? "opacity-100" : "opacity-0 group-hover:opacity-100",
+              )}
+            >
+              {pageViews} views / {ctaClicks} clicks
+            </span>
+          ) : null}
+        </>
+      )}
     </Comp>
   );
 }

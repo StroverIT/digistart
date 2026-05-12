@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import React from "react";
 import { google } from "googleapis";
+import { prisma } from "@/lib/prisma";
 import {
   Body,
   Container,
@@ -47,7 +48,7 @@ async function renderCustomerEmailHtml(params: {
           React.createElement(
             Text,
             null,
-            `Плащането по поръчка ${params.orderId} е успешно. Създадохме ваш клиентски профил автоматично и можете да следите статуса от панела си.`
+            `Плащането по поръчка ${params.orderId} е успешно. Благодарим ви за доверието! Ще се свържем с вас при необходимост. Можете да следите статуса от клиентския панел.`
           ),
           React.createElement(Hr),
           React.createElement(Text, { style: { color: "#6b7280", fontSize: "12px" } }, "Поздрави,"),
@@ -97,7 +98,42 @@ async function renderAdminEmailHtml(params: {
   );
 }
 
-export async function sendGuestOrderSuccessEmails(params: {
+/**
+ * Sends customer + admin paid-order emails once per order (Stripe webhook and success POST may both run).
+ * Requires Gmail OAuth env (same as newsletter): GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN,
+ * REDIRECT_URI, plus a Gmail user (e.g. GOOGLE_EMAIL_USER or SMTP_USER) and ADMIN_EMAIL for the admin copy.
+ */
+export async function trySendOrderPaidConfirmationEmails(orderId: string): Promise<void> {
+  const row = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: {
+      status: true,
+      paidConfirmationEmailsSentAt: true,
+      customerName: true,
+      customerEmail: true,
+    },
+  });
+  if (!row || row.status !== "paid" || row.paidConfirmationEmailsSentAt) {
+    return;
+  }
+
+  await sendOrderPaidConfirmationEmails({
+    orderId,
+    customerName: row.customerName,
+    customerEmail: row.customerEmail,
+  });
+
+  const stamped = await prisma.order.updateMany({
+    where: { id: orderId, paidConfirmationEmailsSentAt: null },
+    data: { paidConfirmationEmailsSentAt: new Date() },
+  });
+  if (stamped.count === 0) {
+    // Concurrent sender already stamped; emails may have been duplicated in a tight race.
+    return;
+  }
+}
+
+export async function sendOrderPaidConfirmationEmails(params: {
   orderId: string;
   customerName: string;
   customerEmail: string;
@@ -127,7 +163,22 @@ export async function sendGuestOrderSuccessEmails(params: {
   const from = process.env.SMTP_FROM ?? (gmailUser ? `DigiStart <${gmailUser}>` : undefined);
   const adminEmail = process.env.ADMIN_EMAIL ?? process.env.admin_email;
 
-  if (!canUseOauth2 || !from || !adminEmail) return;
+  if (!canUseOauth2 || !from || !adminEmail) {
+    const missing: string[] = [];
+    if (!canUseOauth2) {
+      if (!gmailUser) missing.push("GOOGLE_EMAIL_USER|GMAIL_USER|SMTP_USER|… (OAuth user)");
+      if (!googleClientId) missing.push("GOOGLE_CLIENT_ID");
+      if (!googleClientSecret) missing.push("GOOGLE_CLIENT_SECRET");
+      if (!googleRefreshToken) missing.push("GOOGLE_REFRESH_TOKEN");
+      if (!redirectUri) missing.push("REDIRECT_URI");
+    }
+    if (!from) missing.push("SMTP_FROM or OAuth user for From");
+    if (!adminEmail) missing.push("ADMIN_EMAIL");
+    console.error(
+      `[order-emails] Paid order emails not sent (misconfigured): ${missing.join(", ") || "OAuth2"}`
+    );
+    throw new Error(`Order email transport not configured: ${missing.join(", ")}`);
+  }
 
   const oauth2Client = new google.auth.OAuth2(
     googleClientId,
@@ -160,27 +211,23 @@ export async function sendGuestOrderSuccessEmails(params: {
     customerEmail: params.customerEmail,
   });
 
-  try {
-    const sendResults = await Promise.allSettled([
-      mailer.sendMail({
-        from,
-        to: params.customerEmail,
-        subject: "Поръчката ви е потвърдена - DigiStart",
-        text: `Здравейте, ${customerFirstName},\n\nПлащането по поръчка ${params.orderId} е успешно.\nСъздадохме ваш клиентски профил автоматично и можете да следите статуса от панела си.\n\nПоздрави,\nDigiStart`,
-        html: customerHtml,
-      }),
-      mailer.sendMail({
-        from,
-        to: adminEmail,
-        subject: `Нова платена поръчка: ${params.orderId}`,
-        text: `Има нова платена поръчка от guest checkout.\n\nПоръчка: ${params.orderId}\nКлиент: ${params.customerName}\nИмейл: ${params.customerEmail}`,
-        html: adminHtml,
-      }),
-    ]);
-    if (sendResults.some((result) => result.status === "rejected")) {
-      throw new Error("One or more email sends failed.");
-    }
-  } catch (error) {
-    throw error;
+  const sendResults = await Promise.allSettled([
+    mailer.sendMail({
+      from,
+      to: params.customerEmail,
+      subject: "Поръчката ви е потвърдена - DigiStart",
+      text: `Здравейте, ${customerFirstName},\n\nПлащането по поръчка ${params.orderId} е успешно. Благодарим ви за доверието!\n\nПоздрави,\nDigiStart`,
+      html: customerHtml,
+    }),
+    mailer.sendMail({
+      from,
+      to: adminEmail,
+      subject: `Нова платена поръчка: ${params.orderId}`,
+      text: `Има нова платена поръчка.\n\nПоръчка: ${params.orderId}\nКлиент: ${params.customerName}\nИмейл: ${params.customerEmail}`,
+      html: adminHtml,
+    }),
+  ]);
+  if (sendResults.some((result) => result.status === "rejected")) {
+    throw new Error("One or more email sends failed.");
   }
 }

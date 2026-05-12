@@ -17,6 +17,7 @@ import {
   User,
   Menu,
   Newspaper,
+  FlaskConical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,6 +44,7 @@ const navItems = [
   { href: "/admin/consultations", label: "Консултации", icon: CalendarDays },
   { href: "/admin/newsletter", label: "Бюлетин", icon: Newspaper },
   { href: "/admin/businesses", label: "Бизнеси", icon: MapPin },
+  { href: "/admin/testing", label: "Тестване", icon: FlaskConical },
 ] as const;
 
 export function AdminSidebar({ user }: AdminSidebarProps) {

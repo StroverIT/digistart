@@ -2,6 +2,7 @@ import type Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getStripeServerClient } from "@/lib/server/stripe";
+import { trySendOrderPaidConfirmationEmails } from "@/lib/server/order-emails";
 import {
   ensureGuestUserForOrderInDb,
   setOrderStripeSnapshotInDb,
@@ -47,10 +48,9 @@ async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
   if (!orderId) return;
   const orderRow = await prisma.order.findUnique({
     where: { id: orderId },
-    select: { status: true, customerName: true, customerEmail: true },
+    select: { id: true },
   });
   if (!orderRow) return;
-  const wasPaidBefore = orderRow.status === "paid";
 
   const paymentIntentId =
     typeof session.payment_intent === "string"
@@ -96,6 +96,10 @@ async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
         console.error("subscription renew cache", e);
       }
     }
+
+    void trySendOrderPaidConfirmationEmails(orderId).catch((err) => {
+      console.error("stripe webhook: paid confirmation emails", err);
+    });
   }
 }
 

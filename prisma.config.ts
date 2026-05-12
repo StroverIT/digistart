@@ -1,4 +1,9 @@
+import { config as loadEnv } from "dotenv";
 import { defineConfig } from "prisma/config";
+import { resolve } from "node:path";
+
+// Prisma CLI does not always inherit a shell-loaded `.env`. Load project root `.env` before reading URLs.
+loadEnv({ path: resolve(process.cwd(), ".env") });
 
 const fallbackDatabaseUrl = "postgresql://postgres:postgres@localhost:5432/postgres";
 

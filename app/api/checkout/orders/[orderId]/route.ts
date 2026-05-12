@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { sendGuestOrderSuccessEmails } from "@/lib/server/order-emails";
+import { trySendOrderPaidConfirmationEmails } from "@/lib/server/order-emails";
 import { getStripeServerClient } from "@/lib/server/stripe";
 import {
   ensureGuestUserForOrderInDb,
@@ -107,19 +107,14 @@ export async function POST(
   });
 
   if (session.payment_status === "paid") {
-    const ensured = await ensureGuestUserForOrderInDb(orderId);
-    const statusTransition = await prisma.order.updateMany({
+    await ensureGuestUserForOrderInDb(orderId);
+    await prisma.order.updateMany({
       where: { id: orderId, status: { not: "paid" } },
       data: { status: "paid" },
     });
-    const shouldSendEmails = ensured.guestProvisioned || statusTransition.count > 0;
-    if (shouldSendEmails) {
-      void sendGuestOrderSuccessEmails({
-        orderId,
-        customerName: row.customerName,
-        customerEmail: row.customerEmail,
-      }).catch(() => undefined);
-    }
+    void trySendOrderPaidConfirmationEmails(orderId).catch((err) => {
+      console.error("checkout order POST: paid confirmation emails", err);
+    });
   }
 
   const order = await getOrderByIdFromDb(orderId);

@@ -14,9 +14,9 @@ model User {
   phone        String?
   company      String?
   role         String   @default("customer")
-  orders       Order[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  orders       Order[]
 }
 
 model Service {
@@ -30,11 +30,11 @@ model Service {
   isMonthly        Boolean         @default(false)
   timeline         String
   features         String[]
-  options          ServiceOption[]
-  upsells          ServiceUpsell[]
-  orderItems       OrderItem[]
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
+  orderItems       OrderItem[]
+  options          ServiceOption[]
+  upsells          ServiceUpsell[]
 }
 
 model ServiceOption {
@@ -77,45 +77,47 @@ model ServiceUpsell {
 }
 
 model Order {
-  id                     String               @id @default(cuid())
-  userId                 String?
-  user                   User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
-  customerName           String
-  customerEmail          String
-  customerPhone          String
-  customerCompany        String?
-  customerNotes          String?
-  totalOneTime           Int
-  totalMonthly           Int
-  status                 String               @default("pending")
-  consultationId         String?              @unique
-  consultation           ConsultationBooking? @relation("OrderConsultation", fields: [consultationId], references: [id], onDelete: SetNull)
-  items                  OrderItem[]
-  pendingUserEmail       String?
-  pendingUserPasswordHash String?
-  pendingUserName        String?
-  pendingUserPhone       String?
-  pendingUserCompany     String?
-  postCheckoutToken      String?              @unique
-  invoiceWanted          Boolean              @default(false)
-  invoiceData            Json?
-  brandAssets            Json?
-  subscriptionRenewsAt  DateTime?
-  stripeCheckoutMode     String?
-  stripeCheckoutSessionId String?             @unique
-  stripePaymentIntentId  String?
-  stripeSubscriptionId   String?
-  stripeCustomerId       String?
-  stripePaymentStatus    String?
-  stripeCurrency         String?
-  stripeAmountSubtotal   Int?
-  stripeAmountTotal      Int?
-  stripeAmountTax        Int?
-  stripeMetadata         Json?
-  stripeCheckoutCompletedAt DateTime?
-  stripePaidAt           DateTime?
-  createdAt              DateTime             @default(now())
-  updatedAt              DateTime             @updatedAt
+  id                           String               @id @default(cuid())
+  userId                       String?
+  customerName                 String
+  customerEmail                String
+  customerPhone                String
+  customerCompany              String?
+  customerNotes                String?
+  totalOneTime                 Int
+  totalMonthly                 Int
+  status                       String               @default("pending")
+  consultationId               String?              @unique
+  pendingUserEmail             String?
+  pendingUserPasswordHash      String?
+  pendingUserName              String?
+  pendingUserPhone             String?
+  pendingUserCompany           String?
+  postCheckoutToken            String?              @unique
+  invoiceWanted                Boolean              @default(false)
+  invoiceData                  Json?
+  brandAssets                  Json?
+  subscriptionRenewsAt         DateTime?
+  stripeCheckoutMode           String?
+  stripeCheckoutSessionId      String?              @unique
+  stripePaymentIntentId        String?
+  stripeSubscriptionId         String?
+  stripeCustomerId             String?
+  stripePaymentStatus          String?
+  stripeCurrency               String?
+  stripeAmountSubtotal         Int?
+  stripeAmountTotal            Int?
+  stripeAmountTax              Int?
+  stripeMetadata               Json?
+  stripeCheckoutCompletedAt    DateTime?
+  stripePaidAt                 DateTime?
+  createdAt                    DateTime             @default(now())
+  updatedAt                    DateTime             @updatedAt
+  /// * Set when customer + admin paid-order notification emails were sent (idempotent).
+  paidConfirmationEmailsSentAt DateTime?
+  consultation                 ConsultationBooking? @relation("OrderConsultation", fields: [consultationId], references: [id])
+  user                         User?                @relation(fields: [userId], references: [id])
+  items                        OrderItem[]
 }
 
 model OrderItem {
@@ -132,7 +134,7 @@ model OrderItem {
   upsells            Json
   orderId            String
   order              Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  service            Service @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  service            Service @relation(fields: [serviceId], references: [id])
 }
 
 model ConsultationBooking {
@@ -158,20 +160,20 @@ model ConsultationBooking {
 }
 
 model StripeCatalogMapping {
-  id                String   @id @default(cuid())
-  lookupKey         String   @unique
-  serviceId         String
-  serviceName       String
-  selectedOptionId  String
-  selectedOptionName String
-  billingType       String
-  unitAmount        Int
-  currency          String   @default("eur")
-  stripeProductId   String
-  stripePriceId     String
+  id                  String   @id @default(cuid())
+  lookupKey           String   @unique
+  serviceId           String
+  serviceName         String
+  selectedOptionId    String
+  selectedOptionName  String
+  billingType         String
+  unitAmount          Int
+  currency            String   @default("eur")
+  stripeProductId     String
+  stripePriceId       String
   stripePaymentLinkId String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 model StripeCustomerMapping {
@@ -199,10 +201,10 @@ model AnalyticsEvent {
   sessionId String?  @map("session_id")
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@index([eventType, page])
+  @@index([createdAt])
+  @@index([sessionId])
   @@map("analytics_events")
-  @@index([eventType, page], map: "analytics_events_event_type_page_idx")
-  @@index([createdAt], map: "analytics_events_created_at_idx")
-  @@index([sessionId], map: "analytics_events_session_id_idx")
 }
 
 model NewsletterSubscriber {
@@ -218,7 +220,6 @@ model NewsletterSubscriber {
 model UtmLandingEvent {
   id          String   @id @default(cuid())
   page        String
-  landingUrl  String   @map("landing_url")
   utmSource   String?  @map("utm_source")
   utmMedium   String?  @map("utm_medium")
   utmCampaign String?  @map("utm_campaign")
@@ -226,10 +227,11 @@ model UtmLandingEvent {
   dedupeKey   String   @unique @map("dedupe_key")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
+  landingUrl  String   @map("landing_url")
 
+  @@index([createdAt])
+  @@index([utmSource])
+  @@index([utmMedium])
+  @@index([utmCampaign])
   @@map("utm_landing_events")
-  @@index([createdAt], map: "utm_landing_events_created_at_idx")
-  @@index([utmSource], map: "utm_landing_events_utm_source_idx")
-  @@index([utmMedium], map: "utm_landing_events_utm_medium_idx")
-  @@index([utmCampaign], map: "utm_landing_events_utm_campaign_idx")
 }

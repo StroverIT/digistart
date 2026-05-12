@@ -1,6 +1,11 @@
 import type { Service, ServiceOption, ServiceUpsell } from "@/lib/types";
 import { resolveServiceSlug, services as fallbackServices } from "@/lib/data/services";
+import { ADMIN_STRIPE_TEST_SERVICE_ID } from "@/lib/server/admin-stripe-test-order";
 import { prisma } from "@/lib/prisma";
+
+function omitInternalCatalogServices(list: Service[]): Service[] {
+  return list.filter((s) => s.id !== ADMIN_STRIPE_TEST_SERVICE_ID);
+}
 
 function mapUpsell(upsell: {
   upsellKey: string;
@@ -96,17 +101,17 @@ async function fetchServicesFromDb(): Promise<Service[]> {
 export async function getServices(): Promise<Service[]> {
   try {
     const dbServices = await fetchServicesFromDb();
-    if (dbServices.length === 0) return fallbackServices;
+    if (dbServices.length === 0) return omitInternalCatalogServices(fallbackServices);
 
-    // If the DB is only partially seeded, still expose every catalog service so
+    // If the DB is missing some catalog rows, still expose every known service so
     // /services/* pages and /api/services never 404 a known product.
     const byId = new Map(fallbackServices.map((s) => [s.id, s]));
     for (const s of dbServices) {
       byId.set(s.id, s);
     }
-    return Array.from(byId.values());
+    return omitInternalCatalogServices(Array.from(byId.values()));
   } catch {
-    return fallbackServices;
+    return omitInternalCatalogServices(fallbackServices);
   }
 }
 
