@@ -97,9 +97,11 @@ async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
       }
     }
 
-    void trySendOrderPaidConfirmationEmails(orderId).catch((err) => {
+    try {
+      await trySendOrderPaidConfirmationEmails(orderId);
+    } catch (err) {
       console.error("stripe webhook: paid confirmation emails", err);
-    });
+    }
   }
 }
 

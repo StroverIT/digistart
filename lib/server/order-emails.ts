@@ -99,37 +99,48 @@ async function renderAdminEmailHtml(params: {
 }
 
 /**
- * Sends customer + admin paid-order emails once per order (Stripe webhook and success POST may both run).
+ * Sends customer + admin paid-order emails once per order (Stripe webhook and success-page polling may overlap).
+ * Uses an atomic DB claim so concurrent callers cannot all pass a "not sent yet" read before any stamps.
  * Requires Gmail OAuth env (same as newsletter): GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN,
  * REDIRECT_URI, plus a Gmail user (e.g. GOOGLE_EMAIL_USER or SMTP_USER) and ADMIN_EMAIL for the admin copy.
  */
 export async function trySendOrderPaidConfirmationEmails(orderId: string): Promise<void> {
-  const row = await prisma.order.findUnique({
-    where: { id: orderId },
-    select: {
-      status: true,
-      paidConfirmationEmailsSentAt: true,
-      customerName: true,
-      customerEmail: true,
+  const claimed = await prisma.order.updateMany({
+    where: {
+      id: orderId,
+      status: "paid",
+      paidConfirmationEmailsSentAt: null,
     },
+    data: { paidConfirmationEmailsSentAt: new Date() },
   });
-  if (!row || row.status !== "paid" || row.paidConfirmationEmailsSentAt) {
+  if (claimed.count === 0) {
     return;
   }
 
-  await sendOrderPaidConfirmationEmails({
-    orderId,
-    customerName: row.customerName,
-    customerEmail: row.customerEmail,
+  const row = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { status: true, customerName: true, customerEmail: true },
   });
-
-  const stamped = await prisma.order.updateMany({
-    where: { id: orderId, paidConfirmationEmailsSentAt: null },
-    data: { paidConfirmationEmailsSentAt: new Date() },
-  });
-  if (stamped.count === 0) {
-    // Concurrent sender already stamped; emails may have been duplicated in a tight race.
+  if (!row || row.status !== "paid") {
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { paidConfirmationEmailsSentAt: null },
+    });
     return;
+  }
+
+  try {
+    await sendOrderPaidConfirmationEmails({
+      orderId,
+      customerName: row.customerName,
+      customerEmail: row.customerEmail,
+    });
+  } catch (err) {
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { paidConfirmationEmailsSentAt: null },
+    });
+    throw err;
   }
 }
 

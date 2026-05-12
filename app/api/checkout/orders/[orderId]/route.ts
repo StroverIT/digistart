@@ -73,7 +73,6 @@ export async function POST(
 
   const stripe = getStripeServerClient();
   const session = await stripe.checkout.sessions.retrieve(sessionId);
-  const wasPaidBefore = row.status === "paid";
 
   const paymentIntentId =
     typeof session.payment_intent === "string"
@@ -112,9 +111,11 @@ export async function POST(
       where: { id: orderId, status: { not: "paid" } },
       data: { status: "paid" },
     });
-    void trySendOrderPaidConfirmationEmails(orderId).catch((err) => {
+    try {
+      await trySendOrderPaidConfirmationEmails(orderId);
+    } catch (err) {
       console.error("checkout order POST: paid confirmation emails", err);
-    });
+    }
   }
 
   const order = await getOrderByIdFromDb(orderId);
