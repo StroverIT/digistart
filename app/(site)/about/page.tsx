@@ -1,5 +1,6 @@
 import ConsultationBookingForm from "@/components/consultation/consultation-booking-form";
 import { siteContact } from "@/lib/site-contact";
+import Image from "next/image";
 import {
   BrainCircuit,
   Clock3,
@@ -12,20 +13,29 @@ import {
   Linkedin,
 } from "lucide-react";
 
-const teamMembers = [
+type TeamMember = {
+  name: string;
+  role: string;
+  description: string;
+  image?: string;
+};
+
+const teamMembers: TeamMember[] = [
   {
-    name: "Емил Златинов",
+    name: "Емил",
     role: "CEO, Програмист и Дизайнер",
     description:
       "Техническият двигател на агенцията. Емил превръща сложния код и дизайн в красиви, бързи и лесни за управление онлайн магазини. Той е човекът, който се грижи сайтът ти да работи перфектно, докато ти спиш.",
+    image: "/people/emil.png",
   },
   {
-    name: "Ния Митева",
+    name: "Ния",
     role: "Маркетинг мениджър и Content Creator",
     description:
       "Гласът и стратегията. Ния знае точно как да представи продуктите ти пред правилните хора. Тя създава съдържанието и рекламите, които превръщат случайните посетители в лоялни клиенти.",
+    image: "/people/nia.png",
   },
-] as const;
+];
 
 const whyChooseUs = [
   {
@@ -83,13 +93,34 @@ export default function AboutPage() {
             {teamMembers.map((member) => (
               <article
                 key={member.name}
-                className="rounded-2xl border border-border bg-card p-6 md:p-7 space-y-3"
+                className="rounded-2xl border border-border bg-white p-6 md:p-7"
               >
-                <h3 className="text-xl font-semibold">{member.name}</h3>
-                <p className="text-sm font-medium text-primary">{member.role}</p>
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                  {member.description}
-                </p>
+                <div className="flex flex-col gap-4 md:gap-5">
+                  <div
+                    className="relative mx-auto h-40 w-40 lg:h-96 lg:w-96"
+                    aria-hidden={member.image ? undefined : true}
+                  >
+                    {member.image ? (
+                      <Image
+                        src={member.image}
+                        alt={`Илюстрация на ${member.name}`}
+                        fill
+                        className="object-contain object-top"
+                      />
+                    ) : (
+                      <span className="flex h-full w-full items-center justify-center text-3xl font-semibold text-primary">
+                        {member.name.charAt(0)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1 space-y-3 text-center sm:text-left">
+                    <h3 className="text-xl font-semibold">{member.name}</h3>
+                    <p className="text-sm font-medium text-primary">{member.role}</p>
+                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                      {member.description}
+                    </p>
+                  </div>
+                </div>
               </article>
             ))}
           </div>
