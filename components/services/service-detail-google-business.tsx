@@ -19,8 +19,7 @@ import {
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
-import { addToCart, CART_DUPLICATE_SERVICE_MESSAGE } from "@/lib/store/cart";
-import { toast } from "sonner";
+import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
@@ -198,12 +197,15 @@ export function ServiceDetailGoogleBusiness({
 
   const handleGoogleCheckout = () => {
     setIsAdding(true);
+    const existing = findCartItemByService(service.id, GOOGLE_PROFILE_OPTION_ID);
+    if (existing) {
+      updateCartItemUpsells(existing.id, upsells);
+      setIsAdding(false);
+      return;
+    }
     const result = addToCart(service.id, GOOGLE_PROFILE_OPTION_ID, upsells);
     if (!result.added) {
       setIsAdding(false);
-      if (result.reason === "duplicate") {
-        toast(CART_DUPLICATE_SERVICE_MESSAGE);
-      }
       return;
     }
     const addedItem = result.cart.items.find(
@@ -441,6 +443,7 @@ export function ServiceDetailGoogleBusiness({
           onUpsellsChange={setUpsells}
           onAddToCart={handleGoogleCheckout}
           isAdding={isAdding}
+          cartSelectedOptionId={GOOGLE_PROFILE_OPTION_ID}
           ctaId="service_google_business_buy_section_add_to_cart"
           ctaPage="/services/google-business"
         />

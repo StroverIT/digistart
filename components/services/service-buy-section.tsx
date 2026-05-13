@@ -13,7 +13,9 @@ import {
   type UpsellEntryErrors,
 } from "@/components/services/upsell-validation";
 import type { CartItemUpsell, Service } from "@/lib/types";
+import { findCartItemByService } from "@/lib/store/cart";
 import { trackCtaClick } from "@/lib/analytics/tracker";
+import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -45,6 +47,8 @@ interface ServiceBuySectionProps {
   isAdding: boolean;
   ctaId?: string;
   ctaPage?: string;
+  /** When set, cart sync matches this option id (same as `addToCart` / `updateCartItemUpsells`). */
+  cartSelectedOptionId?: string;
 }
 
 export function ServiceBuySection({
@@ -60,8 +64,12 @@ export function ServiceBuySection({
   isAdding,
   ctaId,
   ctaPage,
+  cartSelectedOptionId,
 }: ServiceBuySectionProps) {
+  const { push } = useTransitionRouter();
   const [errors, setErrors] = useState<UpsellEntryErrors>({});
+  const [serviceInCart, setServiceInCart] = useState(false);
+  const hadCartLineRef = useRef(false);
   const [mobileStickyId] = useState(() => `service-buy-mobile-${Math.random().toString(36).slice(2)}`);
   const [isActiveMobileSticky, setIsActiveMobileSticky] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -69,7 +77,31 @@ export function ServiceBuySection({
   const asideRef = useRef<HTMLElement>(null);
 
   const hasUpsells = useMemo(() => service.upsells.length > 0, [service.upsells.length]);
-  const ctaText = ctaLabel ?? "Промени в кошницата";
+  const ctaText =
+    ctaLabel ?? (serviceInCart ? "Промени в кошницата" : "Добави в кошницата");
+
+  useEffect(() => {
+    const cloneUpsells = (list: CartItemUpsell[]) =>
+      list.map((u) => ({
+        ...u,
+        entries: u.entries ? [...u.entries] : undefined,
+      }));
+
+    const syncFromCart = () => {
+      const item = findCartItemByService(service.id, cartSelectedOptionId);
+      setServiceInCart(Boolean(item));
+      if (item) {
+        onUpsellsChange(cloneUpsells(item.upsells));
+        hadCartLineRef.current = true;
+      } else if (hadCartLineRef.current) {
+        onUpsellsChange([]);
+        hadCartLineRef.current = false;
+      }
+    };
+    syncFromCart();
+    window.addEventListener("cart-updated", syncFromCart);
+    return () => window.removeEventListener("cart-updated", syncFromCart);
+  }, [service.id, cartSelectedOptionId, onUpsellsChange]);
 
   const totalPrice = useMemo(() => {
     let total = price;
@@ -113,7 +145,11 @@ export function ServiceBuySection({
     if (ctaId) {
       trackCtaClick(ctaPage ?? `/services/${service.slug}`, ctaId);
     }
+    const wasInCart = serviceInCart;
     onAddToCart();
+    if (wasInCart) {
+      push("/cart");
+    }
   };
 
   useEffect(() => {

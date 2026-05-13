@@ -10,9 +10,8 @@ import { Price } from "@/components/ui/price";
 import { cn } from "@/lib/utils";
 import type { Service, CartItemUpsell } from "@/lib/types";
 import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
-import { addToCart, CART_DUPLICATE_SERVICE_MESSAGE } from "@/lib/store/cart";
+import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
-import { toast } from "sonner";
 
 interface PricingConfiguratorProps {
   service: Service;
@@ -88,6 +87,17 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
     });
   };
 
+  useEffect(() => {
+    const item = findCartItemByService(service.id);
+    if (!item) return;
+    setSelectedOptionId(item.selectedOptionId);
+    const record: Record<string, number> = {};
+    for (const u of item.upsells) {
+      if (u.quantity > 0) record[u.upsellId] = u.quantity;
+    }
+    setUpsells(record);
+  }, [service.id]);
+
   const handleAddToCart = () => {
     setIsAdding(true);
 
@@ -95,12 +105,16 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
       .filter(([_, quantity]) => quantity > 0)
       .map(([upsellId, quantity]) => ({ upsellId, quantity }));
 
+    const existing = findCartItemByService(service.id);
+    if (existing) {
+      updateCartItemUpsells(existing.id, cartUpsells);
+      setIsAdding(false);
+      return;
+    }
+
     const result = addToCart(service.id, selectedOptionId, cartUpsells);
     if (!result.added) {
       setIsAdding(false);
-      if (result.reason === "duplicate") {
-        toast(CART_DUPLICATE_SERVICE_MESSAGE);
-      }
       return;
     }
 

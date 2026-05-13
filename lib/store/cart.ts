@@ -7,10 +7,6 @@ import { recordCartAddition } from "@/lib/store/cart-analytics";
 
 const CART_STORAGE_KEY = "digistart-cart";
 
-/** Shown when the user tries to add a service that is already in the cart. */
-export const CART_DUPLICATE_SERVICE_MESSAGE =
-  "Тази услуга вече е в кошницата.";
-
 export type AddToCartResult =
   | { cart: Cart; added: true }
   | { cart: Cart; added: false; reason: "duplicate" | "invalid" };
@@ -44,6 +40,19 @@ export function saveCart(cart: Cart): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
   window.dispatchEvent(new CustomEvent("cart-updated"));
+}
+
+/** At most one line item per `serviceId` in the cart. */
+export function findCartItemByService(
+  serviceId: string,
+  selectedOptionId?: string,
+): CartItem | undefined {
+  const cart = getCart();
+  return cart.items.find(
+    (item) =>
+      item.serviceId === serviceId &&
+      (selectedOptionId === undefined || item.selectedOptionId === selectedOptionId),
+  );
 }
 
 export { calculateItemTotal };

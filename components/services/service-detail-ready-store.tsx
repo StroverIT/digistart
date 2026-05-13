@@ -17,8 +17,7 @@ import {
   ShoppingCart,
   Zap,
 } from "lucide-react";
-import { addToCart, CART_DUPLICATE_SERVICE_MESSAGE } from "@/lib/store/cart";
-import { toast } from "sonner";
+import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
@@ -215,12 +214,15 @@ export function ServiceDetailReadyStore({
 
   const handleCheckout = () => {
     setIsAdding(true);
+    const existing = findCartItemByService(SERVICE_ID, OPTION_ID);
+    if (existing) {
+      updateCartItemUpsells(existing.id, upsells);
+      setIsAdding(false);
+      return;
+    }
     const result = addToCart(SERVICE_ID, OPTION_ID, upsells);
     if (!result.added) {
       setIsAdding(false);
-      if (result.reason === "duplicate") {
-        toast(CART_DUPLICATE_SERVICE_MESSAGE);
-      }
       return;
     }
     const addedItem = result.cart.items.find(
@@ -536,6 +538,7 @@ export function ServiceDetailReadyStore({
           onUpsellsChange={setUpsells}
           onAddToCart={handleCheckout}
           isAdding={isAdding}
+          cartSelectedOptionId={OPTION_ID}
           ctaId="service_ready_store_buy_section_add_to_cart"
           ctaPage="/services/online-store"
         />
