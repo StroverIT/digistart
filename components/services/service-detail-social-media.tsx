@@ -256,7 +256,7 @@ export function ServiceDetailSocialMedia({
               <span className="text-muted-foreground">/месец</span>
             </div>
           }
-          primaryLabel="Купи сега"
+          primaryLabel="Научи повече"
           onPrimaryClick={() => {
             trackCtaClick(
               "/services/social-media",

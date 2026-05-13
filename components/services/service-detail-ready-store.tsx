@@ -268,7 +268,7 @@ export function ServiceDetailReadyStore({
             )}
           />
         }
-        primaryLabel="Купи сега"
+        primaryLabel="Научи повече"
         onPrimaryClick={() => {
           trackCtaClick("/services/online-store", "service_ready_store_scroll_to_buy");
           scrollToBuySection();

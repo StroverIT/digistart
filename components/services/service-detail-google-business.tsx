@@ -251,7 +251,7 @@ export function ServiceDetailGoogleBusiness({
               className="text-3xl sm:text-4xl text-primary"
             />
           }
-          primaryLabel="Купи сега"
+          primaryLabel="Научи повече"
           onPrimaryClick={() => {
             trackCtaClick(
               "/services/google-business",
