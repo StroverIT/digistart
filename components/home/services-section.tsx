@@ -157,7 +157,7 @@ export function ServicesSection() {
                           variant="ghost"
                           className="max-sm:mt-4 bg-primary text-primary-foreground hover:bg-primary/90 sm:bg-transparent sm:text-foreground sm:hover:bg-primary sm:hover:text-primary-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                         >
-                          Научете повече
+                          Научи повече
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                       </TrackedCtaLink>
