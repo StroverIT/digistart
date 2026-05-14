@@ -20,6 +20,7 @@ import { UtmDailyViewsChart } from "@/components/admin/utm-daily-views-chart";
 import { UtmMonthlyViewsChart } from "@/components/admin/utm-monthly-views-chart";
 import type { AnalyticsAdminResponse } from "@/lib/analytics/types";
 import { CartAdditionsChart } from "@/components/admin/cart-additions-chart";
+import { ViewsPerDayChart } from "@/components/admin/views-per-day-chart";
 
 interface StatCardProps {
   title: string;
@@ -85,6 +86,10 @@ export default function AdminDashboard() {
   const [revenueToDate, setRevenueToDate] = useState(() => getTodayDateKey());
   const [subscriptionsFromDate, setSubscriptionsFromDate] = useState(() => getDateBefore(13));
   const [subscriptionsToDate, setSubscriptionsToDate] = useState(() => getTodayDateKey());
+  const [viewsFromDate, setViewsFromDate] = useState(() => getDateBefore(13));
+  const [viewsToDate, setViewsToDate] = useState(() => getTodayDateKey());
+  const [viewsPeriodData, setViewsPeriodData] = useState<AnalyticsAdminResponse | null>(null);
+  const [viewsPeriodLoading, setViewsPeriodLoading] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -157,6 +162,58 @@ export default function AdminDashboard() {
       ),
     [orders, subscriptionsFromDate, subscriptionsToDate]
   );
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (!viewsFromDate || !viewsToDate || viewsFromDate > viewsToDate) {
+      setViewsPeriodData(null);
+      setViewsPeriodLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    setViewsPeriodLoading(true);
+    const { fromIso, toIso } = dateKeysToInclusiveUtcRange(viewsFromDate, viewsToDate);
+    const params = new URLSearchParams({ from: fromIso, to: toIso });
+
+    fetch(`/api/admin/analytics?${params}`, { signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error("analytics"))))
+      .then((data: AnalyticsAdminResponse) => setViewsPeriodData(data))
+      .catch((error: unknown) => {
+        if (
+          error &&
+          typeof error === "object" &&
+          "name" in error &&
+          (error as { name: string }).name === "AbortError"
+        ) {
+          return;
+        }
+        setViewsPeriodData(null);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setViewsPeriodLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [mounted, viewsFromDate, viewsToDate]);
+
+  const viewsRangeDaily = useMemo(
+    () =>
+      viewsPeriodData
+        ? buildViewsDailyStats(viewsPeriodData.dailyStats, viewsFromDate, viewsToDate)
+        : [],
+    [viewsPeriodData, viewsFromDate, viewsToDate]
+  );
+
+  const viewsRangeTotal = useMemo(
+    () => viewsRangeDaily.reduce((sum, row) => sum + row.visits, 0),
+    [viewsRangeDaily]
+  );
+
+  const viewsByPageSorted = useMemo(() => {
+    if (!viewsPeriodData?.pageStats.length) return [];
+    return [...viewsPeriodData.pageStats].sort((a, b) => b.views - a.views);
+  }, [viewsPeriodData]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -415,6 +472,96 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <SubscriptionsChart data={subscriptionsStats} />
+          </CardContent>
+        </Card>
+
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)] lg:col-span-2"
+        >
+          <CardHeader className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <CardTitle>Посещения (page views) по дни</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Общо за периода:{" "}
+                <span className="font-semibold text-foreground tabular-nums">
+                  {viewsPeriodLoading && viewsPeriodData === null
+                    ? "…"
+                    : viewsRangeTotal.toLocaleString("bg-BG")}
+                </span>
+                {viewsPeriodLoading && viewsPeriodData !== null ? (
+                  <span className="ml-2 inline-block h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent align-middle" />
+                ) : null}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="views-from">От</Label>
+                <Input
+                  id="views-from"
+                  type="date"
+                  value={viewsFromDate}
+                  max={viewsToDate}
+                  onChange={(event) => setViewsFromDate(event.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="views-to">До</Label>
+                <Input
+                  id="views-to"
+                  type="date"
+                  value={viewsToDate}
+                  min={viewsFromDate}
+                  onChange={(event) => setViewsToDate(event.target.value)}
+                />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-8">
+            {viewsPeriodLoading && viewsPeriodData === null ? (
+              <div className="h-[300px] flex items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              </div>
+            ) : (
+              <>
+                <ViewsPerDayChart data={viewsRangeDaily} />
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-3">
+                    Посещения по страница (за периода)
+                  </h3>
+                  {viewsByPageSorted.length === 0 ? (
+                    <p className="text-muted-foreground text-sm">
+                      {viewsPeriodData === null && !viewsPeriodLoading
+                        ? "Няма заредени данни за периода."
+                        : "Няма page views за избрания период."}
+                    </p>
+                  ) : (
+                    <div className="overflow-x-auto rounded-md border border-border">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-border bg-muted/40">
+                            <th className="text-left py-2 px-3">Страница</th>
+                            <th className="text-right py-2 px-3">Views</th>
+                            <th className="text-right py-2 px-3">Сесии</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {viewsByPageSorted.map((stat) => (
+                            <tr key={stat.page} className="border-b border-border/50 last:border-0">
+                              <td className="py-2 px-3 font-mono text-xs break-all max-w-[min(28rem,55vw)]">
+                                {stat.page}
+                              </td>
+                              <td className="py-2 px-3 text-right tabular-nums">{stat.views}</td>
+                              <td className="py-2 px-3 text-right tabular-nums">{stat.uniqueSessions}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -694,12 +841,34 @@ function getTodayDateKey() {
   return new Date().toISOString().split("T")[0];
 }
 
+/** Local calendar day → inclusive UTC bounds for API `from` / `to` filters. */
+function dateKeysToInclusiveUtcRange(fromKey: string, toKey: string) {
+  const from = new Date(`${fromKey}T00:00:00`);
+  const to = new Date(`${toKey}T23:59:59.999`);
+  return { fromIso: from.toISOString(), toIso: to.toISOString() };
+}
+
 function getDateBefore(daysBeforeToday: number) {
   const date = new Date();
   date.setDate(date.getDate() - daysBeforeToday);
   return date.toISOString().split("T")[0];
 }
 
+
+function buildViewsDailyStats(
+  analyticsDays: { date: string; visits: number }[],
+  fromDate: string,
+  toDate: string
+): { date: string; visits: number }[] {
+  const byDate = new Map<string, number>();
+  for (const row of analyticsDays) {
+    byDate.set(row.date, row.visits);
+  }
+  return listDateRange(fromDate, toDate).map((dateKey) => ({
+    date: dateKey,
+    visits: byDate.get(dateKey) ?? 0,
+  }));
+}
 
 function buildRevenueDailyStats(
   orders: Order[],
