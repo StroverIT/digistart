@@ -251,7 +251,7 @@ export function ServiceDetailReadyStore({
         badgeText="Продавай 24/7 без ограничения"
         title={
           <>
-            Готов Онлайн Магазин
+            Онлайн Магазин
             <div className="gradient-text">Твоят бизнес, отворен денонощно</div>
           </>
         }
