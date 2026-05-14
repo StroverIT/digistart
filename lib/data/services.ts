@@ -186,7 +186,7 @@ export const services: Service[] = [
         id: "basic",
         name: "Профил в Google Business",
         description: "Еднократна настройка и оптимизация на профила",
-        price: 11,
+        price: 20,
       },
     ],
     upsells: [
