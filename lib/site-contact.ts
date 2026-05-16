@@ -2,9 +2,9 @@
 export const siteContact = {
   email: "digistartbg@gmail.com",
   /** `tel:` href without spaces */
-  phoneHref: "tel:+359896100061",
+  phoneHref: "tel:+359877187271",
   /** Display with spaces for BG mobile */
-  phoneLabel: "+359896100061",
+  phoneLabel: "+359877187271",
   facebook: "https://www.facebook.com/profile.php?id=61564485825627",
   instagram: "https://www.instagram.com/digistartbg/",
   /** Public company page; use this on the site, not the LinkedIn admin URL. */
