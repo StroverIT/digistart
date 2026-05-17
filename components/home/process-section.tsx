@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { MessageSquare, Lightbulb, Code2, Rocket } from "lucide-react";
+import { LayoutGrid, SlidersHorizontal, ShieldCheck } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -9,32 +9,25 @@ gsap.registerPlugin(ScrollTrigger);
 
 const steps = [
   {
-    icon: <MessageSquare className="h-6 w-6" />,
+    icon: <LayoutGrid className="h-6 w-6" />,
     number: "01",
-    title: "Диагностика",
+    title: "Избери услуга",
     description:
-      "Разбираме как продавате днес, какви стоки имате и кои процеси трябва да останат лесни за вас.",
+      "Онлайн магазин, управление на социални мрежи или Google профил. Решаваш от какво имаш нужда днес.",
   },
   {
-    icon: <Lightbulb className="h-6 w-6" />,
+    icon: <SlidersHorizontal className="h-6 w-6" />,
     number: "02",
-    title: "План за старт",
+    title: "Конфигурирай по твоя мярка",
     description:
-      "Избираме най-краткия път до първи онлайн продажби: магазин, плащания, куриер, Google и социални мрежи.",
+      "Добави само нужните функции (куриери, реклама, дизайн на лого). Виждаш крайната цена веднага, без изненади и скрити такси.",
   },
   {
-    icon: <Code2 className="h-6 w-6" />,
+    icon: <ShieldCheck className="h-6 w-6" />,
     number: "03",
-    title: "Работещо демо",
+    title: "Плати и стартирай без риск",
     description:
-      "Показваме реална версия на магазина, за да видите визията, поръчките и основните настройки преди старт.",
-  },
-  {
-    icon: <Rocket className="h-6 w-6" />,
-    number: "04",
-    title: "Пускане и растеж",
-    description:
-      "Пускаме онлайн канала и надграждаме с реклама, съдържание и локална видимост според резултатите.",
+      "Завършваш поръчката онлайн и ние започваме работа веднага. Тестваш спокойно благодарение на нашата 14-дневна гаранция за връщане на средствата.",
   },
 ];
 
@@ -98,20 +91,21 @@ export function ProcessSection() {
             ref={eyebrowRef}
             className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block opacity-0 translate-y-10"
           >
-            Как работим
+            Процес
           </span>
           <h2
             ref={titleRef}
             className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-balance opacity-0 translate-y-10"
           >
-            От витрината до <span className="gradient-text">първата онлайн поръчка</span>
+            Дигитализирай бизнеса си в{" "}
+            <span className="gradient-text">3 лесни стъпки</span>
           </h2>
           <p
             ref={descRef}
             className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
           >
-            Без технически жаргон и без големи обещания на сляпо. Започваме с ясна версия, която може
-            да продава, после надграждаме според данните.
+            Избираш услуга, конфигурираш само нужното и стартираш онлайн — без скрити такси и с 14-дневна
+            гаранция за връщане на средствата.
           </p>
         </div>
 
@@ -120,7 +114,7 @@ export function ProcessSection() {
           {/* Connection line - desktop */}
           <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-border to-transparent -translate-y-1/2" />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {steps.map((step, index) => (
               <div key={step.number} className="relative">
                 {/* Step card */}

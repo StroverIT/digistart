@@ -61,6 +61,7 @@ const PLAN_DEFINITIONS: PlanDefinition[] = [
     discountPercent: 0,
     features: [
       "Абонаментен онлайн магазин (шаблон, поръчки, Meta Pixel)",
+      "Хостинг и SSL сертификат (HTTPS)",
       "1 канал в социалните мрежи (2 публикации седмично)",
       "Настройка за 1 работен ден",
     ],
@@ -266,6 +267,11 @@ export const BUNDLE_COMPARISON_ROWS: BundleComparisonRow[] = [
   {
     id: "store",
     label: "Онлайн магазин (абонамент, темплейт, поръчки, Meta Pixel)",
+    values: { start: "yes", growth: "yes", full: "yes" },
+  },
+  {
+    id: "hosting-ssl",
+    label: "Хостинг и SSL сертификат",
     values: { start: "yes", growth: "yes", full: "yes" },
   },
   {

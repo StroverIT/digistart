@@ -10,7 +10,6 @@ import {
   MapPin,
   MonitorCheck,
   Rocket,
-  ShoppingCart,
 } from "lucide-react";
 import {
   cartItemToMetaLineItem,
@@ -71,18 +70,18 @@ const googleSolutionItems = [
 
 const googleSteps = [
   {
-    title: "Стъпка 1: Поръчка онлайн",
-    text: "Избираш пакета и плащаш еднократно и сигурно през нашия сайт. Край на скритите такси.",
-    icon: ShoppingCart,
+    title: "Базова настройка",
+    text: "Еднократна такса от €49 за създаване и оптимизиране на профил, за да гарантираме, че бизнесът ти ще се показва в Google Maps, когато хората са наблизо.",
+    icon: MapPin,
   },
   {
-    title: "Стъпка 2: Демо версия и настройка",
-    text: "Изграждаме профила с всички данни, снимки и ключови думи. Преглеждаш го, за да потвърдиш, че отговаря на нуждите ти.",
+    title: "Разшири обхвата",
+    text: "Добави дигитално меню, абонамент за месечни публикации или вписване в популярни автомобилни навигации (Waze, Apple Maps).",
     icon: MonitorCheck,
   },
   {
-    title: "Стъпка 3: Официално в Google",
-    text: "Завършваме верификацията и профилът ти е публичен. Вече си на картата и готов да събираш ревюта и обаждания.",
+    title: "Привлечи човекопоток",
+    text: "Плащаш и ние превръщаме профила ти в ясна дигитална табела, която улеснява клиентите да те открият и посетят на място.",
     icon: Rocket,
   },
 ] as const;
@@ -355,14 +354,13 @@ export function ServiceDetailGoogleBusiness({
                 data-animate-reveal
                 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10"
               >
-                Как да стартираш? (Само 3 лесни стъпки)
+                Стани видим в локалните търсения
               </h2>
               <p
                 data-animate-reveal
                 className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
               >
-                Улеснили сме процеса, за да не губиш излишно време в технически
-                детайли.
+                Навигирай клиентите до вратата си — само 3 лесни стъпки.
               </p>
             </div>
             <div className="relative">

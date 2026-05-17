@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   CircleX,
   ClipboardList,
-  MonitorCheck,
   Rocket,
   ShoppingCart,
   Smartphone,
@@ -68,18 +67,18 @@ const marketingSolutionItems = [
 
 const marketingSteps = [
   {
-    title: "Стъпка 1: Поръчка онлайн",
-    text: "Избираш маркетинговия пакет и плащаш еднократно за първоначалната настройка.",
+    title: "Избери базов пакет",
+    text: "Получаваш професионална поддръжка на 1 канал с 2 качествени публикации всяка седмица.",
     icon: ShoppingCart,
   },
   {
-    title: "Стъпка 2: Демо версия на стратегията",
-    text: "Изготвяме първоначален месечен план за постове, текстове, Reels идеи и рекламни стратегии за преглед и одобрение.",
-    icon: MonitorCheck,
+    title: "Надгради за растеж",
+    text: "Включи управление на реклами, за да генерираш реални поръчки, или Чатбот, който да отговаря на запитванията на клиентите вместо теб.",
+    icon: Smartphone,
   },
   {
-    title: "Стъпка 3: Всичко е активно",
-    text: "Стартираме органичното съдържание и платените реклами. Профилите ти започват да работят за теб 24/7.",
+    title: "Старт с гаранция",
+    text: "Плащаш и пускаме кампаниите в действие. Ако до 1 месец нямаш нито една реализирана продажба – връщаме ти 100% от сумата за нашата услуга.",
     icon: Rocket,
   },
 ] as const;
@@ -361,14 +360,13 @@ export function ServiceDetailSocialMedia({
                 data-animate-reveal
                 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10"
               >
-                Как да стартирам социална мрежа и реклама? (Само 3 лесни стъпки)
+                Привлечи клиенти и генерирай трафик
               </h2>
               <p
                 data-animate-reveal
                 className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
               >
-                Ние поемаме тежката работа, за да можеш да се фокусираш върху
-                бизнеса си.
+                С желязна гаранция за резултат — само 3 лесни стъпки.
               </p>
             </div>
             <div className="relative">

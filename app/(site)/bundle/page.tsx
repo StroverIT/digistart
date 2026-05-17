@@ -39,6 +39,11 @@ export default function BundlePage() {
               Сравни какво е включено във всеки пакет. Цените са с ДДС в евро; месечният абонамент се
               таксува всеки месец, еднократните суми — при първото плащане.
             </p>
+            <p className="mt-2 text-sm text-foreground/90 max-w-2xl">
+              Всички пакети с онлайн магазин включват <strong className="font-medium">хостинг</strong> и{" "}
+              <strong className="font-medium">SSL сертификат</strong> — без допълнителни такси за
+              сигурна HTTPS връзка.
+            </p>
           </div>
         </div>
 
