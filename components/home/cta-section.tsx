@@ -65,15 +65,15 @@ export function CTASection() {
             ref={titleRef}
             className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-balance opacity-0 translate-y-10"
           >
-            Готови да изградите вашето <span className="gradient-text">онлайн присъствие?</span>
+            Искате повече продажби, без още един <span className="gradient-text">физически обект?</span>
           </h2>
 
           <p
             ref={descRef}
             className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed opacity-0 translate-y-10"
           >
-            Свържете се с нас за безплатна консултация. Ще обсъдим вашите нужди и ще ви предложим
-            най-доброто решение за вашия бизнес.
+            На консултацията ще видим къде сте сега, какво ви спира да продавате онлайн и кой е
+            най-разумният първи ход за вашия магазин.
           </p>
 
           <div
@@ -88,7 +88,7 @@ export function CTASection() {
             </TrackedCtaLink>
             <TrackedCtaLink href="/#services" ctaId="bottom_view_services">
               <Button variant="outline" size="lg" className="text-lg h-14 px-8">
-                Разгледайте услугите
+                Вижте решенията
               </Button>
             </TrackedCtaLink>
           </div>

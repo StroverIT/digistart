@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 
 const benefits = [
-  "Безплатна консултация",
-  "Гарантирани резултати",
-  "Поддръжка 24/7",
+  "По-малък риск от нов физически обект",
+  "Продажби извън работното време",
+  "Ясен старт без техническо объркване",
 ];
 
 export function HeroSection() {
@@ -69,7 +69,7 @@ export function HeroSection() {
             ref={titleRef}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl sm:leading-17 mb-6 text-balance opacity-0 translate-y-10"
           >
-            Изградете <span className="gradient-text">дигиталното бъдеще</span> на вашия бизнес
+            Превърнете физическия магазин в <span className="gradient-text">онлайн канал за продажби</span>
           </h1>
 
           {/* Subheadline */}
@@ -77,8 +77,8 @@ export function HeroSection() {
             ref={subRef}
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed text-pretty opacity-0 translate-y-10"
           >
-            Онлайн магазини, Google Business, социални мрежи и дигитален маркетинг. Превръщаме вашите
-            идеи в работещи решения, които генерират приходи.
+            Помагаме на магазини за дрехи да продават в цялата страна с онлайн магазин, локално
+            присъствие и маркетинг, без да отварят нов обект и без да губят контрол върху бизнеса.
           </p>
 
           {/* Benefits */}
@@ -98,7 +98,7 @@ export function HeroSection() {
           <div ref={ctaRef} className="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 translate-y-10">
             <TrackedCtaLink href="/#services" ctaId="hero_view_services">
               <Button size="lg" className="glow-primary text-lg h-14 px-8">
-                Вижте услугите
+                Вижте как можем да помогнем
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </TrackedCtaLink>

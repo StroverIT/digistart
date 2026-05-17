@@ -9,10 +9,14 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
-      <PlansSection className="bg-card/30" />
-      <ServicesSection />
-      <StatsSection />
       <ProcessSection />
+      <PlansSection
+        className="bg-card/30"
+        title="Пакети за старт без излишен риск"
+        subtitle="Започнете с готов онлайн канал за продажби и добавяйте плащания, куриер, Google Business и социални мрежи според темпото на магазина."
+      />
+      <ServicesSection />
+      {/* <StatsSection /> */}
       <CTASection />
     </>
   );
