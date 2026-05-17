@@ -395,7 +395,7 @@ export function Header() {
                   onClick={() => closeMenu()}
                 >
                   <Button className="w-full glow-primary mt-2" size="lg">
-                    Безплатна консултация
+                    Запази безплатна дигитална пътна карта
                   </Button>
                 </TrackedCtaLink>
               </li>
