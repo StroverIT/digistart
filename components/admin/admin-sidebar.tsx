@@ -12,6 +12,7 @@ import {
   RefreshCw,
   CalendarDays,
   MapPin,
+  FolderKanban,
   LogOut,
   ExternalLink,
   User,
@@ -44,6 +45,7 @@ const navItems = [
   { href: "/admin/consultations", label: "Консултации", icon: CalendarDays },
   { href: "/admin/newsletter", label: "Бюлетин", icon: Newspaper },
   { href: "/admin/businesses", label: "Бизнеси", icon: MapPin },
+  { href: "/admin/projects", label: "Проекти", icon: FolderKanban },
   { href: "/admin/testing", label: "Тестване", icon: FlaskConical },
 ] as const;
 

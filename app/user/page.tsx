@@ -1,8 +1,12 @@
+import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
+import { PreviewLink } from "@/components/preview/preview-link";
+import { getTenantProjectForUser } from "@/lib/server/tenant-projects";
 
 export default async function UserHomePage() {
   const session = await getServerSession(authOptions);
@@ -36,6 +40,10 @@ export default async function UserHomePage() {
     )
     : [];
 
+  const tenantProject = await getTenantProjectForUser(userId);
+  const onboardingIncomplete =
+    tenantProject && tenantProject.onboardingStep < 4 && tenantProject.setupStatus === "draft";
+
   return (
     <div className="space-y-8">
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
@@ -44,6 +52,36 @@ export default async function UserHomePage() {
           Здравей{session?.user?.name ? `, ${session.user.name}` : ""}!
         </p>
       </div>
+
+      {(onboardingIncomplete || tenantProject?.previewPath) && (
+        <Card className="border-primary/30">
+          <CardHeader>
+            <CardTitle className="text-lg">Онлайн магазин</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center gap-3">
+            {onboardingIncomplete && (
+              <Button asChild>
+                <Link href="/onboarding">Продължи настройката</Link>
+              </Button>
+            )}
+            {tenantProject?.previewPath && (
+              <PreviewLink
+                href={tenantProject.previewPath}
+                ctaId="user_panel_store_preview"
+                ctaPage="/user"
+                className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium hover:bg-accent"
+              >
+                Преглед на сайта
+              </PreviewLink>
+            )}
+            {tenantProject && (
+              <span className="text-sm text-muted-foreground capitalize">
+                Статус: {tenantProject.setupStatus}
+              </span>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 fill-mode-both">
         <Card>

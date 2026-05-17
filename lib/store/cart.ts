@@ -1,6 +1,13 @@
 "use client";
 
 import type { Cart, CartItem, CartItemUpsell } from "@/lib/types";
+import {
+  getPlanById,
+  planToServiceId,
+  serviceIdToPlanId,
+  type PlanId,
+} from "@/lib/data/plans";
+import { calculatePlanTotal } from "@/lib/pricing/calculate-plan-total";
 import { getServiceById } from "@/lib/data/services";
 import { calculateItemTotal } from "@/lib/pricing/calculate-item-total";
 import { recordCartAddition } from "@/lib/store/cart-analytics";
@@ -140,4 +147,69 @@ function recalculateTotals(cart: Cart): void {
 export function getCartItemCount(): number {
   const cart = getCart();
   return cart.items.length;
+}
+
+export function findCartItemByPlan(planId: PlanId): CartItem | undefined {
+  const serviceId = planToServiceId(planId);
+  return getCart().items.find((item) => item.serviceId === serviceId || item.planId === planId);
+}
+
+export function hasBundlePlanInCart(): boolean {
+  return getCart().items.some((item) => item.planId || serviceIdToPlanId(item.serviceId));
+}
+
+export function hasOverlappingServicesWithPlan(planId: PlanId): string[] {
+  const plan = getPlanById(planId);
+  if (!plan) return [];
+  const cart = getCart();
+  const overlaps: string[] = [];
+  const bundleServiceIds = new Set(["ready-store", "social-media", "google-business"]);
+  for (const item of cart.items) {
+    if (item.planId || serviceIdToPlanId(item.serviceId)) continue;
+    if (bundleServiceIds.has(item.serviceId)) {
+      overlaps.push(item.serviceName);
+    }
+  }
+  return overlaps;
+}
+
+export type AddPlanToCartResult =
+  | { cart: Cart; added: true }
+  | { cart: Cart; added: false; reason: "duplicate" | "invalid" };
+
+/** Replace any existing bundle plan; à la carte items may remain (checkout shows warning). */
+export function addPlanToCart(planId: PlanId): AddPlanToCartResult {
+  const plan = getPlanById(planId);
+  if (!plan) return { cart: getCart(), added: false, reason: "invalid" };
+
+  const cart = getCart();
+  cart.items = cart.items.filter((item) => !item.planId && !serviceIdToPlanId(item.serviceId));
+
+  const serviceId = planToServiceId(planId);
+  if (cart.items.some((item) => item.serviceId === serviceId)) {
+    return { cart, added: false, reason: "duplicate" };
+  }
+
+  const totals = calculatePlanTotal(planId);
+  const newItem: CartItem = {
+    id: `plan-${planId}-${Date.now()}`,
+    planId,
+    serviceId,
+    serviceName: `Пакет ${plan.name}`,
+    selectedOptionId: planId,
+    selectedOptionName: plan.name,
+    basePrice: totals.monthlyTotal,
+    upsells: [],
+    totalPrice: totals.monthlyTotal + totals.oneTimeTotal,
+    totalOneTime: totals.oneTimeTotal,
+    totalMonthly: totals.monthlyTotal,
+    isMonthly: true,
+  };
+
+  cart.items.push(newItem);
+  recalculateTotals(cart);
+  saveCart(cart);
+  recordCartAddition(serviceId, newItem.serviceName, []);
+
+  return { cart, added: true };
 }

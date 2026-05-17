@@ -32,131 +32,60 @@ export const services: Service[] = [
     slug: "online-store",
     name: "Онлайн Магазин",
     shortDescription:
-      "Продавай веднага с професионален магазин, настроен специално за твоя бизнес. Без скрити такси.",
+      "Продавай 24/7 с готов шаблон, поръчки и Meta Pixel — от €20 на месец.",
     fullDescription:
-      "Продуктизиран пакет за бърз старт: индивидуален дизайн, продукти, плащания и мобилна версия — до 48 часа до първи клиенти.",
+      "Абонаментен онлайн магазин с готов темплейт, приемане на поръчки и вграден Meta Pixel. Стандартна настройка за 1 работен ден.",
     icon: "ShoppingCart",
-    basePrice: 750,
+    basePrice: 20,
+    isMonthly: true,
     options: [
       {
-        id: "standard",
-        name: "Онлайн Магазин",
+        id: "subscription",
+        name: "Абонаментен онлайн магазин",
         description:
-          "Пълен пакет: дизайн с лого, продукти, плащания, SEO и хостинг за първия месец",
-        price: 750,
+          "Готов темплейт, поръчки, Meta Pixel и мобилна версия",
+        price: 20,
+        isMonthly: true,
       },
     ],
     upsells: [
       {
-        id: "pro-package",
-        name: "ПРО Пакет: Куриери + Плащания с карта",
+        id: "online-payments",
+        name: "Плащане с карта (Stripe)",
         description:
-          "Комбиниран пакет с интеграция на Еконт + Спиди и картови плащания на по-добра цена.",
-        kind: "toggle",
-        pricePerUnit: 160,
-        unit: "пакет",
-        min: 0,
-        max: 1,
-        default: 0,
-      },
-      {
-        id: "monthly-maintenance",
-        name: "Месечна поддръжка и сигурност",
-        description:
-          "Премиум хостинг, ежедневни архиви, ъпдейти и мониторинг за безпроблемна работа на магазина.",
+          "Сигурни картови плащания, включително Apple Pay и Google Pay. Скоро: DSK Bank и Борика.",
         kind: "toggle",
         isMonthly: true,
-        pricePerUnit: 100,
+        pricePerUnit: 10,
         unit: "месец",
         min: 0,
         max: 1,
         default: 0,
       },
       {
-        id: "online-payments",
-        name: "Онлайн плащания с карта (Stripe / MyPOS)",
-        description:
-          "Интегрираме сигурна система за картови плащания, включително Apple Pay и Google Pay.",
-        kind: "toggle",
-        pricePerUnit: 90,
-        unit: "добавка",
-        min: 0,
-        max: 1,
-        default: 0,
-      },
-      {
-        id: "express-delivery",
-        name: "Експресна изработка до 48 часа",
-        description:
-          "Онлайн магазинът става основен приоритет с гарантиран старт до 48 часа след поръчката.",
-        kind: "toggle",
-        pricePerUnit: 200,
-        unit: "добавка",
-        min: 0,
-        max: 1,
-        default: 0,
-      },
-      {
-        id: "sales-booster",
-        name: 'Модул "Увеличи продажбите" (Upsell & Cross-sell)',
-        description:
-          "Функции като често купувани заедно и bundle оферти за по-висока средна стойност на поръчка.",
-        kind: "toggle",
-        pricePerUnit: 85,
-        unit: "добавка",
-        min: 0,
-        max: 1,
-        default: 0,
-      },
-      {
         id: "courier-integration",
-        name: "Интеграция с куриери",
+        name: "Интеграция с куриер",
         description:
-          "Настройка на Еконт/Спиди с избор на офис по карта и автоматично изчисляване на доставка.",
+          "Еконт или Спиди с избор на офис и автоматично изчисляване на доставка. Скоро: Box Now и Easybox.",
         kind: "choice",
-        unit: "пакет",
+        isMonthly: true,
+        unit: "куриер",
         min: 0,
         max: 1,
         default: 0,
         choices: [
-          { id: "econt", name: "Само Еконт", pricePerUnit: 85 },
-          { id: "speedy", name: "Само Спиди", pricePerUnit: 85 },
-          { id: "both", name: "Еконт + Спиди", pricePerUnit: 140 },
+          { id: "econt", name: "Еконт", pricePerUnit: 5, isMonthly: true },
+          { id: "speedy", name: "Спиди", pricePerUnit: 5, isMonthly: true },
         ],
       },
-
       {
-        id: "pixel-analytics",
-        name: "Facebook Pixel + Google Analytics",
+        id: "unique-design",
+        name: "Уникален дизайн",
         description:
-          "Инсталация и базова конфигурация за точно проследяване на трафик, събития и конверсии.",
+          "Индивидуален дизайн по твоя бранд. Срок: 3–5 работни дни според нишата.",
         kind: "toggle",
-        pricePerUnit: 67,
-        unit: "добавка",
-        min: 0,
-        max: 1,
-        default: 0,
-      },
-      {
-        id: "extra-products",
-        name: "Допълнителни продукти над 500",
-        description:
-          "Базовият пакет включва 500 продукта. За повече се таксуват 0.05 евро на продукт (50 евро на 1000).",
-        kind: "quantity",
-        pricePerUnit: 0.05,
-        unit: "продукт",
-        min: 0,
-        max: 50000,
-        default: 0,
-      },
-      {
-        id: "ecommerce-legal-package",
-        name: "Правен пакет за Електронна Търговия",
-        description:
-          "Шаблони и настройка на общи условия, политика за поверителност и бисквитки за онлайн магазин.",
-        kind: "toggle",
-        pricePerUnit: 90,
-        unit: "пакет",
+        pricePerUnit: 100,
+        unit: "еднократно",
         min: 0,
         max: 1,
         default: 0,
@@ -164,21 +93,22 @@ export const services: Service[] = [
       ...brandUpsells,
     ],
     features: [
-      "Индивидуален дизайн с твоето лого",
-      "Качване и настройка на до 500 продукта",
-      "Интеграция на методи за плащане (Stripe/Наложен платеж)",
-      "Мобилна версия (Responsive design)",
-      "Основни SEO настройки",
-      "Безплатен хостинг за първия месец",
+      "Готов темплейт за магазин",
+      "Приемане на поръчки",
+      "Вграден Meta Pixel",
+      "Мобилна версия (Responsive)",
+      "Настройка за 1 работен ден",
     ],
-    timeline: "До 48 часа",
+    timeline: "1 работен ден",
   },
   {
     id: "google-business",
     slug: "google-business",
     name: "Google Business",
-    shortDescription: "Оптимизация и управление на вашия Google Business профил за повече видимост в търсачката.",
-    fullDescription: "Помагаме ви да се класирате по-високо в Google Maps и локалните търсения. Оптимизираме профила ви, публикуваме редовно съдържание и отговаряме на отзиви, за да изградите доверие с клиентите.",
+    shortDescription:
+      "Оптимизация и управление на Google Business профила за повече локална видимост.",
+    fullDescription:
+      "Помагаме ви да се класирате по-високо в Google Maps и локалните търсения.",
     icon: "MapPin",
     basePrice: 20,
     options: [
@@ -194,7 +124,19 @@ export const services: Service[] = [
         id: "monthly-posts",
         name: "Месечна поддръжка и публикации",
         description:
-          "По 2 оптимизирани поста месечно директно в Google профила, за да останеш активен.",
+          "По 2 оптимизирани поста месечно директно в Google профила.",
+        kind: "toggle",
+        isMonthly: true,
+        pricePerUnit: 32,
+        unit: "месец",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+      {
+        id: "review-removal",
+        name: "Процедура по премахване на фалшиви ревюта",
+        description: "Официални рапорти и жалби към Google support.",
         kind: "toggle",
         isMonthly: true,
         pricePerUnit: 32,
@@ -206,7 +148,7 @@ export const services: Service[] = [
       {
         id: "apple-maps",
         name: "Синхронизация с Apple Maps",
-        description: "Създаване и оптимизация на бизнес профил и в екосистемата на Apple.",
+        description: "Създаване и оптимизация на бизнес профил в Apple.",
         kind: "toggle",
         pricePerUnit: 49,
         unit: "добавка",
@@ -228,7 +170,7 @@ export const services: Service[] = [
       {
         id: "bing-yahoo",
         name: "Регистрация в Bing Places & Yahoo Local",
-        description: "Дублиране и оптимизация на профила и в търсачката на Microsoft.",
+        description: "Дублиране и оптимизация в търсачката на Microsoft.",
         kind: "toggle",
         pricePerUnit: 20,
         unit: "добавка",
@@ -240,7 +182,7 @@ export const services: Service[] = [
         id: "digital-menu",
         name: "Дигитално меню / продуктов каталог",
         description:
-          "Включва въвеждане до 15 продукта или 3 услуги. След това се таксуват по 0.20 евро на артикул или услуга.",
+          "Първите 15 продукта безплатно. След това €0.20 на артикул.",
         kind: "quantity",
         pricePerUnit: 0.2,
         unit: "продукт",
@@ -250,21 +192,9 @@ export const services: Service[] = [
         includedUnits: 15,
       },
       {
-        id: "review-removal",
-        name: "Процедура по премахване на фалшиви ревюта",
-        description: "Официални рапорти и жалби към Google support с аргументация.",
-        kind: "toggle",
-        isMonthly: true,
-        pricePerUnit: 32,
-        unit: "месец",
-        min: 0,
-        max: 1,
-        default: 0,
-      },
-      {
         id: "second-location",
         name: "Добавяне на втора локация (филиал)",
-        description: "Добавяме и верифицираме втори обект на преференциална цена.",
+        description: "Добавяме и верифицираме втори обект.",
         kind: "toggle",
         pricePerUnit: 24,
         unit: "локация",
@@ -277,19 +207,19 @@ export const services: Service[] = [
     features: [
       "Пълна настройка на профила",
       "Оптимизация за локално SEO",
-      "Редовни публикации",
+      "Редовни публикации (с добавка)",
       "Управление на отзиви",
-      "Месечни отчети",
-      "Конкурентен анализ",
     ],
-    timeline: "Постоянна услуга",
+    timeline: "Еднократна настройка",
   },
   {
     id: "social-media",
     slug: "social-media",
     name: "Социални мрежи",
-    shortDescription: "Професионално управление на вашите социални мрежи за повече ангажираност и продажби.",
-    fullDescription: "Създаваме съдържание, което привлича внимание и генерира ангажираност. От визуални постове до рекламни кампании - управляваме цялостното ви присъствие в социалните мрежи.",
+    shortDescription:
+      "Професионално управление на социалните мрежи за повече ангажираност и продажби.",
+    fullDescription:
+      "Създаваме съдържание и управляваме присъствието ви в социалните мрежи.",
     icon: "Share2",
     basePrice: 200,
     isMonthly: true,
@@ -306,8 +236,7 @@ export const services: Service[] = [
       {
         id: "extra-posts",
         name: "Допълнителни публикации",
-        description:
-          "Всеки допълнителен пост / carousel / reel струва 10 евро за текущия канал.",
+        description: "Всеки допълнителен пост / carousel / reel — €10 за канала.",
         kind: "quantity",
         isMonthly: true,
         pricePerUnit: 10,
@@ -319,7 +248,7 @@ export const services: Service[] = [
       {
         id: "extra-channels",
         name: "Допълнителни канали",
-        description: "99 евро/месец на канал, като включва 2 публикации седмично за този канал.",
+        description: "€99/месец на канал, включва 2 публикации седмично.",
         kind: "quantity",
         isMonthly: true,
         pricePerUnit: 99,
@@ -329,9 +258,23 @@ export const services: Service[] = [
         default: 0,
       },
       {
+        id: "ad-management",
+        name: "Управление на реклами",
+        description:
+          "€150/месец на канал. Минимален рекламен бюджет: €50/месец на канал.",
+        kind: "quantity",
+        isMonthly: true,
+        pricePerUnit: 150,
+        unit: "месец",
+        min: 0,
+        max: 10,
+        default: 0,
+        helperText: "Минималният рекламен бюджет е €50/месец за всеки избран канал.",
+      },
+      {
         id: "welcome-messages",
         name: "Автоматични приветствени съобщения",
-        description: "Всеки нов последовател получава автоматично топло лично съобщение.",
+        description: "Автоматично лично съобщение за всеки нов последовател.",
         kind: "toggle",
         pricePerUnit: 20,
         unit: "добавка",
@@ -342,8 +285,7 @@ export const services: Service[] = [
       {
         id: "chatbot-setup",
         name: "Настройка на Чатбот",
-        description:
-          'В стандартния пакет ние модерираме коментарите и следим за спам. Отговарянето на конкретни търговски запитвания (напр. "Кога имате свободен час?" или "Имате ли този модел в червено?") остава твоя задача, тъй като ти познаваш наличностите и графика си най-добре. С тази добавка настройваме чатбот за автоматични отговори на типични запитвания.',
+        description: "Чатбот за автоматични отговори на типични запитвания.",
         kind: "toggle",
         pricePerUnit: 59,
         unit: "добавка",
@@ -351,35 +293,18 @@ export const services: Service[] = [
         max: 1,
         default: 0,
       },
-      {
-        id: "ad-management",
-        name: "Управление на реклами",
-        description:
-          "150 евро/месец на канал за управление на реклами. Минимален бюджет за реклама: 50 евро/месец на канал.",
-        kind: "quantity",
-        isMonthly: true,
-        pricePerUnit: 150,
-        unit: "месец",
-        min: 0,
-        max: 10,
-        default: 0,
-        helperText: "Минималният рекламен бюджет е 50 евро/месец за всеки избран канал.",
-      },
       ...brandUpsells,
     ],
     features: [
       "Създаване на съдържание",
       "Визуален дизайн на постове",
       "Планиране и публикуване",
-      "Отговори на коментари",
-      "Месечни отчети",
-      "Стратегия за растеж",
+      "2 публикации седмично (1 канал)",
     ],
     timeline: "Постоянна услуга",
   },
 ];
 
-/** Historical slug values (e.g. in DB) → canonical Latin slugs. */
 const LEGACY_SERVICE_SLUGS: Record<string, string> = {
   "\u043e\u043d\u043b\u0430\u0439\u043d-\u043c\u0430\u0433\u0430\u0437\u0438\u043d": "online-store",
   "\u0441\u043e\u0446\u0438\u0430\u043b\u043d\u0438-\u043c\u0440\u0435\u0436\u0438": "social-media",
@@ -398,7 +323,6 @@ export function getServiceById(id: string): Service | undefined {
   return services.find((s) => s.id === id);
 }
 
-/** Base plan price for marketing UI: matches the selected option when provided, otherwise the first option, else `basePrice`. */
 export function getServicePlanPrice(service: Service, optionId?: string): number {
   if (optionId) {
     const match = service.options.find((o) => o.id === optionId);

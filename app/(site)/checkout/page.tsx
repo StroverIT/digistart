@@ -676,14 +676,6 @@ export default function CheckoutPage() {
                     </CardContent>
                   </Card>
                   {checkoutError ? <p className="text-sm text-red-500">{checkoutError}</p> : null}
-                  <Button
-                    type="button"
-                    size="lg"
-                    className="w-full glow-primary"
-                    onClick={handleContinueFromAccount}
-                  >
-                    Напред
-                  </Button>
                   <div className="rounded-lg border border-border p-4">
                     <label className="flex items-start gap-3 cursor-pointer">
                       <Checkbox
@@ -729,6 +721,15 @@ export default function CheckoutPage() {
                       <p className="mt-2 text-xs text-red-500">{legalConsentError}</p>
                     ) : null}
                   </div>
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="w-full glow-primary"
+                    onClick={handleContinueFromAccount}
+                  >
+                    Напред
+                  </Button>
+
                 </>
               ) : null}
 

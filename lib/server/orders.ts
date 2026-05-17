@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import type { Cart, ConsultationBooking, CustomerInfo, Order } from "@/lib/types";
 import { prisma } from "@/lib/prisma";
+import { ensureBundlePlanServiceInDb, isBundlePlanServiceId } from "@/lib/server/bundle-plans";
 import { getServiceByIdFromDb } from "@/lib/server/services";
 
 export type OrderWithItemsAndConsultation = Prisma.OrderGetPayload<{
@@ -109,6 +110,11 @@ export async function createOrderInDb(params: {
   for (const serviceId of uniqueServiceIds) {
     const existing = await prisma.service.findUnique({ where: { id: serviceId } });
     if (existing) continue;
+
+    if (isBundlePlanServiceId(serviceId)) {
+      await ensureBundlePlanServiceInDb(serviceId);
+      continue;
+    }
 
     const sourceService = await getServiceByIdFromDb(serviceId);
     if (!sourceService) {

@@ -12,6 +12,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:push": "prisma db push",
+    "sync:catalog": "tsx scripts/sync-services-catalog.ts",
     "stripe-webhook": "stripe listen --forward-to localhost:3000/api/stripe/webhook",
     "postinstall": "prisma generate"
   },

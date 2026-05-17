@@ -366,12 +366,20 @@ function SuccessContent() {
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </TrackedCtaLink>
+        {session?.user?.role === "customer" ? (
+          <TrackedCtaLink href="/onboarding" ctaId="checkout_success_onboarding">
+            <Button size="lg" className="glow-primary">
+              Настрой магазина
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </TrackedCtaLink>
+        ) : null}
         {session?.user?.role === "customer" && order?.cart?.items?.[0]?.id ? (
           <TrackedCtaLink
             href={`/user/services/${order.cart.items[0].id}`}
             ctaId="checkout_success_open_user_panel_order"
           >
-            <Button size="lg" className="glow-primary">
+            <Button size="lg" variant="secondary">
               Виж поръчката в панела
               <User className="ml-2 h-5 w-5" />
             </Button>

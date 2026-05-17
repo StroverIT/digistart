@@ -164,7 +164,7 @@ export function seedDemoOrders(): void {
             id: "demo-2",
             serviceId: "ready-store",
             serviceName: "Онлайн Магазин",
-            selectedOptionId: "standard",
+            selectedOptionId: "subscription",
             selectedOptionName: "Онлайн Магазин",
             basePrice: 499,
             upsells: [{ upsellId: "sales-booster", quantity: 1 }],

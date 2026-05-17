@@ -25,6 +25,7 @@ import { useTransitionRouter } from "@/components/transitions/useTransitionRoute
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServicePlanPrice } from "@/lib/data/services";
 import { Faq, type FaqItem } from "@/components/ui/faq";
+import { PlansSection } from "@/components/plans/plans-section";
 import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 import { ServicePageBackground } from "@/components/services/service-page-background";
 
@@ -432,6 +433,11 @@ export function ServiceDetailGoogleBusiness({
             </div>
           </div>
         </section>
+
+        <PlansSection
+          compact
+          className="py-12 md:py-16"
+        />
 
         <ServiceBuySection
           service={service}

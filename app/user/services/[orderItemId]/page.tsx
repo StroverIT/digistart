@@ -11,6 +11,8 @@ import { getServiceById } from "@/lib/data/services";
 import { calculateItemTotal } from "@/lib/pricing/calculate-item-total";
 import { getServiceByIdFromDb } from "@/lib/server/services";
 import type { CartItemUpsell } from "@/lib/types";
+import { DomainSetupCard } from "@/components/user/domain-setup-card";
+import { getStoreVpsIp, ONLINE_STORE_SERVICE_ID } from "@/lib/store-dns";
 
 /** Last-resort label when no catalog/DB name exists (kebab-case → words). */
 function humanizeUpsellId(id: string): string {
@@ -93,6 +95,8 @@ export default async function UserServiceDetailPage({
   const paletteUrl = brandAssets?.paletteUrl ?? null;
   const logoPreviewUrl = logoUrl ? `/api/uploads/brand/view?url=${encodeURIComponent(logoUrl)}` : null;
   const palettePreviewUrl = paletteUrl ? `/api/uploads/brand/view?url=${encodeURIComponent(paletteUrl)}` : null;
+  const isOnlineStore = item.serviceId === ONLINE_STORE_SERVICE_ID;
+  const vpsIp = getStoreVpsIp();
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -185,6 +189,8 @@ export default async function UserServiceDetailPage({
         </Card>
       )}
       </div>
+
+      {isOnlineStore ? <DomainSetupCard orderItemId={item.id} vpsIp={vpsIp} /> : null}
 
       {(logoUrl || paletteUrl) ? (
         <Card className="border-border bg-card/80 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-both">

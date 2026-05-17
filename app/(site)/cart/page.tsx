@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import type { Cart, CartItem, Service } from "@/lib/types";
-import { getCart, removeFromCart, updateCartItemUpsells } from "@/lib/store/cart";
+import { serviceIdToPlanId } from "@/lib/data/plans";
+import { getCart, hasBundlePlanInCart, removeFromCart, updateCartItemUpsells } from "@/lib/store/cart";
 import { getServiceById } from "@/lib/data/services";
 import { UpsellConfigurator } from "@/components/services/upsell-configurator";
 
@@ -34,7 +35,8 @@ function CartItemCard({
     return fromApi;
   }, [serviceFromDb, item.serviceId]);
   const [showUpsells, setShowUpsells] = useState(false);
-  const hasUpsells = Boolean(service?.upsells.length);
+  const isPlanItem = Boolean(item.planId || serviceIdToPlanId(item.serviceId));
+  const hasUpsells = Boolean(service?.upsells.length) && !isPlanItem;
   const upsellsWrapperRef = useRef<HTMLDivElement | null>(null);
   const upsellsContentRef = useRef<HTMLDivElement | null>(null);
 
@@ -196,6 +198,15 @@ export default function CartPage() {
   };
 
   const isEmpty = cart.items.length === 0;
+  const bundleInCart = hasBundlePlanInCart();
+  const overlappingWithBundle = bundleInCart
+    ? cart.items.filter(
+        (item) =>
+          !item.planId &&
+          !serviceIdToPlanId(item.serviceId) &&
+          ["ready-store", "social-media", "google-business"].includes(item.serviceId),
+      )
+    : [];
 
   useEffect(() => {
     if (!mounted) return;
@@ -263,6 +274,14 @@ export default function CartPage() {
             </p>
           </div>
         </div>
+
+        {overlappingWithBundle.length > 0 && (
+          <div className="mb-6 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-100">
+            Имате абонаментен пакет и отделни услуги, които може да се припокриват (
+            {overlappingWithBundle.map((i) => i.serviceName).join(", ")}). Препоръчваме само пакета
+            или само отделните услуги.
+          </div>
+        )}
 
         {isEmpty ? (
           <Card data-cart-empty className="bg-card border-border opacity-0 translate-y-10">

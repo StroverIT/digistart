@@ -49,6 +49,10 @@ export interface Service {
   timeline: string;
 }
 
+// Bundle plans & templates
+export type { PlanId, SubscriptionPlan } from "@/lib/data/plans";
+export type { ProductCategory, StoreTemplate } from "@/lib/data/templates";
+
 // Cart types
 export interface CartItemUpsell {
   upsellId: string;
@@ -60,6 +64,8 @@ export interface CartItemUpsell {
 
 export interface CartItem {
   id: string;
+  /** Set for bundle subscription plans (`bundle-plan-*`). */
+  planId?: string;
   serviceId: string;
   serviceName: string;
   selectedOptionId: string;

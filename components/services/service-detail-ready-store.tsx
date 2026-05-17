@@ -25,12 +25,13 @@ import { getServiceById, getServicePlanPrice } from "@/lib/data/services";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { Faq, type FaqItem } from "@/components/ui/faq";
 import Link from "next/link";
+import { PlansSection } from "@/components/plans/plans-section";
 import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const SERVICE_ID = "ready-store";
-const OPTION_ID = "standard";
+const OPTION_ID = "subscription";
 const PAIN_POINTS = [
   {
     title: "Затворен си в най-силните часове",
@@ -59,15 +60,12 @@ const PAIN_POINTS = [
 ] as const;
 
 const SOLUTION_ITEMS = [
-  "Индивидуален дизайн: Модерна визия, съобразена с твоя бранд, която вдъхва доверие и увеличава продажбите.",
-  "Мобилна версия (Responsive): Магазинът изглежда и работи перфектно на всяко устройство, като телефон, таблет и компютър.",
-  "Лесен панел за управление: Добавяш продукти, променяш цени и следиш поръчки без сложни кодове.",
-  "Качване на първоначални продукти: Качваме първите ти продукти (например до 20 бр.), за да стартираш веднага.",
-  "Можеш да добавяш и управляваш до 500 артикула през панела за управление.",
-  "Безплатен SSL сертификат: Сигурна връзка и доверие за всеки посетител.",
-  "Безплатен хостинг за 1 година: Стартираш без допълнителни разходи още от първия ден.",
-  "Безплатна поддръжка и сигурност за един месец: Ще ние се грижим за всичко останало, за да работиш безпроблемно.",
-  "Седмична безплатна консултация: Всяка седмица една среща за ъпгрейд, мащабиране и откриване на пропуски, които могат да бъдат попълнени.",
+  "Готов темплейт: Стартираш с професионален магазин без месеци разработка.",
+  "Приемане на поръчки: Клиентите поръчват онлайн 24/7.",
+  "Meta Pixel: Проследяване на събития за реклама във Facebook и Instagram.",
+  "Мобилна версия: Перфектен изглед на телефон, таблет и компютър.",
+  "Настройка за 1 работен ден: След получаване на материалите от теб.",
+  "Уникален дизайн (добавка): 3–5 работни дни според нишата.",
 ] as const;
 
 const STEPS = [
@@ -90,9 +88,9 @@ const STEPS = [
 
 const FAQ_ITEMS: FaqItem[] = [
   {
-    question: "Колко време отнема изработката на онлайн магазина?",
+    question: "Колко време отнема настройката на онлайн магазина?",
     answer:
-      "Стандартната изработка на онлайн магазин отнема между 5 и 6 работни дни след като получим материалите от твоя страна. Процесът е структуриран така, че да стартираш продажбите си максимално бързо.",
+      "Стандартният абонаментен магазин с готов шаблон се настройва за 1 работен ден след като получим материалите от теб. При добавка „Уникален дизайн“ срокът е 3–5 работни дни според нишата.",
   },
   {
     question: "Какви продукти мога да продавам в магазина?",
@@ -257,18 +255,21 @@ export function ServiceDetailReadyStore({
         }
         description={
           <>
-            Излез на онлайн пазара бързо и без стрес. Получаваш професионален, напълно
-            функциониращ електронен магазин на фиксирана цена. Ние вършим черната работа, вие само одобрявате.
+            Абонаментен онлайн магазин от €20/месец — готов шаблон, поръчки и Meta Pixel.
+            Настройка за 1 работен ден. Или избери готов пакет с отстъпка по-долу.
           </>
         }
         priceSlot={
-          <Price
-            value={planPrice}
-            className={cn(
-              headingFontClass,
-              "text-3xl sm:text-4xl text-primary"
-            )}
-          />
+          <div className="flex items-baseline gap-1">
+            <Price
+              value={planPrice}
+              className={cn(
+                headingFontClass,
+                "text-3xl sm:text-4xl text-primary"
+              )}
+            />
+            <span className="text-muted-foreground text-lg">/мес</span>
+          </div>
         }
         primaryLabel="Научи повече"
         onPrimaryClick={() => {
@@ -528,11 +529,18 @@ export function ServiceDetailReadyStore({
         </div>
       </section>
 
+      <PlansSection
+        compact
+        title="Готови абонаментни пакети"
+        subtitle="Или конфигурирай само онлайн магазина и добавките по-долу."
+        className="py-12 md:py-16 bg-card/30"
+      />
+
       {service ? (
         <ServiceBuySection
           service={service}
           title="Купи сега"
-          description="Конфигурирай магазина и го добави в кошницата."
+          description="Конфигурирай абонамента и добавките, след което добави в кошницата."
           price={planPrice}
           upsells={upsells}
           onUpsellsChange={setUpsells}

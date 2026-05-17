@@ -10,6 +10,7 @@ import {
   type PendingCheckoutUser,
 } from "@/lib/server/orders";
 import type { CartItemUpsell } from "@/lib/types";
+import { isBundlePlanServiceId } from "@/lib/server/bundle-plans";
 import { getServiceByIdFromDb } from "@/lib/server/services";
 import { getStripeServerClient } from "@/lib/server/stripe";
 import {
@@ -53,6 +54,7 @@ const payloadSchema = z.object({
         totalOneTime: z.number(),
         totalMonthly: z.number(),
         isMonthly: z.boolean().optional(),
+        planId: z.string().optional(),
       })
     ),
     totalOneTime: z.number(),
@@ -152,6 +154,8 @@ export async function POST(req: NextRequest) {
     }
 
     for (const item of parsed.data.cart.items) {
+      if (isBundlePlanServiceId(item.serviceId)) continue;
+
       const service = await getServiceByIdFromDb(item.serviceId);
       if (!service) {
         return NextResponse.json(
@@ -242,6 +246,9 @@ export async function POST(req: NextRequest) {
       customer: stripeCustomer.stripeCustomerId,
       metadata: {
         orderId: order.id,
+        ...(parsed.data.cart.items.find((i) => i.planId)
+          ? { planId: parsed.data.cart.items.find((i) => i.planId)!.planId! }
+          : {}),
         ...(purchaseAsBusiness ? { purchaseAsBusiness: "true" } : {}),
       },
       // Tax ID collection is often hidden (e.g. Customer already has a tax ID, or Stripe UI
@@ -268,6 +275,9 @@ export async function POST(req: NextRequest) {
       sessionBase.subscription_data = {
         metadata: {
           orderId: order.id,
+          ...(parsed.data.cart.items.find((i) => i.planId)
+            ? { planId: parsed.data.cart.items.find((i) => i.planId)!.planId! }
+            : {}),
           ...(purchaseAsBusiness ? { purchaseAsBusiness: "true" } : {}),
         },
       };
