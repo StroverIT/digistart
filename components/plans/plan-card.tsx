@@ -21,7 +21,7 @@ export function PlanCard({ plan, onSelect, isAdding }: PlanCardProps) {
       className={cn(
         "relative flex h-full flex-col overflow-hidden border-border bg-card shadow-sm transition-shadow hover:shadow-md",
         plan.highlighted &&
-          "border-primary ring-2 ring-primary/20 shadow-md shadow-primary/10",
+        "border-primary ring-2 ring-primary/20 shadow-md shadow-primary/10",
       )}
     >
       <CardHeader className="space-y-2 pb-0 pt-6 px-6">
@@ -51,12 +51,14 @@ export function PlanCard({ plan, onSelect, isAdding }: PlanCardProps) {
         >
           <div className="flex min-h-11 flex-col justify-center">
             {plan.discountPercent > 0 ? (
-              <p className="text-xs leading-tight text-muted-foreground line-through decoration-muted-foreground/70">
-                Каталог:{" "}
+              <p className="text-xs leading-tight text-destructive/80 line-through decoration-destructive decoration-2">
                 <span className="tabular-nums">
-                  <Price value={plan.listMonthly} layout="horizontal" className="inline-flex gap-1.5" />
+                  <Price
+                    value={plan.listMonthly}
+                    layout="horizontal"
+                    className="inline-flex gap-1.5 [&>span]:text-destructive [&>span:last-child]:text-destructive/75 line-through"
+                  />
                 </span>
-                <span className="text-muted-foreground/80">/мес</span>
               </p>
             ) : null}
           </div>

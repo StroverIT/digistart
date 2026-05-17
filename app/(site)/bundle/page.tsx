@@ -126,8 +126,13 @@ export default function BundlePage() {
                 </div>
                 <div className="shrink-0 rounded-lg border border-border bg-background p-4 min-w-[220px]">
                   {plan.discountPercent > 0 && (
-                    <p className="text-xs text-muted-foreground line-through mb-1">
-                      Каталог: <Price value={plan.listMonthly} />/мес
+                    <p className="mb-1 text-xs text-destructive line-through decoration-destructive decoration-2">
+                      Каталог:{" "}
+                      <Price
+                        value={plan.listMonthly}
+                        className="[&>span]:text-destructive [&>span:last-child]:text-destructive/75"
+                      />
+                      /мес
                     </p>
                   )}
                   <p className="text-xs font-medium text-muted-foreground uppercase">Месечно</p>
