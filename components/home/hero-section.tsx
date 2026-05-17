@@ -77,8 +77,9 @@ export function HeroSection() {
             ref={subRef}
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed text-pretty opacity-0 translate-y-10"
           >
-            Помагаме на малки бизнеси, странични проекти и ръчно изработени брандове да продават
-            онлайн с готов магазин, Google профил и маркетинг, без техническо объркване.
+            Превърни физическия си магазин или ръчно изработен бранд в машина за онлайн продажби.
+            Получаваш готов магазин, Google профил и маркетинг – без сложни технически термини и без
+            скрити разходи.
           </p>
 
           {/* Benefits */}

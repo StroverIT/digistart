@@ -79,7 +79,7 @@ const PLAN_DEFINITIONS: PlanDefinition[] = [
     discountPercent: 10,
     highlighted: true,
     features: [
-      "Всичко от Старт, плюс плащания с карта",
+      "Всичко от Digi, плюс плащане с карта",
       "1 куриер по избор (Еконт или Спиди)",
       "2 канала в социалните мрежи",
       "10% отстъпка от месечната цена",
@@ -108,7 +108,7 @@ const PLAN_DEFINITIONS: PlanDefinition[] = [
       "Пълен дигитален пакет с Google Business профил и 15% отстъпка от месечната цена.",
     discountPercent: 15,
     features: [
-      "Всичко от Растеж",
+      "Всичко от Digistart",
       "Google Business — базова настройка на профила (еднократно)",
       "15% отстъпка от месечната цена",
     ],

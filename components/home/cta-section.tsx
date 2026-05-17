@@ -58,7 +58,7 @@ export function CTASection() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8 opacity-0 translate-y-10"
           >
             <MessageCircle className="h-4 w-4" />
-            Безплатна консултация
+            Безплатна дигитална пътна карта
           </div>
 
           <h2
@@ -73,8 +73,8 @@ export function CTASection() {
             ref={descRef}
             className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed opacity-0 translate-y-10"
           >
-            На консултацията ще видим какво продаваш, къде губиш време днес и кой е най-разумният
-            първи ход, за да стартираш без излишен бюджет и сложна техника.
+            Нека направим 20-минутен разговор. Дори да не работим заедно, ще си тръгнете с ясен план в
+            3 стъпки как да изведете бизнеса си онлайн и къде губите пари в момента.
           </p>
 
           <div
@@ -83,7 +83,7 @@ export function CTASection() {
           >
             <TrackedCtaLink href="/consultation" ctaId="bottom_free_consultation">
               <Button size="lg" className="glow-primary text-lg h-14 px-8">
-                Запази безплатна консултация
+                Запази безплатна дигитална пътна карта
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </TrackedCtaLink>
