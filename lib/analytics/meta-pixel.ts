@@ -8,8 +8,8 @@
  * Standard events: PageView, AddToCart, Purchase, Lead.
  *
  * Env:
- * - NEXT_PUBLIC_META_PIXEL_ID — Facebook Pixel ID (browser pixel disabled if unset)
- * - NEXT_PUBLIC_META_CURRENCY — ISO 4217, default EUR
+ * - NEXT_PUBLIC_META_PIXEL_ID - Facebook Pixel ID (browser pixel disabled if unset)
+ * - NEXT_PUBLIC_META_CURRENCY - ISO 4217, default EUR
  */
 
 declare global {
@@ -282,7 +282,7 @@ export function trackMetaPageView(pagePath?: string): string {
 }
 
 /**
- * Lead — e.g. newsletter signup (standard Meta event for lead campaigns).
+ * Lead - e.g. newsletter signup (standard Meta event for lead campaigns).
  */
 export function trackMetaLead(params: {
   content_name: string;
@@ -323,7 +323,7 @@ export function trackMetaLead(params: {
 }
 
 /**
- * AddToCart — one or more line items (e.g. configured service rows).
+ * AddToCart - one or more line items (e.g. configured service rows).
  */
 export function trackMetaAddToCart(
   lineItems: MetaPixelLineItem[],
@@ -365,7 +365,7 @@ export function trackMetaAddToCart(
 }
 
 /**
- * Purchase after successful checkout — pass full cart line items and total value.
+ * Purchase after successful checkout - pass full cart line items and total value.
  */
 export function trackMetaPurchase(params: {
   lineItems: MetaPixelLineItem[];

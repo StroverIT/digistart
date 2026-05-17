@@ -249,7 +249,7 @@ export function OnboardingWizard() {
           {step === 4 && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Gmail: свързването ще бъде активирано скоро. Засега остави имейла си в стъпка 3 —
+                Gmail: свързването ще бъде активирано скоро. Засега остави имейла си в стъпка 3 -
                 ще се свържем с теб.
               </p>
               {project?.gmailConnectedAt ? (

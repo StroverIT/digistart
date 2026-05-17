@@ -75,11 +75,10 @@ export function ProjectsPageClient() {
                 key={p.id}
                 type="button"
                 onClick={() => setSelectedId(p.id)}
-                className={`w-full text-left rounded-lg border p-3 text-sm transition-colors ${
-                  selectedId === p.id
+                className={`w-full text-left rounded-lg border p-3 text-sm transition-colors ${selectedId === p.id
                     ? "border-primary bg-primary/5"
                     : "border-border hover:border-primary/30"
-                }`}
+                  }`}
               >
                 <p className="font-medium truncate">{p.user.name ?? p.user.email}</p>
                 <p className="text-xs text-muted-foreground truncate">{p.user.email}</p>
@@ -99,7 +98,7 @@ export function ProjectsPageClient() {
             <div className="grid gap-2 sm:grid-cols-2">
               <div>
                 <span className="text-muted-foreground">Клиент</span>
-                <p className="font-medium">{selected.user.name ?? "—"}</p>
+                <p className="font-medium">{selected.user.name ?? "-"}</p>
                 <p>{selected.user.email}</p>
               </div>
               <div>
@@ -108,7 +107,7 @@ export function ProjectsPageClient() {
               </div>
               <div>
                 <span className="text-muted-foreground">Шаблон</span>
-                <p className="font-medium">{selected.templateId ?? "—"}</p>
+                <p className="font-medium">{selected.templateId ?? "-"}</p>
               </div>
               <div>
                 <Label className="text-muted-foreground">Статус</Label>

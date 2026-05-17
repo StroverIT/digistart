@@ -8,9 +8,9 @@ import { createHash } from "node:crypto";
  * `event_id`, so Meta dedupes them.
  *
  * Env (production only):
- * - STAPE_CAPIG_URL — e.g. https://capig.digistart.bg
- * - STAPE_CAPIG_API_KEY — base64 token from Stape
- * - NEXT_PUBLIC_META_PIXEL_ID — required (target Pixel)
+ * - STAPE_CAPIG_URL - e.g. https://capig.digistart.bg
+ * - STAPE_CAPIG_API_KEY - base64 token from Stape
+ * - NEXT_PUBLIC_META_PIXEL_ID - required (target Pixel)
  */
 
 export type MetaCapiEventName = "PageView" | "AddToCart" | "Purchase" | "Lead";
@@ -106,7 +106,7 @@ function getCapigConfig(): { url: string; apiKey: string; pixelId: string } | nu
 
 /**
  * Sends a Meta CAPI event through Stape CAPIG. No-ops (returns false) if the
- * gateway is not configured (e.g. local dev). Best-effort — never throws.
+ * gateway is not configured (e.g. local dev). Best-effort - never throws.
  */
 export async function sendMetaCapiEvent(input: MetaCapiSendInput): Promise<boolean> {
   const config = getCapigConfig();

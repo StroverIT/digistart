@@ -337,7 +337,7 @@ export async function sendNewsletterSignupEmails(params: {
       from,
       to: params.email,
       subject: "Благодарим за записването в бюлетина – DigiStart",
-      text: `Здравейте,\n\nПотвърждаваме записването ви за бюлетина на DigiStart (${params.email}). При старта ще получите 10% ексклузивна отстъпка за първата си услуга при нас — детайлите изпращаме със старта.\n\nПоздрави,\nDigiStart`,
+      text: `Здравейте,\n\nПотвърждаваме записването ви за бюлетина на DigiStart (${params.email}). При старта ще получите 10% ексклузивна отстъпка за първата си услуга при нас - детайлите изпращаме със старта.\n\nПоздрави,\nDigiStart`,
       html: subscriberHtml,
     }),
     mailer.sendMail({

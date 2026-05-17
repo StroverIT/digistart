@@ -120,7 +120,7 @@ export default async function UserHomePage() {
                   month: "long",
                   year: "numeric",
                 })
-                : "—"}
+                : "-"}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
               {nextRenewalServices.length > 0

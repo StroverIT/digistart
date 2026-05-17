@@ -23,7 +23,7 @@ export async function ensureAdminStripeTestServiceInDb() {
       icon: "Zap",
       basePrice: 0,
       isMonthly: false,
-      timeline: "—",
+      timeline: "-",
       features: [],
       options: {
         create: {

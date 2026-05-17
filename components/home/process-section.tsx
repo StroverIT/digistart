@@ -104,7 +104,7 @@ export function ProcessSection() {
             ref={descRef}
             className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
           >
-            Избираш услуга, конфигурираш само нужното и стартираш онлайн бързо — без хиляди левове
+            Избираш услуга, конфигурираш само нужното и стартираш онлайн бързо - без хиляди левове
             първоначална инвестиция и с 14-дневна гаранция.
           </p>
         </div>

@@ -75,7 +75,7 @@ const PLAN_DEFINITIONS: PlanDefinition[] = [
     name: "Digistart",
     tagline: "Плащания, куриер и 2 канала",
     description:
-      "Разширен пакет с онлайн плащания, доставка и два социални канала — с 10% отстъпка.",
+      "Разширен пакет с онлайн плащания, доставка и два социални канала - с 10% отстъпка.",
     discountPercent: 10,
     highlighted: true,
     features: [
@@ -109,7 +109,7 @@ const PLAN_DEFINITIONS: PlanDefinition[] = [
     discountPercent: 15,
     features: [
       "Всичко от Digistart",
-      "Google Business — базова настройка на профила (еднократно)",
+      "Google Business - базова настройка на профила (еднократно)",
       "15% отстъпка от месечната цена",
     ],
     monthlyComponents: [
@@ -286,12 +286,12 @@ export const BUNDLE_COMPARISON_ROWS: BundleComparisonRow[] = [
   },
   {
     id: "social",
-    label: "Социални мрежи — активни канали",
+    label: "Социални мрежи - активни канали",
     values: { start: "1 канал", growth: "2 канала", full: "2 канала" },
   },
   {
     id: "google",
-    label: "Google Business — базова настройка на профил",
+    label: "Google Business - базова настройка на профил",
     values: { start: "no", growth: "no", full: "yes" },
   },
   {

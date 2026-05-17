@@ -77,7 +77,7 @@ export function TestingPageClient() {
 
           {lastOrderId ? (
             <p className="text-sm text-muted-foreground">
-              Поръчка: <span className="font-mono text-foreground">{lastOrderId}</span> —
+              Поръчка: <span className="font-mono text-foreground">{lastOrderId}</span> -
               пренасочване към Stripe…
             </p>
           ) : null}

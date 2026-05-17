@@ -11,7 +11,7 @@ interface PreviewLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement>
 
 /**
  * Hard navigation to external template apps (separate Next.js instances).
- * Do not use next/link — client routing breaks cross-app previews.
+ * Do not use next/link - client routing breaks cross-app previews.
  */
 export function PreviewLink({
   href,

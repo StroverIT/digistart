@@ -37,11 +37,11 @@ export default function BundlePage() {
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Абонаментни пакети</h1>
             <p className="mt-2 text-muted-foreground max-w-2xl">
               Сравни какво е включено във всеки пакет. Цените са с ДДС в евро; месечният абонамент се
-              таксува всеки месец, еднократните суми — при първото плащане.
+              таксува всеки месец, еднократните суми - при първото плащане.
             </p>
             <p className="mt-2 text-sm text-foreground/90 max-w-2xl">
               Всички пакети с онлайн магазин включват <strong className="font-medium">хостинг</strong> и{" "}
-              <strong className="font-medium">SSL сертификат</strong> — без допълнителни такси за
+              <strong className="font-medium">SSL сертификат</strong> - без допълнителни такси за
               сигурна HTTPS връзка.
             </p>
           </div>
@@ -147,7 +147,7 @@ export default function BundlePage() {
                     {plan.oneTimeTotal > 0 ? (
                       <Price value={plan.oneTimeTotal} />
                     ) : (
-                      <span className="text-muted-foreground font-normal">—</span>
+                      <span className="text-muted-foreground font-normal">-</span>
                     )}
                   </p>
                   <PlanSelectButton planId={plan.id} className="mt-4 w-full" />
@@ -178,7 +178,7 @@ export default function BundlePage() {
                         )}
                         {line.monthlyAmount === 0 &&
                           (line.oneTimeAmount == null || line.oneTimeAmount === 0) && (
-                            <span className="text-muted-foreground">—</span>
+                            <span className="text-muted-foreground">-</span>
                           )}
                       </span>
                     </li>

@@ -236,7 +236,7 @@ export const services: Service[] = [
       {
         id: "extra-posts",
         name: "Допълнителни публикации",
-        description: "Всеки допълнителен пост / carousel / reel — €10 за канала.",
+        description: "Всеки допълнителен пост / carousel / reel - €10 за канала.",
         kind: "quantity",
         isMonthly: true,
         pricePerUnit: 10,

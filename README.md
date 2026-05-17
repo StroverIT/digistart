@@ -25,11 +25,11 @@ mirror lives at `POST /api/meta/capi`, which enriches with IP / User-Agent /
 
 Set in `.env.production` only (server-side keys are NOT prefixed with `NEXT_PUBLIC_`):
 
-- `NEXT_PUBLIC_META_PIXEL_ID` — Facebook / Meta Pixel ID. Browser `fbq` and the inline `<Script>` in `app/layout.tsx` are skipped if unset.
-- `NEXT_PUBLIC_META_CURRENCY` — ISO 4217 code (default `EUR`).
-- `STAPE_CAPIG_URL` — e.g. `https://capig.digistart.bg`.
-- `STAPE_CAPIG_IDENTIFIER` — Stape CAPIG identifier.
-- `STAPE_CAPIG_API_KEY` — Stape CAPIG API key (base64 token).
+- `NEXT_PUBLIC_META_PIXEL_ID` - Facebook / Meta Pixel ID. Browser `fbq` and the inline `<Script>` in `app/layout.tsx` are skipped if unset.
+- `NEXT_PUBLIC_META_CURRENCY` - ISO 4217 code (default `EUR`).
+- `STAPE_CAPIG_URL` - e.g. `https://capig.digistart.bg`.
+- `STAPE_CAPIG_IDENTIFIER` - Stape CAPIG identifier.
+- `STAPE_CAPIG_API_KEY` - Stape CAPIG API key (base64 token).
 
 `/api/meta/capi` no-ops when the CAPIG env vars are unset, so local dev stays clean.
 

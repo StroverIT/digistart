@@ -186,7 +186,7 @@ export function DomainSetupCard({ orderItemId, vpsIp }: DomainSetupCardProps) {
               spellCheck={false}
             />
             <p className="text-xs text-muted-foreground">
-              Без https:// и без www — само името (напр. <span className="font-mono">magazin.bg</span>
+              Без https:// и без www - само името (напр. <span className="font-mono">magazin.bg</span>
               ).
             </p>
           </div>
@@ -212,7 +212,7 @@ export function DomainSetupCard({ orderItemId, vpsIp }: DomainSetupCardProps) {
           <h3 className="font-semibold">Как да насочиш домейна</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
             В панела на регистратора на домейна (или в Cloudflare) добави следните DNS записи.
-            След като ги запазиш, натисни „Запази домейна“ — ще проверим настройката и ще
+            След като ги запазиш, натисни „Запази домейна“ - ще проверим настройката и ще
             конфигурираме сървъра (nginx).
           </p>
 
@@ -225,7 +225,7 @@ export function DomainSetupCard({ orderItemId, vpsIp }: DomainSetupCardProps) {
             <Alert variant="destructive">
               <AlertTitle>Липсва IP адрес на сървъра</AlertTitle>
               <AlertDescription>
-                Свържи се с нас — ще ти изпратим IP адреса за DNS записите.
+                Свържи се с нас - ще ти изпратим IP адреса за DNS записите.
               </AlertDescription>
             </Alert>
           )}

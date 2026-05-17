@@ -63,7 +63,7 @@ export function NewsletterSignupForm({ spotsRemaining, totalSpots }: NewsletterS
       }
 
       trackMetaLead({
-        content_name: "DigiStart — Бюлетин (очаквайте скоро)",
+        content_name: "DigiStart - Бюлетин (очаквайте скоро)",
         page_path: pathname && pathname.length > 0 ? pathname : "/",
         lead_source: "coming_soon_newsletter",
         user: { email: trimmed },
@@ -71,7 +71,7 @@ export function NewsletterSignupForm({ spotsRemaining, totalSpots }: NewsletterS
 
       if (data.emailSent === false) {
         toast.success(
-          "Записахте се успешно! Имейлът за потвърждение може да закъснее — проверете настройките за изпращане.",
+          "Записахте се успешно! Имейлът за потвърждение може да закъснее - проверете настройките за изпращане.",
         );
       } else {
         toast.success("Благодарим! Проверете пощата си за потвърждение.");

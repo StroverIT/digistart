@@ -71,7 +71,7 @@ export function SocialProofSection() {
             <div className="relative aspect-4/3 bg-muted/30 lg:aspect-auto lg:min-h-[320px]">
               <Image
                 src="/what-we-offer/restyled-mock-up.png"
-                alt="Restyled — mock-up на онлайн магазин"
+                alt="Restyled - mock-up на онлайн магазин"
                 fill
                 className="object-contain p-4 sm:p-6"
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -86,7 +86,7 @@ export function SocialProofSection() {
                 <h3 className="text-2xl sm:text-3xl font-bold mb-4">Restyled</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Restyled е моден бранд, който продаваше основно на живо и в съобщения. С готов онлайн
-                  магазин (mobile-first) преминаха към поръчки 24/7 — без да изглеждат „любителски“
+                  магазин (mobile-first) преминаха към поръчки 24/7 - без да изглеждат „любителски“
                   онлайн. Днес клиентите разглеждат колекциите сами, поръчват с няколко клика и брандът
                   расте с по-организирано присъствие в социалните мрежи, вместо да губи часове в
                   отговори на едни и същи въпроси.

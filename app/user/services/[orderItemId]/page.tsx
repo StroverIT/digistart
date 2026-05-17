@@ -54,7 +54,7 @@ export default async function UserServiceDetailPage({
   if (!item) notFound();
 
   const upsells = parseOrderItemUpsells(item.upsells);
-  /** Static catalog in `lib/data/services.ts` — preferred for titles and copy. */
+  /** Static catalog in `lib/data/services.ts` - preferred for titles and copy. */
   const catalogService = getServiceById(item.serviceId);
   const dbService = await getServiceByIdFromDb(item.serviceId);
   const storedMonthly = Number(item.totalMonthly) || 0;
@@ -118,76 +118,76 @@ export default async function UserServiceDetailPage({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 fill-mode-both">
-      <Card className="border-border bg-card/80 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <ReceiptText className="h-5 w-5 text-primary" />
-            Цена
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Еднократно</span>
-            <Price value={item.totalOneTime} className="font-medium" />
-          </div>
-          {displayMonthly > 0 ? (
+        <Card className="border-border bg-card/80 shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <ReceiptText className="h-5 w-5 text-primary" />
+              Цена
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Месечно</span>
-              <span>
-                <Price value={displayMonthly} className="font-medium" /> /мес
-              </span>
+              <span className="text-muted-foreground">Еднократно</span>
+              <Price value={item.totalOneTime} className="font-medium" />
             </div>
-          ) : null}
-          <div className="flex justify-between border-t pt-2 font-semibold">
-            <span>Общо позиция</span>
-            <Price value={item.totalPrice} />
-          </div>
-        </CardContent>
-      </Card>
+            {displayMonthly > 0 ? (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Месечно</span>
+                <span>
+                  <Price value={displayMonthly} className="font-medium" /> /мес
+                </span>
+              </div>
+            ) : null}
+            <div className="flex justify-between border-t pt-2 font-semibold">
+              <span>Общо позиция</span>
+              <Price value={item.totalPrice} />
+            </div>
+          </CardContent>
+        </Card>
 
-      {hasRecurringSubscription ? (
-        <Card className="border-border bg-card/80 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <CalendarClock className="h-5 w-5 text-primary" />
-              Абонамент
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {renew ? (
-              <>
-                <p className="text-sm text-muted-foreground">Следващо подновяване</p>
-                <p className="text-lg font-semibold">
-                  {renew.toLocaleDateString("bg-BG", {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="text-sm text-muted-foreground">Абонаментът е активен</p>
-                <p className="text-base font-semibold">Очаква се синхронизация на датата за подновяване</p>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="border-border bg-card/80 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <CalendarClock className="h-5 w-5 text-primary" />
-              Тип плащане
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">Еднократно закупена услуга</p>
-            <p className="mt-1 font-semibold">Без автоматично подновяване</p>
-          </CardContent>
-        </Card>
-      )}
+        {hasRecurringSubscription ? (
+          <Card className="border-border bg-card/80 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <CalendarClock className="h-5 w-5 text-primary" />
+                Абонамент
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {renew ? (
+                <>
+                  <p className="text-sm text-muted-foreground">Следващо подновяване</p>
+                  <p className="text-lg font-semibold">
+                    {renew.toLocaleDateString("bg-BG", {
+                      weekday: "long",
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-muted-foreground">Абонаментът е активен</p>
+                  <p className="text-base font-semibold">Очаква се синхронизация на датата за подновяване</p>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="border-border bg-card/80 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <CalendarClock className="h-5 w-5 text-primary" />
+                Тип плащане
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Еднократно закупена услуга</p>
+              <p className="mt-1 font-semibold">Без автоматично подновяване</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {isOnlineStore ? <DomainSetupCard orderItemId={item.id} vpsIp={vpsIp} /> : null}

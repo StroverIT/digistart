@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
             currency: "eur",
             unit_amount: TEST_UNIT_AMOUNT_CENTS,
             product_data: {
-              name: "DigiStart — админ тест на плащане",
+              name: "DigiStart - админ тест на плащане",
               description: "Еднократно тестово плащане €0.50 (production).",
             },
           },
