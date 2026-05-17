@@ -12,10 +12,13 @@ import {
   CheckCircle2,
   CircleX,
   ClipboardList,
+  Facebook,
+  Instagram,
   Rocket,
   ShoppingCart,
   Zap,
 } from "lucide-react";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
@@ -69,10 +72,18 @@ const SOLUTION_ITEMS = [
   "Конфигурация: Настройка за 1 работен ден.",
 ] as const;
 
+const RESTYLED_CASE = {
+  story:
+    "Restyled е моден бранд, който продаваше основно на живо и в съобщения. С готов онлайн магазин (mobile-first) преминаха към поръчки 24/7 — без да изглеждат „любителски“ онлайн. Днес клиентите разглеждат колекциите сами, поръчват с няколко клика и брандът расте с по-организирано присъствие в социалните мрежи, вместо да губи часове в отговори на едни и същи въпроси.",
+  website: "https://restyled.bg",
+  facebook: "https://www.facebook.com/profile.php?id=61582055477324",
+  instagram: "https://www.instagram.com/restyled_bg/",
+} as const;
+
 const STEPS = [
   {
     title: "Избери абонамент",
-    body: "Стартираш с базов магазин за €20/месец (включва готов темплейт и вграден Meta Pixel за проследяване на данни).",
+    body: "Стартираш с базов магазин за едва €20/месец (включва готов, модерен темплейт, хостинг и вграден Meta Pixel за реклама).",
     icon: ShoppingCart,
   },
   {
@@ -82,7 +93,7 @@ const STEPS = [
   },
   {
     title: "Продавай след 1–2 дни",
-    body: "Плащаш и в рамките на 24 до 48 часа (в зависимост от твоята ниша) магазинът ти е готов да приема поръчки 24/7. Започваш без риск с 14 дни право на отказ.",
+    body: "Без да чакаш месеци за разработка. В рамките на 24 до 48 часа магазинът ти е готов да приема поръчки 24/7. Стартираш без риск с 14 дни право на отказ.",
     icon: Rocket,
   },
 ] as const;
@@ -452,41 +463,76 @@ export function ServiceDetailReadyStore({
 
             <div className="space-y-6 sm:space-y-8">
               <div data-animate-reveal className="opacity-0 translate-y-10">
-                <span className="text-xs sm:text-sm font-medium tracking-widest uppercase text-muted-foreground mb-2 block">
-                  Онлайн магазин
+                <span className="text-xs font-semibold uppercase tracking-wider text-primary mb-2 block">
+                  Онлайн магазин · Fashion
                 </span>
                 <h3 className={cn(headingFontClass, "text-2xl sm:text-3xl md:text-4xl mb-4 text-balance")}>
                   Restyled
                 </h3>
                 <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
-                  Реален пример как добре структуриран онлайн магазин помага на малък бранд да
-                  изглежда професионално, да приема поръчки по-лесно и да тества пазара с по-малък риск.
+                  {RESTYLED_CASE.story}
                 </p>
               </div>
 
               <div
                 data-animate-reveal
-                className="grid grid-cols-2 gap-6 sm:gap-8 opacity-0 translate-y-10"
+                className="grid grid-cols-1 sm:grid-cols-3 gap-4 opacity-0 translate-y-10"
               >
-                <div>
-                  <p className={cn(headingFontClass, "text-2xl sm:text-3xl md:text-4xl mb-1")}>Fashion</p>
-                  <p className="text-muted-foreground text-sm sm:text-base">Ниша</p>
+                <div className="rounded-xl border border-border/80 bg-muted/20 px-4 py-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                    Ниша
+                  </p>
+                  <p className={cn(headingFontClass, "text-lg font-semibold")}>Fashion</p>
                 </div>
-                <div>
-                  <p className={cn(headingFontClass, "text-2xl sm:text-3xl md:text-4xl mb-1")}>Mobile-first</p>
-                  <p className="text-muted-foreground text-sm sm:text-base">Фокус</p>
+                <div className="rounded-xl border border-border/80 bg-muted/20 px-4 py-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                    Фокус
+                  </p>
+                  <p className={cn(headingFontClass, "text-lg font-semibold")}>Mobile-first</p>
+                </div>
+                <div className="rounded-xl border border-border/80 bg-muted/20 px-4 py-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                    Резултат
+                  </p>
+                  <p className="text-sm font-semibold leading-snug">
+                    Онлайн продажби и по-силна аудитория
+                  </p>
                 </div>
               </div>
 
-              <Link
+              <div
                 data-animate-reveal
-                target="_blank"
-                href="https://restyled.bg"
-                className="inline-flex items-center gap-2 text-primary text-base sm:text-lg font-medium group opacity-0 translate-y-10"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 opacity-0 translate-y-10"
               >
-                Виж онлайн магазина
-                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </Link>
+                <TrackedCtaLink
+                  href={RESTYLED_CASE.website}
+                  ctaId="service_ready_store_restyled_store"
+                  className="inline-flex items-center gap-2 text-primary text-base sm:text-lg font-medium group"
+                >
+                  Виж онлайн магазина
+                  <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </TrackedCtaLink>
+                <div className="flex items-center gap-3">
+                  <Link
+                    href={RESTYLED_CASE.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+                    aria-label="Restyled във Facebook"
+                  >
+                    <Facebook className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href={RESTYLED_CASE.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+                    aria-label="Restyled в Instagram"
+                  >
+                    <Instagram className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
