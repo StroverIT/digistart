@@ -71,7 +71,8 @@ export function Footer() {
               </span>
             </TrackedCtaLink>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              Изграждаме дигиталното бъдеще на вашия бизнес. Дигитални решения, които работят за вас.
+              Помагаме на малки бизнеси и странични проекти да стартират онлайн бързо, ясно и без
+              излишен риск.
             </p>
             <div className="flex items-center gap-3">
               <a

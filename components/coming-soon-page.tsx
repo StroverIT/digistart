@@ -8,7 +8,7 @@ import { NewsletterSignupForm } from "@/components/newsletter/newsletter-signup-
 import TransitionLink from "@/components/transitions/TransitionLink";
 
 const offerBullets = [
-  "Едно от 20-те места (преди да обявим старта публично).",
+  "Едно от 20-те места за ранен старт (преди да обявим публично).",
   "10% отстъпка за първия ти цялостен пакет при нас.",
   "Спокойствието, че най-после някой друг движи дигиталните неща вместо теб.",
 ] as const;
@@ -54,7 +54,7 @@ export async function ComingSoonPage() {
             </div>
 
             <h1 className="mb-6 text-balance text-4xl sm:text-5xl md:text-6xl lg:text-7xl sm:leading-17">
-              Само за собственици на физически магазини
+              За малки бизнеси, идеи и странични проекти
               <br />
               {spotsRemaining > 0 ? (
                 <span className="gradient-text">
@@ -66,19 +66,20 @@ export async function ComingSoonPage() {
             </h1>
 
             <p className="mx-auto mb-10 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              Забрави за дългите срещи, неразбираемите IT термини и координирането на 3 различни фирми. Ние
-              изработваме твоя онлайн магазин, вадим те на първо място в Google и пускаме рекламите ти. Ние вършим
-              черната работа, ти просто приемаш поръчките.
+              Забрави за дългите срещи, неразбираемите IT термини и координирането на 3 различни
+              фирми. Ние настройваме онлайн магазин, Google профил и маркетинг, за да тестваш
+              идеята си бързо и да приемаш поръчки без хаос.
             </p>
           </div>
 
           <div className="rounded-3xl border border-border bg-card/60 p-6 shadow-sm backdrop-blur sm:p-8">
             <h2 className="text-xl font-bold leading-snug sm:text-2xl">
-              <span aria-hidden>🔥 </span>Защо стартираме само с 20 магазина?
+              <span aria-hidden>🔥 </span>Защо стартираме само с 20 клиента?
             </h2>
             <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">
-              Защото не правим сайтове на конвейер. Искаме да работим лично с всеки от първите ни 20 клиента, за да
-              сме сигурни, че инвестицията им ще се върне в пъти още през първия месец.
+              Защото не правим сайтове на конвейер. Искаме да работим лично с всеки от първите ни
+              20 клиента, за да изградим правилния минимален старт според продукта, бюджета и
+              реалните цели.
             </p>
 
             <p className="mt-6 font-semibold text-foreground">Запиши се в списъка на чакащите днес и си гарантирай:</p>

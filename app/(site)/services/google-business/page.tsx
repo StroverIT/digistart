@@ -5,7 +5,8 @@ import { getServiceByIdFromDb } from "@/lib/server/services";
 
 export const metadata: Metadata = {
   title: "Google Business",
-  description: "Услуга за Google Business профил.",
+  description:
+    "Google Business профил за малки бизнеси, които искат клиентите да ги намират в Maps и локалните търсения.",
 };
 
 export default async function GoogleBusinessPage() {

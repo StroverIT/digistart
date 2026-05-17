@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: "%s | DigiStart",
   },
   description:
-    "Онлайн магазини, Google Business оптимизация и управление на социални мрежи. Изграждаме вашето онлайн присъствие.",
+    "Онлайн магазини, Google Business оптимизация и социални мрежи за малки бизнеси, странични проекти и създатели в България.",
   keywords: [
     "онлайн магазини",
     "Google Business",
@@ -47,13 +47,13 @@ export const metadata: Metadata = {
     siteName: "DigiStart",
     title: "DigiStart | Дигитална агенция",
     description:
-      "Онлайн магазини, Google Business, социални мрежи и дигитален маркетинг",
+      "Бърз и бюджетен онлайн старт за малки бизнеси, странични проекти и създатели",
   },
   twitter: {
     card: "summary_large_image",
     title: "DigiStart | Дигитална агенция",
     description:
-      "Онлайн магазини, Google Business, социални мрежи и дигитален маркетинг",
+      "Бърз и бюджетен онлайн старт за малки бизнеси, странични проекти и създатели",
   },
   robots: {
     index: true,

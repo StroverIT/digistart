@@ -6,7 +6,7 @@ import { getServiceByIdFromDb } from "@/lib/server/services";
 export const metadata: Metadata = {
   title: "Онлайн Магазин",
   description:
-    "Продавай веднага с професионален магазин, настроен специално за твоя бизнес. Без скрити такси.",
+    "Стартирай онлайн продажби с готов магазин, нисък месечен разход и добавки за плащания и куриери.",
 };
 
 export default async function OnlineStorePage() {

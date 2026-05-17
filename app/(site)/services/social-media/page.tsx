@@ -5,7 +5,8 @@ import { getServiceByIdFromDb } from "@/lib/server/services";
 
 export const metadata: Metadata = {
   title: "Социални мрежи",
-  description: "Услуга за управление на социални мрежи.",
+  description:
+    "Съдържание, реклами и автоматизация за малки бизнеси, които искат заявки и продажби от социалните мрежи.",
 };
 
 export default async function SocialMediaPage() {

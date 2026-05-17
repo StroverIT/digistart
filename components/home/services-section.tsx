@@ -85,20 +85,21 @@ export function ServicesSection() {
             ref={eyebrowRef}
             className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block opacity-0 translate-y-10"
           >
-            Какво изграждаме
+            Какво получаваш
           </span>
           <h2
             ref={titleRef}
             className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-balance opacity-0 translate-y-10"
           >
-            Дигитална основа за магазин, който иска да <span className="gradient-text">продава извън квартала</span>
+            Всичко нужно, за да превърнеш идеята си в{" "}
+            <span className="gradient-text">работещ онлайн бизнес</span>
           </h2>
           <p
             ref={descRef}
             className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
           >
-            Комбинираме онлайн магазин, Google Business и социални мрежи така, че клиентите да ви
-            намират, да ви вярват и да могат да поръчват без излишни стъпки.
+            Комбинираме онлайн магазин, Google Business и социални мрежи така, че клиентите да те
+            намират, да ти вярват и да поръчват без писане на десетки съобщения.
           </p>
         </div>
 

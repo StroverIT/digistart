@@ -65,15 +65,16 @@ export function CTASection() {
             ref={titleRef}
             className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-balance opacity-0 translate-y-10"
           >
-            Искате повече продажби, без още един <span className="gradient-text">физически обект?</span>
+            Имаш идея, продукт или услуга, но още нямаш{" "}
+            <span className="gradient-text">ясен онлайн старт?</span>
           </h2>
 
           <p
             ref={descRef}
             className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed opacity-0 translate-y-10"
           >
-            На консултацията ще видим къде сте сега, какво ви спира да продавате онлайн и кой е
-            най-разумният първи ход за вашия магазин.
+            На консултацията ще видим какво продаваш, къде губиш време днес и кой е най-разумният
+            първи ход, за да стартираш без излишен бюджет и сложна техника.
           </p>
 
           <div

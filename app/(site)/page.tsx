@@ -12,8 +12,8 @@ export default function HomePage() {
       <ProcessSection />
       <PlansSection
         className="bg-card/30"
-        title="Пакети за старт без излишен риск"
-        subtitle="Започнете с готов онлайн канал за продажби и добавяйте плащания, куриер, Google Business и социални мрежи според темпото на магазина."
+        title="Пакети за старт без голям бюджет"
+        subtitle="Започни с готов онлайн магазин, Google профил или социални мрежи и добавяй плащания, куриер и реклама само когато наистина ти трябват."
       />
       <ServicesSection />
       {/* <StatsSection /> */}

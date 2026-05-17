@@ -13,7 +13,7 @@ const steps = [
     number: "01",
     title: "Избери услуга",
     description:
-      "Онлайн магазин, управление на социални мрежи или Google профил. Решаваш от какво имаш нужда днес.",
+      "Онлайн магазин, социални мрежи или Google профил. Избираш какво ти трябва днес, за да започнеш без излишни разходи.",
   },
   {
     icon: <SlidersHorizontal className="h-6 w-6" />,
@@ -97,15 +97,15 @@ export function ProcessSection() {
             ref={titleRef}
             className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-balance opacity-0 translate-y-10"
           >
-            Дигитализирай бизнеса си в{" "}
+            Дигитализирай идеята си в{" "}
             <span className="gradient-text">3 лесни стъпки</span>
           </h2>
           <p
             ref={descRef}
             className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
           >
-            Избираш услуга, конфигурираш само нужното и стартираш онлайн — без скрити такси и с 14-дневна
-            гаранция за връщане на средствата.
+            Избираш услуга, конфигурираш само нужното и стартираш онлайн бързо — без хиляди левове
+            първоначална инвестиция и с 14-дневна гаранция.
           </p>
         </div>
 
