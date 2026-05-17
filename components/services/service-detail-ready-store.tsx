@@ -246,7 +246,7 @@ export function ServiceDetailReadyStore({
         title={
           <>
             Онлайн магазин за малък бизнес
-            <div className="gradient-text">От идея до поръчки за 1–2 дни</div>
+            <div className="gradient-text">От идея до поръчки за 1 ден</div>
           </>
         }
         description={
@@ -529,7 +529,7 @@ export function ServiceDetailReadyStore({
       <PlansSection
         compact
         title="Готови абонаментни пакети"
-          subtitle="Или конфигурирай само магазина и добавките, които са ти нужни сега."
+        subtitle="Или конфигурирай само магазина и добавките, които са ти нужни сега."
         className="py-12 md:py-16 bg-card/30"
       />
 
