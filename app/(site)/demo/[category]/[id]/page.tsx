@@ -1,22 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { notFound } from "next/navigation";
 import { Monitor, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getTemplate } from "@/lib/data/templates";
+import { resolveTemplatePreviewUrl } from "@/lib/preview-url";
 import { PreviewLink } from "@/components/preview/preview-link";
 import { cn } from "@/lib/utils";
 
 interface DemoPageProps {
-  params: { category: string; id: string };
+  params: Promise<{ category: string; id: string }>;
 }
 
 export default function DemoPage({ params }: DemoPageProps) {
-  const template = getTemplate(params.category, params.id);
+  const { category, id } = use(params);
+  const template = getTemplate(category, id);
   const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
 
   if (!template) notFound();
+
+  const previewUrl = resolveTemplatePreviewUrl(template);
 
   return (
     <main className="pt-24 pb-16 min-h-screen bg-background">
@@ -44,8 +48,8 @@ export default function DemoPage({ params }: DemoPageProps) {
               Mobile
             </Button>
             <PreviewLink
-              href={template.previewPath}
-              ctaId={`demo_open_${params.category}_${params.id}`}
+              href={previewUrl}
+              ctaId={`demo_open_${category}_${id}`}
               ctaPage={template.demoPath}
               className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium hover:bg-accent"
             >
@@ -63,7 +67,7 @@ export default function DemoPage({ params }: DemoPageProps) {
           >
             <iframe
               title={template.name}
-              src={template.previewPath}
+              src={previewUrl}
               className="w-full h-full border-0 bg-white"
             />
           </div>

@@ -1,5 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import { getTemplate } from "@/lib/data/templates";
+import {
+  resolvePreviewPathBySlug,
+  resolveTemplatePreviewUrl,
+} from "@/lib/preview-url";
 import { prisma } from "@/lib/prisma";
 
 export type TenantProjectDto = {
@@ -48,7 +52,11 @@ function mapProject(row: {
     productCategory: row.productCategory,
     templateId: row.templateId,
     previewSlug: row.previewSlug,
-    previewPath: template?.previewPath ?? (row.previewSlug ? `/preview/${row.previewSlug}` : null),
+    previewPath: template
+      ? resolveTemplatePreviewUrl(template)
+      : row.previewSlug
+        ? resolvePreviewPathBySlug(row.previewSlug, `/preview/${row.previewSlug}`)
+        : null,
     setupStatus: row.setupStatus,
     onboardingStep: row.onboardingStep,
     businessSettings:

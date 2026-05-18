@@ -26,10 +26,16 @@ const nextConfig = {
     ];
 
     if (process.env.ENABLE_TEMPLATE_PREVIEW_REWRITES !== "false") {
-      rewrites.push({
-        source: "/preview/clothing/1/:path*",
-        destination: `${templateClothing1}/:path*`,
-      });
+      rewrites.push(
+        {
+          source: "/preview/clothing/1",
+          destination: `${templateClothing1}/`,
+        },
+        {
+          source: "/preview/clothing/1/:path*",
+          destination: `${templateClothing1}/:path*`,
+        },
+      );
     }
 
     return rewrites;

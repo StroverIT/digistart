@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { productCategories, storeTemplates } from "@/lib/data/templates";
+import { resolveTemplatePreviewUrl } from "@/lib/preview-url";
 import { PreviewLink } from "@/components/preview/preview-link";
 import type { TenantProjectDto } from "@/lib/server/tenant-projects";
 import { cn } from "@/lib/utils";
@@ -177,7 +178,7 @@ export function OnboardingWizard() {
                   <p className="text-sm text-muted-foreground">{t.description}</p>
                   <div className="flex flex-wrap gap-2">
                     <PreviewLink
-                      href={t.previewPath}
+                      href={resolveTemplatePreviewUrl(t)}
                       ctaId={`onboarding_preview_${t.category}_${t.id}`}
                       ctaPage="/onboarding"
                       className="text-sm text-primary underline"
