@@ -154,7 +154,6 @@ export function ServiceDetailReadyStore({
 
       <TemplatesShowcaseSection
         headingFontClass={headingFontClass}
-        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_templates_scroll_buy")}
       />
 
       <ReadyStoreFaqSection
