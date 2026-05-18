@@ -1,64 +1,148 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { OnboardingIntegrationsStep } from "@/components/onboarding/onboarding-integrations-step";
 import { productCategories, storeTemplates } from "@/lib/data/templates";
+import {
+  getActiveWizardSteps,
+  getNextWizardStep,
+  getPrevWizardStep,
+  isValidUrl,
+  normalizeWizardStep,
+  parseSocialChannelsFromSettings,
+  type OnboardingRequirements,
+  type SocialChannelInput,
+} from "@/lib/onboarding/requirements";
 import { resolveTemplatePreviewUrl } from "@/lib/preview-url";
 import { PreviewLink } from "@/components/preview/preview-link";
 import type { TenantProjectDto } from "@/lib/server/tenant-projects";
 import { cn } from "@/lib/utils";
 
-const STEPS = [
-  { id: 1, title: "Категория" },
-  { id: 2, title: "Шаблон" },
-  { id: 3, title: "Бизнес и продукти" },
-  { id: 4, title: "Интеграции" },
-] as const;
+const DEFAULT_REQUIREMENTS: OnboardingRequirements = {
+  showCategoryTemplate: true,
+  showBusiness: true,
+  showIntegrations: true,
+  socialChannelCount: 0,
+  showGoogleBusinessLink: false,
+  showStoreSocialFields: true,
+};
 
-export function OnboardingWizard() {
+type OnboardingWizardProps = {
+  orderItemId?: string | null;
+};
+
+export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWizardProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const orderItemId = orderItemIdProp ?? searchParams.get("orderItemId");
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [project, setProject] = useState<TenantProjectDto | null>(null);
+  const [requirements, setRequirements] = useState<OnboardingRequirements>(DEFAULT_REQUIREMENTS);
   const [category, setCategory] = useState("clothing");
   const [templateId, setTemplateId] = useState<string | null>(null);
   const [businessName, setBusinessName] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
   const [businessEmail, setBusinessEmail] = useState("");
   const [productNotes, setProductNotes] = useState("");
-  const [dbNotes, setDbNotes] = useState("");
-  const [socialFacebook, setSocialFacebook] = useState("");
-  const [socialInstagram, setSocialInstagram] = useState("");
+  const [channels, setChannels] = useState<SocialChannelInput[]>([]);
+  const [googleBusinessUrl, setGoogleBusinessUrl] = useState("");
+  const [storeFacebook, setStoreFacebook] = useState("");
+  const [storeInstagram, setStoreInstagram] = useState("");
+
+  const activeSteps = useMemo(() => getActiveWizardSteps(requirements), [requirements]);
+  const isLastStep = step === activeSteps[activeSteps.length - 1]?.id;
+  const isFirstStep = step === activeSteps[0]?.id;
+
+  const hydrateFromProject = useCallback(
+    (p: TenantProjectDto, req: OnboardingRequirements) => {
+      setProject(p);
+      setStep(normalizeWizardStep(p.onboardingStep || 1, req));
+      setCategory(p.productCategory);
+      setTemplateId(p.templateId);
+      const bs = p.businessSettings ?? {};
+      setBusinessName(String(bs.businessName ?? ""));
+      setBusinessPhone(String(bs.phone ?? ""));
+      setBusinessEmail(String(bs.email ?? ""));
+      setProductNotes(String(bs.productNotes ?? ""));
+      const ss = p.socialSettings ?? {};
+      setGoogleBusinessUrl(String(ss.googleBusinessUrl ?? ""));
+      setStoreFacebook(String(ss.facebook ?? ""));
+      setStoreInstagram(String(ss.instagram ?? ""));
+      setChannels(parseSocialChannelsFromSettings(ss, req.socialChannelCount));
+    },
+    [],
+  );
 
   useEffect(() => {
-    fetch("/api/onboarding")
+    const query = orderItemId ? `?orderItemId=${encodeURIComponent(orderItemId)}` : "";
+    fetch(`/api/onboarding${query}`)
       .then((r) => r.json())
-      .then((data: { project?: TenantProjectDto }) => {
-        const p = data.project;
-        if (p) {
-          setProject(p);
-          setStep(p.onboardingStep || 1);
-          setCategory(p.productCategory);
-          setTemplateId(p.templateId);
-          const bs = p.businessSettings ?? {};
-          setBusinessName(String(bs.businessName ?? ""));
-          setBusinessPhone(String(bs.phone ?? ""));
-          setBusinessEmail(String(bs.email ?? ""));
-          setProductNotes(String(bs.productNotes ?? ""));
-          setDbNotes(p.dbMigrationNotes ?? "");
-          const ss = p.socialSettings ?? {};
-          setSocialFacebook(String(ss.facebook ?? ""));
-          setSocialInstagram(String(ss.instagram ?? ""));
-        }
-      })
+      .then(
+        (data: { project?: TenantProjectDto; requirements?: OnboardingRequirements }) => {
+          const req = data.requirements ?? DEFAULT_REQUIREMENTS;
+          setRequirements(req);
+          if (data.project) hydrateFromProject(data.project, req);
+          setChannels((prev) => {
+            if (prev.length > 0) return prev;
+            return parseSocialChannelsFromSettings(data.project?.socialSettings ?? {}, req.socialChannelCount);
+          });
+        },
+      )
       .finally(() => setLoading(false));
-  }, []);
+  }, [orderItemId, hydrateFromProject]);
+
+  useEffect(() => {
+    if (requirements.socialChannelCount <= 0) return;
+    setChannels((prev) => {
+      const parsed = parseSocialChannelsFromSettings(
+        project?.socialSettings ?? {},
+        requirements.socialChannelCount,
+      );
+      if (prev.length === requirements.socialChannelCount) return prev;
+      return parsed;
+    });
+  }, [requirements.socialChannelCount, project?.socialSettings]);
+
+  const buildPayload = () => {
+    const socialSettings: Record<string, unknown> = {
+      ...(requirements.socialChannelCount > 0
+        ? {
+            channels: channels.map((c) => ({
+              label: c.label?.trim() || undefined,
+              profileUrl: c.profileUrl.trim(),
+            })),
+          }
+        : {}),
+      ...(requirements.showStoreSocialFields
+        ? { facebook: storeFacebook, instagram: storeInstagram }
+        : {}),
+      ...(requirements.showGoogleBusinessLink
+        ? { googleBusinessUrl: googleBusinessUrl.trim() || undefined }
+        : {}),
+    };
+
+    return {
+      productCategory: category,
+      templateId: templateId ?? undefined,
+      businessSettings: {
+        businessName,
+        phone: businessPhone,
+        email: businessEmail,
+        productNotes,
+      },
+      socialSettings,
+    };
+  };
 
   const save = async (nextStep: number, extra?: Record<string, unknown>) => {
     setSaving(true);
@@ -67,19 +151,7 @@ export function OnboardingWizard() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         step: nextStep,
-        productCategory: category,
-        templateId: templateId ?? undefined,
-        businessSettings: {
-          businessName,
-          phone: businessPhone,
-          email: businessEmail,
-          productNotes,
-        },
-        socialSettings: {
-          facebook: socialFacebook,
-          instagram: socialInstagram,
-        },
-        dbMigrationNotes: dbNotes,
+        ...buildPayload(),
         ...extra,
       }),
     });
@@ -89,17 +161,38 @@ export function OnboardingWizard() {
     return res.ok;
   };
 
+  const validateIntegrations = (): boolean => {
+    if (requirements.socialChannelCount > 0) {
+      for (let i = 0; i < requirements.socialChannelCount; i++) {
+        const url = channels[i]?.profileUrl ?? "";
+        if (!isValidUrl(url)) {
+          toast.error(`Моля, въведете валиден линк за канал ${i + 1}.`);
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
   const handleNext = async () => {
     if (step === 1 && !category) return;
     if (step === 2 && !templateId) return;
-    const next = Math.min(step + 1, 4);
+    if (step === 4 && !validateIntegrations()) return;
+
+    const next = getNextWizardStep(step, requirements);
+    if (next == null) return;
+
     const ok = await save(next);
     if (ok) setStep(next);
   };
 
-  const handleBack = () => setStep((s) => Math.max(1, s - 1));
+  const handleBack = () => {
+    const prev = getPrevWizardStep(step, requirements);
+    if (prev != null) setStep(prev);
+  };
 
   const handleFinish = async () => {
+    if (!validateIntegrations()) return;
     const ok = await save(4, { setupStatus: "in_progress" });
     if (ok) router.push("/user");
   };
@@ -113,11 +206,12 @@ export function OnboardingWizard() {
   }
 
   const templates = storeTemplates.filter((t) => t.category === category);
+  const currentStepTitle = activeSteps.find((s) => s.id === step)?.title ?? "";
 
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-        {STEPS.map((s) => (
+        {activeSteps.map((s) => (
           <div
             key={s.id}
             className={cn(
@@ -136,10 +230,10 @@ export function OnboardingWizard() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{STEPS[step - 1]?.title}</CardTitle>
+          <CardTitle>{currentStepTitle}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {step === 1 && (
+          {step === 1 && requirements.showCategoryTemplate ? (
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
                 За момента поддържаме категория дрехи. Скоро ще добавим още ниши.
@@ -162,9 +256,9 @@ export function OnboardingWizard() {
                 </button>
               ))}
             </div>
-          )}
+          ) : null}
 
-          {step === 2 && (
+          {step === 2 && requirements.showCategoryTemplate ? (
             <div className="grid gap-4 sm:grid-cols-2">
               {templates.map((t) => (
                 <div
@@ -205,9 +299,9 @@ export function OnboardingWizard() {
                 </div>
               ))}
             </div>
-          )}
+          ) : null}
 
-          {step === 3 && (
+          {step === 3 && requirements.showBusiness ? (
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="businessName">Име на бизнеса</Label>
@@ -234,66 +328,40 @@ export function OnboardingWizard() {
                   onChange={(e) => setBusinessEmail(e.target.value)}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="productNotes">Продукти и бележки</Label>
-                <Textarea
-                  id="productNotes"
-                  rows={4}
-                  placeholder="Опиши продуктите, снимки, цени или линк към каталог..."
-                  value={productNotes}
-                  onChange={(e) => setProductNotes(e.target.value)}
-                />
-              </div>
+              {requirements.showCategoryTemplate ? (
+                <div className="space-y-2">
+                  <Label htmlFor="productNotes">Продукти и бележки</Label>
+                  <Textarea
+                    id="productNotes"
+                    rows={4}
+                    placeholder="Опиши продуктите, снимки, цени или линк към каталог..."
+                    value={productNotes}
+                    onChange={(e) => setProductNotes(e.target.value)}
+                  />
+                </div>
+              ) : null}
             </div>
-          )}
+          ) : null}
 
-          {step === 4 && (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Gmail: свързването ще бъде активирано скоро. Засега остави имейла си в стъпка 3 -
-                ще се свържем с теб.
-              </p>
-              {project?.gmailConnectedAt ? (
-                <p className="text-sm text-green-600">Gmail е свързан.</p>
-              ) : (
-                <Button type="button" variant="outline" disabled>
-                  Свържи Gmail (скоро)
-                </Button>
-              )}
-              <div className="space-y-2">
-                <Label>Facebook страница</Label>
-                <Input
-                  value={socialFacebook}
-                  onChange={(e) => setSocialFacebook(e.target.value)}
-                  placeholder="https://facebook.com/..."
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Instagram</Label>
-                <Input
-                  value={socialInstagram}
-                  onChange={(e) => setSocialInstagram(e.target.value)}
-                  placeholder="https://instagram.com/..."
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="dbNotes">Миграция от друг магазин / база данни</Label>
-                <Textarea
-                  id="dbNotes"
-                  rows={3}
-                  placeholder="URL за експорт, платформа, бележки за пълен достъп..."
-                  value={dbNotes}
-                  onChange={(e) => setDbNotes(e.target.value)}
-                />
-              </div>
-            </div>
-          )}
+          {step === 4 && requirements.showIntegrations ? (
+            <OnboardingIntegrationsStep
+              requirements={requirements}
+              channels={channels}
+              onChannelsChange={setChannels}
+              googleBusinessUrl={googleBusinessUrl}
+              onGoogleBusinessUrlChange={setGoogleBusinessUrl}
+              storeFacebook={storeFacebook}
+              onStoreFacebookChange={setStoreFacebook}
+              storeInstagram={storeInstagram}
+              onStoreInstagramChange={setStoreInstagram}
+            />
+          ) : null}
 
           <div className="flex justify-between pt-4 border-t border-border">
-            <Button type="button" variant="outline" onClick={handleBack} disabled={step === 1 || saving}>
+            <Button type="button" variant="outline" onClick={handleBack} disabled={isFirstStep || saving}>
               Назад
             </Button>
-            {step < 4 ? (
+            {!isLastStep ? (
               <Button type="button" onClick={handleNext} disabled={saving}>
                 {saving ? "Запазване..." : "Напред"}
               </Button>
@@ -306,7 +374,7 @@ export function OnboardingWizard() {
         </CardContent>
       </Card>
 
-      {project?.previewPath && (
+      {project?.previewPath ? (
         <p className="text-center text-sm text-muted-foreground mt-6">
           Преглед на магазина:{" "}
           <PreviewLink
@@ -318,7 +386,7 @@ export function OnboardingWizard() {
             отвори шаблона
           </PreviewLink>
         </p>
-      )}
+      ) : null}
     </div>
   );
 }

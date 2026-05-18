@@ -7,6 +7,7 @@ import { PreviewLink } from "@/components/preview/preview-link";
 import { resolveTemplatePreviewUrl } from "@/lib/preview-url";
 import type { StoreTemplate, TemplateDetailSection } from "@/lib/data/templates";
 import { trackCtaClick } from "@/lib/analytics/tracker";
+import { setCheckoutTemplateSelection } from "@/lib/store/checkout-template";
 import TransitionLink from "@/components/transitions/TransitionLink";
 import { cn } from "@/lib/utils";
 
@@ -100,9 +101,13 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
             </PreviewLink>
             <TransitionLink
               href="/services/online-store#buy-now"
-              onClick={() =>
-                trackCtaClick(detailPath, `templates_detail_start_${template.category}_${template.id}`)
-              }
+              onClick={() => {
+                setCheckoutTemplateSelection({
+                  category: template.category,
+                  id: template.id,
+                });
+                trackCtaClick(detailPath, `templates_detail_start_${template.category}_${template.id}`);
+              }}
             >
               <Button type="button" variant="secondary" size="default">
                 Започни с този шаблон

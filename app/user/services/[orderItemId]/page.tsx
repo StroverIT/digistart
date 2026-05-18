@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { getServerSession } from "next-auth";
-import { CalendarClock, PackageCheck, ReceiptText, Sparkles } from "lucide-react";
+import { ArrowRight, CalendarClock, PackageCheck, ReceiptText, Sparkles } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getStripeServerClient } from "@/lib/server/stripe";
@@ -11,7 +12,14 @@ import { getServiceById } from "@/lib/data/services";
 import { calculateItemTotal } from "@/lib/pricing/calculate-item-total";
 import { getServiceByIdFromDb } from "@/lib/server/services";
 import type { CartItemUpsell } from "@/lib/types";
+import { Button } from "@/components/ui/button";
 import { DomainSetupCard } from "@/components/user/domain-setup-card";
+import { isOnboardingIncomplete } from "@/lib/onboarding/is-onboarding-incomplete";
+import {
+  getOnboardingBannerCopy,
+  ONBOARDING_SERVICE_IDS,
+} from "@/lib/onboarding/requirements";
+import { getTenantProjectForUser } from "@/lib/server/tenant-projects";
 import { getStoreVpsIp, ONLINE_STORE_SERVICE_ID } from "@/lib/store-dns";
 
 /** Last-resort label when no catalog/DB name exists (kebab-case → words). */
@@ -97,9 +105,33 @@ export default async function UserServiceDetailPage({
   const palettePreviewUrl = paletteUrl ? `/api/uploads/brand/view?url=${encodeURIComponent(paletteUrl)}` : null;
   const isOnlineStore = item.serviceId === ONLINE_STORE_SERVICE_ID;
   const vpsIp = getStoreVpsIp();
+  const tenantProject = await getTenantProjectForUser(session.user.id);
+  const showOnboardingBanner =
+    isOnboardingIncomplete(tenantProject) &&
+    (ONBOARDING_SERVICE_IDS as readonly string[]).includes(item.serviceId);
+  const onboardingCopy = showOnboardingBanner
+    ? getOnboardingBannerCopy(item.serviceId)
+    : null;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
+      {showOnboardingBanner && onboardingCopy ? (
+        <Card className="border-primary/40 bg-primary/5 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
+          <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold">{onboardingCopy.title}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{onboardingCopy.description}</p>
+            </div>
+            <Button asChild>
+              <Link href={`/onboarding?orderItemId=${item.id}`}>
+                Продължи настройката
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
+
       <div className="rounded-3xl border border-border bg-card/80 p-6 shadow-sm backdrop-blur md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
         <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div>

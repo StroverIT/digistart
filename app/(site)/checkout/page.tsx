@@ -25,7 +25,6 @@ import {
   getCheckoutTemplateSelection,
   type CheckoutTemplateSelection,
 } from "@/lib/store/checkout-template";
-import { CheckoutTemplatePicker } from "@/components/checkout/checkout-template-picker";
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 import { getServiceById } from "@/lib/data/services";
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
@@ -41,7 +40,21 @@ const PAYMENT_PREPARE_FAILED_MESSAGE =
 
 const LOGO_UPSELL = "logo-design";
 const PALETTE_UPSELL = "color-palette";
-const READY_STORE_SERVICE_ID = "ready-store";
+
+function contactFieldsMissingMessage(
+  name: string,
+  email: string,
+  phone: string
+): string | null {
+  const missing: string[] = [];
+  if (!name.trim()) missing.push("име");
+  if (!email.trim()) missing.push("имейл");
+  if (!phone.trim()) missing.push("телефон");
+  if (missing.length === 0) return null;
+  if (missing.length === 1) return `Моля попълнете ${missing[0]}.`;
+  if (missing.length === 2) return `Моля попълнете ${missing[0]} и ${missing[1]}.`;
+  return "Моля попълнете име, имейл и телефон.";
+}
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -124,9 +137,6 @@ export default function CheckoutPage() {
   }, [isLoggedInCustomer, session?.user?.name, session?.user?.email]);
 
   const firstCartItem = cart.items[0];
-  const requiresTemplateSelection = cart.items.some(
-    (item) => item.serviceId === READY_STORE_SERVICE_ID,
-  );
   const hasLogoUpsell = Boolean(
     firstCartItem?.upsells.some((u) => u.upsellId === LOGO_UPSELL && u.quantity > 0)
   );
@@ -194,11 +204,11 @@ export default function CheckoutPage() {
         purchaseAsBusiness,
         ...(templateSelection
           ? {
-              selectedTemplate: {
-                productCategory: templateSelection.category,
-                templateId: templateSelection.id,
-              },
-            }
+            selectedTemplate: {
+              productCategory: templateSelection.category,
+              templateId: templateSelection.id,
+            },
+          }
           : {}),
       }),
     });
@@ -350,8 +360,13 @@ export default function CheckoutPage() {
 
   const validateAccount = async () => {
     setCheckoutError("");
-    if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
-      setCheckoutError("Моля попълнете име, имейл и телефон.");
+    const contactError = contactFieldsMissingMessage(
+      formData.name,
+      formData.email,
+      formData.phone
+    );
+    if (contactError) {
+      setCheckoutError(contactError);
       return false;
     }
     if (!isPasswordStrong) {
@@ -381,8 +396,13 @@ export default function CheckoutPage() {
 
   const validateAssetsAndContact = () => {
     setCheckoutError("");
-    if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
-      setCheckoutError("Моля попълнете име, имейл и телефон.");
+    const contactError = contactFieldsMissingMessage(
+      formData.name,
+      formData.email,
+      formData.phone
+    );
+    if (contactError) {
+      setCheckoutError(contactError);
       return false;
     }
     if (purchaseAsBusiness && !formData.company?.trim()) {
@@ -441,12 +461,6 @@ export default function CheckoutPage() {
       notifyMissingLegalConsent();
       return;
     }
-    if (requiresTemplateSelection && !templateSelection) {
-      const message = "Моля изберете шаблон за онлайн магазина.";
-      setCheckoutError(message);
-      toast.error(message);
-      return;
-    }
     if (!validateAssetsAndContact()) return;
     const uploaded = await uploadBrandFiles();
     if (uploaded === false) return;
@@ -475,12 +489,12 @@ export default function CheckoutPage() {
 
   const displayStepLabel = useMemo(() => {
     if (isLoggedInCustomer) {
-      return logicalStep === 1 ? "Шаблон и бранд" : "Плащане";
+      return logicalStep === 1 ? "Лого и палитра" : "Плащане";
     }
     return logicalStep === 1
       ? "Акаунт"
       : logicalStep === 2
-        ? "Шаблон и бранд"
+        ? "Лого и палитра"
         : "Плащане";
   }, [isLoggedInCustomer, logicalStep]);
 
@@ -561,7 +575,7 @@ export default function CheckoutPage() {
                               type="tel"
                               value={formData.phone}
                               onChange={handleInputChange}
-                              placeholder="+359 888 123 456"
+                              placeholder="+359"
                               required
                             />
                           </Field>
@@ -764,16 +778,9 @@ export default function CheckoutPage() {
                 <>
                   <Card className="bg-card border-border">
                     <CardHeader>
-                      <CardTitle className="text-lg">Шаблон, лого и палитра</CardTitle>
+                      <CardTitle className="text-lg">Лого и цветова палитра</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                      {requiresTemplateSelection ? (
-                        <CheckoutTemplatePicker
-                          value={templateSelection}
-                          onChange={setTemplateSelection}
-                        />
-                      ) : null}
-
                       {isLoggedInCustomer ? (
                         <div className="space-y-4">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

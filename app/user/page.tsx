@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import { PreviewLink } from "@/components/preview/preview-link";
+import { isOnboardingIncomplete } from "@/lib/onboarding/is-onboarding-incomplete";
 import { getTenantProjectForUser } from "@/lib/server/tenant-projects";
 
 export default async function UserHomePage() {
@@ -41,8 +42,7 @@ export default async function UserHomePage() {
     : [];
 
   const tenantProject = await getTenantProjectForUser(userId);
-  const onboardingIncomplete =
-    tenantProject && tenantProject.onboardingStep < 4 && tenantProject.setupStatus === "draft";
+  const onboardingIncomplete = isOnboardingIncomplete(tenantProject);
 
   return (
     <div className="space-y-8">

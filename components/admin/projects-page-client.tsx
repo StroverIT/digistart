@@ -149,7 +149,27 @@ export function ProjectsPageClient() {
 
             {selected.socialSettings && (
               <div>
-                <p className="text-muted-foreground mb-1">Социални мрежи</p>
+                <p className="text-muted-foreground mb-1">Интеграции</p>
+                {typeof selected.socialSettings.googleBusinessUrl === "string" &&
+                selected.socialSettings.googleBusinessUrl ? (
+                  <p className="mb-2 text-sm break-all">
+                    <span className="text-muted-foreground">Google Business: </span>
+                    {selected.socialSettings.googleBusinessUrl}
+                  </p>
+                ) : null}
+                {Array.isArray(selected.socialSettings.channels) &&
+                selected.socialSettings.channels.length > 0 ? (
+                  <ul className="mb-2 space-y-1 text-sm">
+                    {(selected.socialSettings.channels as Array<Record<string, unknown>>).map(
+                      (ch, i) => (
+                        <li key={i} className="break-all">
+                          {typeof ch.label === "string" && ch.label ? `${ch.label}: ` : `Канал ${i + 1}: `}
+                          {String(ch.profileUrl ?? "")}
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                ) : null}
                 <pre className="rounded-md bg-muted p-3 text-xs overflow-auto max-h-32">
                   {JSON.stringify(selected.socialSettings, null, 2)}
                 </pre>
