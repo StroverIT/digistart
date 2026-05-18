@@ -15,12 +15,15 @@ import type { CartItemUpsell } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { DomainSetupCard } from "@/components/user/domain-setup-card";
 import { isOnboardingIncomplete } from "@/lib/onboarding/is-onboarding-incomplete";
+import { getOnlineStoreSetupItems } from "@/lib/onboarding/online-store-setup-status";
 import {
   getOnboardingBannerCopy,
   ONBOARDING_SERVICE_IDS,
 } from "@/lib/onboarding/requirements";
+import { getStoreDomainByOrderItemId } from "@/lib/server/store-domains";
 import { getTenantProjectForUser } from "@/lib/server/tenant-projects";
 import { getStoreVpsIp, ONLINE_STORE_SERVICE_ID } from "@/lib/store-dns";
+import { OnlineStoreSetupStatusCard } from "@/components/user/online-store-setup-status";
 
 /** Last-resort label when no catalog/DB name exists (kebab-case → words). */
 function humanizeUpsellId(id: string): string {
@@ -106,9 +109,29 @@ export default async function UserServiceDetailPage({
   const isOnlineStore = item.serviceId === ONLINE_STORE_SERVICE_ID;
   const vpsIp = getStoreVpsIp();
   const tenantProject = await getTenantProjectForUser(session.user.id);
+
+  let storeDomain = null;
+  if (isOnlineStore) {
+    try {
+      storeDomain = await getStoreDomainByOrderItemId(item.id);
+    } catch {
+      storeDomain = null;
+    }
+  }
+
+  const onlineStoreSetupItems = isOnlineStore
+    ? getOnlineStoreSetupItems({
+        project: tenantProject,
+        hasLogo: Boolean(logoUrl),
+        hasPalette: Boolean(paletteUrl),
+        domain: storeDomain,
+      })
+    : null;
+
   const showOnboardingBanner =
     isOnboardingIncomplete(tenantProject) &&
-    (ONBOARDING_SERVICE_IDS as readonly string[]).includes(item.serviceId);
+    (ONBOARDING_SERVICE_IDS as readonly string[]).includes(item.serviceId) &&
+    !isOnlineStore;
   const onboardingCopy = showOnboardingBanner
     ? getOnboardingBannerCopy(item.serviceId)
     : null;
@@ -222,10 +245,21 @@ export default async function UserServiceDetailPage({
         )}
       </div>
 
-      {isOnlineStore ? <DomainSetupCard orderItemId={item.id} vpsIp={vpsIp} /> : null}
+      {isOnlineStore && onlineStoreSetupItems ? (
+        <OnlineStoreSetupStatusCard orderItemId={item.id} items={onlineStoreSetupItems} />
+      ) : null}
+
+      {isOnlineStore ? (
+        <div id="store-domain-setup">
+          <DomainSetupCard orderItemId={item.id} vpsIp={vpsIp} />
+        </div>
+      ) : null}
 
       {(logoUrl || paletteUrl) ? (
-        <Card className="border-border bg-card/80 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-both">
+        <Card
+          id={isOnlineStore ? "store-brand-assets" : undefined}
+          className="border-border bg-card/80 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-both"
+        >
           <CardHeader>
             <CardTitle className="text-lg">Качени бранд материали</CardTitle>
           </CardHeader>
