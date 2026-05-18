@@ -77,9 +77,7 @@ export function HeroSection() {
             ref={subRef}
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed text-pretty opacity-0 translate-y-10"
           >
-            Превърни физическия си магазин или ръчно изработен бранд в машина за онлайн продажби.
-            Получаваш готов магазин, Google профил и маркетинг – без сложни технически термини и без
-            скрити разходи.
+            Създай дигиталното си присъствие за по-малко от 48 часа и стартирай продажби 24/7.
           </p>
 
           {/* Benefits */}
