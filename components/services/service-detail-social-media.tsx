@@ -422,15 +422,9 @@ export function ServiceDetailSocialMedia({
           </div>
         </section>
 
-        <PlansSection
-          compact
-          className="py-12 md:py-16"
-        />
-
         <ServiceBuySection
           service={service}
           title="Купи сега"
-          description="Избери базовия пакет и добавките, които имат смисъл за етапа на бизнеса ти."
           price={planPrice}
           monthlyLabel="/месец"
           upsells={upsells}
@@ -440,6 +434,11 @@ export function ServiceDetailSocialMedia({
           cartSelectedOptionId={service.options[0]?.id}
           ctaId="service_social_media_buy_section_add_to_cart"
           ctaPage="/services/social-media"
+        />
+
+        <PlansSection
+          compact
+          className="py-12 md:py-16"
         />
       </div>
     </div>

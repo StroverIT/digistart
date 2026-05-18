@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { toast } from "sonner";
@@ -37,7 +38,6 @@ function setActiveMobileSticky(id: string | null) {
 interface ServiceBuySectionProps {
   service: Service;
   title: string;
-  description: string;
   price: number;
   monthlyLabel?: string;
   ctaLabel?: string;
@@ -49,12 +49,13 @@ interface ServiceBuySectionProps {
   ctaPage?: string;
   /** When set, cart sync matches this option id (same as `addToCart` / `updateCartItemUpsells`). */
   cartSelectedOptionId?: string;
+  /** Anchor id of `PlansSection` on the same page (default matches `PlansSection`). */
+  plansSectionId?: string;
 }
 
 export function ServiceBuySection({
   service,
   title,
-  description,
   price,
   monthlyLabel,
   ctaLabel,
@@ -65,6 +66,7 @@ export function ServiceBuySection({
   ctaId,
   ctaPage,
   cartSelectedOptionId,
+  plansSectionId = "plans",
 }: ServiceBuySectionProps) {
   const { push } = useTransitionRouter();
   const [errors, setErrors] = useState<UpsellEntryErrors>({});
@@ -225,7 +227,15 @@ export function ServiceBuySection({
             className="rounded-2xl border border-border bg-card p-5 sm:p-6 opacity-0 translate-y-10"
           >
             <h2 className="text-2xl font-bold mb-2">{title}</h2>
-            <p className="text-muted-foreground mb-5">{description}</p>
+            <p className="mb-5 text-sm text-pretty text-muted-foreground">
+              Избери сам <span className="font-semibold text-foreground">ИЛИ</span>{" "}
+              <Link
+                href={`#${plansSectionId}`}
+                className="font-medium text-primary underline-offset-4 hover:underline"
+              >
+                избери нашите готови планове с до 15% отстъпка
+              </Link>
+            </p>
             {isAdding ? (
               <div className="mb-6 space-y-3">
                 <Skeleton className="h-5 w-48" />

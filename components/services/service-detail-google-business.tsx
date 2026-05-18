@@ -430,15 +430,10 @@ export function ServiceDetailGoogleBusiness({
           </div>
         </section>
 
-        <PlansSection
-          compact
-          className="py-12 md:py-16"
-        />
 
         <ServiceBuySection
           service={service}
           title="Купи сега"
-          description="Избери базова настройка и добавките, които ще помогнат на клиентите да те намират по-лесно."
           price={planPrice}
           upsells={upsells}
           onUpsellsChange={setUpsells}
@@ -447,6 +442,11 @@ export function ServiceDetailGoogleBusiness({
           cartSelectedOptionId={GOOGLE_PROFILE_OPTION_ID}
           ctaId="service_google_business_buy_section_add_to_cart"
           ctaPage="/services/google-business"
+        />
+
+        <PlansSection
+          compact
+          className="py-12 md:py-16"
         />
       </div>
     </div>

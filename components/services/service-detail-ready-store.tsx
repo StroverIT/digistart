@@ -587,7 +587,6 @@ export function ServiceDetailReadyStore({
         <ServiceBuySection
           service={service}
           title="Купи сега"
-          description="Избери абонамент и добавки според етапа на бизнеса, след което добави в кошницата."
           price={planPrice}
           upsells={upsells}
           onUpsellsChange={setUpsells}

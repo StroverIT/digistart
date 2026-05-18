@@ -22,17 +22,23 @@ const navLinks = [
     paths: ["/услуги/онлайн-магазин", "/services/online-store"],
   },
   {
+    href: "/services/social-media",
+    label: "Социални Мрежи",
+    paths: ["/услуги/социални-мрежи", "/services/social-media"],
+  },
+  {
     href: "/services/google-business",
     label: "Google Business",
     paths: ["/услуги/google-business", "/services/google-business"],
   },
   {
-    href: "/services/social-media",
-    label: "Социални Мрежи",
-    paths: ["/услуги/социални-мрежи", "/services/social-media"],
+    href: "/templates",
+    label: "Шаблони",
+    paths: ["/templates"],
   },
   { href: "/about", label: "За нас", paths: ["/about"] },
   { href: "/blog", label: "Блог", paths: ["/blog"] },
+
 
 ] as const;
 
@@ -407,14 +413,14 @@ export function Header() {
               <>
                 {session.user.role === "customer" ? (
                   <TransitionLink href="/user" onClick={() => void closeMenu()}>
-                    <Button variant="outline" className="w-full border-zinc-600 text-zinc-50 bg-transparent">
+                    <Button variant="secondary" className="w-full">
                       Моят панел
                     </Button>
                   </TransitionLink>
                 ) : null}
                 <Button
-                  variant="secondary"
-                  className="w-full mt-4"
+                  variant="outline"
+                  className="w-full mt-4 border-zinc-600 text-zinc-50 bg-transparent"
                   onClick={() => {
                     void closeMenu();
                     void signOut({ callbackUrl: "/" });
