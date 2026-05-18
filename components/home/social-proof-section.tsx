@@ -3,7 +3,15 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Facebook, Instagram, Paintbrush, Smartphone, TrendingUp } from "lucide-react";
+import {
+  ArrowUpRight,
+  Facebook,
+  Instagram,
+  Paintbrush,
+  Shirt,
+  Smartphone,
+  TrendingUp,
+} from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
@@ -18,7 +26,7 @@ const restyledSocial = {
 } as const;
 
 const highlights = [
-  { label: "Ниша", value: "Fashion" },
+  { label: "Ниша", value: "Fashion", icon: Shirt },
   { label: "Фокус", value: "Mobile-first", icon: Smartphone },
   { label: "Резултат", value: "Онлайн продажби и по-силна аудитория", icon: TrendingUp },
   { label: "Уникален дизайн", value: "Дизайнът е направен от екипа ни, а не е темлейт", icon: Paintbrush },
@@ -88,29 +96,50 @@ export function SocialProofSection() {
                 <p className="text-muted-foreground leading-relaxed">
                   Restyled е моден бранд, който продаваше основно на живо и в съобщения. С готов онлайн
                   магазин (mobile-first) преминаха към поръчки 24/7 - без да изглеждат „любителски“
-                  онлайн. Днес клиентите разглеждат колекциите сами, поръчват с няколко клика и брандът
+
+                  онлайн.
+                  <div className="mt-2" />
+                  Днес клиентите разглеждат колекциите сами, поръчват с няколко клика и брандът
                   расте с по-организирано присъствие в социалните мрежи, вместо да губи часове в
                   отговори на едни и същи въпроси.
                 </p>
               </div>
 
-              <ul className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {highlights.map((item) => (
-                  <li
-                    key={item.label}
-                    className="rounded-xl border border-border/80 bg-muted/20 px-4 py-3"
-                  >
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                      {item.label}
-                    </p>
-                    <p className="text-sm font-semibold leading-snug flex items-start gap-2">
-                      {"icon" in item && item.icon ? (
-                        <item.icon className="h-4 w-4 shrink-0 text-primary mt-0.5" aria-hidden />
-                      ) : null}
-                      <span>{item.value}</span>
-                    </p>
-                  </li>
-                ))}
+              <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4" role="list">
+                {highlights.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <li
+                      key={item.label}
+                      className={cn(
+                        "group flex flex-col items-start gap-3 rounded-xl border border-border/80 bg-muted/15 p-4",
+                        "transition-[border-color,box-shadow,background-color] duration-200",
+                        "hover:border-primary/20 hover:bg-muted/25 hover:shadow-sm",
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
+                          "bg-primary/10 text-primary ring-1 ring-inset ring-primary/10",
+                          "transition-[background-color,color,transform] duration-200",
+                          "group-hover:bg-primary/15 group-hover:ring-primary/20",
+                          "motion-safe:group-hover:scale-[1.02]",
+                        )}
+                        aria-hidden
+                      >
+                        <Icon className="h-4 w-4" strokeWidth={2} />
+                      </div>
+                      <div className="min-w-0 w-full space-y-1">
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                          {item.label}
+                        </p>
+                        <p className="text-sm font-semibold leading-snug text-foreground text-pretty">
+                          {item.value}
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2 border-t border-border/60">
