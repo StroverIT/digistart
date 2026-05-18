@@ -1,21 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ArrowRight, Check } from "lucide-react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Price } from "@/components/ui/price";
 import { services } from "@/lib/data/services";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { cn } from "@/lib/utils";
@@ -54,7 +42,7 @@ export function ServicesSection() {
   const eyebrowRef = useRef<HTMLSpanElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const descRef = useRef<HTMLParagraphElement>(null);
-  const sectionRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -127,81 +115,39 @@ export function ServicesSection() {
           </p>
         </div>
 
-        {/* Service tiles */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-4xl mx-auto">
-          {services.map((service, index) => (
-            <Dialog key={service.id}>
-              <DialogTrigger asChild>
-                <button
-                  type="button"
-                  ref={(el) => {
-                    sectionRefs.current[index] = el;
-                  }}
+        {/* Service tiles — explicit 1 col + minmax(0,1fr) on mobile; bleed past container px on small screens */}
+        <div className="min-w-0 max-sm:-mx-4 sm:mx-auto ">
+          <div className="px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {services.map((service, index) => (
+              <div
+                key={service.id}
+                ref={(el) => {
+                  sectionRefs.current[index] = el;
+                }}
+                className="opacity-0 translate-y-10 w-full min-w-0 [&>span]:flex [&>span]:w-full"
+              >
+                <TrackedCtaLink
+                  href={`/services/${service.slug}`}
+                  ctaId={`home_service_${service.slug}`}
                   className={cn(
                     "flex flex-col items-center justify-center gap-4 w-full",
                     "rounded-xl border border-border bg-card p-8 md:p-10",
                     "hover:border-primary/50 hover:bg-card/80 transition-all duration-300",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                    "cursor-pointer group opacity-0 translate-y-10",
+                    "cursor-pointer group no-underline text-inherit",
                   )}
                 >
                   <ServiceSticker
                     serviceId={service.id}
                     alt={`${service.name} sticker`}
-                    className="h-28 w-28 sm:h-56 sm:w-56 group-hover:scale-105 transition-transform"
+                    className="h-56 w-56 group-hover:scale-105 transition-transform"
                     sizes="(max-width: 640px) 14rem, 28rem"
                   />
                   <span className="text-lg sm:text-2xl font-bold text-center">{service.name}</span>
-                </button>
-              </DialogTrigger>
-
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <div className="flex items-center gap-3">
-                    <ServiceSticker
-                      serviceId={service.id}
-                      alt={`${service.name} sticker`}
-                      className="h-14 w-14"
-                      sizes="3.5rem"
-                    />
-                    <DialogTitle className="text-xl">{service.name}</DialogTitle>
-                  </div>
-                  <DialogDescription className="text-base leading-relaxed pt-2">
-                    {service.shortDescription}
-                  </DialogDescription>
-                </DialogHeader>
-
-                <ul className="space-y-2">
-                  {service.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm">
-                      <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="flex items-baseline gap-1 pt-2 border-t border-border">
-                  <span className="text-sm text-muted-foreground">от</span>
-                  <Price value={service.basePrice} className="text-2xl text-primary" />
-                  {service.isMonthly && (
-                    <span className="text-muted-foreground text-sm">/мес</span>
-                  )}
-                </div>
-
-                <DialogFooter className="sm:justify-start pt-2">
-                  <TrackedCtaLink
-                    href={`/services/${service.slug}`}
-                    ctaId={`home_service_${service.slug}`}
-                  >
-                    <Button className="w-full sm:w-auto">
-                      Научи повече
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TrackedCtaLink>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          ))}
+                </TrackedCtaLink>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
