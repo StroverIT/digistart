@@ -49,8 +49,12 @@ export function HeroSection() {
       ref={containerRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
     >
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
+      {/* Background gradients */}
+      <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+        <div className="absolute inset-0 bg-linear-to-br from-background via-secondary/25 to-primary/12" />
+        <div className="absolute inset-0 bg-linear-to-tr from-transparent via-primary/10 to-chart-6/12" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_55%_at_50%_-15%,oklch(0.65_0.22_250_/_0.14),transparent_65%)]" />
+      </div>
 
       {/* Grid pattern overlay */}
       <div

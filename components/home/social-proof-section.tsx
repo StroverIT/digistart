@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Facebook, Instagram, Smartphone, TrendingUp } from "lucide-react";
+import { ArrowUpRight, Facebook, Instagram, Paintbrush, Smartphone, TrendingUp } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
@@ -21,6 +21,7 @@ const highlights = [
   { label: "Ниша", value: "Fashion" },
   { label: "Фокус", value: "Mobile-first", icon: Smartphone },
   { label: "Резултат", value: "Онлайн продажби и по-силна аудитория", icon: TrendingUp },
+  { label: "Уникален дизайн", value: "Дизайнът е направен от екипа ни, а не е темлейт", icon: Paintbrush },
 ] as const;
 
 export function SocialProofSection() {
