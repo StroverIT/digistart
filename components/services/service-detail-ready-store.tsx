@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { trackCtaClick } from "@/lib/analytics/tracker";
+import { Button } from "@/components/ui/button";
 import { Price } from "@/components/ui/price";
 import {
   ArrowUpRight,
@@ -289,6 +290,20 @@ export function ServiceDetailReadyStore({
         backCtaId="service_ready_store_back_to_services"
         headingFontClass={headingFontClass}
       />
+
+      <section className="border-b border-border/50 bg-muted/20 py-5">
+        <div className="container mx-auto px-4 flex justify-center">
+          <TrackedCtaLink
+            href="/templates"
+            ctaId="service_ready_store_browse_templates"
+          >
+            <Button variant="outline" size="lg" type="button" className="gap-2">
+              Разгледай шаблоните
+              <ArrowUpRight className="h-4 w-4" />
+            </Button>
+          </TrackedCtaLink>
+        </div>
+      </section>
 
       <section data-animate-section className="py-8 md:py-20 bg-card/50">
         <div className="container mx-auto px-4">
