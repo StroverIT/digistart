@@ -63,21 +63,22 @@ export function SocialProofSection() {
   }, []);
 
   return (
-    <section ref={containerRef} id="social-proof" className="py-20 md:py-28 bg-card/30">
-      <div className="container mx-auto px-4">
+    <section
+      ref={containerRef}
+      id="social-proof"
+      className="flex min-h-screen w-full flex-col justify-center py-16 md:py-20 lg:py-24"
+    >
+      <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-16">
         <h2
           ref={titleRef}
-          className="text-center text-3xl sm:text-4xl md:text-5xl font-bold mb-12 md:mb-14 text-balance opacity-0 translate-y-10"
+          className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-12 md:mb-14 text-balance opacity-0 translate-y-10"
         >
           Бизнеси, които вече <span className="gradient-text">растат с нас</span>
         </h2>
 
-        <div
-          ref={cardRef}
-          className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-border bg-card shadow-sm opacity-0 translate-y-10"
-        >
+        <div ref={cardRef} className="w-full opacity-0 translate-y-10">
           <div className="grid grid-cols-1 lg:grid-cols-2">
-            <div className="relative aspect-4/3 bg-muted/30 lg:aspect-auto lg:min-h-[320px]">
+            <div className="relative aspect-4/3 lg:sticky lg:top-24 lg:z-10 lg:self-start lg:aspect-auto lg:min-h-[320px]">
               <Image
                 src="/what-we-offer/restyled-mock-up.png"
                 alt="Restyled - mock-up на онлайн магазин"
@@ -89,11 +90,11 @@ export function SocialProofSection() {
 
             <div className="flex flex-col gap-6 p-6 sm:p-8 lg:p-10">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">
+                <p className="text-xs lg:text-sm font-semibold uppercase tracking-wider text-primary mb-2">
                   Онлайн магазин · Fashion
                 </p>
-                <h3 className="text-2xl sm:text-3xl font-bold mb-4">Restyled</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Restyled</h3>
+                <p className="text-muted-foreground leading-relaxed lg:text-lg">
                   Restyled е моден бранд, който продаваше основно на живо и в съобщения. С готов онлайн
                   магазин (mobile-first) преминаха към поръчки 24/7 - без да изглеждат „любителски“
 
@@ -130,10 +131,10 @@ export function SocialProofSection() {
                         <Icon className="h-4 w-4" strokeWidth={2} />
                       </div>
                       <div className="min-w-0 w-full space-y-1">
-                        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        <p className="text-[11px] lg:text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                           {item.label}
                         </p>
-                        <p className="text-sm font-semibold leading-snug text-foreground text-pretty">
+                        <p className="text-sm lg:text-base font-semibold leading-snug text-foreground text-pretty">
                           {item.value}
                         </p>
                       </div>
@@ -146,11 +147,11 @@ export function SocialProofSection() {
                 <TrackedCtaLink
                   href={restyledSocial.website}
                   ctaId="home_social_proof_restyled_store"
-                  className="inline-flex items-center gap-2 text-primary font-medium group"
+                  className="inline-flex items-center gap-2 text-primary font-medium lg:text-lg group"
                   _blank={true}
                 >
                   Виж онлайн магазина
-                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <ArrowUpRight className="h-4 w-4 lg:h-5 lg:w-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </TrackedCtaLink>
 
                 <div className="flex items-center gap-3">
