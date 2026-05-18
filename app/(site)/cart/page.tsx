@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { ArrowLeft, ArrowRight, ChevronDown, Package, ShoppingCart, Trash2 } from "lucide-react";
 import gsap from "gsap";
@@ -8,10 +9,34 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import type { Cart, CartItem, Service } from "@/lib/types";
-import { serviceIdToPlanId } from "@/lib/data/plans";
+import { getPlanComponentsForRecalc, serviceIdToPlanId } from "@/lib/data/plans";
+import type { PlanId } from "@/lib/data/plans";
 import { getCart, hasBundlePlanInCart, removeFromCart, updateCartItemUpsells } from "@/lib/store/cart";
-import { getServiceById } from "@/lib/data/services";
+import { getServiceById, services } from "@/lib/data/services";
 import { UpsellConfigurator } from "@/components/services/upsell-configurator";
+
+const additionalServicePrompts: Record<string, string> = {
+  "ready-store": "Искаш ли онлайн магазин за 20 евро на месец?",
+  "social-media": "Искаш ли да достигнеш до още повече клиенти?",
+  "google-business": "Искаш ли локално да достигнеш до повече клиенти?",
+};
+
+const serviceStickerMap: Record<string, string> = {
+  "ready-store": "/stickers/online-shop.png",
+  "google-business": "/stickers/my-business.png",
+  "social-media": "/stickers/social-media.png",
+};
+
+function AdditionalServiceSticker({ service }: { service: Service }) {
+  const src = serviceStickerMap[service.id];
+  if (!src) return null;
+
+  return (
+    <div className="relative h-56 w-56 shrink-0 -my-10">
+      <Image src={src} alt={`${service.name} sticker`} fill className="object-contain" sizes="5rem" />
+    </div>
+  );
+}
 
 function CartItemCard({
   item,
@@ -201,12 +226,33 @@ export default function CartPage() {
   const bundleInCart = hasBundlePlanInCart();
   const overlappingWithBundle = bundleInCart
     ? cart.items.filter(
-        (item) =>
-          !item.planId &&
-          !serviceIdToPlanId(item.serviceId) &&
-          ["ready-store", "social-media", "google-business"].includes(item.serviceId),
-      )
+      (item) =>
+        !item.planId &&
+        !serviceIdToPlanId(item.serviceId) &&
+        ["ready-store", "social-media", "google-business"].includes(item.serviceId),
+    )
     : [];
+  const includedServiceIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const item of cart.items) {
+      const planId = (item.planId as PlanId | undefined) ?? serviceIdToPlanId(item.serviceId);
+      if (planId) {
+        for (const component of getPlanComponentsForRecalc(planId)) {
+          ids.add(component.serviceId);
+        }
+        continue;
+      }
+      ids.add(item.serviceId);
+    }
+    return ids;
+  }, [cart.items]);
+  const additionalServices = useMemo(
+    () =>
+      services.filter(
+        (service) => additionalServicePrompts[service.id] && !includedServiceIds.has(service.id),
+      ),
+    [includedServiceIds],
+  );
 
   useEffect(() => {
     if (!mounted) return;
@@ -225,8 +271,11 @@ export default function CartPage() {
 
       const header = root.querySelector<HTMLElement>("[data-cart-header]");
       const items = root.querySelectorAll<HTMLElement>("[data-cart-item]");
+      const additional = root.querySelector<HTMLElement>("[data-cart-additional-services]");
       const summary = root.querySelector<HTMLElement>("[data-cart-summary]");
-      const targets = [header, ...Array.from(items), summary].filter(Boolean) as HTMLElement[];
+      const targets = [header, ...Array.from(items), additional, summary].filter(
+        Boolean,
+      ) as HTMLElement[];
       if (!targets.length) return;
 
       gsap.set(targets, { opacity: 0, y: 36 });
@@ -239,6 +288,7 @@ export default function CartPage() {
           header ? "-=0.2" : 0,
         );
       }
+      if (additional) tl.to(additional, { opacity: 1, y: 0, duration: 0.5 }, "-=0.25");
       if (summary) tl.to(summary, { opacity: 1, y: 0, duration: 0.5 }, "-=0.35");
     }, root);
 
@@ -312,6 +362,38 @@ export default function CartPage() {
                   onUpsellsChange={handleUpsellsChange}
                 />
               ))}
+
+              {additionalServices.length > 0 ? (
+                <Card
+                  data-cart-additional-services
+                  className="bg-card border-border opacity-0 translate-y-10"
+                >
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="mb-4">
+                      <h2 className="text-lg font-semibold">Може да ти бъде полезно още</h2>
+                      <p className="text-sm text-muted-foreground">
+                        Добави липсващите услуги, за да покриеш повече канали за продажби.
+                      </p>
+                    </div>
+                    <div className="grid gap-3 xl:grid-cols-2">
+                      {additionalServices.map((service) => (
+                        <div key={service.id} className="[&>span]:flex [&>span]:w-full">
+                          <TrackedCtaLink
+                            href={`/services/${service.slug}`}
+                            ctaId={`cart_upsell_${service.slug}`}
+                            className="flex flex-col xl:flex-row w-full items-center rounded-xl border border-border bg-background/60 p-5 text-left transition-all duration-300 hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                          >
+                            <AdditionalServiceSticker service={service} />
+                            <span className="text-sm font-semibold leading-snug text-center xl:text-left">
+                              {additionalServicePrompts[service.id]}
+                            </span>
+                          </TrackedCtaLink>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : null}
 
               <TrackedCtaLink
                 href="/#services"
