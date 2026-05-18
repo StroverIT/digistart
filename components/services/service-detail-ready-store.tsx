@@ -557,6 +557,29 @@ export function ServiceDetailReadyStore({
         </div>
       </section>
 
+      <PlansSection
+        compact
+        title="Готови абонаментни пакети"
+        subtitle="Или конфигурирай само магазина и добавките, които са ти нужни сега."
+        className="py-12 md:py-16 bg-card/30"
+      />
+
+      {service ? (
+        <ServiceBuySection
+          service={service}
+          title="Купи сега"
+          description="Избери абонамент и добавки според етапа на бизнеса, след което добави в кошницата."
+          price={planPrice}
+          upsells={upsells}
+          onUpsellsChange={setUpsells}
+          onAddToCart={handleCheckout}
+          isAdding={isAdding}
+          cartSelectedOptionId={OPTION_ID}
+          ctaId="service_ready_store_buy_section_add_to_cart"
+          ctaPage="/services/online-store"
+        />
+      ) : null}
+
       <section data-animate-section className="py-8 md:py-20 bg-card/40">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
@@ -590,29 +613,6 @@ export function ServiceDetailReadyStore({
           </div>
         </div>
       </section>
-
-      <PlansSection
-        compact
-        title="Готови абонаментни пакети"
-        subtitle="Или конфигурирай само магазина и добавките, които са ти нужни сега."
-        className="py-12 md:py-16 bg-card/30"
-      />
-
-      {service ? (
-        <ServiceBuySection
-          service={service}
-          title="Купи сега"
-          description="Избери абонамент и добавки според етапа на бизнеса, след което добави в кошницата."
-          price={planPrice}
-          upsells={upsells}
-          onUpsellsChange={setUpsells}
-          onAddToCart={handleCheckout}
-          isAdding={isAdding}
-          cartSelectedOptionId={OPTION_ID}
-          ctaId="service_ready_store_buy_section_add_to_cart"
-          ctaPage="/services/online-store"
-        />
-      ) : null}
 
     </div>
   );
