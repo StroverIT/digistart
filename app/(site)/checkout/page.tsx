@@ -26,6 +26,8 @@ import {
   type CheckoutTemplateSelection,
 } from "@/lib/store/checkout-template";
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { getServiceById } from "@/lib/data/services";
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -39,7 +41,7 @@ const PAYMENT_PREPARE_FAILED_MESSAGE =
   "Нещо се провали при подготовката за формата за плащане. Опитайте отново.";
 
 const LOGO_UPSELL = "logo-design";
-const PALETTE_UPSELL = "color-palette";
+const BRAND_IMAGE_ACCEPT = "image/*,application/pdf";
 
 function contactFieldsMissingMessage(
   name: string,
@@ -81,8 +83,7 @@ export default function CheckoutPage() {
   const [purchaseAsBusiness, setPurchaseAsBusiness] = useState(false);
   const [legalConsentError, setLegalConsentError] = useState("");
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [paletteFile, setPaletteFile] = useState<File | null>(null);
-  const [brandUrls, setBrandUrls] = useState<{ logoUrl?: string; paletteUrl?: string }>({});
+  const [brandUrls, setBrandUrls] = useState<{ logoUrl?: string }>({});
   const [templateSelection, setTemplateSelection] = useState<CheckoutTemplateSelection | null>(
     null,
   );
@@ -140,20 +141,12 @@ export default function CheckoutPage() {
   const hasLogoUpsell = Boolean(
     firstCartItem?.upsells.some((u) => u.upsellId === LOGO_UPSELL && u.quantity > 0)
   );
-  const hasPaletteUpsell = Boolean(
-    firstCartItem?.upsells.some((u) => u.upsellId === PALETTE_UPSELL && u.quantity > 0)
-  );
-
   const setUpsellOnFirstItem = useCallback((upsellId: string, on: boolean) => {
     const current = getCart();
     const item = current.items[0];
     if (!item) return;
-    const service = getServiceById(item.serviceId);
-    if (!service) return;
     const others = item.upsells.filter((u) => u.upsellId !== upsellId);
-    const next = on
-      ? [...others, { upsellId, quantity: 1 }]
-      : others;
+    const next = on ? [...others, { upsellId, quantity: 1 }] : others;
     const updated = updateCartItemUpsells(item.id, next);
     setCart(updated);
   }, []);
@@ -178,13 +171,9 @@ export default function CheckoutPage() {
         : undefined;
 
     const brandSource = stripeBrandPayload ?? brandUrls;
-    const brandAssets =
-      brandSource.logoUrl || brandSource.paletteUrl
-        ? {
-          logoUrl: brandSource.logoUrl ?? null,
-          paletteUrl: brandSource.paletteUrl ?? null,
-        }
-        : undefined;
+    const brandAssets = brandSource.logoUrl
+      ? { logoUrl: brandSource.logoUrl ?? null, paletteUrl: null }
+      : undefined;
 
     const response = await fetch("/api/checkout/stripe-session", {
       method: "POST",
@@ -252,7 +241,13 @@ export default function CheckoutPage() {
   useEffect(() => {
     setMounted(true);
     const currentCart = getCart();
-    setCart(currentCart);
+    const firstItem = currentCart.items[0];
+    if (firstItem?.upsells.some((u) => u.upsellId === "color-palette" && u.quantity > 0)) {
+      const nextUpsells = firstItem.upsells.filter((u) => u.upsellId !== "color-palette");
+      setCart(updateCartItemUpsells(firstItem.id, nextUpsells));
+    } else {
+      setCart(currentCart);
+    }
     setTemplateSelection(getCheckoutTemplateSelection());
     fetch("/api/services")
       .then((response) => response.json())
@@ -409,14 +404,19 @@ export default function CheckoutPage() {
       setCheckoutError("При закупуване като фирма въведете име на фирмата.");
       return false;
     }
+    if (!hasLogoUpsell && !logoFile && !brandUrls.logoUrl) {
+      setCheckoutError(
+        "Качете лого или изберете „Искам изработка на лого“."
+      );
+      return false;
+    }
     return true;
   };
 
   const uploadBrandFiles = async (): Promise<Record<string, string> | true | false> => {
-    if (!logoFile && !paletteFile) return true;
+    if (!logoFile) return true;
     const fd = new FormData();
     if (logoFile) fd.append("logo", logoFile);
-    if (paletteFile) fd.append("palette", paletteFile);
     try {
       const res = await fetch("/api/uploads/brand", { method: "POST", body: fd });
       const json = (await res.json()) as {
@@ -430,7 +430,6 @@ export default function CheckoutPage() {
       }
       const uploadedUrls: Record<string, string> = {};
       if (typeof json.logoUrl === "string" && json.logoUrl) uploadedUrls.logoUrl = json.logoUrl;
-      if (typeof json.paletteUrl === "string" && json.paletteUrl) uploadedUrls.paletteUrl = json.paletteUrl;
       const merged = { ...brandUrls, ...uploadedUrls };
       setBrandUrls(merged);
       return merged;
@@ -470,7 +469,7 @@ export default function CheckoutPage() {
         : { ...brandUrls, ...uploaded };
     setStripeBrandPayload({
       logoUrl: merged.logoUrl ?? null,
-      paletteUrl: merged.paletteUrl ?? null,
+      paletteUrl: null,
     });
     paymentInitRef.current = false;
     setStripeClientSecret(null);
@@ -489,12 +488,12 @@ export default function CheckoutPage() {
 
   const displayStepLabel = useMemo(() => {
     if (isLoggedInCustomer) {
-      return logicalStep === 1 ? "Лого и палитра" : "Плащане";
+      return logicalStep === 1 ? "Лого" : "Плащане";
     }
     return logicalStep === 1
       ? "Акаунт"
       : logicalStep === 2
-        ? "Лого и палитра"
+        ? "Лого"
         : "Плащане";
   }, [isLoggedInCustomer, logicalStep]);
 
@@ -591,8 +590,7 @@ export default function CheckoutPage() {
                               }}
                             />
                             <span className="text-sm text-muted-foreground leading-snug">
-                              Закупувам като фирма - във формата за плащане на Stripe ще има задължително поле
-                              „VAT / ДДС номер (фирма)“.
+                              Закупувам като фирма
                             </span>
                           </label>
                           <Field>
@@ -778,7 +776,7 @@ export default function CheckoutPage() {
                 <>
                   <Card className="bg-card border-border">
                     <CardHeader>
-                      <CardTitle className="text-lg">Лого и цветова палитра</CardTitle>
+                      <CardTitle className="text-lg">Лого</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
                       {isLoggedInCustomer ? (
@@ -811,8 +809,7 @@ export default function CheckoutPage() {
                                 }}
                               />
                               <span className="text-sm text-muted-foreground leading-snug">
-                                Закупувам като фирма - във формата за плащане на Stripe ще има задължително поле
-                                „VAT / ДДС номер (фирма)“.
+                                Закупувам като фирма
                               </span>
                             </label>
                             <Field>
@@ -832,45 +829,54 @@ export default function CheckoutPage() {
                         </div>
                       ) : null}
 
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <Field>
-                          <FieldLabel htmlFor="logo">Лого (файл)</FieldLabel>
-                          <Input
-                            id="logo"
-                            type="file"
-                            accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                            onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
-                          />
-                        </Field>
-                        <Field>
-                          <FieldLabel htmlFor="palette">Цветова палитра (файл)</FieldLabel>
-                          <Input
-                            id="palette"
-                            type="file"
-                            accept="image/png,image/jpeg,image/webp,application/pdf"
-                            onChange={(e) => setPaletteFile(e.target.files?.[0] ?? null)}
-                          />
-                        </Field>
-                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        За настройката на магазина ни трябва лого. Ако нямаш готово, можеш да
+                        поръчаш изработка; иначе качи файл по-долу.
+                      </p>
 
-                      <div className="rounded-lg border border-border p-4 space-y-3">
-                        <p className="text-sm text-muted-foreground">
-                          Нямаш готови материали? Добави изработка към поръчката:
-                        </p>
-                        <label className="flex items-center gap-3 cursor-pointer">
-                          <Checkbox
-                            checked={hasLogoUpsell}
-                            onCheckedChange={(v) => setUpsellOnFirstItem(LOGO_UPSELL, v === true)}
-                          />
-                          <span>Изработка на лого (+50 €)</span>
-                        </label>
-                        <label className="flex items-center gap-3 cursor-pointer">
-                          <Checkbox
-                            checked={hasPaletteUpsell}
-                            onCheckedChange={(v) => setUpsellOnFirstItem(PALETTE_UPSELL, v === true)}
-                          />
-                          <span>Цветова палитра и бранд гайд (+20 €)</span>
-                        </label>
+                      <div className="space-y-3 rounded-lg border border-border p-4">
+                        <RadioGroup
+                          value={hasLogoUpsell ? "design" : "own"}
+                          onValueChange={(value) => {
+                            const wantsDesign = value === "design";
+                            setUpsellOnFirstItem(LOGO_UPSELL, wantsDesign);
+                            if (wantsDesign) setLogoFile(null);
+                          }}
+                          className="gap-2"
+                        >
+                          <div className="flex items-start gap-3 rounded-md p-2 hover:bg-secondary/40">
+                            <RadioGroupItem value="own" id="logo-own" className="mt-0.5" />
+                            <Label
+                              htmlFor="logo-own"
+                              className="cursor-pointer font-normal leading-snug"
+                            >
+                              Имам готово лого — ще го кача
+                            </Label>
+                          </div>
+                          <div className="flex items-start gap-3 rounded-md p-2 hover:bg-secondary/40">
+                            <RadioGroupItem value="design" id="logo-design-choice" className="mt-0.5" />
+                            <Label
+                              htmlFor="logo-design-choice"
+                              className="cursor-pointer font-normal leading-snug"
+                            >
+                              Искам изработка на лого (+50 €)
+                            </Label>
+                          </div>
+                        </RadioGroup>
+                        {!hasLogoUpsell ? (
+                          <Field>
+                            <FieldLabel htmlFor="logo">Качи лого *</FieldLabel>
+                            <Input
+                              id="logo"
+                              type="file"
+                              accept={BRAND_IMAGE_ACCEPT}
+                              onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              PNG, JPG, WebP, SVG или друг формат на изображение (макс. 8 MB).
+                            </p>
+                          </Field>
+                        ) : null}
                       </div>
                       {isLoggedInCustomer ? (
                         <div className="rounded-lg border border-border p-4">

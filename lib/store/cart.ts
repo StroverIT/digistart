@@ -3,6 +3,7 @@
 import type { Cart, CartItem, CartItemUpsell } from "@/lib/types";
 import {
   getPlanById,
+  getPlanComponentsForRecalc,
   planToServiceId,
   serviceIdToPlanId,
   type PlanId,
@@ -116,12 +117,57 @@ export function removeFromCart(itemId: string): Cart {
   return cart;
 }
 
+function planCartUpsellExtras(planId: PlanId, userUpsells: CartItemUpsell[]): {
+  oneTimeTotal: number;
+  monthlyTotal: number;
+} {
+  let oneTimeTotal = 0;
+  let monthlyTotal = 0;
+  const components = getPlanComponentsForRecalc(planId);
+  /** Each cart upsell id applies to one line item only (logo exists on several services in data). */
+  const consumedUpsellIds = new Set<string>();
+  for (const comp of components) {
+    const service = getServiceById(comp.serviceId);
+    if (!service) continue;
+    const builtIn = comp.upsells;
+    const builtInIds = new Set(builtIn.map((u) => u.upsellId));
+    const extras = userUpsells.filter(
+      (u) =>
+        !consumedUpsellIds.has(u.upsellId) &&
+        service.upsells.some((su) => su.id === u.upsellId) &&
+        !builtInIds.has(u.upsellId),
+    );
+    if (extras.length === 0) continue;
+    for (const u of extras) consumedUpsellIds.add(u.upsellId);
+    const base = calculateItemTotal(comp.serviceId, comp.optionId, builtIn);
+    const withExtras = calculateItemTotal(comp.serviceId, comp.optionId, [...builtIn, ...extras]);
+    oneTimeTotal += withExtras.oneTimeTotal - base.oneTimeTotal;
+    monthlyTotal += withExtras.monthlyTotal - base.monthlyTotal;
+  }
+  return { oneTimeTotal, monthlyTotal };
+}
+
 export function updateCartItemUpsells(itemId: string, upsells: CartItemUpsell[]): Cart {
   const cart = getCart();
   const item = cart.items.find((cartItem) => cartItem.id === itemId);
   if (!item) return cart;
 
-  const totals = calculateItemTotal(item.serviceId, item.selectedOptionId, upsells);
+  const planId = item.planId ?? serviceIdToPlanId(item.serviceId);
+  const totals =
+    planId != null
+      ? (() => {
+          const planTotals = calculatePlanTotal(planId);
+          const extra = planCartUpsellExtras(planId, upsells);
+          const oneTimeTotal = planTotals.oneTimeTotal + extra.oneTimeTotal;
+          const monthlyTotal = planTotals.monthlyTotal + extra.monthlyTotal;
+          return {
+            total: oneTimeTotal + monthlyTotal,
+            isMonthly: true,
+            oneTimeTotal,
+            monthlyTotal,
+          };
+        })()
+      : calculateItemTotal(item.serviceId, item.selectedOptionId, upsells);
   item.upsells = upsells;
   item.totalPrice = totals.total;
   item.totalOneTime = totals.oneTimeTotal;

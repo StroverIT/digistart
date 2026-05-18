@@ -3,7 +3,14 @@ import { randomUUID } from "crypto";
 import { BRAND_ASSETS_BUCKET, getSupabaseAdmin } from "@/lib/supabase/admin";
 
 const MAX_BYTES = 8 * 1024 * 1024;
-const ALLOWED = new Set(["image/png", "image/jpeg", "image/webp", "image/svg+xml", "application/pdf"]);
+const ALLOWED = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/svg+xml",
+  "image/gif",
+  "application/pdf",
+]);
 
 export async function POST(req: Request) {
   try {
@@ -36,7 +43,9 @@ export async function POST(req: Request) {
               ? "webp"
               : type === "image/svg+xml"
                 ? "svg"
-                : "pdf";
+                : type === "image/gif"
+                  ? "gif"
+                  : "pdf";
       const path = `uploads/${base}-${suffix}.${ext}`;
       const buffer = Buffer.from(await file.arrayBuffer());
       const { data, error } = await supabase.storage.from(BRAND_ASSETS_BUCKET).upload(path, buffer, {

@@ -250,6 +250,29 @@ export function serviceIdToPlanId(serviceId: string): PlanId | null {
   return getPlanById(id) ? id : null;
 }
 
+/** Plan components (monthly then one-time) with built-in upsells — for cart line recalculation. */
+export function getPlanComponentsForRecalc(planId: PlanId): Array<{
+  serviceId: string;
+  optionId: string;
+  upsells: CartItemUpsell[];
+}> {
+  const def = PLAN_DEFINITIONS.find((p) => p.id === planId);
+  if (!def) return [];
+  const rows = def.monthlyComponents.map((c) => ({
+    serviceId: c.serviceId,
+    optionId: c.optionId,
+    upsells: [...(c.upsells ?? [])],
+  }));
+  for (const c of def.oneTimeComponents ?? []) {
+    rows.push({
+      serviceId: c.serviceId,
+      optionId: c.optionId,
+      upsells: [...(c.upsells ?? [])],
+    });
+  }
+  return rows;
+}
+
 /** In-app path for full bundle comparison + plan details. */
 export const BUNDLE_PAGE_PATH = "/bundle";
 

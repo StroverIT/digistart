@@ -37,7 +37,7 @@ const SERVICE_ID = "ready-store";
 const OPTION_ID = "subscription";
 
 const HERO_DESCRIPTION_INTRO =
-  "Получаваш професионален онлайн магазин на цената на една вечеря (от €20/месец).";
+  "Получаваш професионален онлайн магазин на цената на една вечеря";
 const HERO_DESCRIPTION_DETAIL_P1 =
   "Ние поемаме цялата техническа част - от хостинга до интеграциите с куриери. Ти просто качваш продуктите си и започваш да продаваш в цяла България.";
 const HERO_DESCRIPTION_DETAIL_P2 =
@@ -543,28 +543,9 @@ export function ServiceDetailReadyStore({
         </div>
       </section>
 
-      <PlansSection
-        compact
-        title="Готови абонаментни пакети"
-        subtitle="Или конфигурирай само магазина и добавките, които са ти нужни сега."
-        className="py-12 md:py-16 bg-card/30"
-      />
 
-      {service ? (
-        <ServiceBuySection
-          service={service}
-          title="Купи сега"
-          description="Избери абонамент и добавки според етапа на бизнеса, след което добави в кошницата."
-          price={planPrice}
-          upsells={upsells}
-          onUpsellsChange={setUpsells}
-          onAddToCart={handleCheckout}
-          isAdding={isAdding}
-          cartSelectedOptionId={OPTION_ID}
-          ctaId="service_ready_store_buy_section_add_to_cart"
-          ctaPage="/services/online-store"
-        />
-      ) : null}
+
+
 
       <TemplatesShowcaseSection headingFontClass={headingFontClass} />
 
@@ -601,6 +582,29 @@ export function ServiceDetailReadyStore({
           </div>
         </div>
       </section>
+
+      {service ? (
+        <ServiceBuySection
+          service={service}
+          title="Купи сега"
+          description="Избери абонамент и добавки според етапа на бизнеса, след което добави в кошницата."
+          price={planPrice}
+          upsells={upsells}
+          onUpsellsChange={setUpsells}
+          onAddToCart={handleCheckout}
+          isAdding={isAdding}
+          cartSelectedOptionId={OPTION_ID}
+          ctaId="service_ready_store_buy_section_add_to_cart"
+          ctaPage="/services/online-store"
+        />
+      ) : null}
+
+      <PlansSection
+        compact
+        title="Готови абонаментни пакети"
+        subtitle="Или конфигурирай само магазина и добавките, които са ти нужни сега."
+        className="py-12 md:py-16 bg-card/30"
+      />
 
     </div>
   );
