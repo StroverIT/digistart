@@ -379,7 +379,7 @@ export default function CartPage() {
                       {additionalServices.map((service) => (
                         <div key={service.id} className="[&>span]:flex [&>span]:w-full">
                           <TrackedCtaLink
-                            href={`/services/${service.slug}`}
+                            href={`/services/${service.slug}#buy-now`}
                             ctaId={`cart_upsell_${service.slug}`}
                             className="flex flex-col xl:flex-row w-full items-center rounded-xl border border-border bg-background/60 p-5 text-left transition-all duration-300 hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                           >
