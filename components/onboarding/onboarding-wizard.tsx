@@ -187,11 +187,11 @@ export function OnboardingWizard() {
                     </PreviewLink>
                     <PreviewLink
                       href={t.demoPath}
-                      ctaId={`onboarding_demo_${t.category}_${t.id}`}
+                      ctaId={`onboarding_detail_${t.category}_${t.id}`}
                       ctaPage="/onboarding"
                       className="text-sm text-muted-foreground underline"
                     >
-                      Demo рамка
+                      Детайли
                     </PreviewLink>
                   </div>
                   <Button

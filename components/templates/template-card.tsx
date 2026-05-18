@@ -1,22 +1,27 @@
 "use client";
 
-import type { StoreTemplate } from "@/lib/data/templates";
+import { getTemplateDetailPath, type StoreTemplate } from "@/lib/data/templates";
 import { TemplatePreviewFrame } from "@/components/templates/template-preview-frame";
+import { trackCtaClick } from "@/lib/analytics/tracker";
+import TransitionLink from "@/components/transitions/TransitionLink";
 import { cn } from "@/lib/utils";
 
 type TemplateCardProps = {
   template: StoreTemplate;
-  onSelect: (template: StoreTemplate) => void;
   className?: string;
 };
 
-export function TemplateCard({ template, onSelect, className }: TemplateCardProps) {
+export function TemplateCard({ template, className }: TemplateCardProps) {
+  const href = getTemplateDetailPath(template.category, template.id);
+
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(template)}
+    <TransitionLink
+      href={href}
+      onClick={() =>
+        trackCtaClick("/templates", `templates_select_${template.category}_${template.id}`)
+      }
       className={cn(
-        "group w-full rounded-xl border border-border bg-card p-4 text-left shadow-sm transition-all",
+        "group block w-full rounded-xl border border-border bg-card p-4 text-left shadow-sm transition-all",
         "hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
         className,
       )}
@@ -32,6 +37,6 @@ export function TemplateCard({ template, onSelect, className }: TemplateCardProp
       <span className="mt-3 inline-block text-sm font-medium text-primary">
         Виж подробности →
       </span>
-    </button>
+    </TransitionLink>
   );
 }

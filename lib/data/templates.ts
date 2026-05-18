@@ -40,7 +40,7 @@ export const storeTemplates: StoreTemplate[] = [
     description:
       "Чист дизайн за модни дрехи с акцент върху колекциите, качествени материали и силна визуална история.",
     previewPath: "/preview/clothing/1",
-    demoPath: "/demo/clothing/1",
+    demoPath: "/templates/clothing/1",
     builtWith:
       "Next.js магазин с бързо зареждане, mobile-first оформление и готови интеграции за плащания и куриери през DigiStart.",
     audience: {
@@ -90,4 +90,13 @@ export function getTemplatesByCategoryFilter(
 ): StoreTemplate[] {
   if (category === "all") return storeTemplates;
   return getTemplatesByCategory(category);
+}
+
+export function getTemplateDetailPath(category: string, id: string): string {
+  return `/templates/${category}/${id}`;
+}
+
+/** Latest templates by catalog order (newest last in array). */
+export function getLatestTemplates(count = 3): StoreTemplate[] {
+  return storeTemplates.slice(-count).reverse();
 }

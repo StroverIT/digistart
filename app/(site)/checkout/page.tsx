@@ -21,6 +21,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Price } from "@/components/ui/price";
 import type { Cart, CustomerInfo, Service } from "@/lib/types";
 import { getCart, clearCart, updateCartItemUpsells } from "@/lib/store/cart";
+import {
+  getCheckoutTemplateSelection,
+  type CheckoutTemplateSelection,
+} from "@/lib/store/checkout-template";
+import { CheckoutTemplatePicker } from "@/components/checkout/checkout-template-picker";
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 import { getServiceById } from "@/lib/data/services";
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
@@ -36,6 +41,7 @@ const PAYMENT_PREPARE_FAILED_MESSAGE =
 
 const LOGO_UPSELL = "logo-design";
 const PALETTE_UPSELL = "color-palette";
+const READY_STORE_SERVICE_ID = "ready-store";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -64,6 +70,9 @@ export default function CheckoutPage() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [paletteFile, setPaletteFile] = useState<File | null>(null);
   const [brandUrls, setBrandUrls] = useState<{ logoUrl?: string; paletteUrl?: string }>({});
+  const [templateSelection, setTemplateSelection] = useState<CheckoutTemplateSelection | null>(
+    null,
+  );
   /** Merged URLs committed before entering payment (avoids stale state after upload). */
   const [stripeBrandPayload, setStripeBrandPayload] = useState<{
     logoUrl?: string | null;
@@ -115,6 +124,9 @@ export default function CheckoutPage() {
   }, [isLoggedInCustomer, session?.user?.name, session?.user?.email]);
 
   const firstCartItem = cart.items[0];
+  const requiresTemplateSelection = cart.items.some(
+    (item) => item.serviceId === READY_STORE_SERVICE_ID,
+  );
   const hasLogoUpsell = Boolean(
     firstCartItem?.upsells.some((u) => u.upsellId === LOGO_UPSELL && u.quantity > 0)
   );
@@ -180,6 +192,14 @@ export default function CheckoutPage() {
         pendingUser,
         brandAssets,
         purchaseAsBusiness,
+        ...(templateSelection
+          ? {
+              selectedTemplate: {
+                productCategory: templateSelection.category,
+                templateId: templateSelection.id,
+              },
+            }
+          : {}),
       }),
     });
 
@@ -223,6 +243,7 @@ export default function CheckoutPage() {
     setMounted(true);
     const currentCart = getCart();
     setCart(currentCart);
+    setTemplateSelection(getCheckoutTemplateSelection());
     fetch("/api/services")
       .then((response) => response.json())
       .then((data: { services?: Service[] }) => {
@@ -420,6 +441,12 @@ export default function CheckoutPage() {
       notifyMissingLegalConsent();
       return;
     }
+    if (requiresTemplateSelection && !templateSelection) {
+      const message = "Моля изберете шаблон за онлайн магазина.";
+      setCheckoutError(message);
+      toast.error(message);
+      return;
+    }
     if (!validateAssetsAndContact()) return;
     const uploaded = await uploadBrandFiles();
     if (uploaded === false) return;
@@ -448,12 +475,12 @@ export default function CheckoutPage() {
 
   const displayStepLabel = useMemo(() => {
     if (isLoggedInCustomer) {
-      return logicalStep === 1 ? "Лого и палитра" : "Плащане";
+      return logicalStep === 1 ? "Шаблон и бранд" : "Плащане";
     }
     return logicalStep === 1
       ? "Акаунт"
       : logicalStep === 2
-        ? "Лого и палитра"
+        ? "Шаблон и бранд"
         : "Плащане";
   }, [isLoggedInCustomer, logicalStep]);
 
@@ -737,9 +764,16 @@ export default function CheckoutPage() {
                 <>
                   <Card className="bg-card border-border">
                     <CardHeader>
-                      <CardTitle className="text-lg">Лого и цветова палитра</CardTitle>
+                      <CardTitle className="text-lg">Шаблон, лого и палитра</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
+                      {requiresTemplateSelection ? (
+                        <CheckoutTemplatePicker
+                          value={templateSelection}
+                          onChange={setTemplateSelection}
+                        />
+                      ) : null}
+
                       {isLoggedInCustomer ? (
                         <div className="space-y-4">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

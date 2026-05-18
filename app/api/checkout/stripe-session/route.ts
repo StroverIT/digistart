@@ -39,6 +39,11 @@ const brandAssetsSchema = z.object({
   paletteUrl: z.string().url().optional().nullable(),
 });
 
+const selectedTemplateSchema = z.object({
+  productCategory: z.string().min(1),
+  templateId: z.string().min(1),
+});
+
 const payloadSchema = z.object({
   cart: z.object({
     items: z.array(
@@ -71,6 +76,7 @@ const payloadSchema = z.object({
   uiMode: z.enum(["redirect", "embedded"]).optional(),
   pendingUser: pendingUserSchema.optional(),
   brandAssets: brandAssetsSchema.optional(),
+  selectedTemplate: selectedTemplateSchema.optional(),
   purchaseAsBusiness: z.boolean().optional(),
 });
 
@@ -239,6 +245,14 @@ export async function POST(req: NextRequest) {
       phone: parsed.data.customer.phone,
     });
 
+    const selectedTemplate = parsed.data.selectedTemplate;
+    const templateMetadata = selectedTemplate
+      ? {
+          templateCategory: selectedTemplate.productCategory,
+          templateId: selectedTemplate.templateId,
+        }
+      : {};
+
     const uiMode = parsed.data.uiMode ?? "redirect";
     const sessionBase: Parameters<typeof stripe.checkout.sessions.create>[0] = {
       mode,
@@ -246,6 +260,7 @@ export async function POST(req: NextRequest) {
       customer: stripeCustomer.stripeCustomerId,
       metadata: {
         orderId: order.id,
+        ...templateMetadata,
         ...(parsed.data.cart.items.find((i) => i.planId)
           ? { planId: parsed.data.cart.items.find((i) => i.planId)!.planId! }
           : {}),
@@ -275,6 +290,7 @@ export async function POST(req: NextRequest) {
       sessionBase.subscription_data = {
         metadata: {
           orderId: order.id,
+          ...templateMetadata,
           ...(parsed.data.cart.items.find((i) => i.planId)
             ? { planId: parsed.data.cart.items.find((i) => i.planId)!.planId! }
             : {}),

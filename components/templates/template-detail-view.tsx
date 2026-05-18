@@ -1,9 +1,9 @@
 "use client";
 
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, ExternalLink, Monitor, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PreviewLink } from "@/components/preview/preview-link";
-import { TemplatePreviewFrame } from "@/components/templates/template-preview-frame";
 import { resolveTemplatePreviewUrl } from "@/lib/preview-url";
 import type { StoreTemplate, TemplateDetailSection } from "@/lib/data/templates";
 import { trackCtaClick } from "@/lib/analytics/tracker";
@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 
 type TemplateDetailViewProps = {
   template: StoreTemplate;
-  onBack: () => void;
 };
 
 function DetailSection({ section }: { section: TemplateDetailSection }) {
@@ -31,30 +30,30 @@ function DetailSection({ section }: { section: TemplateDetailSection }) {
   );
 }
 
-export function TemplateDetailView({ template, onBack }: TemplateDetailViewProps) {
+export function TemplateDetailView({ template }: TemplateDetailViewProps) {
   const previewUrl = resolveTemplatePreviewUrl(template);
+  const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
+  const detailPath = template.demoPath;
 
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            trackCtaClick("/templates", "templates_detail_back");
-            onBack();
-          }}
+        <TransitionLink
+          href="/templates"
+          onClick={() => trackCtaClick(detailPath, "templates_detail_back")}
+          className={cn(
+            "inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium hover:bg-accent",
+          )}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Към шаблоните
-        </Button>
+          Към всички шаблони
+        </TransitionLink>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
         <div className="space-y-4">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold">{template.name}</h2>
+            <h1 className="text-2xl sm:text-3xl font-bold">{template.name}</h1>
             {template.tagline && (
               <p className="mt-2 text-primary font-medium">{template.tagline}</p>
             )}
@@ -66,11 +65,32 @@ export function TemplateDetailView({ template, onBack }: TemplateDetailViewProps
             )}
           </div>
 
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant={device === "desktop" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setDevice("desktop")}
+            >
+              <Monitor className="h-4 w-4 mr-2" />
+              Desktop
+            </Button>
+            <Button
+              type="button"
+              variant={device === "mobile" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setDevice("mobile")}
+            >
+              <Smartphone className="h-4 w-4 mr-2" />
+              Mobile
+            </Button>
+          </div>
+
           <div className="flex flex-wrap gap-3">
             <PreviewLink
               href={previewUrl}
               ctaId={`templates_detail_preview_${template.category}_${template.id}`}
-              ctaPage="/templates"
+              ctaPage={detailPath}
               className={cn(
                 "inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90",
               )}
@@ -78,18 +98,10 @@ export function TemplateDetailView({ template, onBack }: TemplateDetailViewProps
               <ExternalLink className="h-4 w-4 mr-2" />
               Отвори на цял екран
             </PreviewLink>
-            <PreviewLink
-              href={template.demoPath}
-              ctaId={`templates_detail_demo_${template.category}_${template.id}`}
-              ctaPage="/templates"
-              className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium hover:bg-accent"
-            >
-              Demo рамка
-            </PreviewLink>
             <TransitionLink
               href="/services/online-store#buy-now"
               onClick={() =>
-                trackCtaClick("/templates", `templates_detail_start_${template.category}_${template.id}`)
+                trackCtaClick(detailPath, `templates_detail_start_${template.category}_${template.id}`)
               }
             >
               <Button type="button" variant="secondary" size="default">
@@ -99,7 +111,20 @@ export function TemplateDetailView({ template, onBack }: TemplateDetailViewProps
           </div>
         </div>
 
-        <TemplatePreviewFrame template={template} size="detail" lazy={false} />
+        <div className="flex justify-center lg:justify-end">
+          <div
+            className={cn(
+              "overflow-hidden rounded-xl border border-border bg-muted/30 shadow-2xl transition-all duration-300",
+              device === "desktop" ? "w-full aspect-16/10" : "w-[375px] aspect-9/19",
+            )}
+          >
+            <iframe
+              title={`Преглед на ${template.name}`}
+              src={previewUrl}
+              className="h-full w-full border-0 bg-white"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 pt-4 border-t border-border">

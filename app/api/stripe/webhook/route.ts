@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getStripeServerClient } from "@/lib/server/stripe";
 import { trySendOrderPaidConfirmationEmails } from "@/lib/server/order-emails";
+import { applyCheckoutTemplateFromOrderMetadata } from "@/lib/server/checkout-template";
 import {
   ensureGuestUserForOrderInDb,
   setOrderStripeSnapshotInDb,
@@ -105,6 +106,14 @@ async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
 
   if (session.payment_status === "paid") {
     await provisionGuestUserFromOrder(orderId);
+    const orderUser = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { userId: true },
+    });
+    const userId = orderUser?.userId ?? null;
+    if (userId) {
+      await applyCheckoutTemplateFromOrderMetadata(orderId, userId);
+    }
     if (subscriptionId) {
       try {
         const stripe = getStripeServerClient();

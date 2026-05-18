@@ -4,8 +4,6 @@ import { useMemo, useState } from "react";
 import type { ProductCategory, StoreTemplate, TemplateCategoryFilter } from "@/lib/data/templates";
 import { TemplateCategorySidebar } from "@/components/templates/template-category-sidebar";
 import { TemplateCard } from "@/components/templates/template-card";
-import { TemplateDetailView } from "@/components/templates/template-detail-view";
-import { trackCtaClick } from "@/lib/analytics/tracker";
 import { cn } from "@/lib/utils";
 
 type CategoryItem = {
@@ -21,19 +19,11 @@ type TemplatesGalleryProps = {
 
 export function TemplatesGallery({ categories, templates }: TemplatesGalleryProps) {
   const [selectedCategory, setSelectedCategory] = useState<TemplateCategoryFilter>("all");
-  const [selectedTemplate, setSelectedTemplate] = useState<StoreTemplate | null>(null);
 
   const filteredTemplates = useMemo(() => {
     if (selectedCategory === "all") return templates;
     return templates.filter((t) => t.category === selectedCategory);
   }, [templates, selectedCategory]);
-
-  const handleSelectTemplate = (template: StoreTemplate) => {
-    trackCtaClick("/templates", `templates_select_${template.category}_${template.id}`);
-    setSelectedTemplate(template);
-  };
-
-  const handleBack = () => setSelectedTemplate(null);
 
   return (
     <main className="pt-24 pb-16 min-h-screen bg-background">
@@ -48,7 +38,6 @@ export function TemplatesGallery({ categories, templates }: TemplatesGalleryProp
           </p>
         </header>
 
-        {/* Mobile category chips */}
         <div className="lg:hidden mb-6 -mx-1 overflow-x-auto pb-1">
           <div className="flex gap-2 px-1 min-w-max">
             <CategoryChip
@@ -73,23 +62,12 @@ export function TemplatesGallery({ categories, templates }: TemplatesGalleryProp
             <TemplateCategorySidebar
               categories={categories}
               selected={selectedCategory}
-              onSelect={(cat) => {
-                setSelectedCategory(cat);
-                setSelectedTemplate(null);
-              }}
+              onSelect={setSelectedCategory}
             />
           </aside>
 
           <div className="flex-1 min-w-0">
-            {selectedTemplate ? (
-              <TemplateDetailView template={selectedTemplate} onBack={handleBack} />
-            ) : (
-              <TemplatesGrid
-                templates={filteredTemplates}
-                selectedCategory={selectedCategory}
-                onSelect={handleSelectTemplate}
-              />
-            )}
+            <TemplatesGrid templates={filteredTemplates} selectedCategory={selectedCategory} />
           </div>
         </div>
       </div>
@@ -129,11 +107,9 @@ function CategoryChip({
 function TemplatesGrid({
   templates,
   selectedCategory,
-  onSelect,
 }: {
   templates: StoreTemplate[];
   selectedCategory: TemplateCategoryFilter;
-  onSelect: (template: StoreTemplate) => void;
 }) {
   if (templates.length === 0) {
     const categoryName =
@@ -157,7 +133,7 @@ function TemplatesGrid({
   return (
     <div className="grid gap-6 sm:grid-cols-2">
       {templates.map((template) => (
-        <TemplateCard key={`${template.category}-${template.id}`} template={template} onSelect={onSelect} />
+        <TemplateCard key={`${template.category}-${template.id}`} template={template} />
       ))}
     </div>
   );

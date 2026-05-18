@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { trySendOrderPaidConfirmationEmails } from "@/lib/server/order-emails";
 import { getStripeServerClient } from "@/lib/server/stripe";
+import { applyCheckoutTemplateFromOrderMetadata } from "@/lib/server/checkout-template";
 import {
   ensureGuestUserForOrderInDb,
   getOrderByIdFromDb,
@@ -106,7 +107,18 @@ export async function POST(
   });
 
   if (session.payment_status === "paid") {
-    await ensureGuestUserForOrderInDb(orderId);
+    const ensured = await ensureGuestUserForOrderInDb(orderId);
+    const userId =
+      ensured.userId ??
+      (
+        await prisma.order.findUnique({
+          where: { id: orderId },
+          select: { userId: true },
+        })
+      )?.userId;
+    if (userId) {
+      await applyCheckoutTemplateFromOrderMetadata(orderId, userId);
+    }
     await prisma.order.updateMany({
       where: { id: orderId, status: { not: "paid" } },
       data: { status: "paid" },

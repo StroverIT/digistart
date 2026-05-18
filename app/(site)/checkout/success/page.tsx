@@ -23,6 +23,7 @@ const CHECKOUT_STATE_KEYS = [
   "digistart-checkout-brand-assets",
   "digistart-checkout-consultation",
   "digistart-checkout-step",
+  "digistart-checkout-template",
 ];
 
 function clearCheckoutClientState() {

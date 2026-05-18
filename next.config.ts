@@ -8,6 +8,15 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  async redirects() {
+    return [
+      {
+        source: "/demo/:category/:id",
+        destination: "/templates/:category/:id",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {
