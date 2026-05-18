@@ -117,6 +117,7 @@ export function SocialProofSection() {
                   href={restyledSocial.website}
                   ctaId="home_social_proof_restyled_store"
                   className="inline-flex items-center gap-2 text-primary font-medium group"
+                  _blank={true}
                 >
                   Виж онлайн магазина
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

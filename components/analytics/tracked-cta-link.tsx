@@ -15,6 +15,7 @@ type TrackedCtaLinkProps = {
   children: ReactNode;
   className?: string;
   onClick?: () => void | Promise<void>;
+  _blank?: boolean;
 };
 
 function getOverlayTone(views: number, clicks: number) {
@@ -26,6 +27,7 @@ function getOverlayTone(views: number, clicks: number) {
 export function TrackedCtaLink({
   href,
   ctaId,
+  _blank = false,
   children,
   className,
   onClick,
@@ -51,6 +53,7 @@ export function TrackedCtaLink({
     <span className="relative inline-flex group">
       <TransitionLink
         href={href}
+        target={_blank ? "_blank" : undefined}
         className={className}
         onClick={async () => {
           if (onClick) await onClick();
@@ -72,9 +75,8 @@ export function TrackedCtaLink({
       ) : null}
       {showBadge ? (
         <span
-          className={`pointer-events-none absolute -top-2 right-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold text-foreground shadow-sm transition-opacity ${
-            getOverlayTone(views, clicks)
-          } ${showAllCtaStats ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+          className={`pointer-events-none absolute -top-2 right-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold text-foreground shadow-sm transition-opacity ${getOverlayTone(views, clicks)
+            } ${showAllCtaStats ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
         >
           {clicks} клика
         </span>

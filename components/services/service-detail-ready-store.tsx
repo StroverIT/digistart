@@ -475,6 +475,7 @@ export function ServiceDetailReadyStore({
                   href={RESTYLED_CASE.website}
                   ctaId="service_ready_store_restyled_store"
                   className="inline-flex items-center gap-2 text-primary text-base sm:text-lg font-medium group"
+                  _blank={true}
                 >
                   Виж онлайн магазина
                   <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
