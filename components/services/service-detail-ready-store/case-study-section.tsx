@@ -2,16 +2,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Facebook, Instagram } from "lucide-react";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
+import {
+  ServiceSectionBuyCta,
+  type ServiceSectionBuyCtaConfig,
+} from "@/components/services/service-section-buy-cta";
 import { cn } from "@/lib/utils";
 import { RESTYLED_CASE } from "./constants";
 import { ReadyStoreSectionIntro } from "./section-intro";
 
 interface ReadyStoreCaseStudySectionProps {
   headingFontClass?: string;
+  buyCta?: ServiceSectionBuyCtaConfig;
 }
 
 export function ReadyStoreCaseStudySection({
   headingFontClass,
+  buyCta,
 }: ReadyStoreCaseStudySectionProps) {
   return (
     <section data-animate-section className="py-8 md:py-20 border-y border-border/70 bg-card/30">
@@ -88,6 +94,14 @@ export function ReadyStoreCaseStudySection({
             </div>
           </div>
         </div>
+        {buyCta ? (
+          <div
+            data-animate-reveal
+            className="mt-8 md:mt-12 opacity-0 translate-y-10"
+          >
+            <ServiceSectionBuyCta {...buyCta} />
+          </div>
+        ) : null}
       </div>
     </section>
   );

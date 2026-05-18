@@ -4,17 +4,23 @@ import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { TemplateCard } from "@/components/templates/template-card";
+import {
+  ServiceSectionBuyCta,
+  type ServiceSectionBuyCtaConfig,
+} from "@/components/services/service-section-buy-cta";
 import { getLatestTemplates } from "@/lib/data/templates";
 import { cn } from "@/lib/utils";
 
 type TemplatesShowcaseSectionProps = {
   headingFontClass?: string;
   className?: string;
+  buyCta?: ServiceSectionBuyCtaConfig;
 };
 
 export function TemplatesShowcaseSection({
   headingFontClass,
   className,
+  buyCta,
 }: TemplatesShowcaseSectionProps) {
   const latestTemplates = getLatestTemplates(3);
 
@@ -69,6 +75,14 @@ export function TemplatesShowcaseSection({
             </Button>
           </TrackedCtaLink>
         </div>
+        {buyCta ? (
+          <div
+            data-animate-reveal
+            className="mt-4 flex justify-center opacity-0 translate-y-10"
+          >
+            <ServiceSectionBuyCta {...buyCta} />
+          </div>
+        ) : null}
       </div>
     </section>
   );

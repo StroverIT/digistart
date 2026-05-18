@@ -27,8 +27,11 @@ import { Faq, type FaqItem } from "@/components/ui/faq";
 import { PlansSection } from "@/components/plans/plans-section";
 import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 import { ServicePageBackground } from "@/components/services/service-page-background";
+import { ServiceSectionBuyCta } from "@/components/services/service-section-buy-cta";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const SOCIAL_MEDIA_HERO_PRIMARY_CTA = "Увеличи продажбите си сега" as const;
 
 const marketingPainPoints = [
   {
@@ -226,9 +229,9 @@ export function ServiceDetailSocialMedia({
           badgeText="Редовно съдържание и по-ясна стратегия"
           title={
             <>
-              Социални мрежи без хаос
+              Поддръжка, съдържание и реклами
               <div className="gradient-text">
-                Поддръжка, съдържание и реклами без нужда от вътрешен маркетинг екип
+                без нужда от вътрешен маркетинг екип
               </div>
             </>
           }
@@ -249,7 +252,7 @@ export function ServiceDetailSocialMedia({
               <span className="text-muted-foreground">/месец</span>
             </div>
           }
-          primaryLabel="Увеличи продажбите си сега"
+          primaryLabel={SOCIAL_MEDIA_HERO_PRIMARY_CTA}
           onPrimaryClick={() => {
             trackCtaClick(
               "/services/social-media",
@@ -273,7 +276,7 @@ export function ServiceDetailSocialMedia({
                 data-animate-reveal
                 className="text-3xl sm:text-4xl md:text-5xl font-bold text-balance opacity-0 translate-y-10"
               >
-                Имаш страхотен продукт, но губиш време в хаос и клиентите избират други.
+                Имаш страхотен продукт, но губиш време в хаос и клиентите избират други
               </h2>
             </div>
             <div className="grid gap-6 md:grid-cols-3">
@@ -292,6 +295,16 @@ export function ServiceDetailSocialMedia({
                   </CardContent>
                 </Card>
               ))}
+            </div>
+            <div
+              data-animate-reveal
+              className="mt-8 md:mt-10 opacity-0 translate-y-10"
+            >
+              <ServiceSectionBuyCta
+                pagePath="/services/social-media"
+                ctaId="service_social_media_section_pain_scroll_buy"
+                label={SOCIAL_MEDIA_HERO_PRIMARY_CTA}
+              />
             </div>
           </div>
         </section>
@@ -327,6 +340,16 @@ export function ServiceDetailSocialMedia({
                   </CardContent>
                 </Card>
               ))}
+            </div>
+            <div
+              data-animate-reveal
+              className="mt-8 md:mt-10 opacity-0 translate-y-10"
+            >
+              <ServiceSectionBuyCta
+                pagePath="/services/social-media"
+                ctaId="service_social_media_section_solution_scroll_buy"
+                label={SOCIAL_MEDIA_HERO_PRIMARY_CTA}
+              />
             </div>
           </div>
         </section>
@@ -387,6 +410,16 @@ export function ServiceDetailSocialMedia({
                 ))}
               </div>
             </div>
+            <div
+              data-animate-reveal
+              className="mt-8 md:mt-10 opacity-0 translate-y-10"
+            >
+              <ServiceSectionBuyCta
+                pagePath="/services/social-media"
+                ctaId="service_social_media_section_steps_scroll_buy"
+                label={SOCIAL_MEDIA_HERO_PRIMARY_CTA}
+              />
+            </div>
           </div>
         </section>
 
@@ -417,6 +450,16 @@ export function ServiceDetailSocialMedia({
               className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 sm:px-8 sm:py-4 opacity-0 translate-y-10"
             >
               <Faq items={FAQ_ITEMS} />
+            </div>
+            <div
+              data-animate-reveal
+              className="mt-8 md:mt-10 opacity-0 translate-y-10"
+            >
+              <ServiceSectionBuyCta
+                pagePath="/services/social-media"
+                ctaId="service_social_media_section_faq_scroll_buy"
+                label={SOCIAL_MEDIA_HERO_PRIMARY_CTA}
+              />
             </div>
           </div>
         </section>

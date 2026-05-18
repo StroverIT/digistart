@@ -34,6 +34,17 @@ interface ServiceDetailReadyStoreProps {
   serviceData?: Service;
 }
 
+const READY_STORE_CTA_PAGE = "/services/online-store" as const;
+const READY_STORE_HERO_PRIMARY_CTA = "Стартирай своя онлайн магазин без риск" as const;
+
+function readyStoreScrollToBuyCta(ctaId: string) {
+  return {
+    pagePath: READY_STORE_CTA_PAGE,
+    ctaId,
+    label: READY_STORE_HERO_PRIMARY_CTA,
+  };
+}
+
 export function ServiceDetailReadyStore({
   headingFontClass,
   bodyFontClass,
@@ -112,7 +123,7 @@ export function ServiceDetailReadyStore({
             <span className="text-muted-foreground text-lg">/мес</span>
           </div>
         }
-        primaryLabel="Стартирай своя онлайн магазин без риск"
+        primaryLabel={READY_STORE_HERO_PRIMARY_CTA}
         onPrimaryClick={() => {
           trackCtaClick("/services/online-store", "service_ready_store_scroll_to_buy");
           scrollToBuySection();
@@ -121,15 +132,35 @@ export function ServiceDetailReadyStore({
         headingFontClass={headingFontClass}
       />
 
-      <ReadyStorePainPointsSection headingFontClass={headingFontClass} />
-      <ReadyStoreSolutionSection headingFontClass={headingFontClass} />
-      <ReadyStoreStepsSection headingFontClass={headingFontClass} />
-      <ReadyStoreValuePropSection />
-      <ReadyStoreCaseStudySection headingFontClass={headingFontClass} />
+      <ReadyStorePainPointsSection
+        headingFontClass={headingFontClass}
+        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_pain_scroll_buy")}
+      />
+      <ReadyStoreSolutionSection
+        headingFontClass={headingFontClass}
+        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_solution_scroll_buy")}
+      />
+      <ReadyStoreStepsSection
+        headingFontClass={headingFontClass}
+        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_steps_scroll_buy")}
+      />
+      <ReadyStoreValuePropSection
+        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_value_prop_scroll_buy")}
+      />
+      <ReadyStoreCaseStudySection
+        headingFontClass={headingFontClass}
+        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_case_study_scroll_buy")}
+      />
 
-      <TemplatesShowcaseSection headingFontClass={headingFontClass} />
+      <TemplatesShowcaseSection
+        headingFontClass={headingFontClass}
+        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_templates_scroll_buy")}
+      />
 
-      <ReadyStoreFaqSection headingFontClass={headingFontClass} />
+      <ReadyStoreFaqSection
+        headingFontClass={headingFontClass}
+        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_faq_scroll_buy")}
+      />
 
       <ServiceBuySection
         service={service}

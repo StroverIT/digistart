@@ -27,8 +27,11 @@ import { Faq, type FaqItem } from "@/components/ui/faq";
 import { PlansSection } from "@/components/plans/plans-section";
 import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 import { ServicePageBackground } from "@/components/services/service-page-background";
+import { ServiceSectionBuyCta } from "@/components/services/service-section-buy-cta";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const GOOGLE_BUSINESS_HERO_PRIMARY_CTA = "Стани видим в локалните търсения" as const;
 
 const GOOGLE_PROFILE_OPTION_ID = "basic";
 
@@ -254,7 +257,7 @@ export function ServiceDetailGoogleBusiness({
               <span className="text-muted-foreground">еднократно</span>
             </div>
           }
-          primaryLabel="Стани видим в локалните търсения"
+          primaryLabel={GOOGLE_BUSINESS_HERO_PRIMARY_CTA}
           onPrimaryClick={() => {
             trackCtaClick(
               "/services/google-business",
@@ -299,6 +302,16 @@ export function ServiceDetailGoogleBusiness({
                 </Card>
               ))}
             </div>
+            <div
+              data-animate-reveal
+              className="mt-8 md:mt-10 opacity-0 translate-y-10"
+            >
+              <ServiceSectionBuyCta
+                pagePath="/services/google-business"
+                ctaId="service_google_business_section_pain_scroll_buy"
+                label={GOOGLE_BUSINESS_HERO_PRIMARY_CTA}
+              />
+            </div>
           </div>
         </section>
 
@@ -334,6 +347,16 @@ export function ServiceDetailGoogleBusiness({
                   </CardContent>
                 </Card>
               ))}
+            </div>
+            <div
+              data-animate-reveal
+              className="mt-8 md:mt-10 opacity-0 translate-y-10"
+            >
+              <ServiceSectionBuyCta
+                pagePath="/services/google-business"
+                ctaId="service_google_business_section_solution_scroll_buy"
+                label={GOOGLE_BUSINESS_HERO_PRIMARY_CTA}
+              />
             </div>
           </div>
         </section>
@@ -395,6 +418,16 @@ export function ServiceDetailGoogleBusiness({
                 ))}
               </div>
             </div>
+            <div
+              data-animate-reveal
+              className="mt-8 md:mt-10 opacity-0 translate-y-10"
+            >
+              <ServiceSectionBuyCta
+                pagePath="/services/google-business"
+                ctaId="service_google_business_section_steps_scroll_buy"
+                label={GOOGLE_BUSINESS_HERO_PRIMARY_CTA}
+              />
+            </div>
           </div>
         </section>
 
@@ -426,6 +459,16 @@ export function ServiceDetailGoogleBusiness({
               className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 sm:px-8 sm:py-4 opacity-0 translate-y-10"
             >
               <Faq items={FAQ_ITEMS} />
+            </div>
+            <div
+              data-animate-reveal
+              className="mt-8 md:mt-10 opacity-0 translate-y-10"
+            >
+              <ServiceSectionBuyCta
+                pagePath="/services/google-business"
+                ctaId="service_google_business_section_faq_scroll_buy"
+                label={GOOGLE_BUSINESS_HERO_PRIMARY_CTA}
+              />
             </div>
           </div>
         </section>

@@ -1,13 +1,19 @@
 import { CircleX } from "lucide-react";
+import {
+  ServiceSectionBuyCta,
+  type ServiceSectionBuyCtaConfig,
+} from "@/components/services/service-section-buy-cta";
 import { PAIN_POINTS } from "./constants";
 import { ReadyStoreSectionIntro } from "./section-intro";
 
 interface ReadyStorePainPointsSectionProps {
   headingFontClass?: string;
+  buyCta?: ServiceSectionBuyCtaConfig;
 }
 
 export function ReadyStorePainPointsSection({
   headingFontClass,
+  buyCta,
 }: ReadyStorePainPointsSectionProps) {
   return (
     <section data-animate-section className="py-8 md:py-20 bg-card/50">
@@ -33,6 +39,14 @@ export function ReadyStorePainPointsSection({
             </div>
           ))}
         </div>
+        {buyCta ? (
+          <div
+            data-animate-reveal
+            className="mt-8 md:mt-10 opacity-0 translate-y-10"
+          >
+            <ServiceSectionBuyCta {...buyCta} />
+          </div>
+        ) : null}
       </div>
     </section>
   );

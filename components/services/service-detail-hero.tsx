@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import gsap from "gsap";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { Button } from "@/components/ui/button";
+import { SERVICE_DETAIL_HERO_PRIMARY_BUTTON_CLASSNAME } from "@/components/services/service-detail-primary-cta-styles";
 import { cn } from "@/lib/utils";
 
 interface ServiceDetailHeroProps {
@@ -113,7 +114,7 @@ export function ServiceDetailHero({
             <Button
               onClick={onPrimaryClick}
               size="lg"
-              className="h-14 px-8 text-lg bg-orange-500 hover:bg-orange-600 text-white"
+              className={SERVICE_DETAIL_HERO_PRIMARY_BUTTON_CLASSNAME}
             >
               {primaryLabel}
               <ArrowRight className="ml-2 h-5 w-5" />
