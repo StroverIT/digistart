@@ -322,7 +322,7 @@ export function ServiceDetailSocialMedia({
                 data-animate-reveal
                 className="text-3xl sm:text-4xl md:text-5xl font-bold text-balance opacity-0 translate-y-10"
               >
-                Какво се случва, когато повериш онлайн присъствието си на професионалисти?
+                Какво получаваш, когато довериш онлайн присъствието си на нас?
               </h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
