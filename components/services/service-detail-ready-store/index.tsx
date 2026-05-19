@@ -175,7 +175,7 @@ export function ServiceDetailReadyStore({
         compact
         title="Готови абонаментни пакети"
         subtitle="Или конфигурирай само магазина и добавките, които са ти нужни сега."
-        className="py-12 md:py-16 bg-card/30"
+        className="pb-12 md:pb-16 bg-card/30"
       />
     </div>
   );
