@@ -51,13 +51,16 @@ export function PlanCard({ plan, onSelect, isAdding }: PlanCardProps) {
         >
           <div className="flex min-h-11 flex-col justify-center">
             {plan.discountPercent > 0 ? (
-              <p className="text-xs leading-tight text-destructive/80 line-through decoration-destructive decoration-2">
-                <span className="tabular-nums">
+              <p className="text-xs text-destructive">
+                <span className=" leading-tight text-destructive/80 line-through decoration-destructive decoration-2">
                   <Price
                     value={plan.listMonthly}
                     layout="horizontal"
-                    className="inline-flex gap-1.5 [&>span]:text-destructive [&>span:last-child]:text-destructive/75 line-through"
+                    className="inline-flex gap-1.5 [&>span]:text-destructive line-through"
                   />
+                </span>
+                <span className="pl-1">
+                  / мес
                 </span>
               </p>
             ) : null}
