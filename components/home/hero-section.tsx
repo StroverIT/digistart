@@ -73,7 +73,7 @@ export function HeroSection() {
             ref={titleRef}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl sm:leading-17 mb-6 text-balance opacity-0 translate-y-10"
           >
-            Продай твоите продукти онлайн <span className="gradient-text">без хиляди левове риск</span>
+            Продай твоите продукти онлайн <span className="gradient-text">без хиляди евро наведнъж</span>
           </h1>
 
           {/* Subheadline */}

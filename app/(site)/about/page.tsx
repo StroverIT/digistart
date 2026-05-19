@@ -78,7 +78,7 @@ export default function AboutPage() {
         <section className="max-w-4xl mx-auto rounded-2xl border border-border bg-card p-6 sm:p-8 md:p-10 space-y-4">
           <h2 className="text-2xl sm:text-3xl font-semibold">Нашата мисия 🚀</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Вярваме, че добра идея не трябва да чака бюджет от хиляди левове, за да стигне до
+            Вярваме, че добра идея не трябва да чака бюджет от хиляди евро, за да стигне до
             първите си клиенти. Нашата цел е да ти дадем бърз, ясен и бюджетен онлайн старт, за да
             тестваш пазара, да намалиш ръчната работа и да продаваш по-спокойно.
           </p>
