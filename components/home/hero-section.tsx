@@ -73,7 +73,7 @@ export function HeroSection() {
             ref={titleRef}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl sm:leading-17 mb-6 text-balance opacity-0 translate-y-10"
           >
-            Стартирай идеята си онлайн <span className="gradient-text">без хиляди левове риск</span>
+            Продай твоите продукти онлайн <span className="gradient-text">без хиляди левове риск</span>
           </h1>
 
           {/* Subheadline */}
@@ -81,7 +81,7 @@ export function HeroSection() {
             ref={subRef}
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed text-pretty opacity-0 translate-y-10"
           >
-            Създай дигиталното си присъствие за по-малко от 48 часа и стартирай продажби 24/7.
+            Създай дигиталното си присъствие за по-малко от 48 часа и продавай 24/7.
           </p>
 
           {/* Benefits */}
