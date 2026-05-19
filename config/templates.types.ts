@@ -7,8 +7,8 @@ export type TemplateRuntimeEntry = {
   /** Upstream app URL for Next.js rewrites. */
   rewriteTarget: string;
   /**
-   * Direct URL for iframe / “open preview” links.
-   * Use in test when the template has no basePath. Omit in prod to use previewPath + rewrites.
+   * Direct URL for iframe / “open preview” links when the template app serves assets from /_next.
+   * Required in prod unless each template sets basePath to match previewPath.
    */
   previewOrigin?: string;
 };
