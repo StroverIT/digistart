@@ -38,6 +38,29 @@ function AdditionalServiceSticker({ service }: { service: Service }) {
   );
 }
 
+function AdditionalServicesGrid({ services }: { services: Service[] }) {
+  if (services.length === 0) return null;
+
+  return (
+    <div className="grid gap-3 xl:grid-cols-2">
+      {services.map((service) => (
+        <div key={service.id} className="[&>span]:flex [&>span]:w-full">
+          <TrackedCtaLink
+            href={`/services/${service.slug}#buy-now`}
+            ctaId={`cart_upsell_${service.slug}`}
+            className="flex flex-col xl:flex-row w-full items-center rounded-xl border border-border bg-background/60 p-5 text-left transition-all duration-300 hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <AdditionalServiceSticker service={service} />
+            <span className="text-sm font-semibold leading-snug text-center xl:text-left">
+              {additionalServicePrompts[service.id]}
+            </span>
+          </TrackedCtaLink>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function CartItemCard({
   item,
   serviceFromDb,
@@ -335,18 +358,15 @@ export default function CartPage() {
 
         {isEmpty ? (
           <Card data-cart-empty className="bg-card border-border opacity-0 translate-y-10">
-            <CardContent className="py-16 text-center">
-              <Package className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Кошницата е празна</h2>
-              <p className="text-muted-foreground mb-6">
-                Разгледайте нашите услуги и добавете нещо в кошницата.
-              </p>
-              <TrackedCtaLink href="/#services" ctaId="cart_empty_to_services">
-                <Button className="glow-primary">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Към услугите
-                </Button>
-              </TrackedCtaLink>
+            <CardContent className="p-4 sm:p-6 py-12 sm:py-16">
+              <div className="text-center mb-8">
+                <Package className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+                <h2 className="text-xl font-semibold mb-2">Кошницата е празна</h2>
+                <p className="text-muted-foreground">
+                  Изберете услуга и я добавете в кошницата.
+                </p>
+              </div>
+              <AdditionalServicesGrid services={additionalServices} />
             </CardContent>
           </Card>
         ) : (
@@ -375,22 +395,7 @@ export default function CartPage() {
                         Добави липсващите услуги, за да покриеш повече канали за продажби.
                       </p>
                     </div>
-                    <div className="grid gap-3 xl:grid-cols-2">
-                      {additionalServices.map((service) => (
-                        <div key={service.id} className="[&>span]:flex [&>span]:w-full">
-                          <TrackedCtaLink
-                            href={`/services/${service.slug}#buy-now`}
-                            ctaId={`cart_upsell_${service.slug}`}
-                            className="flex flex-col xl:flex-row w-full items-center rounded-xl border border-border bg-background/60 p-5 text-left transition-all duration-300 hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                          >
-                            <AdditionalServiceSticker service={service} />
-                            <span className="text-sm font-semibold leading-snug text-center xl:text-left">
-                              {additionalServicePrompts[service.id]}
-                            </span>
-                          </TrackedCtaLink>
-                        </div>
-                      ))}
-                    </div>
+                    <AdditionalServicesGrid services={additionalServices} />
                   </CardContent>
                 </Card>
               ) : null}
