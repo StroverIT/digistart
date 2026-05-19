@@ -14,6 +14,12 @@ export function resolveTemplatePreviewUrl(
   return template.previewPath;
 }
 
+export function resolveTemplatePreviewImageUrl(
+  template: Pick<StoreTemplate, "category" | "id" | "previewImagePath">,
+): string {
+  return template.previewImagePath;
+}
+
 export function resolvePreviewPathBySlug(
   previewSlug: string,
   fallbackPath: string,

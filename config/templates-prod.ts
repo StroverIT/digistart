@@ -2,7 +2,7 @@ import type { TemplatesConfig } from "./templates.types";
 
 /**
  * Production template upstream URLs. Commit updates when template deployments change.
- * previewOrigin loads iframes directly on Vercel so /_next assets resolve correctly
+ * previewOrigin is used for live preview links on Vercel so /_next assets resolve correctly
  * (proxied previewPath requires basePath on each template app).
  */
 export const templatesProd: TemplatesConfig = {

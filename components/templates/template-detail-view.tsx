@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowLeft, ExternalLink, Monitor, Smartphone } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { PreviewLink } from "@/components/preview/preview-link";
-import { resolveTemplatePreviewUrl } from "@/lib/preview-url";
+import {
+  resolveTemplatePreviewImageUrl,
+  resolveTemplatePreviewUrl,
+} from "@/lib/preview-url";
 import type { StoreTemplate, TemplateDetailSection } from "@/lib/data/templates";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { setCheckoutTemplateSelection } from "@/lib/store/checkout-template";
@@ -32,8 +35,8 @@ function DetailSection({ section }: { section: TemplateDetailSection }) {
 }
 
 export function TemplateDetailView({ template }: TemplateDetailViewProps) {
-  const previewUrl = resolveTemplatePreviewUrl(template);
-  const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
+  const livePreviewUrl = resolveTemplatePreviewUrl(template);
+  const previewImageUrl = resolveTemplatePreviewImageUrl(template);
   const detailPath = template.demoPath;
 
   return (
@@ -66,30 +69,9 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
             )}
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              variant={device === "desktop" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setDevice("desktop")}
-            >
-              <Monitor className="h-4 w-4 mr-2" />
-              Desktop
-            </Button>
-            <Button
-              type="button"
-              variant={device === "mobile" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setDevice("mobile")}
-            >
-              <Smartphone className="h-4 w-4 mr-2" />
-              Mobile
-            </Button>
-          </div>
-
           <div className="flex flex-wrap gap-3">
             <PreviewLink
-              href={previewUrl}
+              href={livePreviewUrl}
               ctaId={`templates_detail_preview_${template.category}_${template.id}`}
               ctaPage={detailPath}
               className={cn(
@@ -97,7 +79,7 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
               )}
             >
               <ExternalLink className="h-4 w-4 mr-2" />
-              Отвори на цял екран
+              Жив преглед
             </PreviewLink>
             <TransitionLink
               href="/services/online-store#buy-now"
@@ -117,16 +99,14 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
         </div>
 
         <div className="flex justify-center lg:justify-end">
-          <div
-            className={cn(
-              "overflow-hidden rounded-xl border border-border bg-muted/30 shadow-2xl transition-all duration-300",
-              device === "desktop" ? "w-full aspect-16/10" : "w-[375px] aspect-9/19",
-            )}
-          >
-            <iframe
-              title={`Преглед на ${template.name}`}
-              src={previewUrl}
-              className="h-full w-full border-0 bg-white"
+          <div className="relative w-full aspect-16/10 rounded-xl">
+            <Image
+              src={previewImageUrl}
+              alt={`Преглед на ${template.name}`}
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-contain object-top"
             />
           </div>
         </div>

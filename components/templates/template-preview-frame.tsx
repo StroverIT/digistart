@@ -1,14 +1,15 @@
 "use client";
 
-import { resolveTemplatePreviewUrl } from "@/lib/preview-url";
+import Image from "next/image";
+import { resolveTemplatePreviewImageUrl } from "@/lib/preview-url";
 import type { StoreTemplate } from "@/lib/data/templates";
 import { cn } from "@/lib/utils";
 
 type TemplatePreviewFrameProps = {
-  template: Pick<StoreTemplate, "category" | "id" | "previewPath" | "name">;
+  template: Pick<StoreTemplate, "category" | "id" | "previewImagePath" | "name">;
   size?: "thumb" | "detail";
   className?: string;
-  lazy?: boolean;
+  priority?: boolean;
 };
 
 const sizeClasses = {
@@ -16,30 +17,34 @@ const sizeClasses = {
   detail: "aspect-16/10 w-full max-w-5xl",
 } as const;
 
+const imageSizes = {
+  thumb: "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
+  detail: "(max-width: 1024px) 100vw, 50vw",
+} as const;
+
 export function TemplatePreviewFrame({
   template,
   size = "thumb",
   className,
-  lazy = true,
+  priority = false,
 }: TemplatePreviewFrameProps) {
-  const src = resolveTemplatePreviewUrl(template);
+  const src = resolveTemplatePreviewImageUrl(template);
 
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-lg border border-border bg-muted/30",
+        "relative overflow-hidden rounded-lg",
         sizeClasses[size],
         className,
       )}
     >
-      <iframe
-        title={`Преглед на ${template.name}`}
+      <Image
         src={src}
-        loading={lazy ? "lazy" : "eager"}
-        className={cn(
-          "h-full w-full border-0 bg-white",
-          size === "thumb" && "pointer-events-none",
-        )}
+        alt={`Преглед на ${template.name}`}
+        fill
+        priority={priority}
+        sizes={imageSizes[size]}
+        className="object-contain object-top"
       />
     </div>
   );
