@@ -1,16 +1,20 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowUpRight,
   Facebook,
   Instagram,
+  MessageCircle,
   Paintbrush,
+  Share2,
   Shirt,
+  ShoppingBag,
   Smartphone,
   TrendingUp,
+  type LucideIcon,
 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -25,14 +29,138 @@ const restyledSocial = {
   website: "https://restyled.bg",
 } as const;
 
-const highlights = [
-  { label: "Ниша", value: "Fashion", icon: Shirt },
-  { label: "Фокус", value: "Mobile-first", icon: Smartphone },
-  { label: "Резултат", value: "Онлайн продажби и по-силна аудитория", icon: TrendingUp },
-  { label: "Уникален дизайн", value: "Дизайнът е направен от екипа ни, а не е темлейт", icon: Paintbrush },
-] as const;
+export type SocialProofSectionType = "home" | "online-store" | "social-media";
 
-export function SocialProofSection() {
+type Highlight = {
+  label: string;
+  value: string;
+  icon: LucideIcon;
+};
+
+type SocialProofContent = {
+  title: ReactNode;
+  eyebrow: string;
+  description: ReactNode;
+  highlights: Highlight[];
+  primaryCta: { href: string; label: string; ctaId: string };
+};
+
+const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
+  home: {
+    title: (
+      <>
+        Бизнеси, които вече <span className="gradient-text">растат с нас</span>
+      </>
+    ),
+    eyebrow: "Онлайн магазин · Fashion",
+    description: (
+      <>
+        Restyled е моден бранд, който продаваше основно на живо и в съобщения. С готов онлайн
+        магазин (mobile-first) преминаха към поръчки 24/7 - без да изглеждат „любителски“
+        онлайн.
+        <div className="mt-2" />
+        Днес клиентите разглеждат колекциите сами, поръчват с няколко клика и брандът расте с
+        по-организирано присъствие в социалните мрежи, вместо да губи часове в отговори на едни и
+        същи въпроси.
+      </>
+    ),
+    highlights: [
+      { label: "Ниша", value: "Fashion", icon: Shirt },
+      { label: "Фокус", value: "Mobile-first", icon: Smartphone },
+      { label: "Резултат", value: "Онлайн продажби и по-силна аудитория", icon: TrendingUp },
+      {
+        label: "Уникален дизайн",
+        value: "Дизайнът е направен от екипа ни, а не е темлейт",
+        icon: Paintbrush,
+      },
+    ],
+    primaryCta: {
+      href: restyledSocial.website,
+      label: "Виж онлайн магазина",
+      ctaId: "home_social_proof_restyled_store",
+    },
+  },
+  "online-store": {
+    title: (
+      <>
+        От чат до <span className="gradient-text">поръчки 24/7</span>
+      </>
+    ),
+    eyebrow: "Казус · Онлайн магазин · Fashion",
+    description: (
+      <>
+        Restyled продаваха основно през съобщения - всеки ден същите въпроси за размери, цени и
+        адреси. С готов онлайн магазин (mobile-first) клиентите вече избират и поръчват сами, а
+        поръчките влизат денонощно.
+        <div className="mt-2" />
+        Без преписване на адреси и без лимит от времето в чата - собствениците се фокусират върху
+        колекциите, а не върху операторска работа.
+      </>
+    ),
+    highlights: [
+      { label: "Ниша", value: "Fashion", icon: Shirt },
+      { label: "Фокус", value: "Mobile-first магазин", icon: Smartphone },
+      { label: "Резултат", value: "Поръчки 24/7 без хаос в съобщенията", icon: ShoppingBag },
+      {
+        label: "Уникален дизайн",
+        value: "Премиум изглед, направен от екипа ни",
+        icon: Paintbrush,
+      },
+    ],
+    primaryCta: {
+      href: restyledSocial.website,
+      label: "Виж онлайн магазина",
+      ctaId: "service_online_store_social_proof_restyled_store",
+    },
+  },
+  "social-media": {
+    title: (
+      <>
+        От хаос в чата до <span className="gradient-text">подреден бранд</span>
+      </>
+    ),
+    eyebrow: "Казус · Социални мрежи · Fashion",
+    description: (
+      <>
+        Restyled създават страхотна мода, но губеха часове в Instagram и Facebook - едни и същи
+        въпроси, без ясна стратегия за съдържание и реклами.
+        <div className="mt-2" />
+        С подредено присъствие и кампании, насочени към бранда им, достигат до повече хора и
+        печелят време за новите колекции - вместо да работят като оператори в чата.
+      </>
+    ),
+    highlights: [
+      { label: "Ниша", value: "Fashion", icon: Shirt },
+      { label: "Фокус", value: "Instagram & Facebook", icon: Share2 },
+      { label: "Резултат", value: "По-силна аудитория и по-малко хаос в чата", icon: TrendingUp },
+      {
+        label: "Подход",
+        value: "Съдържание и реклами, съобразени с бранда",
+        icon: MessageCircle,
+      },
+    ],
+    primaryCta: {
+      href: restyledSocial.instagram,
+      label: "Виж профила в Instagram",
+      ctaId: "service_social_media_social_proof_restyled_instagram",
+    },
+  },
+};
+
+interface SocialProofSectionProps {
+  type?: SocialProofSectionType;
+  headingFontClass?: string;
+  className?: string;
+}
+
+export function SocialProofSection({
+  type = "home",
+  headingFontClass,
+  className,
+}: SocialProofSectionProps) {
+  const content = CONTENT[type];
+  const isHome = type === "home";
+
   const containerRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -65,25 +193,50 @@ export function SocialProofSection() {
   return (
     <section
       ref={containerRef}
-      id="social-proof"
-      className="flex min-h-screen w-full flex-col justify-center py-16 md:py-20 lg:py-24"
+      id={isHome ? "social-proof" : undefined}
+      className={cn(
+        isHome
+          ? "flex min-h-screen w-full flex-col justify-center py-16 md:py-20 lg:py-24"
+          : "py-8 md:py-20 border-y border-border/70 bg-card/30",
+        className,
+      )}
     >
-      <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-16">
+      <div
+        className={cn(
+          isHome ? "w-full px-4 sm:px-6 lg:px-10 xl:px-16" : "container mx-auto px-4",
+        )}
+      >
         <h2
           ref={titleRef}
-          className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-12 md:mb-14 text-balance opacity-0 translate-y-10"
+          className={cn(
+            "text-center font-bold mb-12 md:mb-14 text-balance opacity-0 translate-y-10",
+            isHome
+              ? "text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
+              : "text-3xl sm:text-4xl md:text-5xl",
+            headingFontClass,
+          )}
         >
-          Бизнеси, които вече <span className="gradient-text">растат с нас</span>
+          {content.title}
         </h2>
 
         <div ref={cardRef} className="w-full opacity-0 translate-y-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-center">
-            <div className="relative aspect-4/3 lg:sticky lg:top-24 lg:z-10 lg:flex lg:aspect-auto lg:min-h-[480px] lg:w-full lg:items-center lg:justify-center xl:min-h-[560px]">
+            <div
+              className={cn(
+                "relative aspect-4/3 overflow-hidden rounded-lg",
+                isHome
+                  ? "lg:sticky lg:top-24 lg:z-10 lg:flex lg:aspect-auto lg:min-h-[480px] lg:w-full lg:items-center lg:justify-center xl:min-h-[560px]"
+                  : "lg:aspect-auto lg:min-h-[360px]",
+              )}
+            >
               <Image
                 src="/what-we-offer/restyled-mock-up.png"
                 alt="Restyled - mock-up на онлайн магазин"
                 fill
-                className="object-contain p-4 sm:p-6 lg:p-2 xl:p-0"
+                className={cn(
+                  "object-contain",
+                  isHome ? "p-4 sm:p-6 lg:p-2 xl:p-0" : "p-2 sm:p-4",
+                )}
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </div>
@@ -91,23 +244,23 @@ export function SocialProofSection() {
             <div className="flex flex-col gap-6 p-6 sm:p-8 lg:p-10">
               <div>
                 <p className="text-xs lg:text-sm font-semibold uppercase tracking-wider text-primary mb-2">
-                  Онлайн магазин · Fashion
+                  {content.eyebrow}
                 </p>
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Restyled</h3>
+                <h3
+                  className={cn(
+                    "text-2xl sm:text-3xl lg:text-4xl font-bold mb-4",
+                    headingFontClass,
+                  )}
+                >
+                  Restyled
+                </h3>
                 <p className="text-muted-foreground leading-relaxed lg:text-lg">
-                  Restyled е моден бранд, който продаваше основно на живо и в съобщения. С готов онлайн
-                  магазин (mobile-first) преминаха към поръчки 24/7 - без да изглеждат „любителски“
-
-                  онлайн.
-                  <div className="mt-2" />
-                  Днес клиентите разглеждат колекциите сами, поръчват с няколко клика и брандът
-                  расте с по-организирано присъствие в социалните мрежи, вместо да губи часове в
-                  отговори на едни и същи въпроси.
+                  {content.description}
                 </p>
               </div>
 
               <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4" role="list">
-                {highlights.map((item) => {
+                {content.highlights.map((item) => {
                   const Icon = item.icon;
                   return (
                     <li
@@ -145,12 +298,12 @@ export function SocialProofSection() {
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2 border-t border-border/60">
                 <TrackedCtaLink
-                  href={restyledSocial.website}
-                  ctaId="home_social_proof_restyled_store"
+                  href={content.primaryCta.href}
+                  ctaId={content.primaryCta.ctaId}
                   className="inline-flex items-center gap-2 text-primary font-medium lg:text-lg group"
                   _blank={true}
                 >
-                  Виж онлайн магазина
+                  {content.primaryCta.label}
                   <ArrowUpRight className="h-4 w-4 lg:h-5 lg:w-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </TrackedCtaLink>
 

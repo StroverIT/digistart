@@ -22,7 +22,7 @@ import {
 import { ReadyStorePainPointsSection } from "./pain-points-section";
 import { ReadyStoreSolutionSection } from "./solution-section";
 import { ReadyStoreStepsSection } from "./steps-section";
-import { ReadyStoreCaseStudySection } from "./case-study-section";
+import { SocialProofSection } from "@/components/home/social-proof-section";
 import { ReadyStoreValuePropSection } from "./value-prop-section";
 import { ReadyStoreFaqSection } from "./faq-section";
 import { useReadyStoreScrollAnimations } from "./use-ready-store-scroll-animations";
@@ -147,10 +147,7 @@ export function ServiceDetailReadyStore({
       <ReadyStoreValuePropSection
         buyCta={readyStoreScrollToBuyCta("service_ready_store_section_value_prop_scroll_buy")}
       />
-      <ReadyStoreCaseStudySection
-        headingFontClass={headingFontClass}
-        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_case_study_scroll_buy")}
-      />
+      <SocialProofSection type="online-store" headingFontClass={headingFontClass} />
 
       <TemplatesShowcaseSection
         headingFontClass={headingFontClass}

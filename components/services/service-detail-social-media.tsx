@@ -28,6 +28,7 @@ import { PlansSection } from "@/components/plans/plans-section";
 import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 import { ServicePageBackground } from "@/components/services/service-page-background";
 import { ServiceSectionBuyCta } from "@/components/services/service-section-buy-cta";
+import { SocialProofSection } from "@/components/home/social-proof-section";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -422,6 +423,8 @@ export function ServiceDetailSocialMedia({
             </div>
           </div>
         </section>
+
+        <SocialProofSection type="social-media" />
 
         <section data-animate-section className="py-8 md:py-20 bg-card/40">
           <div className="container mx-auto px-4">
