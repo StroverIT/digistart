@@ -49,6 +49,34 @@ function mapUpsell(upsell: {
   };
 }
 
+/** Prefer DB rows by id; fill gaps from static catalog; preserve catalog order. */
+function mergeCatalogById<T extends { id: string }>(fromDb: T[], fallback: T[]): T[] {
+  if (fromDb.length === 0) return fallback;
+  const dbById = new Map(fromDb.map((row) => [row.id, row]));
+  const merged: T[] = [];
+  const seen = new Set<string>();
+
+  for (const row of fallback) {
+    merged.push(dbById.get(row.id) ?? row);
+    seen.add(row.id);
+  }
+
+  for (const row of fromDb) {
+    if (!seen.has(row.id)) merged.push(row);
+  }
+
+  return merged;
+}
+
+function mergeServiceWithFallback(fallback: Service, fromDb: Service): Service {
+  return {
+    ...fallback,
+    ...fromDb,
+    options: mergeCatalogById(fromDb.options, fallback.options),
+    upsells: mergeCatalogById(fromDb.upsells, fallback.upsells),
+  };
+}
+
 function mapOption(option: {
   optionKey: string;
   name: string;
@@ -98,7 +126,8 @@ export async function getServices(): Promise<Service[]> {
     // /services/* pages and /api/services never 404 a known product.
     const byId = new Map(fallbackServices.map((s) => [s.id, s]));
     for (const s of dbServices) {
-      byId.set(s.id, s);
+      const fallback = byId.get(s.id);
+      byId.set(s.id, fallback ? mergeServiceWithFallback(fallback, s) : s);
     }
     return omitInternalCatalogServices(Array.from(byId.values()));
   } catch {
