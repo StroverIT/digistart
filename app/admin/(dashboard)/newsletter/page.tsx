@@ -17,7 +17,7 @@ export default async function AdminNewsletterPage() {
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
         <h1 className="mb-2 text-3xl font-bold">Бюлетин</h1>
         <p className="text-muted-foreground">
-          Абонати, записани през страницата „Очаквайте скоро“
+          Абонати от бюлетина и препоръки за ниши от страницата с шаблони
         </p>
       </div>
 
@@ -45,6 +45,9 @@ export default async function AdminNewsletterPage() {
                     <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                       Записан на
                     </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
+                      Метаданни
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -54,6 +57,9 @@ export default async function AdminNewsletterPage() {
                       <td className="px-4 py-3 text-sm">{row.source}</td>
                       <td className="px-4 py-3 text-sm text-muted-foreground">
                         {formatDate(row.createdAt)}
+                      </td>
+                      <td className="max-w-xs px-4 py-3 text-xs text-muted-foreground">
+                        {row.metadata ? JSON.stringify(row.metadata) : "—"}
                       </td>
                     </tr>
                   ))}

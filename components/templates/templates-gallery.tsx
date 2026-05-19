@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { ProductCategory, StoreTemplate, TemplateCategoryFilter } from "@/lib/data/templates";
 import { TemplateCategorySidebar } from "@/components/templates/template-category-sidebar";
 import { TemplateCard } from "@/components/templates/template-card";
+import { NicheRecommendationDialog } from "@/components/templates/niche-recommendation-dialog";
 import { cn } from "@/lib/utils";
 
 type CategoryItem = {
@@ -36,6 +37,9 @@ export function TemplatesGallery({ categories, templates }: TemplatesGalleryProp
             Разгледай готовите дизайни, виж как изглеждат на живо и избери шаблон, който пасва на
             твоя бизнес.
           </p>
+          <div className="mt-6">
+            <NicheRecommendationDialog />
+          </div>
         </header>
 
         <div className="lg:hidden mb-6 -mx-1 overflow-x-auto pb-1">
@@ -126,6 +130,9 @@ function TemplatesGrid({
         <p className="text-muted-foreground">
           Все още няма шаблони за {categoryName}. Работим по нови дизайни — следи ни скоро.
         </p>
+        <div className="mt-6 flex justify-center">
+          <NicheRecommendationDialog />
+        </div>
       </div>
     );
   }

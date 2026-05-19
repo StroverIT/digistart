@@ -9,7 +9,7 @@ export const templatesProd: TemplatesConfig = {
   templates: {
     "clothing:1": {
       previewPath: "/preview/clothing/1",
-      rewriteTarget: "https://template-clothing-1.digistart.bg",
+      rewriteTarget: "https://template-1-steel.vercel.app",
     },
   },
 };
