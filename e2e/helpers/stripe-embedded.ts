@@ -147,9 +147,17 @@ async function submitPayment(frame: Frame, page: Page) {
 }
 
 /** Complete payment in Stripe Embedded Checkout (subscription or one-time). */
-export async function completeStripeEmbeddedCheckout(page: Page) {
+export async function completeStripeEmbeddedCheckout(
+  page: Page,
+  options?: { paymentStep?: number; totalSteps?: number },
+) {
+  const totalSteps = options?.totalSteps ?? 3;
+  const paymentStep = options?.paymentStep ?? totalSteps;
+
   await dismissBlockingOverlays(page);
-  await expect(page.getByText(/Стъпка 3 от 3/)).toBeVisible({ timeout: 60_000 });
+  await expect(
+    page.getByText(new RegExp(`Стъпка ${paymentStep} от ${totalSteps}`)),
+  ).toBeVisible({ timeout: 60_000 });
 
   await expect(page.locator('iframe[src*="stripe"]').first()).toBeVisible({
     timeout: 60_000,

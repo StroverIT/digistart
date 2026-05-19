@@ -6,6 +6,8 @@ import {
   expectCartItemCount,
 } from "./helpers/add-service";
 import { addPlanFromPlansPage, expectPlanInCart } from "./helpers/add-plan";
+import { hasE2eCustomerCredentials, signInAsE2eCustomer } from "./helpers/auth";
+import { checkoutLoggedInCustomer } from "./helpers/checkout-logged-in";
 import {
   assertCheckoutSuccess,
   checkoutGuest,
@@ -69,6 +71,24 @@ test.describe("Checkout scenarios", () => {
 
     await proceedToCheckoutFromCart(page);
     await checkoutGuest(page, { scenario: "plan-plus-service" });
+    await assertCheckoutSuccess(page);
+  });
+});
+
+test.describe("Logged-in checkout", () => {
+  test.describe.configure({ mode: "serial", timeout: 240_000 });
+  test.skip(!hasE2eCustomerCredentials(), "Set E2E_CUSTOMER_PASSWORD in .env.local");
+
+  test.beforeEach(async ({ page }) => {
+    await signInAsE2eCustomer(page, "/cart");
+  });
+
+  test("6. Логнат потребител – една услуга", async ({ page }) => {
+    await addServiceFromPage(page, "online-store", 1);
+    await expectCartContainsService(page, "online-store");
+
+    await proceedToCheckoutFromCart(page);
+    await checkoutLoggedInCustomer(page, { scenario: "logged-in-one-service" });
     await assertCheckoutSuccess(page);
   });
 });

@@ -16,6 +16,7 @@
     "stripe-webhook": "stripe listen --forward-to localhost:3000/api/stripe/webhook",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:e2e:ensure-customer": "tsx scripts/ensure-e2e-customer.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

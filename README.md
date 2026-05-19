@@ -41,7 +41,7 @@ Run Stripe CLI and forward webhook events to Next.js:
 
 ## E2E tests (Playwright)
 
-Checkout flows are covered by five serial scenarios (one service, two services, three services, plan only, plan + service). Tests build the cart through the UI, complete guest checkout, and pay with a Stripe test card.
+Checkout flows are covered by serial scenarios: guest paths (one service, two services, three services, plan only, plan + service) and a logged-in customer checkout. Tests build the cart through the UI and pay with a Stripe test card.
 
 ### Prerequisites
 
@@ -53,6 +53,7 @@ Checkout flows are covered by five serial scenarios (one service, two services, 
   - `NEXT_PUBLIC_SITE_URL=http://localhost:3000`
 - `IS_COMING_SOON` unset or `false` (coming soon blocks checkout APIs)
 - `NEXTAUTH_SECRET` set (required by the app)
+- Logged-in scenario (optional): `E2E_CUSTOMER_PASSWORD` in `.env.local`, and optionally `E2E_CUSTOMER_EMAIL` (default `emilzlatinov1234@gmail.com`). Run `E2E_CUSTOMER_PASSWORD=… npx tsx scripts/ensure-e2e-customer.ts` once against your local DB if the user does not exist yet.
 
 Optional: run `npm run stripe-webhook` in another terminal for webhook-driven emails (success page polling marks orders paid without the webhook).
 
@@ -67,4 +68,4 @@ npm run test:e2e:ui   # interactive UI mode
 
 ### CI
 
-GitHub Actions workflow `.github/workflows/e2e.yml` runs on pull requests when repository secrets `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, and `STRIPE_WEBHOOK_SECRET` are configured.
+GitHub Actions workflow `.github/workflows/e2e.yml` runs on pull requests when repository secrets `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, and `STRIPE_WEBHOOK_SECRET` are configured. For the logged-in test, add `E2E_CUSTOMER_PASSWORD` (and optionally `E2E_CUSTOMER_EMAIL`) secrets.

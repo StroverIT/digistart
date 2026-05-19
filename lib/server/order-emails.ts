@@ -14,6 +14,13 @@ import {
   Text,
 } from "@react-email/components";
 import { render } from "@react-email/render";
+import {
+  resolveOutboundEmailDelivery,
+  withTestFrom,
+  withTestHtmlBody,
+  withTestSubject,
+  withTestTextBody,
+} from "@/lib/server/email-test";
 
 async function renderCustomerEmailHtml(params: {
   customerFirstName: string;
@@ -211,6 +218,11 @@ export async function sendOrderPaidConfirmationEmails(params: {
       accessToken: accessToken.token ?? undefined,
     },
   });
+  const delivery = resolveOutboundEmailDelivery({
+    customerEmail: params.customerEmail,
+    adminEmail,
+  });
+  const mailFrom = withTestFrom(from, delivery.testMode);
   const customerFirstName = params.customerName.trim().split(" ")[0] || "клиент";
   const customerHtml = await renderCustomerEmailHtml({
     customerFirstName,
@@ -222,20 +234,41 @@ export async function sendOrderPaidConfirmationEmails(params: {
     customerEmail: params.customerEmail,
   });
 
+  const customerSubject = withTestSubject(
+    "Поръчката ви е потвърдена - DigiStart",
+    delivery.testMode,
+  );
+  const adminSubject = withTestSubject(
+    `Нова платена поръчка: ${params.orderId}`,
+    delivery.testMode,
+  );
+  const customerText = withTestTextBody(
+    `Здравейте, ${customerFirstName},\n\nПлащането по поръчка ${params.orderId} е успешно. Благодарим ви за доверието!\n\nПоздрави,\nDigiStart`,
+    delivery.testMode,
+    { originalTo: params.customerEmail },
+  );
+  const adminText = withTestTextBody(
+    `Има нова платена поръчка.\n\nПоръчка: ${params.orderId}\nКлиент: ${params.customerName}\nИмейл: ${params.customerEmail}`,
+    delivery.testMode,
+    { originalTo: adminEmail },
+  );
+
   const sendResults = await Promise.allSettled([
     mailer.sendMail({
-      from,
-      to: params.customerEmail,
-      subject: "Поръчката ви е потвърдена - DigiStart",
-      text: `Здравейте, ${customerFirstName},\n\nПлащането по поръчка ${params.orderId} е успешно. Благодарим ви за доверието!\n\nПоздрави,\nDigiStart`,
-      html: customerHtml,
+      from: mailFrom,
+      to: delivery.customerTo,
+      subject: customerSubject,
+      text: customerText,
+      html: withTestHtmlBody(customerHtml, delivery.testMode, {
+        originalTo: params.customerEmail,
+      }),
     }),
     mailer.sendMail({
-      from,
-      to: adminEmail,
-      subject: `Нова платена поръчка: ${params.orderId}`,
-      text: `Има нова платена поръчка.\n\nПоръчка: ${params.orderId}\nКлиент: ${params.customerName}\nИмейл: ${params.customerEmail}`,
-      html: adminHtml,
+      from: mailFrom,
+      to: delivery.adminTo,
+      subject: adminSubject,
+      text: adminText,
+      html: withTestHtmlBody(adminHtml, delivery.testMode, { originalTo: adminEmail }),
     }),
   ]);
   if (sendResults.some((result) => result.status === "rejected")) {

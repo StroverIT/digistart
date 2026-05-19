@@ -1,6 +1,12 @@
+import { config as loadEnv } from "dotenv";
 import { defineConfig, devices } from "@playwright/test";
+import { siteContact } from "./lib/site-contact";
+
+loadEnv({ path: ".env.local" });
+loadEnv({ path: ".env" });
 
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
+const testEmailInbox = process.env.TEST_EMAIL_INBOX ?? siteContact.email;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -31,5 +37,10 @@ export default defineConfig({
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      EMAIL_TEST_MODE: "true",
+      TEST_EMAIL_INBOX: testEmailInbox,
+      E2E_CHECKOUT_EMAIL: process.env.E2E_CHECKOUT_EMAIL ?? testEmailInbox,
+    },
   },
 });

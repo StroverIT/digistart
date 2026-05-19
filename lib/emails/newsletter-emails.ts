@@ -15,6 +15,13 @@ import {
   Text,
 } from "@react-email/components";
 import { render } from "@react-email/render";
+import {
+  resolveOutboundEmailDelivery,
+  withTestFrom,
+  withTestHtmlBody,
+  withTestSubject,
+  withTestTextBody,
+} from "@/lib/server/email-test";
 
 /** Aligns with app/globals.css light theme: white bg, slate text, electric blue accent */
 const colors = {
@@ -325,6 +332,12 @@ export async function sendNewsletterSignupEmails(params: {
     throw new Error("Email is not configured (OAuth2 transporter, SMTP_FROM, or ADMIN_EMAIL).");
   }
 
+  const delivery = resolveOutboundEmailDelivery({
+    customerEmail: params.email,
+    adminEmail,
+  });
+  const mailFrom = withTestFrom(from, delivery.testMode);
+
   const subscriberHtml = await renderSubscriberEmailHtml({ email: params.email });
   const adminHtml = await renderAdminEmailHtml({
     email: params.email,
@@ -332,20 +345,39 @@ export async function sendNewsletterSignupEmails(params: {
     subscribedAt: params.subscribedAt,
   });
 
+  const subscriberSubject = withTestSubject(
+    "Благодарим за записването в бюлетина – DigiStart",
+    delivery.testMode,
+  );
+  const adminSubject = withTestSubject(
+    `Нов бюлетин абонамент: ${params.email}`,
+    delivery.testMode,
+  );
+
   const results = await Promise.allSettled([
     mailer.sendMail({
-      from,
-      to: params.email,
-      subject: "Благодарим за записването в бюлетина – DigiStart",
-      text: `Здравейте,\n\nПотвърждаваме записването ви за бюлетина на DigiStart (${params.email}). При старта ще получите 10% ексклузивна отстъпка за първата си услуга при нас - детайлите изпращаме със старта.\n\nПоздрави,\nDigiStart`,
-      html: subscriberHtml,
+      from: mailFrom,
+      to: delivery.customerTo,
+      subject: subscriberSubject,
+      text: withTestTextBody(
+        `Здравейте,\n\nПотвърждаваме записването ви за бюлетина на DigiStart (${params.email}). При старта ще получите 10% ексклузивна отстъпка за първата си услуга при нас - детайлите изпращаме със старта.\n\nПоздрави,\nDigiStart`,
+        delivery.testMode,
+        { originalTo: params.email },
+      ),
+      html: withTestHtmlBody(subscriberHtml, delivery.testMode, {
+        originalTo: params.email,
+      }),
     }),
     mailer.sendMail({
-      from,
-      to: adminEmail,
-      subject: `Нов бюлетин абонамент: ${params.email}`,
-      text: `Нов абонамент за бюлетин.\nИмейл: ${params.email}\nИзточник: ${params.source}\nДата: ${formatBgDate(params.subscribedAt)}`,
-      html: adminHtml,
+      from: mailFrom,
+      to: delivery.adminTo,
+      subject: adminSubject,
+      text: withTestTextBody(
+        `Нов абонамент за бюлетин.\nИмейл: ${params.email}\nИзточник: ${params.source}\nДата: ${formatBgDate(params.subscribedAt)}`,
+        delivery.testMode,
+        { originalTo: adminEmail },
+      ),
+      html: withTestHtmlBody(adminHtml, delivery.testMode, { originalTo: adminEmail }),
     }),
   ]);
 

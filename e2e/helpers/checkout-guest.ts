@@ -1,4 +1,10 @@
 import { expect, type Page } from "@playwright/test";
+import { buildE2eCheckoutEmail } from "@/lib/server/email-test";
+import {
+  acceptCheckoutTerms,
+  proceedToCheckoutFromCart,
+  assertCheckoutSuccess,
+} from "./checkout-shared";
 import { completeStripeEmbeddedCheckout } from "./stripe-embedded";
 
 export type GuestCheckoutDetails = {
@@ -13,28 +19,10 @@ const DEFAULT_PHONE = "+359888123456";
 const DEFAULT_PASSWORD = "TestPass1!";
 
 export function buildGuestEmail(scenario: string): string {
-  return `e2e+${scenario}+${Date.now()}@digistart.test`;
+  return buildE2eCheckoutEmail(scenario);
 }
 
-export async function proceedToCheckoutFromCart(page: Page) {
-  const checkoutCta = page
-    .locator("[data-cart-summary]")
-    .getByRole("link", { name: /Продължи към поръчка/i });
-  await expect(checkoutCta).toBeVisible({ timeout: 30_000 });
-  await Promise.all([
-    page.waitForURL(/\/checkout(?:\?|$)/, {
-      timeout: 60_000,
-      waitUntil: "domcontentloaded",
-    }),
-    checkoutCta.click(),
-  ]);
-}
-
-async function acceptCheckoutTerms(page: Page) {
-  const termsLabel = page.getByText("Съгласен/на съм", { exact: false }).first();
-  await expect(termsLabel).toBeVisible();
-  await termsLabel.click();
-}
+export { proceedToCheckoutFromCart, assertCheckoutSuccess };
 
 export async function checkoutGuest(page: Page, details: GuestCheckoutDetails) {
   const email = buildGuestEmail(details.scenario);
@@ -64,11 +52,5 @@ export async function checkoutGuest(page: Page, details: GuestCheckoutDetails) {
     timeout: 60_000,
   });
 
-  await completeStripeEmbeddedCheckout(page);
-}
-
-export async function assertCheckoutSuccess(page: Page) {
-  await expect(page).toHaveURL(/\/checkout\/success/, { timeout: 30_000 });
-  await expect(page.getByText("Поръчката е успешна!")).toBeVisible({ timeout: 30_000 });
-  await expect(page.getByText("Потвърдено")).toBeVisible({ timeout: 60_000 });
+  await completeStripeEmbeddedCheckout(page, { paymentStep: 3, totalSteps: 3 });
 }

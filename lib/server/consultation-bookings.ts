@@ -5,6 +5,13 @@ import {
   renderConsultationCustomerEmailHtml,
 } from "@/lib/emails/consultation-emails";
 import { prisma } from "@/lib/prisma";
+import {
+  resolveOutboundEmailDelivery,
+  withTestFrom,
+  withTestHtmlBody,
+  withTestSubject,
+  withTestTextBody,
+} from "@/lib/server/email-test";
 
 export interface ConsultationRecord {
   id: string;
@@ -257,20 +264,39 @@ async function sendConsultationEmails(booking: ConsultationRecord) {
   const adminHtml = await renderConsultationAdminEmailHtml(booking);
   const commonText = `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.source}\nGoogle Meet: ${booking.meetUrl ?? "Ще бъде добавен допълнително"}`;
 
+  const delivery = resolveOutboundEmailDelivery({
+    customerEmail: booking.email,
+    adminEmail: notifyEmail,
+  });
+  const mailFrom = withTestFrom(from, delivery.testMode);
+  const customerSubject = withTestSubject(
+    "Потвърждение за консултация - DigiStart",
+    delivery.testMode,
+  );
+  const adminSubject = withTestSubject(`Нова консултация: ${booking.name}`, delivery.testMode);
+
   const sendResults = await Promise.allSettled([
     mailer.sendMail({
-      from,
-      to: booking.email,
-      subject: "Потвърждение за консултация - DigiStart",
-      text: `Здравейте, ${booking.name},\n\nВашата консултация е записана.\n${commonText}`,
-      html: customerHtml,
+      from: mailFrom,
+      to: delivery.customerTo,
+      subject: customerSubject,
+      text: withTestTextBody(
+        `Здравейте, ${booking.name},\n\nВашата консултация е записана.\n${commonText}`,
+        delivery.testMode,
+        { originalTo: booking.email },
+      ),
+      html: withTestHtmlBody(customerHtml, delivery.testMode, { originalTo: booking.email }),
     }),
     mailer.sendMail({
-      from,
-      to: notifyEmail,
-      subject: `Нова консултация: ${booking.name}`,
-      text: `${commonText}\nИмейл: ${booking.email}\nКомпания: ${booking.company ?? "-"}`,
-      html: adminHtml,
+      from: mailFrom,
+      to: delivery.adminTo,
+      subject: adminSubject,
+      text: withTestTextBody(
+        `${commonText}\nИмейл: ${booking.email}\nКомпания: ${booking.company ?? "-"}`,
+        delivery.testMode,
+        { originalTo: notifyEmail },
+      ),
+      html: withTestHtmlBody(adminHtml, delivery.testMode, { originalTo: notifyEmail }),
     }),
   ]);
 
