@@ -38,8 +38,7 @@ export interface Service {
   id: string;
   slug: string;
   name: string;
-  shortDescription: string;
-  fullDescription: string;
+  description: string;
   icon: string;
   basePrice: number;
   isMonthly?: boolean;

@@ -38,3 +38,33 @@ Set in `.env.production` only (server-side keys are NOT prefixed with `NEXT_PUBL
 Run Stripe CLI and forward webhook events to Next.js:
 
 `stripe listen --forward-to localhost:3000/api/stripe/webhook`
+
+## E2E tests (Playwright)
+
+Checkout flows are covered by five serial scenarios (one service, two services, three services, plan only, plan + service). Tests build the cart through the UI, complete guest checkout, and pay with a Stripe test card.
+
+### Prerequisites
+
+- Postgres with migrations applied (`npm run prisma:migrate:deploy`)
+- Stripe **test** keys in `.env`:
+  - `STRIPE_SECRET_KEY`
+  - `STRIPE_PUBLISHABLE_KEY`
+  - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (same publishable key as above)
+  - `NEXT_PUBLIC_SITE_URL=http://localhost:3000`
+- `IS_COMING_SOON` unset or `false` (coming soon blocks checkout APIs)
+- `NEXTAUTH_SECRET` set (required by the app)
+
+Optional: run `npm run stripe-webhook` in another terminal for webhook-driven emails (success page polling marks orders paid without the webhook).
+
+### Commands
+
+```bash
+npm run test:e2e      # headless
+npm run test:e2e:ui   # interactive UI mode
+```
+
+`playwright.config.ts` starts `npm run dev` unless a server is already running locally. Override the base URL with `PLAYWRIGHT_BASE_URL`.
+
+### CI
+
+GitHub Actions workflow `.github/workflows/e2e.yml` runs on pull requests when repository secrets `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, and `STRIPE_WEBHOOK_SECRET` are configured.

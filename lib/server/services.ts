@@ -74,28 +74,19 @@ async function fetchServicesFromDb(): Promise<Service[]> {
     orderBy: { createdAt: "asc" },
   });
 
-  return dbServices.map((service) => {
-    const fromDb: Service = {
-      id: service.id,
-      slug: resolveServiceSlug(service.slug),
-      name: service.name,
-      shortDescription: service.shortDescription,
-      fullDescription: service.fullDescription,
-      icon: service.icon,
-      basePrice: service.basePrice,
-      isMonthly: service.isMonthly,
-      options: service.options.map(mapOption),
-      upsells: service.upsells.map(mapUpsell),
-      features: service.features,
-      timeline: service.timeline,
-    };
-    // If Prisma has no upsell rows yet, keep catalog upsells from lib/data so UI and pricing stay in sync.
-    const fallback = fallbackServices.find((f) => f.id === service.id);
-    if (fromDb.upsells.length === 0 && fallback && fallback.upsells.length > 0) {
-      fromDb.upsells = fallback.upsells;
-    }
-    return fromDb;
-  });
+  return dbServices.map((service) => ({
+    id: service.id,
+    slug: resolveServiceSlug(service.slug),
+    name: service.name,
+    description: service.fullDescription || service.shortDescription,
+    icon: service.icon,
+    basePrice: service.basePrice,
+    isMonthly: service.isMonthly,
+    options: service.options.map(mapOption),
+    upsells: service.upsells.map(mapUpsell),
+    features: service.features,
+    timeline: service.timeline,
+  }));
 }
 
 export async function getServices(): Promise<Service[]> {

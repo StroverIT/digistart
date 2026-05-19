@@ -38,25 +38,49 @@ function AdditionalServiceSticker({ service }: { service: Service }) {
   );
 }
 
-function AdditionalServicesGrid({ services }: { services: Service[] }) {
+function AdditionalServicesGrid({
+  services,
+  title,
+  description,
+}: {
+  services: Service[];
+  title?: string;
+  description?: string;
+}) {
   if (services.length === 0) return null;
 
   return (
-    <div className="grid gap-3 xl:grid-cols-2">
-      {services.map((service) => (
-        <div key={service.id} className="[&>span]:flex [&>span]:w-full">
-          <TrackedCtaLink
-            href={`/services/${service.slug}#buy-now`}
-            ctaId={`cart_upsell_${service.slug}`}
-            className="flex flex-col xl:flex-row w-full items-center rounded-xl border border-border bg-background/60 p-5 text-left transition-all duration-300 hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            <AdditionalServiceSticker service={service} />
-            <span className="text-sm font-semibold leading-snug text-center xl:text-left">
-              {additionalServicePrompts[service.id]}
-            </span>
-          </TrackedCtaLink>
+    <div>
+      {title ? (
+        <div className="mb-4 text-center sm:text-left">
+          <h2 className="text-lg font-semibold">{title}</h2>
+          {description ? (
+            <p className="text-sm text-muted-foreground mt-1">{description}</p>
+          ) : null}
         </div>
-      ))}
+      ) : null}
+      <div className="grid gap-3 xl:grid-cols-2">
+        {services.map((service) => {
+          const prompt = additionalServicePrompts[service.id];
+          return (
+            <div key={service.id} className="[&>span]:flex [&>span]:w-full">
+              <TrackedCtaLink
+                href={`/services/${service.slug}#buy-now`}
+                ctaId={`cart_upsell_${service.slug}`}
+                className="flex flex-col xl:flex-row w-full items-center gap-2 xl:gap-4 rounded-xl border border-border bg-background/60 p-5 text-left transition-all duration-300 hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <AdditionalServiceSticker service={service} />
+                <div className="flex min-w-0 flex-1 flex-col gap-1 text-center xl:text-left">
+                  <h3 className="text-base font-semibold leading-snug">{service.name}</h3>
+                  {prompt ? (
+                    <p className="text-sm font-medium leading-snug pt-1">{prompt}</p>
+                  ) : null}
+                </div>
+              </TrackedCtaLink>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -366,7 +390,11 @@ export default function CartPage() {
                   Изберете услуга и я добавете в кошницата.
                 </p>
               </div>
-              <AdditionalServicesGrid services={additionalServices} />
+              <AdditionalServicesGrid
+                services={additionalServices}
+                title="Нашите услуги"
+                description="Изберете услуга според нуждите на бизнеса ви."
+              />
             </CardContent>
           </Card>
         ) : (

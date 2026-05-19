@@ -31,9 +31,7 @@ export const services: Service[] = [
     id: "ready-store",
     slug: "online-store",
     name: "Онлайн Магазин",
-    shortDescription:
-      "Готов онлайн магазин който продава 24/7.",
-    fullDescription:
+    description:
       "Абонаментен онлайн магазин с готов темплейт, приемане на поръчки и вграден Meta Pixel. Стандартна настройка за 1 работен ден.",
     icon: "ShoppingCart",
     basePrice: 20,
@@ -105,9 +103,7 @@ export const services: Service[] = [
     id: "google-business",
     slug: "google-business",
     name: "Google Business",
-    shortDescription:
-      "Профил в Google и Maps, за да те намират хората, които вече търсят услуга или бизнес като твоя.",
-    fullDescription:
+    description:
       "Помагаме ви да се класирате по-високо в Google Maps и локалните търсения.",
     icon: "MapPin",
     basePrice: 49,
@@ -216,9 +212,7 @@ export const services: Service[] = [
     id: "social-media",
     slug: "social-media",
     name: "Социални мрежи",
-    shortDescription:
-      "Съдържание, реклами и автоматизации, които превръщат профилите ти в канал за запитвания и продажби.",
-    fullDescription:
+    description:
       "Създаваме съдържание и управляваме присъствието ви в социалните мрежи.",
     icon: "Share2",
     basePrice: 200,

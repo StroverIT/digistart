@@ -20,3 +20,7 @@ node_modules
 supabase/.temp/
 supabase/.branches
 .cursor/*.debug-
+
+# Playwright
+/playwright-report/
+/test-results/
