@@ -77,13 +77,13 @@ export function SocialProofSection() {
         </h2>
 
         <div ref={cardRef} className="w-full opacity-0 translate-y-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            <div className="relative aspect-4/3 lg:sticky lg:top-24 lg:z-10 lg:self-start lg:aspect-auto lg:min-h-[320px]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-center">
+            <div className="relative aspect-4/3 lg:sticky lg:top-24 lg:z-10 lg:flex lg:aspect-auto lg:min-h-[480px] lg:w-full lg:items-center lg:justify-center xl:min-h-[560px]">
               <Image
                 src="/what-we-offer/restyled-mock-up.png"
                 alt="Restyled - mock-up на онлайн магазин"
                 fill
-                className="object-contain p-4 sm:p-6"
+                className="object-contain p-4 sm:p-6 lg:p-2 xl:p-0"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </div>
