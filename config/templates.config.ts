@@ -26,5 +26,7 @@ export const templatesConfig: TemplatesConfig = {
     "clothing:7": vercelClothing("7", "https://template-7-steel.vercel.app"),
     "clothing:8": vercelClothing("8", "https://template-8-steel.vercel.app"),
     "clothing:9": vercelClothing("9", "https://template-9-steel.vercel.app"),
+    "clothing:10": vercelClothing("10", "https://template-10-steel.vercel.app"),
+    "clothing:11": vercelClothing("11", "https://template-11-steel.vercel.app"),
   },
 };
