@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { ProductCategory, StoreTemplate, TemplateCategoryFilter } from "@/lib/data/templates";
 import { TemplateCategorySidebar } from "@/components/templates/template-category-sidebar";
+import { TemplateExampleNotice } from "@/components/templates/template-example-notice";
 import { TemplateCard } from "@/components/templates/template-card";
 import { NicheRecommendationDialog } from "@/components/templates/niche-recommendation-dialog";
 import { cn } from "@/lib/utils";
@@ -40,6 +41,7 @@ export function TemplatesGallery({ categories, templates }: TemplatesGalleryProp
           <div className="mt-6">
             <NicheRecommendationDialog />
           </div>
+          <TemplateExampleNotice className="mt-6" />
         </header>
 
         <div className="lg:hidden mb-6 -mx-1 overflow-x-auto pb-1">

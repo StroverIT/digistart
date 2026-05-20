@@ -12,6 +12,7 @@ import type { StoreTemplate, TemplateDetailSection } from "@/lib/data/templates"
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { setCheckoutTemplateSelection } from "@/lib/store/checkout-template";
 import TransitionLink from "@/components/transitions/TransitionLink";
+import { TemplateExampleNotice } from "@/components/templates/template-example-notice";
 import { cn } from "@/lib/utils";
 
 type TemplateDetailViewProps = {
@@ -111,6 +112,8 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
           </div>
         </div>
       </div>
+
+      <TemplateExampleNotice />
 
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 pt-4 border-t border-border">
         <DetailSection section={template.audience} />
