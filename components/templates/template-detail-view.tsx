@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import Image from "next/image";
 import { PreviewLink } from "@/components/preview/preview-link";
 import {
@@ -12,6 +12,7 @@ import type { StoreTemplate, TemplateDetailSection } from "@/lib/data/templates"
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { setCheckoutTemplateSelection } from "@/lib/store/checkout-template";
 import TransitionLink from "@/components/transitions/TransitionLink";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { TemplateExampleNotice } from "@/components/templates/template-example-notice";
 import { cn } from "@/lib/utils";
 
@@ -71,31 +72,29 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <PreviewLink
-              href={livePreviewUrl}
-              ctaId={`templates_detail_preview_${template.category}_${template.id}`}
-              ctaPage={detailPath}
-              className={cn(
-                "inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90",
-              )}
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Жив преглед
-            </PreviewLink>
-            <TransitionLink
+            <TrackedCtaLink
               href="/services/online-store#buy-now"
+              ctaId={`templates_detail_start_${template.category}_${template.id}`}
               onClick={() => {
                 setCheckoutTemplateSelection({
                   category: template.category,
                   id: template.id,
                 });
-                trackCtaClick(detailPath, `templates_detail_start_${template.category}_${template.id}`);
               }}
             >
-              <Button type="button" variant="secondary" size="default">
+              <Button type="button" size="default" className="bg-primary text-primary-foreground hover:bg-primary/90">
                 Започни с този шаблон
               </Button>
-            </TransitionLink>
+            </TrackedCtaLink>
+            <PreviewLink
+              href={livePreviewUrl}
+              ctaId={`templates_detail_preview_${template.category}_${template.id}`}
+              ctaPage={detailPath}
+              className={buttonVariants({ variant: "outline", size: "default" })}
+            >
+              <ExternalLink />
+              Жив преглед
+            </PreviewLink>
           </div>
         </div>
 
