@@ -1,8 +1,9 @@
 import type { TemplateRuntimeEntry, TemplatesConfig } from "./templates.types";
 
 /**
- * Shared local / staging template URLs for all developers.
- * Template 1 uses localhost; 2–8 use deployed Vercel previews (same as production).
+ * Template upstream URLs. Commit updates when template deployments change.
+ * previewOrigin is used for live preview links on Vercel so /_next assets resolve correctly
+ * (proxied previewPath requires basePath on each template app).
  */
 const vercelClothing = (
   id: string,
@@ -13,7 +14,7 @@ const vercelClothing = (
   previewOrigin: rewriteTarget,
 });
 
-export const templatesTest: TemplatesConfig = {
+export const templatesConfig: TemplatesConfig = {
   enablePreviewRewrites: true,
   templates: {
     "clothing:1": vercelClothing("1", "https://template-1-steel.vercel.app"),
@@ -24,5 +25,6 @@ export const templatesTest: TemplatesConfig = {
     "clothing:6": vercelClothing("6", "https://template-6-steel.vercel.app"),
     "clothing:7": vercelClothing("7", "https://template-7-steel.vercel.app"),
     "clothing:8": vercelClothing("8", "https://template-8-steel.vercel.app"),
+    "clothing:9": vercelClothing("9", "https://template-9-steel.vercel.app"),
   },
 };

@@ -1,5 +1,4 @@
-import { templatesProd } from "./templates-prod";
-import { templatesTest } from "./templates-test";
+import { templatesConfig } from "./templates.config";
 import type {
   TemplateConfigKey,
   TemplateRuntimeEntry,
@@ -13,7 +12,7 @@ export function toTemplateConfigKey(category: string, id: string): TemplateConfi
 }
 
 export function getActiveTemplatesConfig(): TemplatesConfig {
-  return process.env.NODE_ENV === "production" ? templatesProd : templatesTest;
+  return templatesConfig;
 }
 
 export function getTemplateRuntimeEntry(
