@@ -22,12 +22,25 @@ const pool =
 
 const adapter = new PrismaPg(pool);
 
-export const prisma =
-  global.prisma ??
-  new PrismaClient({
+function createPrismaClient() {
+  return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
+}
+
+/** Dev HMR can keep an old PrismaClient without newly generated models. */
+function getCachedPrisma(): PrismaClient | undefined {
+  const cached = global.prisma;
+  if (!cached) return undefined;
+  if (!("supportChat" in cached)) {
+    global.prisma = undefined;
+    return undefined;
+  }
+  return cached;
+}
+
+export const prisma = getCachedPrisma() ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
   global.prisma = prisma;

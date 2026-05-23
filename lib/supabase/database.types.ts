@@ -48,6 +48,66 @@ export type Database = {
         }
         Relationships: []
       }
+      support_chats: {
+        Row: {
+          id: string
+          user_id: string
+          status: string
+          admin_joined_at: string | null
+          admin_notified_at: string | null
+          closed_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          status?: string
+          admin_joined_at?: string | null
+          admin_notified_at?: string | null
+          closed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          status?: string
+          admin_joined_at?: string | null
+          admin_notified_at?: string | null
+          closed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      support_messages: {
+        Row: {
+          id: string
+          chat_id: string
+          sender_type: string
+          sender_user_id: string | null
+          body: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          chat_id: string
+          sender_type: string
+          sender_user_id?: string | null
+          body: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          chat_id?: string
+          sender_type?: string
+          sender_user_id?: string | null
+          body?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

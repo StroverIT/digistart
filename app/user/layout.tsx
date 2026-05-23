@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
-import { LayoutDashboard, PackageCheck } from "lucide-react";
+import { LayoutDashboard, MessageCircle, PackageCheck } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Header } from "@/components/layout/header";
@@ -62,6 +62,16 @@ export default async function UserLayout({
                 >
                   <LayoutDashboard className="h-4 w-4" />
                   Начало
+                </Link>
+                <Link
+                  href="/user/support"
+                  className={cn(
+                    "flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                    "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  )}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Поискай помощ
                 </Link>
                 {navItems.length === 0 ? (
                   <p className="rounded-xl px-3 py-3 text-xs text-muted-foreground">

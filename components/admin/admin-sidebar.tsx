@@ -11,6 +11,7 @@ import {
   ShoppingBag,
   RefreshCw,
   CalendarDays,
+  MessageCircle,
   MapPin,
   FolderKanban,
   LogOut,
@@ -43,6 +44,7 @@ const navItems = [
   { href: "/admin/orders", label: "Поръчки", icon: ShoppingBag },
   { href: "/admin/subscriptions", label: "Абонаменти", icon: RefreshCw },
   { href: "/admin/consultations", label: "Консултации", icon: CalendarDays },
+  { href: "/admin/support", label: "Чат за помощ", icon: MessageCircle },
   { href: "/admin/newsletter", label: "Бюлетин", icon: Newspaper },
   { href: "/admin/businesses", label: "Бизнеси", icon: MapPin },
   { href: "/admin/projects", label: "Проекти", icon: FolderKanban },
@@ -92,7 +94,9 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            pathname === item.href ||
+            (item.href === "/admin/support" && pathname.startsWith("/admin/support"));
           return (
             <Link
               key={item.href}

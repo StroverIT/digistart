@@ -7,6 +7,22 @@
 - `/admin` (including login) stays available; other page routes show the launch screen. Public APIs return `503` except `POST /api/newsletter/subscribe`, NextAuth, and Stripe webhooks.
 - After pulling, run `npx prisma migrate deploy` (or `prisma migrate dev`) so the `newsletter_subscribers` table exists.
 
+## Support chat (Supabase Realtime)
+
+Client support chat at `/user/support` uses Postgres persistence (Prisma) and [Supabase Realtime](https://supabase.com/docs/guides/realtime/postgres-changes) for live updates.
+
+Required env vars (in addition to existing Supabase service role vars):
+
+- `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL (same as `SUPABASE_URL` if already set).
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase **anon** public key (Project Settings → API).
+- `SUPABASE_JWT_SECRET` — Supabase JWT secret (Project Settings → API → JWT Secret). Used to issue short-lived tokens for Realtime RLS.
+- `ADMIN_EMAIL` — receives an email with the chat link when a customer sends their first message.
+- `NEXT_PUBLIC_SITE_URL` — used in admin notification links (e.g. `https://digistart.bg/admin/support/{chatId}`).
+
+Admins manage chats at `/admin/support` (sidebar: **Чат за помощ**). Email „Отвори чата“ links open the chat in the admin panel.
+
+After deploying Prisma migration `20260523120000_support_chat`, apply the Supabase SQL migration `supabase/migrations/20260523120000_support_chat.sql` on your Supabase project (Dashboard SQL editor or `supabase db push`) so Realtime publication and RLS policies are active.
+
 ## Stripe setup
 
 - Add Stripe keys to `.env` / `.env.production` using `.env.example` as a template.

@@ -18,6 +18,36 @@ model User {
   updatedAt      DateTime        @updatedAt
   orders         Order[]
   tenantProjects TenantProject[]
+  supportChats   SupportChat[]
+}
+
+model SupportChat {
+  id              String           @id @default(cuid())
+  userId          String           @map("user_id")
+  status          String           @default("open")
+  adminJoinedAt   DateTime?        @map("admin_joined_at")
+  adminNotifiedAt DateTime?        @map("admin_notified_at")
+  closedAt        DateTime?        @map("closed_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages        SupportMessage[]
+
+  @@index([userId, status])
+  @@map("support_chats")
+}
+
+model SupportMessage {
+  id           String      @id @default(cuid())
+  chatId       String      @map("chat_id")
+  senderType   String      @map("sender_type")
+  senderUserId String?     @map("sender_user_id")
+  body         String
+  createdAt    DateTime    @default(now()) @map("created_at")
+  chat         SupportChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@index([chatId, createdAt])
+  @@map("support_messages")
 }
 
 model TenantProject {
