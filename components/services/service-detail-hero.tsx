@@ -13,6 +13,8 @@ interface ServiceDetailHeroProps {
   badgeText: string;
   title: ReactNode;
   description: ReactNode;
+  /** Optional social proof line below the description (direct-response style). */
+  socialProof?: string;
   priceSlot: ReactNode;
   primaryLabel: string;
   onPrimaryClick: () => void;
@@ -26,6 +28,7 @@ export function ServiceDetailHero({
   badgeText,
   title,
   description,
+  socialProof,
   priceSlot,
   primaryLabel,
   onPrimaryClick,
@@ -106,6 +109,11 @@ export function ServiceDetailHero({
           >
             {description}
           </p>
+          {socialProof ? (
+            <p className="mt-4 max-w-3xl text-sm sm:text-base font-medium text-primary/90">
+              {socialProof}
+            </p>
+          ) : null}
           <div
             ref={rowRef}
             className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 opacity-0 translate-y-10"

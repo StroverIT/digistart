@@ -12,20 +12,14 @@ import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
 import { PlansSection } from "@/components/plans/plans-section";
-import { ServiceDetailHero } from "@/components/services/service-detail-hero";
+import { ServicePasLanding } from "@/components/services/service-pas-landing/service-pas-landing";
+import { useServicePasScrollAnimations } from "@/components/services/service-pas-landing/use-service-pas-scroll-animations";
 import { TemplatesShowcaseSection } from "@/components/templates/templates-showcase-section";
 import {
-  HERO_DESCRIPTION_INTRO,
-  OPTION_ID,
-  SERVICE_ID,
-} from "./constants";
-import { ReadyStorePainPointsSection } from "./pain-points-section";
-import { ReadyStoreSolutionSection } from "./solution-section";
-import { ReadyStoreStepsSection } from "./steps-section";
-import { SocialProofSection } from "@/components/home/social-proof-section";
-import { ReadyStoreValuePropSection } from "./value-prop-section";
-import { ReadyStoreFaqSection } from "./faq-section";
-import { useReadyStoreScrollAnimations } from "./use-ready-store-scroll-animations";
+  ONLINE_STORE_LANDING,
+  ONLINE_STORE_OPTION_ID,
+  ONLINE_STORE_SERVICE_ID,
+} from "@/config/service-landing/online-store";
 
 interface ServiceDetailReadyStoreProps {
   headingFontClass?: string;
@@ -34,34 +28,24 @@ interface ServiceDetailReadyStoreProps {
   serviceData?: Service;
 }
 
-const READY_STORE_CTA_PAGE = "/services/online-store" as const;
-const READY_STORE_HERO_PRIMARY_CTA = "Стартирай своя онлайн магазин без риск" as const;
-
-function readyStoreScrollToBuyCta(ctaId: string) {
-  return {
-    pagePath: READY_STORE_CTA_PAGE,
-    ctaId,
-    label: READY_STORE_HERO_PRIMARY_CTA,
-  };
-}
-
 export function ServiceDetailReadyStore({
   headingFontClass,
   bodyFontClass,
   className,
   serviceData,
 }: ServiceDetailReadyStoreProps) {
-  const service = serviceData ?? getServiceById(SERVICE_ID);
+  const service = serviceData ?? getServiceById(ONLINE_STORE_SERVICE_ID);
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
   const pageRootRef = useRef<HTMLDivElement>(null);
 
-  useReadyStoreScrollAnimations(pageRootRef);
+  useServicePasScrollAnimations(pageRootRef);
 
   if (!service) return null;
 
-  const planPrice = getServicePlanPrice(service, OPTION_ID);
+  const content = ONLINE_STORE_LANDING;
+  const planPrice = getServicePlanPrice(service, ONLINE_STORE_OPTION_ID);
 
   const scrollToBuySection = () => {
     document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -69,22 +53,24 @@ export function ServiceDetailReadyStore({
 
   const handleCheckout = () => {
     setIsAdding(true);
-    const existing = findCartItemByService(SERVICE_ID, OPTION_ID);
+    const existing = findCartItemByService(ONLINE_STORE_SERVICE_ID, ONLINE_STORE_OPTION_ID);
     if (existing) {
       updateCartItemUpsells(existing.id, upsells);
       setIsAdding(false);
       return;
     }
-    const result = addToCart(SERVICE_ID, OPTION_ID, upsells);
+    const result = addToCart(ONLINE_STORE_SERVICE_ID, ONLINE_STORE_OPTION_ID, upsells);
     if (!result.added) {
       setIsAdding(false);
       return;
     }
     const addedItem = result.cart.items.find(
-      (i) => i.serviceId === SERVICE_ID && i.selectedOptionId === OPTION_ID,
+      (i) =>
+        i.serviceId === ONLINE_STORE_SERVICE_ID &&
+        i.selectedOptionId === ONLINE_STORE_OPTION_ID,
     );
     if (addedItem) {
-      trackMetaAddToCart([cartItemToMetaLineItem(addedItem)], { page_path: "/services/online-store" });
+      trackMetaAddToCart([cartItemToMetaLineItem(addedItem)], { page_path: content.pagePath });
     }
     setTimeout(() => {
       setIsAdding(false);
@@ -93,71 +79,30 @@ export function ServiceDetailReadyStore({
   };
 
   return (
-    <div
-      ref={pageRootRef}
-      className={cn(
-        "pt-16 pb-12 md:pt-20 md:pb-16",
-        bodyFontClass,
-        className
-      )}
+    <ServicePasLanding
+      content={content}
+      pageRootRef={pageRootRef}
+      headingFontClass={headingFontClass}
+      className={cn("pt-16 pb-12 md:pt-20 md:pb-16", bodyFontClass, className)}
+      badgeIcon={<ShoppingCart className="h-4 w-4" />}
+      priceSlot={
+        <div className="flex items-baseline gap-1">
+          <Price
+            value={planPrice}
+            className={cn(headingFontClass, "text-3xl sm:text-4xl text-primary")}
+          />
+          <span className="text-muted-foreground text-lg">/мес</span>
+        </div>
+      }
+      onHeroPrimaryClick={() => {
+        trackCtaClick(content.pagePath, `${content.ctaIdPrefix}_scroll_to_buy`);
+        scrollToBuySection();
+      }}
+      backCtaId={`${content.ctaIdPrefix}_back_to_services`}
+      beforeFaq={
+        <TemplatesShowcaseSection headingFontClass={headingFontClass} />
+      }
     >
-      <ServiceDetailHero
-        badgeIcon={<ShoppingCart className="h-4 w-4" />}
-        badgeText="Без хиляди левове първоначална инвестиция. Без ИТ екип. Само чисти продажби."
-        title={
-          <>
-            Превърни идеята или проекта си в автоматизиран онлайн магазин -{" "}
-            <div className="gradient-text">бързо, лесно и без финансов риск.</div>
-          </>
-        }
-        description={HERO_DESCRIPTION_INTRO}
-        priceSlot={
-          <div className="flex items-baseline gap-1">
-            <Price
-              value={planPrice}
-              className={cn(
-                headingFontClass,
-                "text-3xl sm:text-4xl text-primary"
-              )}
-            />
-            <span className="text-muted-foreground text-lg">/мес</span>
-          </div>
-        }
-        primaryLabel={READY_STORE_HERO_PRIMARY_CTA}
-        onPrimaryClick={() => {
-          trackCtaClick("/services/online-store", "service_ready_store_scroll_to_buy");
-          scrollToBuySection();
-        }}
-        backCtaId="service_ready_store_back_to_services"
-        headingFontClass={headingFontClass}
-      />
-
-      <ReadyStorePainPointsSection
-        headingFontClass={headingFontClass}
-        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_pain_scroll_buy")}
-      />
-      <ReadyStoreSolutionSection
-        headingFontClass={headingFontClass}
-        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_solution_scroll_buy")}
-      />
-      <ReadyStoreStepsSection
-        headingFontClass={headingFontClass}
-        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_steps_scroll_buy")}
-      />
-      <ReadyStoreValuePropSection
-        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_value_prop_scroll_buy")}
-      />
-      <SocialProofSection type="online-store" headingFontClass={headingFontClass} />
-
-      <TemplatesShowcaseSection
-        headingFontClass={headingFontClass}
-      />
-
-      <ReadyStoreFaqSection
-        headingFontClass={headingFontClass}
-        buyCta={readyStoreScrollToBuyCta("service_ready_store_section_faq_scroll_buy")}
-      />
-
       <ServiceBuySection
         service={service}
         title="Купи сега"
@@ -166,17 +111,11 @@ export function ServiceDetailReadyStore({
         onUpsellsChange={setUpsells}
         onAddToCart={handleCheckout}
         isAdding={isAdding}
-        cartSelectedOptionId={OPTION_ID}
-        ctaId="service_ready_store_buy_section_add_to_cart"
-        ctaPage="/services/online-store"
+        cartSelectedOptionId={ONLINE_STORE_OPTION_ID}
+        ctaId={`${content.ctaIdPrefix}_buy_section_add_to_cart`}
+        ctaPage={content.pagePath}
       />
 
-      <PlansSection
-        compact
-        title="Готови абонаментни пакети"
-        subtitle="Или конфигурирай само магазина и добавките, които са ти нужни сега."
-        className="pb-12 md:pb-16 bg-card/30"
-      />
-    </div>
+    </ServicePasLanding>
   );
 }

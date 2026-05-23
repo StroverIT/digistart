@@ -9,6 +9,7 @@ import {
   Instagram,
   MessageCircle,
   Paintbrush,
+  MapPin,
   Share2,
   Shirt,
   ShoppingBag,
@@ -29,7 +30,12 @@ const restyledSocial = {
   website: "https://restyled.bg",
 } as const;
 
-export type SocialProofSectionType = "home" | "online-store" | "social-media";
+export type SocialProofSectionType =
+  | "home"
+  | "online-store"
+  | "social-media"
+  | "google-business"
+  | "ads";
 
 type Highlight = {
   label: string;
@@ -143,6 +149,70 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
       href: restyledSocial.instagram,
       label: "Виж профила в Instagram",
       ctaId: "service_social_media_social_proof_restyled_instagram",
+    },
+  },
+  "google-business": {
+    title: (
+      <>
+        От „legit ли сте?“ до <span className="gradient-text">доверие в Google</span>
+      </>
+    ),
+    eyebrow: "Казус · Google Business · Fashion",
+    description: (
+      <>
+        Restyled продаваха основно в социалните мрежи — купувачите питаха в DM, но преди поръчка
+        търсеха бранда в Google. Без силен профил губеха доверие спрямо по-големи имена.
+        <div className="mt-2" />
+        С оптимизиран Google Business профил — отзиви, снимки и линкове към профилите — брандът
+        изглежда официален още преди първото съобщение.
+      </>
+    ),
+    highlights: [
+      { label: "Ниша", value: "Fashion", icon: Shirt },
+      { label: "Фокус", value: "Доверие преди DM", icon: MapPin },
+      { label: "Резултат", value: "Видимост при търсене на бранда", icon: TrendingUp },
+      {
+        label: "Подход",
+        value: "Профил за социални продажби, не само физически обект",
+        icon: Share2,
+      },
+    ],
+    primaryCta: {
+      href: restyledSocial.website,
+      label: "Виж онлайн магазина",
+      ctaId: "service_google_business_social_proof_restyled_store",
+    },
+  },
+  ads: {
+    title: (
+      <>
+        От boost на сляпо до <span className="gradient-text">структурирани кампании</span>
+      </>
+    ),
+    eyebrow: "Казус · Реклами · Fashion",
+    description: (
+      <>
+        Restyled имаха продукт и аудитория, но рекламите не носеха предвидим резултат — липсваха
+        ясна стратегия и профил, готов за клик.
+        <div className="mt-2" />
+        С подредено съдържание и управлявани кампании достигат до повече купувачи с по-малко
+        хаос — вместо да хвърлят бюджет без система.
+      </>
+    ),
+    highlights: [
+      { label: "Ниша", value: "Fashion", icon: Shirt },
+      { label: "Фокус", value: "Meta реклами", icon: Share2 },
+      { label: "Резултат", value: "По-ясна възвръщаемост на бюджета", icon: TrendingUp },
+      {
+        label: "Подход",
+        value: "Съдържание + реклами в един стек",
+        icon: MessageCircle,
+      },
+    ],
+    primaryCta: {
+      href: restyledSocial.instagram,
+      label: "Виж профила в Instagram",
+      ctaId: "service_ads_social_proof_restyled_instagram",
     },
   },
 };

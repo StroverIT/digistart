@@ -245,8 +245,13 @@ export function Header() {
                 className="h-8 w-8 transition-transform group-hover:scale-110"
                 priority
               />
-              <span className="text-xl font-bold tracking-tight">
-                Digi<span className="text-primary">Start</span>
+              <span className="flex flex-col leading-tight">
+                <span className="text-xl font-bold tracking-tight">
+                  Digi<span className="text-primary">Start</span>
+                </span>
+                <span className="text-[10px] sm:text-xs text-muted-foreground font-medium tracking-widest uppercase">
+                  Easy Start
+                </span>
               </span>
             </TransitionLink>
 
@@ -341,8 +346,13 @@ export function Header() {
                   height={32}
                   className="h-8 w-8 transition-transform group-hover:scale-110"
                 />
-                <span className="text-xl font-bold tracking-tight">
-                  Digi<span className="text-primary">Start</span>
+                <span className="flex flex-col leading-tight">
+                  <span className="text-xl font-bold tracking-tight">
+                    Digi<span className="text-primary">Start</span>
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-zinc-400 font-medium tracking-widest uppercase">
+                    Easy Start
+                  </span>
                 </span>
               </TransitionLink>
 
