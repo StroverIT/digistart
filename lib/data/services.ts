@@ -252,20 +252,6 @@ export const services: Service[] = [
         default: 0,
       },
       {
-        id: "ad-management",
-        name: "Управление на реклами",
-        description:
-          "€150/месец на канал. Минимален рекламен бюджет: €50/месец на канал.",
-        kind: "quantity",
-        isMonthly: true,
-        pricePerUnit: 150,
-        unit: "месец",
-        min: 0,
-        max: 10,
-        default: 0,
-        helperText: "Минималният рекламен бюджет е €50/месец за всеки избран канал.",
-      },
-      {
         id: "welcome-messages",
         name: "Автоматични приветствени съобщения",
         description: "Автоматично лично съобщение за всеки нов последовател.",
@@ -297,11 +283,55 @@ export const services: Service[] = [
     ],
     timeline: "Постоянна услуга",
   },
+  {
+    id: "ads",
+    slug: "ads",
+    name: "Реклами",
+    description:
+      "Настройваме и управляваме платени реклами в социалните мрежи, за да достигнеш до правилните клиенти.",
+    icon: "Megaphone",
+    basePrice: 150,
+    isMonthly: true,
+    options: [
+      {
+        id: "default",
+        name: "Управление на реклами",
+        description:
+          "€150/месец на канал. Минимален рекламен бюджет: €50/месец на канал.",
+        price: 150,
+        isMonthly: true,
+      },
+    ],
+    upsells: [
+      {
+        id: "extra-ad-channels",
+        name: "Допълнителни канали",
+        description:
+          "€150/месец на допълнителен канал за управление на реклами.",
+        kind: "quantity",
+        isMonthly: true,
+        pricePerUnit: 150,
+        unit: "канал",
+        min: 0,
+        max: 10,
+        default: 0,
+        helperText: "Минималният рекламен бюджет е €50/месец за всеки канал.",
+      },
+    ],
+    features: [
+      "Настройка и оптимизация на кампании",
+      "Таргетиране към правилната аудитория",
+      "Месечни отчети за резултатите",
+      "Минимален бюджет €50/месец на канал",
+    ],
+    timeline: "Постоянна услуга",
+  },
 ];
 
 const LEGACY_SERVICE_SLUGS: Record<string, string> = {
   "\u043e\u043d\u043b\u0430\u0439\u043d-\u043c\u0430\u0433\u0430\u0437\u0438\u043d": "online-store",
   "\u0441\u043e\u0446\u0438\u0430\u043b\u043d\u0438-\u043c\u0440\u0435\u0436\u0438": "social-media",
+  "\u0440\u0435\u043a\u043b\u0430\u043c\u0438": "ads",
 };
 
 export function resolveServiceSlug(slug: string): string {

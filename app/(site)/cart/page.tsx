@@ -17,7 +17,8 @@ import { UpsellConfigurator } from "@/components/services/upsell-configurator";
 
 const additionalServicePrompts: Record<string, string> = {
   "ready-store": "Искаш ли онлайн магазин за 20 евро на месец?",
-  "social-media": "Искаш ли да достигнеш до още повече клиенти?",
+  "social-media": "Искаш ли редовно съдържание в профилите си?",
+  ads: "Искаш ли платени реклами с управление от нас?",
   "google-business": "Искаш ли локално да достигнеш до повече клиенти?",
 };
 
@@ -25,6 +26,7 @@ const serviceStickerMap: Record<string, string> = {
   "ready-store": "/stickers/online-shop.png",
   "google-business": "/stickers/my-business.png",
   "social-media": "/stickers/social-media.png",
+  ads: "/stickers/social-media.png",
 };
 
 function AdditionalServiceSticker({ service }: { service: Service }) {

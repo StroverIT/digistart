@@ -8,12 +8,15 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/ui/price";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ServiceCompanionOffer } from "@/components/services/service-companion-offer";
+import type { ServiceCompanionOfferConfig } from "@/lib/types";
 import { UpsellConfigurator } from "@/components/services/upsell-configurator";
 import {
   validateUpsellEntries,
   type UpsellEntryErrors,
 } from "@/components/services/upsell-validation";
 import type { CartItemUpsell, Service } from "@/lib/types";
+import { getServiceById } from "@/lib/data/services";
 import { findCartItemByService } from "@/lib/store/cart";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
@@ -43,7 +46,8 @@ interface ServiceBuySectionProps {
   ctaLabel?: string;
   upsells: CartItemUpsell[];
   onUpsellsChange: (nextUpsells: CartItemUpsell[]) => void;
-  onAddToCart: () => void;
+  onAddToCart: (options?: { includeCompanion?: boolean }) => void;
+  companion?: ServiceCompanionOfferConfig;
   isAdding: boolean;
   ctaId?: string;
   ctaPage?: string;
@@ -67,8 +71,10 @@ export function ServiceBuySection({
   ctaPage,
   cartSelectedOptionId,
   plansSectionId = "plans",
+  companion,
 }: ServiceBuySectionProps) {
   const { push } = useTransitionRouter();
+  const [includeCompanion, setIncludeCompanion] = useState(false);
   const [errors, setErrors] = useState<UpsellEntryErrors>({});
   const [serviceInCart, setServiceInCart] = useState(false);
   const hadCartLineRef = useRef(false);
@@ -105,8 +111,15 @@ export function ServiceBuySection({
     return () => window.removeEventListener("cart-updated", syncFromCart);
   }, [service.id, cartSelectedOptionId, onUpsellsChange]);
 
+  const companionPrice = useMemo(() => {
+    if (!companion || !includeCompanion) return 0;
+    const companionService = getServiceById(companion.serviceId);
+    const option = companionService?.options.find((o) => o.id === companion.optionId);
+    return option?.price ?? 0;
+  }, [companion, includeCompanion]);
+
   const totalPrice = useMemo(() => {
-    let total = price;
+    let total = price + companionPrice;
 
     for (const item of upsells) {
       if (item.quantity <= 0) continue;
@@ -129,7 +142,7 @@ export function ServiceBuySection({
     }
 
     return total;
-  }, [price, upsells, service.upsells]);
+  }, [price, companionPrice, upsells, service.upsells]);
 
   const handleChange = (nextUpsells: CartItemUpsell[]) => {
     onUpsellsChange(nextUpsells);
@@ -148,7 +161,9 @@ export function ServiceBuySection({
       trackCtaClick(ctaPage ?? `/services/${service.slug}`, ctaId);
     }
     const wasInCart = serviceInCart;
-    onAddToCart();
+    onAddToCart(
+      companion && includeCompanion ? { includeCompanion: true } : undefined,
+    );
     if (wasInCart) {
       push("/cart");
     }
@@ -244,16 +259,30 @@ export function ServiceBuySection({
                 <Skeleton className="h-16 w-full" />
               </div>
             ) : null}
-            {hasUpsells && !isAdding ? (
-              <div className="mb-6">
-                <h3 className="font-semibold mb-3">Допълнителни услуги</h3>
-                <UpsellConfigurator
-                  service={service}
-                  value={upsells}
-                  onChange={handleChange}
-                  errors={errors}
-                  analyticsPage={ctaPage ?? `/services/${service.slug}`}
-                />
+            {(hasUpsells || companion) && !isAdding ? (
+              <div className="mb-6 space-y-6">
+                {hasUpsells ? (
+                  <div>
+                    <h3 className="font-semibold mb-3">Допълнителни услуги</h3>
+                    <UpsellConfigurator
+                      service={service}
+                      value={upsells}
+                      onChange={handleChange}
+                      errors={errors}
+                      analyticsPage={ctaPage ?? `/services/${service.slug}`}
+                    />
+                  </div>
+                ) : null}
+                {companion ? (
+                  <div>
+                    <h3 className="font-semibold mb-3">Комбинирай с</h3>
+                    <ServiceCompanionOffer
+                      config={companion}
+                      included={includeCompanion}
+                      onIncludedChange={setIncludeCompanion}
+                    />
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </div>

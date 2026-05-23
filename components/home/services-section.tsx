@@ -14,6 +14,7 @@ const stickerMap: Record<string, string> = {
   "ready-store": "/stickers/online-shop.png",
   "google-business": "/stickers/my-business.png",
   "social-media": "/stickers/social-media.png",
+  ads: "/stickers/social-media.png",
 };
 
 function ServiceSticker({

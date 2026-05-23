@@ -31,6 +31,10 @@ const nextConfig: NextConfig = {
         source: "/услуги/социални-мрежи",
         destination: "/services/social-media",
       },
+      {
+        source: "/услуги/реклами",
+        destination: "/services/ads",
+      },
       ...buildTemplatePreviewRewrites(),
     ];
   },

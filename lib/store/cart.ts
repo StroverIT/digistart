@@ -109,6 +109,45 @@ export function addToCart(
   return { cart, added: true };
 }
 
+export function addOrUpdateServiceInCart(
+  serviceId: string,
+  optionId: string,
+  upsells: CartItemUpsell[],
+  options?: {
+    includeCompanion?: boolean;
+    companionServiceId?: string;
+    companionOptionId?: string;
+  },
+): AddToCartResult {
+  const existing = findCartItemByService(serviceId, optionId);
+  if (existing) {
+    updateCartItemUpsells(existing.id, upsells);
+    if (
+      options?.includeCompanion &&
+      options.companionServiceId &&
+      options.companionOptionId &&
+      !findCartItemByService(options.companionServiceId, options.companionOptionId)
+    ) {
+      addToCart(options.companionServiceId, options.companionOptionId, []);
+    }
+    return { cart: getCart(), added: false, reason: "duplicate" };
+  }
+
+  const result = addToCart(serviceId, optionId, upsells);
+  if (!result.added) return result;
+
+  if (
+    options?.includeCompanion &&
+    options.companionServiceId &&
+    options.companionOptionId &&
+    !findCartItemByService(options.companionServiceId, options.companionOptionId)
+  ) {
+    addToCart(options.companionServiceId, options.companionOptionId, []);
+  }
+
+  return result;
+}
+
 export function removeFromCart(itemId: string): Cart {
   const cart = getCart();
   cart.items = cart.items.filter((item) => item.id !== itemId);

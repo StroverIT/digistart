@@ -7,9 +7,10 @@ import {
   CheckCircle2,
   CircleX,
   ClipboardList,
+  Megaphone,
   Rocket,
   ShoppingCart,
-  Smartphone,
+  Target,
 } from "lucide-react";
 import {
   cartItemToMetaLineItem,
@@ -18,7 +19,7 @@ import {
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
-import { SOCIAL_MEDIA_ADS_COMPANION } from "@/lib/data/service-companions";
+import { ADS_SOCIAL_MEDIA_COMPANION } from "@/lib/data/service-companions";
 import { addOrUpdateServiceInCart } from "@/lib/store/cart";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
@@ -33,97 +34,90 @@ import { SocialProofSection } from "@/components/home/social-proof-section";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SOCIAL_MEDIA_HERO_PRIMARY_CTA = "Увеличи продажбите си сега" as const;
+const ADS_HERO_PRIMARY_CTA = "Стартирай реклами с увереност" as const;
 
-const marketingPainPoints = [
+const adsPainPoints = [
   {
-    title: "Страхотна идея, нулев трафик",
-    text: "Създаваш качествени неща, но ги виждат само малцина. Клиентите купуват от големите платформи просто защото не знаят, че твоят бранд съществува.",
+    title: "Хвърляш пари без възвръщаемост",
+    text: "Пускаш реклами на сляпо и не разбираш защо бюджетът изчезва, а поръчките не идват. Без структура всеки месец е лотария.",
   },
   {
-    title: "Роб на съобщенията",
-    text: "Губиш ценни часове всеки ден, за да отговаряш на едни и същи въпроси в чата. Работиш като оператор, вместо да развиваш бизнеса си.",
+    title: "Страх от сложните настройки",
+    text: "Facebook Ads Manager изглежда като космически кораб. Отлагаш старта, защото се страхуваш да сгрешиш таргетирането или креативите.",
   },
   {
-    title: "Хронична липса на време",
-    text: "Изработката, опаковането, доставките и основната работа изяждат деня ти. Поддръжката на социалните мрежи винаги остава „за утре“.",
+    title: "Няма какво да рекламираш",
+    text: "Профилът ти е празен или нередовен — рекламата води към страница, която не вдъхва доверие. Кликовете не се превръщат в продажби.",
   },
   {
-    title: "Рекламите те плашат",
-    text: "Чуваш за огромни суми, изхвърлени на вятъра във Facebook. Страхуваш се да инвестираш в реклама, защото не знаеш как да я настроиш така, че да донесе възвръщаемост.",
+    title: "Губиш време в оптимизация",
+    text: "Вместо да управляваш бизнеса, гледаш статистики и тестваш обяви без ясна стратегия. Резултатът е изтощение, не растеж.",
   },
   {
-    title: "Профилът ти не излъчва доверие",
-    text: "Разпокъсани снимки и хаотични публикации те карат да изглеждаш по-малък, отколкото си. Потребителите се колебаят и отиват при по-лъскавите конкуренти.",
+    title: "Конкурентите те изпреварват",
+    text: "Докато ти се колебаеш, другите вече купуват видимост пред твоите клиенти. Губиш пазарен дял всеки ден.",
   },
 ] as const;
 
-const marketingSolutionItems = [
-  "Магнетично съдържание: Получаваш професионална поддръжка на 1 канал с 2 качествени публикации всяка седмица. Превръщаме суровите ти идеи в постове, които грабват вниманието.",
-  "Текстове, които продават (Copywriting): Не просто красиви картинки, а ясни послания, които обясняват защо клиентът трябва да избере точно твоя продукт пред този на конкуренцията.",
-  "Предвидимост и стратегия: Край на импровизациите. Знаеш точно какво и кога ще се публикува благодарение на предварително изграден план.",
-  "Реклами, които носят оборот: По избор добавяш управление на платени кампании — виж отделната ни услуга „Реклами“ или я комбинирай директно при поръчка.",
-  "Чатбот автоматизация (Опция): Настройваме автоматизирани отговори. Системата отговаря на клиентите вместо теб, докато ти твориш или почиваш.",
+const adsSolutionItems = [
+  "Стратегия и настройка: Създаваме кампании с ясна цел — заявки, съобщения или продажби — според твоя бизнес.",
+  "Таргетиране към правилните хора: Намираме аудиторията, която реално купува, вместо да хвърляш бюджет на всички.",
+  "Оптимизация всеки месец: Следим резултатите, спираме слабите обяви и увеличаваме работещите.",
+  "Прозрачност: Знаеш какво плащаш за управление и какво — за бюджет към платформите (минимум €50/месец на канал).",
+  "Съдържание за рекламите (опция): Комбинирай с базов пакет социални мрежи — профилът ти да изглежда готов, когато клиентът кликне.",
 ] as const;
 
-const marketingSteps = [
+const adsSteps = [
   {
-    title: "Стартираш с базов пакет",
-    text: "За €200/месец получаваш поддръжка на 1 канал, 2 качествени публикации седмично и ясна стратегия — без агенция за хиляди левове.",
+    title: "Избираш канали и бюджет",
+    text: "Започваш с €150/месец управление на канал + минимум €50 рекламен бюджет към платформата. Ти определяш колко да инвестираш.",
     icon: ShoppingCart,
   },
   {
-    title: "Ти създаваш, ние публикуваме",
-    text: "Пращаш сурови кадри и видеа с телефона. Ние ги обработваме, пишем продаващи текстове и публикуваме по предварителен план.",
-    icon: Smartphone,
+    title: "Ние настройваме и пускаме",
+    text: "Създаваме кампании, креативи и таргети. Ти одобряваш или ни даваш материали — без да влизаш в Ads Manager всеки ден.",
+    icon: Target,
   },
   {
-    title: "Резултат с желязна гаранция",
-    text: "Изграждаме доверие и (по избор) пускаме реклами. Ако до 1 месец нямаш реализирана продажба — връщаме 100% от сумата за нашата услуга.",
+    title: "Растеж с отчети",
+    text: "Получаваш ясна картина какво работи. По желание добавяш съдържание в профила чрез услугата „Социални мрежи“.",
     icon: Rocket,
   },
 ] as const;
 
 const FAQ_ITEMS: FaqItem[] = [
   {
-    question: "1. Мога ли да добавя реклами към този пакет?",
+    question: "1. Включен ли е рекламният бюджет в цената?",
     answer:
-      "Да. Базовият пакет от €200/месец е за съдържание и стратегия. Управление на реклами (€150/месец на канал) е отделна услуга — можеш да я добавиш в секцията „Комбинирай с“ при поръчка или на страницата „Реклами“.",
+      "Не. €150/месец на канал е за нашето управление и оптимизация. Бюджетът към Facebook/Instagram (минимум €50/месец на канал) се плаща директно от твоята карта към платформата.",
   },
   {
-    question: "2. Трябва ли да имам професионални снимки?",
+    question: "2. Трябва ли да имам готов профил и съдържание?",
     answer:
-      "Не е задължително. Можеш да ни пращаш сурови кадри и кратки видеа, заснети с телефон. Ние ги обработваме, добавяме трендинг звук, графики и ги превръщаме в завладяващо и професионално съдържание.",
+      "Препоръчително е профилът да изглежда активен. Ако нямаш редовни публикации, комбинирай с базовия пакет „Социални мрежи“ — можеш да го добавиш при поръчка.",
   },
   {
-    question: "3. Гарантирате ли продажби?",
+    question: "3. Гарантирате ли продажби от рекламите?",
     answer:
-      "Да! Нашата цел е твоят растеж, затова предлагаме желязна гаранция: ако до 1 месец нямаш реализирана продажба от нашата работа, ти връщаме 100% от сумата за нашата услуга.",
+      "Рекламите зависят от продукта, офертата и бюджета. Нашата задача е професионална настройка и оптимизация. При комбинация със социални мрежи и нашата гаранция за съдържание — имаш по-силен стек за растеж.",
   },
   {
-    question: "4. Вие ли ще отговаряте на съобщенията (DMs)?",
+    question: "4. Колко канала мога да управлявам?",
     answer:
-      "В базовия пакет ние се грижим за модерирането на коментарите. За да се освободиш напълно от отговарянето на повтарящи се въпроси в чата, предлагаме еднократна настройка на чатбот за €59, който поема комуникацията.",
+      "Базово е 1 канал. В секцията „Купи сега“ можеш да добавиш допълнителни канали — €150/месец управление на канал.",
   },
   {
-    question: "5. Запазвам ли контрол над профилите си?",
+    question: "5. Мога ли да спра по всяко време?",
     answer:
-      "Напълно. Профилите остават твоя собственост. Ние просто получаваме достъп като администратори, за да можем да публикуваме съдържанието и да управляваме кампаниите.",
-  },
-  {
-    question: "6. Обвързвам ли се с дългосрочни договори?",
-    answer:
-      "Не. Услугата е изцяло на месечен абонамент. Можеш да я паузираш или прекратиш с предизвестие преди началото на следващия месец. Вярваме в резултатите, не в обвързващите клаузи.",
+      "Да. Услугата е месечен абонамент без дългосрочен договор. Спираш с предизвестие преди следващия месечен цикъл.",
   },
 ];
 
-interface ServiceDetailSocialMediaProps {
+interface ServiceDetailAdsProps {
   service: Service;
 }
 
-export function ServiceDetailSocialMedia({
-  service,
-}: ServiceDetailSocialMediaProps) {
+export function ServiceDetailAds({ service }: ServiceDetailAdsProps) {
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
@@ -191,18 +185,14 @@ export function ServiceDetailSocialMedia({
 
   const planPrice = getServicePlanPrice(service);
 
-  const handleMarketingCheckout = (options?: { includeCompanion?: boolean }) => {
+  const handleAdsCheckout = (options?: { includeCompanion?: boolean }) => {
     setIsAdding(true);
     const optionId = service.options[0].id;
     const result = addOrUpdateServiceInCart(service.id, optionId, upsells, {
       includeCompanion: options?.includeCompanion,
-      companionServiceId: SOCIAL_MEDIA_ADS_COMPANION.serviceId,
-      companionOptionId: SOCIAL_MEDIA_ADS_COMPANION.optionId,
+      companionServiceId: ADS_SOCIAL_MEDIA_COMPANION.serviceId,
+      companionOptionId: ADS_SOCIAL_MEDIA_COMPANION.optionId,
     });
-    if (!result.added && result.reason === "duplicate") {
-      setIsAdding(false);
-      return;
-    }
     if (!result.added) {
       setIsAdding(false);
       return;
@@ -212,7 +202,7 @@ export function ServiceDetailSocialMedia({
     );
     if (addedItem) {
       trackMetaAddToCart([cartItemToMetaLineItem(addedItem)], {
-        page_path: "/services/social-media",
+        page_path: "/services/ads",
       });
     }
     setTimeout(() => {
@@ -229,21 +219,19 @@ export function ServiceDetailSocialMedia({
       <ServicePageBackground />
       <div className="relative z-10">
         <ServiceDetailHero
-          badgeIcon={<Smartphone className="h-4 w-4" />}
-          badgeText="Редовно съдържание и по-ясна стратегия"
+          badgeIcon={<Megaphone className="h-4 w-4" />}
+          badgeText="Платени кампании с ясна стратегия"
           title={
             <>
-              Поддръжка и съдържание
-              <div className="gradient-text">
-                без нужда от вътрешен маркетинг екип
-              </div>
+              Реклами, които достигат
+              <div className="gradient-text">до готови да купят клиенти</div>
             </>
           }
           description={
             <>
-              Поддържаме профилите ти с ясна стратегия и редовни публикации. Ти се фокусираш
-              върху бизнеса, а ние помагаме съдържанието да изглежда професионално и да
-              привлича клиенти. Реклами можеш да добавиш отделно или при поръчка.
+              Настройваме и управляваме Facebook и Instagram реклами с фокус върху
+              заявки и продажби. Ти задаваш бюджета, ние поемаме техническата част и
+              оптимизацията.
             </>
           }
           priceSlot={
@@ -256,15 +244,12 @@ export function ServiceDetailSocialMedia({
               <span className="text-muted-foreground">/месец</span>
             </div>
           }
-          primaryLabel={SOCIAL_MEDIA_HERO_PRIMARY_CTA}
+          primaryLabel={ADS_HERO_PRIMARY_CTA}
           onPrimaryClick={() => {
-            trackCtaClick(
-              "/services/social-media",
-              "service_social_media_scroll_to_buy",
-            );
+            trackCtaClick("/services/ads", "service_ads_scroll_to_buy");
             scrollToBuySection();
           }}
-          backCtaId="service_social_media_back_to_services"
+          backCtaId="service_ads_back_to_services"
         />
 
         <section data-animate-section className="py-8 md:py-20 bg-card/50">
@@ -274,17 +259,17 @@ export function ServiceDetailSocialMedia({
                 data-animate-reveal
                 className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
               >
-                Лайковете не плащат сметките
+                Бюджет без резултат
               </span>
               <h2
                 data-animate-reveal
                 className="text-3xl sm:text-4xl md:text-5xl font-bold text-balance opacity-0 translate-y-10"
               >
-                Имаш страхотен продукт, но губиш време в хаос и клиентите избират други
+                Рекламите те плашат, а конкурентите вече купуват твоите клиенти
               </h2>
             </div>
             <div className="grid gap-6 md:grid-cols-3">
-              {marketingPainPoints.map((item) => (
+              {adsPainPoints.map((item) => (
                 <Card
                   key={item.title}
                   data-animate-card
@@ -305,9 +290,9 @@ export function ServiceDetailSocialMedia({
               className="mt-8 md:mt-10 opacity-0 translate-y-10"
             >
               <ServiceSectionBuyCta
-                pagePath="/services/social-media"
-                ctaId="service_social_media_section_pain_scroll_buy"
-                label={SOCIAL_MEDIA_HERO_PRIMARY_CTA}
+                pagePath="/services/ads"
+                ctaId="service_ads_section_pain_scroll_buy"
+                label={ADS_HERO_PRIMARY_CTA}
               />
             </div>
           </div>
@@ -320,17 +305,17 @@ export function ServiceDetailSocialMedia({
                 data-animate-reveal
                 className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
               >
-                Маркетинг, който работи за теб
+                Реклами с контрол
               </span>
               <h2
                 data-animate-reveal
                 className="text-3xl sm:text-4xl md:text-5xl font-bold text-balance opacity-0 translate-y-10"
               >
-                Какво получаваш, когато довериш онлайн присъствието си на нас?
+                Какво получаваш с нашето управление на реклами?
               </h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              {marketingSolutionItems.map((item) => (
+              {adsSolutionItems.map((item) => (
                 <Card
                   key={item}
                   data-animate-card
@@ -350,9 +335,9 @@ export function ServiceDetailSocialMedia({
               className="mt-8 md:mt-10 opacity-0 translate-y-10"
             >
               <ServiceSectionBuyCta
-                pagePath="/services/social-media"
-                ctaId="service_social_media_section_solution_scroll_buy"
-                label={SOCIAL_MEDIA_HERO_PRIMARY_CTA}
+                pagePath="/services/ads"
+                ctaId="service_ads_section_solution_scroll_buy"
+                label={ADS_HERO_PRIMARY_CTA}
               />
             </div>
           </div>
@@ -365,25 +350,19 @@ export function ServiceDetailSocialMedia({
                 data-animate-reveal
                 className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
               >
-                Ти създаваш продукта — ние водим клиентите
+                От бюджет към заявки
               </span>
               <h2
                 data-animate-reveal
                 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10"
               >
-                Привлечи клиенти и генерирай трафик
+                Стартирай реклами в 3 стъпки
               </h2>
-              <p
-                data-animate-reveal
-                className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
-              >
-                С желязна гаранция за резултат — само 3 лесни стъпки.
-              </p>
             </div>
             <div className="relative">
               <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-border to-transparent -translate-y-1/2" />
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {marketingSteps.map((step, index) => (
+                {adsSteps.map((step, index) => (
                   <div key={step.title} className="relative">
                     <Card
                       data-animate-card
@@ -405,7 +384,7 @@ export function ServiceDetailSocialMedia({
                         </p>
                       </CardContent>
                     </Card>
-                    {index < marketingSteps.length - 1 && (
+                    {index < adsSteps.length - 1 && (
                       <div className="lg:hidden flex justify-center my-4">
                         <div className="h-8 w-0.5 bg-border" />
                       </div>
@@ -419,9 +398,9 @@ export function ServiceDetailSocialMedia({
               className="mt-8 md:mt-10 opacity-0 translate-y-10"
             >
               <ServiceSectionBuyCta
-                pagePath="/services/social-media"
-                ctaId="service_social_media_section_steps_scroll_buy"
-                label={SOCIAL_MEDIA_HERO_PRIMARY_CTA}
+                pagePath="/services/ads"
+                ctaId="service_ads_section_steps_scroll_buy"
+                label={ADS_HERO_PRIMARY_CTA}
               />
             </div>
           </div>
@@ -444,12 +423,6 @@ export function ServiceDetailSocialMedia({
               >
                 Често задавани въпроси
               </h2>
-              <p
-                data-animate-reveal
-                className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
-              >
-                Всичко, което трябва да знаеш, преди да ни повериш социалните си мрежи.
-              </p>
             </div>
             <div
               data-animate-card
@@ -462,9 +435,9 @@ export function ServiceDetailSocialMedia({
               className="mt-8 md:mt-10 opacity-0 translate-y-10"
             >
               <ServiceSectionBuyCta
-                pagePath="/services/social-media"
-                ctaId="service_social_media_section_faq_scroll_buy"
-                label={SOCIAL_MEDIA_HERO_PRIMARY_CTA}
+                pagePath="/services/ads"
+                ctaId="service_ads_section_faq_scroll_buy"
+                label={ADS_HERO_PRIMARY_CTA}
               />
             </div>
           </div>
@@ -477,18 +450,15 @@ export function ServiceDetailSocialMedia({
           monthlyLabel="/месец"
           upsells={upsells}
           onUpsellsChange={setUpsells}
-          onAddToCart={handleMarketingCheckout}
+          onAddToCart={handleAdsCheckout}
           isAdding={isAdding}
           cartSelectedOptionId={service.options[0]?.id}
-          companion={SOCIAL_MEDIA_ADS_COMPANION}
-          ctaId="service_social_media_buy_section_add_to_cart"
-          ctaPage="/services/social-media"
+          companion={ADS_SOCIAL_MEDIA_COMPANION}
+          ctaId="service_ads_buy_section_add_to_cart"
+          ctaPage="/services/ads"
         />
 
-        <PlansSection
-          compact
-          className="py-12 md:py-16"
-        />
+        <PlansSection compact className="py-12 md:py-16" />
       </div>
     </div>
   );

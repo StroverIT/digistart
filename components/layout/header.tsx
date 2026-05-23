@@ -27,6 +27,11 @@ const navLinks = [
     paths: ["/услуги/социални-мрежи", "/services/social-media"],
   },
   {
+    href: "/services/ads",
+    label: "Реклами",
+    paths: ["/услуги/реклами", "/services/ads"],
+  },
+  {
     href: "/services/google-business",
     label: "Google Business",
     paths: ["/услуги/google-business", "/services/google-business"],

@@ -14,6 +14,7 @@ const services = [
   { href: "/services/online-store", label: "Онлайн магазин" },
   { href: "/services/google-business", label: "Google Business" },
   { href: "/services/social-media", label: "Социални мрежи" },
+  { href: "/services/ads", label: "Реклами" },
 ];
 
 const quickLinks = [

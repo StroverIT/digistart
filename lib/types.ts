@@ -48,6 +48,14 @@ export interface Service {
   timeline: string;
 }
 
+export interface ServiceCompanionOfferConfig {
+  serviceId: string;
+  optionId: string;
+  title?: string;
+  description: string;
+  learnMoreHref: string;
+}
+
 // Bundle plans & templates
 export type { PlanId, SubscriptionPlan } from "@/lib/data/plans";
 export type { ProductCategory, StoreTemplate } from "@/lib/data/templates";
