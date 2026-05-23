@@ -69,13 +69,6 @@ export function getOnlineStoreSetupItems(params: {
       action: "onboarding",
     },
     {
-      id: "brand",
-      label: "Лого и цветова палитра",
-      ok: brandOk,
-      missingHint: "Качени при поръчката; при липса пиши ни на имейл.",
-      action: "brand",
-    },
-    {
       id: "domain",
       label: "Персонален домейн (DNS)",
       ok: domainOk,

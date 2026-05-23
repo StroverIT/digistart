@@ -495,23 +495,7 @@ export default function OrdersPage() {
                         />
                       </a>
                     ) : null}
-                    {selectedOrder.brandAssets?.paletteUrl ? (
-                      <a
-                        href={selectedOrder.brandAssets.paletteUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-lg border border-border bg-secondary/30 p-3"
-                      >
-                        <p className="mb-2 text-sm font-medium">Цветова палитра</p>
-                        <Image
-                          src={`/api/uploads/brand/view?url=${encodeURIComponent(selectedOrder.brandAssets.paletteUrl)}`}
-                          alt="Цветова палитра"
-                          width={640}
-                          height={320}
-                          className="h-40 w-full rounded-md border border-border bg-background object-contain p-2"
-                        />
-                      </a>
-                    ) : null}
+
                   </div>
                 </div>
               ) : null}

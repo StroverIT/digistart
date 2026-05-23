@@ -13,17 +13,6 @@ export const brandUpsells: ServiceUpsell[] = [
     max: 1,
     default: 0,
   },
-  {
-    id: "color-palette",
-    name: "Цветова палитра и бранд гайд",
-    description: "Съгласувана цветова палитра + типография.",
-    kind: "toggle",
-    pricePerUnit: 20,
-    unit: "добавка",
-    min: 0,
-    max: 1,
-    default: 0,
-  },
 ];
 
 export const services: Service[] = [
@@ -49,7 +38,7 @@ export const services: Service[] = [
     upsells: [
       {
         id: "online-payments",
-        name: "Плащане с карта (Stripe)",
+        name: "Плащане с карта",
         description:
           "Сигурни картови плащания, включително Apple Pay и Google Pay. Скоро: DSK Bank и Борика.",
         kind: "toggle",

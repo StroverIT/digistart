@@ -121,11 +121,11 @@ export default async function UserServiceDetailPage({
 
   const onlineStoreSetupItems = isOnlineStore
     ? getOnlineStoreSetupItems({
-        project: tenantProject,
-        hasLogo: Boolean(logoUrl),
-        hasPalette: Boolean(paletteUrl),
-        domain: storeDomain,
-      })
+      project: tenantProject,
+      hasLogo: Boolean(logoUrl),
+      hasPalette: Boolean(paletteUrl),
+      domain: storeDomain,
+    })
     : null;
 
   const showOnboardingBanner =
@@ -278,20 +278,7 @@ export default async function UserServiceDetailPage({
                 </a>
               </div>
             ) : null}
-            {paletteUrl ? (
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Цветова палитра</p>
-                <a href={paletteUrl} target="_blank" rel="noreferrer">
-                  <Image
-                    src={palettePreviewUrl ?? paletteUrl}
-                    alt="Качена цветова палитра"
-                    width={640}
-                    height={320}
-                    className="h-40 w-full rounded-xl border border-border object-contain bg-background p-2"
-                  />
-                </a>
-              </div>
-            ) : null}
+
           </CardContent>
         </Card>
       ) : null}
