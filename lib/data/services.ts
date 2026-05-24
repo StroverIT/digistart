@@ -65,18 +65,6 @@ export const services: Service[] = [
           { id: "speedy", name: "Спиди", pricePerUnit: 5, isMonthly: true },
         ],
       },
-      {
-        id: "unique-design",
-        name: "Уникален дизайн",
-        description:
-          "Индивидуален дизайн по твоя бранд. Срок: 2–4 работни дни според нишата.",
-        kind: "toggle",
-        pricePerUnit: 100,
-        unit: "еднократно",
-        min: 0,
-        max: 1,
-        default: 0,
-      },
       ...brandUpsells,
     ],
     features: [

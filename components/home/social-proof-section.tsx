@@ -74,11 +74,6 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
       { label: "Ниша", value: "Fashion", icon: Shirt },
       { label: "Фокус", value: "Mobile-first", icon: Smartphone },
       { label: "Резултат", value: "Онлайн продажби и по-силна аудитория", icon: TrendingUp },
-      {
-        label: "Уникален дизайн",
-        value: "Дизайнът е направен от екипа ни, а не е темлейт",
-        icon: Paintbrush,
-      },
     ],
     primaryCta: {
       href: restyledSocial.website,
@@ -107,11 +102,6 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
       { label: "Ниша", value: "Fashion", icon: Shirt },
       { label: "Фокус", value: "Mobile-first магазин", icon: Smartphone },
       { label: "Резултат", value: "Поръчки 24/7 без хаос в съобщенията", icon: ShoppingBag },
-      {
-        label: "Уникален дизайн",
-        value: "Премиум изглед, направен от екипа ни",
-        icon: Paintbrush,
-      },
     ],
     primaryCta: {
       href: restyledSocial.website,
