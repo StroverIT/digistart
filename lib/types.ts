@@ -158,6 +158,26 @@ export interface ServiceStats {
   revenue: number;
 }
 
+export interface ServiceSlotAvailability {
+  serviceId: string;
+  serviceName: string;
+  slug: string;
+  capacity: number;
+  adjustment: number;
+  paidCount: number;
+  remaining: number;
+  isSoldOut: boolean;
+}
+
+export interface ServiceWaitlistEntryRow {
+  id: string;
+  name: string;
+  email: string;
+  serviceId: string;
+  serviceName: string;
+  createdAt: string;
+}
+
 // Business Lead types
 export type LeadStatus = "prospect" | "contacted" | "accepted" | "declined";
 

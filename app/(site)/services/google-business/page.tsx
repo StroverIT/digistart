@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ServiceDetailGoogleBusiness } from "@/components/services/service-detail-google-business";
 import { getServiceByIdFromDb } from "@/lib/server/services";
+import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
 export const metadata: Metadata = {
   title: "Google Business · локална видимост",
@@ -15,5 +16,6 @@ export default async function GoogleBusinessPage() {
     notFound();
   }
 
-  return <ServiceDetailGoogleBusiness service={service} />;
+  const availability = await getServiceSlotAvailability("google-business");
+  return <ServiceDetailGoogleBusiness service={service} availability={availability} />;
 }

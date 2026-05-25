@@ -21,6 +21,8 @@ import { findCartItemByService } from "@/lib/store/cart";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { cn } from "@/lib/utils";
+import type { ServiceSlotAvailability } from "@/lib/types";
+import { ServiceWaitlistOverlay } from "@/components/services/service-waitlist-overlay";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -55,6 +57,8 @@ interface ServiceBuySectionProps {
   cartSelectedOptionId?: string;
   /** Anchor id of `PlansSection` on the same page (default matches `PlansSection`). */
   plansSectionId?: string;
+  /** Slot availability for this service; when sold out, buy UI is blurred and waitlist is shown. */
+  availability?: ServiceSlotAvailability | null;
 }
 
 export function ServiceBuySection({
@@ -72,6 +76,7 @@ export function ServiceBuySection({
   cartSelectedOptionId,
   plansSectionId = "plans",
   companion,
+  availability,
 }: ServiceBuySectionProps) {
   const { push } = useTransitionRouter();
   const [includeCompanion, setIncludeCompanion] = useState(false);
@@ -93,6 +98,8 @@ export function ServiceBuySection({
     monthlyLabel ?? (selectedOption?.isMonthly || service.isMonthly ? "/месец" : "еднократно");
   const ctaText =
     ctaLabel ?? (serviceInCart ? "Промени в кошницата" : "Добави в кошницата");
+  const isSoldOut = availability?.isSoldOut ?? false;
+  const remainingSlots = availability?.remaining;
 
   useEffect(() => {
     const cloneUpsells = (list: CartItemUpsell[]) =>
@@ -157,6 +164,7 @@ export function ServiceBuySection({
   };
 
   const handleAddClick = () => {
+    if (isSoldOut) return;
     const validation = validateUpsellEntries(service.upsells, upsells);
     setErrors(validation.errors);
     if (!validation.isValid) {
@@ -242,7 +250,22 @@ export function ServiceBuySection({
   return (
     <section ref={sectionRef} id="buy-now" className="py-12 md:py-16">
       <div className="container mx-auto px-4">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+        {availability && remainingSlots !== undefined && !isSoldOut ? (
+          <p className="mb-4 text-center text-sm font-medium text-foreground">
+            Свободни места:{" "}
+            <span className="font-bold text-primary tabular-nums">{remainingSlots}</span>
+          </p>
+        ) : null}
+        <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+          {isSoldOut && availability ? (
+            <ServiceWaitlistOverlay availability={availability} />
+          ) : null}
+          <div
+            className={cn(
+              "contents",
+              isSoldOut && "pointer-events-none select-none blur-sm opacity-60",
+            )}
+          >
           <div
             ref={mainPanelRef}
             className="rounded-2xl border border-border bg-card p-5 sm:p-6 opacity-0 translate-y-10"
@@ -343,7 +366,7 @@ export function ServiceBuySection({
               <Button
                 onClick={handleAddClick}
                 size="lg"
-                disabled={isAdding}
+                disabled={isAdding || isSoldOut}
                 analyticsCtaId={ctaId}
                 analyticsPage={ctaPage ?? `/services/${service.slug}`}
                 className="h-12 w-full px-6 text-base bg-orange-500 hover:bg-orange-600 text-white"
@@ -352,13 +375,14 @@ export function ServiceBuySection({
               </Button>
             </div>
           </aside>
+          </div>
         </div>
       </div>
 
       <div
         className={cn(
           "fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80 lg:hidden",
-          !isActiveMobileSticky && "hidden"
+          (!isActiveMobileSticky || isSoldOut) && "hidden"
         )}
       >
         <div className="container mx-auto flex items-center justify-between gap-3 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
@@ -376,7 +400,7 @@ export function ServiceBuySection({
           <Button
             onClick={handleAddClick}
             size="lg"
-            disabled={isAdding}
+            disabled={isAdding || isSoldOut}
             analyticsCtaId={ctaId}
             analyticsPage={ctaPage ?? `/services/${service.slug}`}
             className="h-11 shrink-0 px-4 text-xs sm:text-sm bg-orange-500 hover:bg-orange-600 text-white"

@@ -21,6 +21,7 @@ import { UtmMonthlyViewsChart } from "@/components/admin/utm-monthly-views-chart
 import type { AnalyticsAdminResponse } from "@/lib/analytics/types";
 import { CartAdditionsChart } from "@/components/admin/cart-additions-chart";
 import { ViewsPerDayChart } from "@/components/admin/views-per-day-chart";
+import { ServiceSlotsPanel } from "@/components/admin/service-slots-panel";
 
 interface StatCardProps {
   title: string;
@@ -308,6 +309,8 @@ export default function AdminDashboard() {
           icon={<TrendingUp className="h-6 w-6" />}
         />
       </div>
+
+      <ServiceSlotsPanel />
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

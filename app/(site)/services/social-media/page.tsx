@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ServiceDetailSocialMedia } from "@/components/services/service-detail-social-media";
 import { getServiceByIdFromDb } from "@/lib/server/services";
+import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
 export const metadata: Metadata = {
   title: "Социални мрежи · съдържание и стратегия",
@@ -15,5 +16,6 @@ export default async function SocialMediaPage() {
     notFound();
   }
 
-  return <ServiceDetailSocialMedia service={service} />;
+  const availability = await getServiceSlotAvailability("social-media");
+  return <ServiceDetailSocialMedia service={service} availability={availability} />;
 }

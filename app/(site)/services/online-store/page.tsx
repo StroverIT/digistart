@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ServiceDetailReadyStore } from "@/components/services/service-detail-ready-store";
 import { getServiceByIdFromDb } from "@/lib/server/services";
+import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
@@ -12,5 +13,6 @@ export const metadata: Metadata = {
 export default async function OnlineStorePage() {
   const service = await getServiceByIdFromDb("ready-store");
   if (!service) notFound();
-  return <ServiceDetailReadyStore serviceData={service} />;
+  const availability = await getServiceSlotAvailability("ready-store");
+  return <ServiceDetailReadyStore serviceData={service} availability={availability} />;
 }

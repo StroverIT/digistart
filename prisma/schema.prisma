@@ -73,21 +73,37 @@ model TenantProject {
 }
 
 model Service {
-  id               String          @id
-  slug             String          @unique
+  id               String                 @id
+  slug             String                 @unique
   name             String
   shortDescription String
   fullDescription  String
   icon             String
   basePrice        Int
-  isMonthly        Boolean         @default(false)
+  isMonthly        Boolean                @default(false)
   timeline         String
   features         String[]
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  slotCapacity     Int                    @default(20) @map("slot_capacity")
+  slotAdjustment   Int                    @default(0) @map("slot_adjustment")
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
   orderItems       OrderItem[]
   options          ServiceOption[]
   upsells          ServiceUpsell[]
+  waitlistEntries  ServiceWaitlistEntry[]
+}
+
+model ServiceWaitlistEntry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  serviceId String   @map("service_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt(sort: Desc)])
+  @@index([serviceId])
+  @@map("service_waitlist_entries")
 }
 
 model ServiceOption {

@@ -22,6 +22,8 @@ async function syncService(service: (typeof services)[number]) {
       isMonthly: service.isMonthly ?? false,
       timeline: service.timeline,
       features: service.features,
+      slotCapacity: 20,
+      slotAdjustment: 0,
     },
     update: {
       slug: service.slug,

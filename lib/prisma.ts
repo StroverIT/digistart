@@ -33,7 +33,7 @@ function createPrismaClient() {
 function getCachedPrisma(): PrismaClient | undefined {
   const cached = global.prisma;
   if (!cached) return undefined;
-  if (!("supportChat" in cached)) {
+  if (!("supportChat" in cached) || !("serviceWaitlistEntry" in cached)) {
     global.prisma = undefined;
     return undefined;
   }

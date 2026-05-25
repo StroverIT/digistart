@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createOrderInDb, listOrdersFromDb, updateOrderStatusInDb } from "@/lib/server/orders";
 import type { CartItemUpsell, Order } from "@/lib/types";
 import { getServiceByIdFromDb } from "@/lib/server/services";
+import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
 const upsellSchema: z.ZodType<CartItemUpsell> = z.object({
   upsellId: z.string(),
@@ -73,6 +74,16 @@ export async function POST(req: Request) {
         return NextResponse.json(
           { error: `Option not found for service ${item.serviceId}` },
           { status: 400 }
+        );
+      }
+
+      const availability = await getServiceSlotAvailability(item.serviceId);
+      if (availability?.isSoldOut) {
+        return NextResponse.json(
+          {
+            error: `Няма свободни места за ${availability.serviceName}. Запишете се в waitlist.`,
+          },
+          { status: 409 },
         );
       }
     }

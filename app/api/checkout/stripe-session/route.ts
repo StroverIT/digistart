@@ -12,6 +12,7 @@ import {
 import type { CartItemUpsell } from "@/lib/types";
 import { isBundlePlanServiceId } from "@/lib/server/bundle-plans";
 import { getServiceByIdFromDb } from "@/lib/server/services";
+import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 import { getStripeServerClient } from "@/lib/server/stripe";
 import {
   resolveOrCreateCatalogPrice,
@@ -174,6 +175,16 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(
           { error: `Option not found for service ${item.serviceId}` },
           { status: 400 }
+        );
+      }
+
+      const availability = await getServiceSlotAvailability(item.serviceId);
+      if (availability?.isSoldOut) {
+        return NextResponse.json(
+          {
+            error: `Няма свободни места за ${availability.serviceName}. Запишете се в waitlist.`,
+          },
+          { status: 409 },
         );
       }
     }

@@ -9,7 +9,7 @@ import {
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { Price } from "@/components/ui/price";
 import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
-import type { CartItemUpsell, Service } from "@/lib/types";
+import type { CartItemUpsell, Service, ServiceSlotAvailability } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServicePlanPrice } from "@/lib/data/services";
@@ -23,9 +23,13 @@ import {
 
 interface ServiceDetailGoogleBusinessProps {
   service: Service;
+  availability?: ServiceSlotAvailability | null;
 }
 
-export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusinessProps) {
+export function ServiceDetailGoogleBusiness({
+  service,
+  availability,
+}: ServiceDetailGoogleBusinessProps) {
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
@@ -97,6 +101,7 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
         cartSelectedOptionId={GOOGLE_BUSINESS_PROFILE_OPTION_ID}
         ctaId={`${content.ctaIdPrefix}_buy_section_add_to_cart`}
         ctaPage={content.pagePath}
+        availability={availability}
       />
       <PlansSection compact className="py-12 md:py-16" />
     </ServicePasLanding>

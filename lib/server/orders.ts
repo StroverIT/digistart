@@ -133,6 +133,8 @@ export async function createOrderInDb(params: {
         isMonthly: sourceService.isMonthly ?? false,
         timeline: sourceService.timeline,
         features: sourceService.features,
+        slotCapacity: 20,
+        slotAdjustment: 0,
         options: {
           create: sourceService.options.map((option) => ({
             optionKey: option.id,

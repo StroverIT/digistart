@@ -13,6 +13,7 @@ import Hamburger from "hamburger-react";
 import { useSession, signOut } from "next-auth/react";
 import { AnalyticsToolbar } from "@/components/analytics/analytics-toolbar";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
+import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
 
 const navLinks = [
   { href: "/", label: "Начало", paths: ["/"] },
@@ -228,8 +229,9 @@ export function Header() {
 
   return (
     <>
+      <div className="fixed top-0 left-0 right-0 z-50">
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+        className={`transition-all duration-300 ${isScrolled
           ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg"
           : "bg-transparent"
           }`}
@@ -310,6 +312,8 @@ export function Header() {
           </div>
         </div>
       </header>
+      <ServiceSlotsBanner />
+      </div>
 
       <div
         ref={backdropRef}

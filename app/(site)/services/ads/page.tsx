@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ServiceDetailAds } from "@/components/services/service-detail-ads";
 import { getServiceByIdFromDb } from "@/lib/server/services";
+import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
 export const metadata: Metadata = {
   title: "Реклами · Facebook и Instagram Ads",
@@ -15,5 +16,6 @@ export default async function AdsPage() {
     notFound();
   }
 
-  return <ServiceDetailAds service={service} />;
+  const availability = await getServiceSlotAvailability("ads");
+  return <ServiceDetailAds service={service} availability={availability} />;
 }

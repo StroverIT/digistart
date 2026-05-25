@@ -7,7 +7,7 @@ import { trackCtaClick } from "@/lib/analytics/tracker";
 import { Price } from "@/components/ui/price";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServiceById, getServicePlanPrice } from "@/lib/data/services";
-import type { CartItemUpsell, Service } from "@/lib/types";
+import type { CartItemUpsell, Service, ServiceSlotAvailability } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
@@ -26,6 +26,7 @@ interface ServiceDetailReadyStoreProps {
   bodyFontClass?: string;
   className?: string;
   serviceData?: Service;
+  availability?: ServiceSlotAvailability | null;
 }
 
 export function ServiceDetailReadyStore({
@@ -33,6 +34,7 @@ export function ServiceDetailReadyStore({
   bodyFontClass,
   className,
   serviceData,
+  availability,
 }: ServiceDetailReadyStoreProps) {
   const service = serviceData ?? getServiceById(ONLINE_STORE_SERVICE_ID);
   const { push } = useTransitionRouter();
@@ -113,6 +115,7 @@ export function ServiceDetailReadyStore({
         cartSelectedOptionId={ONLINE_STORE_OPTION_ID}
         ctaId={`${content.ctaIdPrefix}_buy_section_add_to_cart`}
         ctaPage={content.pagePath}
+        availability={availability}
       />
 
     </ServicePasLanding>

@@ -10,7 +10,7 @@ import { trackCtaClick } from "@/lib/analytics/tracker";
 import { Price } from "@/components/ui/price";
 import { ADS_SOCIAL_MEDIA_COMPANION } from "@/lib/data/service-companions";
 import { addOrUpdateServiceInCart } from "@/lib/store/cart";
-import type { CartItemUpsell, Service } from "@/lib/types";
+import type { CartItemUpsell, Service, ServiceSlotAvailability } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServicePlanPrice } from "@/lib/data/services";
@@ -21,9 +21,10 @@ import { ADS_LANDING } from "@/config/service-landing/ads";
 
 interface ServiceDetailAdsProps {
   service: Service;
+  availability?: ServiceSlotAvailability | null;
 }
 
-export function ServiceDetailAds({ service }: ServiceDetailAdsProps) {
+export function ServiceDetailAds({ service, availability }: ServiceDetailAdsProps) {
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
@@ -99,6 +100,7 @@ export function ServiceDetailAds({ service }: ServiceDetailAdsProps) {
         companion={ADS_SOCIAL_MEDIA_COMPANION}
         ctaId={`${content.ctaIdPrefix}_buy_section_add_to_cart`}
         ctaPage={content.pagePath}
+        availability={availability}
       />
       <PlansSection compact className="py-12 md:py-16" />
     </ServicePasLanding>
