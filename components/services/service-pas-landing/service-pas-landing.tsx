@@ -7,6 +7,7 @@ import { ServicePageBackground } from "@/components/services/service-page-backgr
 import { PasAuthoritySection } from "./authority-section";
 import { PasBenefitsSection } from "./benefits-section";
 import { PasHeroBulletsSection } from "./hero-bullets-section";
+import { PasHeroCtaSection } from "./hero-cta-section";
 import { PasFaqSection } from "./faq-section";
 import { PasProblemSection } from "./problem-section";
 import { PasQualificationSection } from "./qualification-section";
@@ -22,7 +23,6 @@ interface ServicePasLandingProps {
   badgeIcon: ReactNode;
   priceSlot: ReactNode;
   onHeroPrimaryClick: () => void;
-  backCtaId: string;
   headingFontClass?: string;
   className?: string;
   withPageBackground?: boolean;
@@ -36,7 +36,6 @@ export function ServicePasLanding({
   badgeIcon,
   priceSlot,
   onHeroPrimaryClick,
-  backCtaId,
   headingFontClass,
   className,
   withPageBackground = false,
@@ -48,28 +47,29 @@ export function ServicePasLanding({
   return (
     <div
       ref={pageRootRef}
-      className={className ?? "relative isolate pt-16 pb-12 md:pt-20 md:pb-16"}
+      className={className ?? "relative isolate pb-12 md:pb-16"}
     >
       {withPageBackground ? <ServicePageBackground /> : null}
       <div className={withPageBackground ? "relative z-10" : undefined}>
-        <ServiceDetailHero
-          badgeIcon={badgeIcon}
-          badgeText={content.hero.badgeText}
-          title={content.hero.title}
-          description={content.hero.description}
-          socialProof={content.hero.socialProof}
-          priceSlot={priceSlot}
-          primaryLabel={content.primaryCtaLabel}
-          onPrimaryClick={onHeroPrimaryClick}
-          backCtaId={backCtaId}
-          headingFontClass={headingFontClass}
-        />
-
-        {content.hero.bullets?.length ? (
-          <PasHeroBulletsSection
-            bullets={content.hero.bullets}
+        <div className="relative isolate flex min-h-[calc(100dvh-4rem)] flex-col md:min-h-[calc(100dvh-5rem)]">
+          <ServiceDetailHero
+            badgeIcon={badgeIcon}
+            badgeText={content.hero.badgeText}
+            title={content.hero.title}
+            description={content.hero.description}
+            socialProof={content.hero.socialProof}
             headingFontClass={headingFontClass}
           />
+
+          <PasHeroCtaSection
+            priceSlot={priceSlot}
+            primaryLabel={content.primaryCtaLabel}
+            onPrimaryClick={onHeroPrimaryClick}
+          />
+        </div>
+
+        {content.hero.bullets?.length ? (
+          <PasHeroBulletsSection bullets={content.hero.bullets} />
         ) : null}
 
         {content.benefits ? (

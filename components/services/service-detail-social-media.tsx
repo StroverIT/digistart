@@ -85,7 +85,6 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
         trackCtaClick(content.pagePath, `${content.ctaIdPrefix}_scroll_to_buy`);
         scrollToBuySection();
       }}
-      backCtaId={`${content.ctaIdPrefix}_back_to_services`}
     >
       <ServiceBuySection
         service={service}

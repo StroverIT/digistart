@@ -83,7 +83,7 @@ export function ServiceDetailReadyStore({
       content={content}
       pageRootRef={pageRootRef}
       headingFontClass={headingFontClass}
-      className={cn("pt-16 pb-12 md:pt-20 md:pb-16", bodyFontClass, className)}
+      className={cn("pb-12 md:pb-16", bodyFontClass, className)}
       badgeIcon={<ShoppingCart className="h-4 w-4" />}
       priceSlot={
         <div className="flex items-baseline gap-1">
@@ -98,7 +98,6 @@ export function ServiceDetailReadyStore({
         trackCtaClick(content.pagePath, `${content.ctaIdPrefix}_scroll_to_buy`);
         scrollToBuySection();
       }}
-      backCtaId={`${content.ctaIdPrefix}_back_to_services`}
       beforeFaq={
         <TemplatesShowcaseSection headingFontClass={headingFontClass} />
       }
