@@ -1,22 +1,21 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import gsap from "gsap";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { SERVICE_DETAIL_HERO_PRIMARY_BUTTON_CLASSNAME } from "@/components/services/service-detail-primary-cta-styles";
 
 interface PasHeroCtaSectionProps {
-  priceSlot: ReactNode;
   primaryLabel: string;
   onPrimaryClick: () => void;
+  socialProof?: string;
 }
 
 export function PasHeroCtaSection({
-  priceSlot,
   primaryLabel,
   onPrimaryClick,
+  socialProof,
 }: PasHeroCtaSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
@@ -39,24 +38,26 @@ export function PasHeroCtaSection({
   }, []);
 
   return (
-    <div
-      ref={sectionRef}
-      className="relative z-10 shrink-0 pb-10 md:pb-12"
-    >
-      <div className="container mx-auto px-4">
-        <div
-          ref={rowRef}
-          className="mx-auto flex max-w-4xl translate-y-10 flex-col items-center justify-center gap-4 opacity-0"
+    <div ref={sectionRef} className="relative z-10 shrink-0 w-full">
+      <div
+        ref={rowRef}
+        className="flex translate-y-10 flex-col items-center gap-3 opacity-0"
+      >
+
+        <Button
+          onClick={onPrimaryClick}
+          size="lg"
+          className="glow-primary text-lg h-14 px-8"
         >
-          <Button
-            onClick={onPrimaryClick}
-            size="lg"
-            className="glow-primary text-lg h-14 px-8"
-          >
-            {primaryLabel}
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </div>
+          {primaryLabel}
+          <ArrowRight className="ml-2 h-5 w-5" />
+        </Button>
+        {socialProof ? (
+          <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-green-500" aria-hidden />
+            {socialProof}
+          </p>
+        ) : null}
       </div>
     </div>
   );

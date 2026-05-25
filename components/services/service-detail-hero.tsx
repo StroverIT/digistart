@@ -11,13 +11,11 @@ interface ServiceDetailHeroProps {
   badgeText: string;
   title: ReactNode;
   description: ReactNode;
-  /** Optional social proof line below the description (direct-response style). */
+  /** Optional social proof line below the CTA (direct-response style). */
   socialProof?: string;
   headingFontClass?: string;
-  priceSlot: ReactNode;
   primaryLabel: string;
   onPrimaryClick: () => void;
-  bullets?: readonly string[];
 }
 
 export function ServiceDetailHero({
@@ -25,18 +23,16 @@ export function ServiceDetailHero({
   badgeText,
   title,
   description,
+  socialProof,
   headingFontClass,
-  priceSlot,
   primaryLabel,
   onPrimaryClick,
-  bullets,
 }: ServiceDetailHeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const badgeRef = useRef<HTMLSpanElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const descRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -48,9 +44,9 @@ export function ServiceDetailHero({
       const tl = gsap.timeline({ defaults: { ease: "back.out(1.6)" } });
       tl.to(badgeRef.current, { opacity: 1, y: 0, duration: 0.5 }, 0)
         .to(titleRef.current, { opacity: 1, y: 0, duration: 0.6 }, 0.05)
-        .to(descRef.current, { opacity: 1, y: 0, duration: 0.5 }, "-=0.25")
-        .to(scrollRef.current, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, "-=0.15");
+        .to(descRef.current, { opacity: 1, y: 0, duration: 0.5 }, "-=0.25");
 
+      tl.to(scrollRef.current, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, "-=0.2");
     }, sectionRef);
 
     return () => ctx.revert();
@@ -77,11 +73,11 @@ export function ServiceDetailHero({
       </div>
 
       <div className="container relative z-10 mx-auto flex flex-1 flex-col justify-center">
-        <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center text-center gap-6">
+        <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center text-center gap-5">
           <div>
             <span
               ref={badgeRef}
-              className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary opacity-0"
+              className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary shadow-sm opacity-0"
             >
               {badgeIcon}
               {badgeText}
@@ -97,18 +93,17 @@ export function ServiceDetailHero({
             </h1>
           </div>
 
-
           <div
             ref={descRef}
-            className="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground opacity-0 sm:max-w-3xl sm:text-xl"
+            className="max-w-2xl text-lg leading-relaxed text-muted-foreground opacity-0 sm:max-w-3xl sm:text-xl"
           >
             {description}
           </div>
 
           <PasHeroCtaSection
-            priceSlot={priceSlot}
             primaryLabel={primaryLabel}
             onPrimaryClick={onPrimaryClick}
+            socialProof={socialProof}
           />
         </div>
         <div

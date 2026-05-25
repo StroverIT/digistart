@@ -19,7 +19,7 @@ export function PasSectionIntro({
     <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
       <span
         data-animate-reveal
-        className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block opacity-0 translate-y-10"
+        className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary mb-4 opacity-0 translate-y-10"
       >
         {eyebrow}
       </span>
@@ -36,7 +36,7 @@ export function PasSectionIntro({
       {description ? (
         <p
           data-animate-reveal
-          className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10 mt-3"
+          className="text-muted-foreground text-base sm:text-lg leading-relaxed opacity-0 translate-y-10 mt-4"
         >
           {description}
         </p>

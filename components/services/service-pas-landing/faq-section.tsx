@@ -34,7 +34,7 @@ export function PasFaqSection({
         />
         <div
           data-animate-card
-          className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 sm:px-8 sm:py-4 opacity-0 translate-y-10"
+          className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 sm:px-8 sm:py-4 opacity-0 translate-y-10 shadow-sm"
         >
           <Faq items={[...items]} />
         </div>

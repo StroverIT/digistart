@@ -42,10 +42,13 @@ export function PasProblemSection({
             <div
               key={item.title}
               data-animate-card
-              className="group bg-card border border-border hover:border-destructive/50 rounded-xl transition-all duration-300 opacity-0 translate-y-10"
+              className="group relative bg-card border border-border hover:border-destructive/40 rounded-xl transition-all duration-300 opacity-0 translate-y-10 hover:shadow-md overflow-hidden"
             >
+              <div className="absolute inset-y-0 left-0 w-0.5 bg-destructive/0 group-hover:bg-destructive/50 transition-colors duration-300 rounded-l-xl" />
               <div className="p-6 md:p-7">
-                <CircleX className="h-5 w-5 text-red-500 mb-4" />
+                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10 ring-1 ring-destructive/15 group-hover:bg-destructive/15 transition-colors">
+                  <CircleX className="h-5 w-5 text-destructive" />
+                </div>
                 <h3 className="font-bold text-lg mb-3">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
               </div>

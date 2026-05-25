@@ -87,15 +87,6 @@ export function ServiceDetailReadyStore({
       headingFontClass={headingFontClass}
       className={cn("pb-12 md:pb-16", bodyFontClass, className)}
       badgeIcon={<ShoppingCart className="h-4 w-4" />}
-      priceSlot={
-        <div className="flex items-baseline gap-1">
-          <Price
-            value={planPrice}
-            className={cn(headingFontClass, "text-3xl sm:text-4xl text-primary")}
-          />
-          <span className="text-muted-foreground text-lg">/мес</span>
-        </div>
-      }
       onHeroPrimaryClick={() => {
         trackCtaClick(content.pagePath, `${content.ctaIdPrefix}_scroll_to_buy`);
         scrollToBuySection();

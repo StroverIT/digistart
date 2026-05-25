@@ -1,4 +1,3 @@
-import { ClipboardList } from "lucide-react";
 import {
   ServiceSectionBuyCta,
   type ServiceSectionBuyCtaConfig,
@@ -32,37 +31,27 @@ export function PasStepsSection({
           description={description}
           headingFontClass={headingFontClass}
         />
-        <div className="relative">
-          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-border to-transparent -translate-y-1/2" />
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((step, index) => (
-              <div key={step.title} className="relative">
-                <div
-                  data-animate-card
-                  className="group bg-card border border-border hover:border-primary/50 transition-colors h-full rounded-xl opacity-0 translate-y-10"
-                >
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                        <step.icon className="h-5 w-5" />
-                      </div>
-                      <span className="text-3xl font-bold text-muted-foreground/30">
-                        0{index + 1}
-                      </span>
-                      <ClipboardList className="ml-auto h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <h3 className="font-semibold mb-2">{step.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{step.body}</p>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((step, index) => (
+            <div
+              key={step.title}
+              data-animate-card
+              className="group relative bg-card border border-border hover:border-primary/50 hover:shadow-md transition-all duration-300 h-full rounded-xl opacity-0 translate-y-10"
+            >
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-5">
+                  <div className="h-11 w-11 rounded-full bg-primary/10 ring-1 ring-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground group-hover:ring-primary transition-all duration-300">
+                    <step.icon className="h-5 w-5" />
                   </div>
+                  <span className="text-5xl font-bold text-muted-foreground/15 leading-none select-none tabular-nums">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
                 </div>
-                {index < items.length - 1 && (
-                  <div className="lg:hidden flex justify-center my-4">
-                    <div className="h-8 w-0.5 bg-border" />
-                  </div>
-                )}
+                <h3 className="font-semibold text-base mb-2">{step.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{step.body}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
         {buyCta ? (
           <div data-animate-reveal className="mt-8 md:mt-10 opacity-0 translate-y-10">

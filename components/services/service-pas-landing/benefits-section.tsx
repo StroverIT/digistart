@@ -30,9 +30,11 @@ export function PasBenefitsSection({
             <div
               key={item.title}
               data-animate-card
-              className="group rounded-xl border border-border bg-card/80 p-6 md:p-7 opacity-0 translate-y-10 transition-colors hover:border-primary/30"
+              className="group rounded-xl border border-border bg-card/80 p-6 md:p-7 opacity-0 translate-y-10 transition-all duration-300 hover:border-primary/35 hover:shadow-md"
             >
-              <Sparkles className="mb-4 h-5 w-5 text-primary" aria-hidden />
+              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/20 group-hover:bg-primary/15 transition-colors">
+                <Sparkles className="h-5 w-5 text-primary" aria-hidden />
+              </div>
               <h3 className="mb-3 text-lg font-bold">{item.title}</h3>
               <p className="text-sm leading-relaxed text-muted-foreground">{item.text}</p>
             </div>

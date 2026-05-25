@@ -33,10 +33,12 @@ export function PasSolutionSection({
             <div
               key={item}
               data-animate-card
-              className="group border border-border bg-card hover:border-primary/50 transition-all duration-300 rounded-xl opacity-0 translate-y-10"
+              className="group border border-border bg-card hover:border-green-500/40 transition-all duration-300 rounded-xl opacity-0 translate-y-10 hover:shadow-sm"
             >
               <div className="p-5 md:p-6 flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                <div className="shrink-0 mt-0.5 flex h-7 w-7 items-center justify-center rounded-full bg-green-500/10 ring-1 ring-green-500/20 group-hover:bg-green-500/15 transition-colors">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                </div>
                 <p className="text-muted-foreground leading-relaxed">{item}</p>
               </div>
             </div>

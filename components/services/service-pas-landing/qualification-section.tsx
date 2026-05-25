@@ -36,9 +36,9 @@ export function PasQualificationSection({
             <li
               key={statement}
               data-animate-card
-              className="flex items-start gap-3 rounded-xl border border-border bg-card/80 px-4 py-3.5 opacity-0 translate-y-10"
+              className="group flex items-start gap-3 rounded-xl border border-border bg-card/80 px-4 py-4 opacity-0 translate-y-10 transition-all duration-200 hover:border-primary/30 hover:bg-card"
             >
-              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary ring-1 ring-primary/20 group-hover:bg-primary/20 transition-colors">
                 <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
               </span>
               <span className="text-sm sm:text-base leading-relaxed text-foreground">

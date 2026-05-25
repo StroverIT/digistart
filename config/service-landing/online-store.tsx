@@ -21,7 +21,7 @@ export const ONLINE_STORE_LANDING: ServicePasLandingContent = {
       "Жив екип зад гърба ти — месечен преглед, не PDF с инструкции",
       "14 дни без риск — ако не работи за теб, връщаме парите",
     ],
-    socialProof: "14 дни тест · без договор · жив екип",
+    socialProof: "14 дни тест · без договор",
   },
   benefits: {
     eyebrow: "Защо продавачите в чата избират нас",

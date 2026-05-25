@@ -19,7 +19,6 @@ interface ServicePasLandingProps {
   content: ServicePasLandingContent;
   pageRootRef: RefObject<HTMLDivElement | null>;
   badgeIcon: ReactNode;
-  priceSlot: ReactNode;
   onHeroPrimaryClick: () => void;
   headingFontClass?: string;
   className?: string;
@@ -32,7 +31,6 @@ export function ServicePasLanding({
   content,
   pageRootRef,
   badgeIcon,
-  priceSlot,
   onHeroPrimaryClick,
   headingFontClass,
   className,
@@ -51,14 +49,12 @@ export function ServicePasLanding({
       <div className={withPageBackground ? "relative z-10" : undefined}>
         <div className="relative isolate">
           <ServiceDetailHero
-            bullets={content.hero.bullets}
             badgeIcon={badgeIcon}
             badgeText={content.hero.badgeText}
             title={content.hero.title}
             description={content.hero.description}
             socialProof={content.hero.socialProof}
             headingFontClass={headingFontClass}
-            priceSlot={priceSlot}
             primaryLabel={content.primaryCtaLabel}
             onPrimaryClick={onHeroPrimaryClick}
           />
@@ -69,7 +65,6 @@ export function ServicePasLanding({
           headingFontClass={headingFontClass}
           buyCta={buy("pain")}
         />
-
 
         {content.benefits ? (
           <PasBenefitsSection
@@ -108,6 +103,13 @@ export function ServicePasLanding({
           headingFontClass={headingFontClass}
           buyCta={buy("steps")}
         />
+
+        {content.valueProp ? (
+          <PasValuePropSection
+            {...content.valueProp}
+            buyCta={buy("value_prop")}
+          />
+        ) : null}
 
         <SocialProofSection
           type={content.socialProofType}

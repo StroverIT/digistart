@@ -33,10 +33,11 @@ export function PasAuthoritySection({
             <div
               key={stat.label}
               data-animate-card
-              className="rounded-xl border border-primary/20 bg-primary/5 px-5 py-6 text-center opacity-0 translate-y-10"
+              className="rounded-xl border border-primary/20 bg-linear-to-b from-primary/10 to-primary/5 px-5 py-7 text-center opacity-0 translate-y-10 transition-all duration-300 hover:border-primary/35 hover:shadow-sm"
             >
-              <p className="text-2xl sm:text-3xl font-bold text-primary">{stat.value}</p>
-              <p className="mt-2 text-sm text-muted-foreground leading-snug">{stat.label}</p>
+              <p className="text-3xl sm:text-4xl font-bold text-primary leading-none">{stat.value}</p>
+              <div className="mx-auto my-3 h-px w-8 bg-primary/30" />
+              <p className="text-sm text-muted-foreground leading-snug">{stat.label}</p>
             </div>
           ))}
         </div>
