@@ -6,8 +6,6 @@ import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 import { ServicePageBackground } from "@/components/services/service-page-background";
 import { PasAuthoritySection } from "./authority-section";
 import { PasBenefitsSection } from "./benefits-section";
-import { PasHeroBulletsSection } from "./hero-bullets-section";
-import { PasHeroCtaSection } from "./hero-cta-section";
 import { PasFaqSection } from "./faq-section";
 import { PasProblemSection } from "./problem-section";
 import { PasQualificationSection } from "./qualification-section";
@@ -53,6 +51,7 @@ export function ServicePasLanding({
       <div className={withPageBackground ? "relative z-10" : undefined}>
         <div className="relative isolate">
           <ServiceDetailHero
+            bullets={content.hero.bullets}
             badgeIcon={badgeIcon}
             badgeText={content.hero.badgeText}
             title={content.hero.title}
@@ -65,9 +64,12 @@ export function ServicePasLanding({
           />
         </div>
 
-        {content.hero.bullets?.length ? (
-          <PasHeroBulletsSection bullets={content.hero.bullets} />
-        ) : null}
+        <PasProblemSection
+          {...content.problem}
+          headingFontClass={headingFontClass}
+          buyCta={buy("pain")}
+        />
+
 
         {content.benefits ? (
           <PasBenefitsSection
@@ -76,12 +78,6 @@ export function ServicePasLanding({
             buyCta={buy("benefits")}
           />
         ) : null}
-
-        <PasProblemSection
-          {...content.problem}
-          headingFontClass={headingFontClass}
-          buyCta={buy("pain")}
-        />
 
         <PasQualificationSection
           {...content.qualification}

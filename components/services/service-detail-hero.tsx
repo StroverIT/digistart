@@ -17,6 +17,7 @@ interface ServiceDetailHeroProps {
   priceSlot: ReactNode;
   primaryLabel: string;
   onPrimaryClick: () => void;
+  bullets?: readonly string[];
 }
 
 export function ServiceDetailHero({
@@ -24,11 +25,11 @@ export function ServiceDetailHero({
   badgeText,
   title,
   description,
-  socialProof,
   headingFontClass,
   priceSlot,
   primaryLabel,
   onPrimaryClick,
+  bullets,
 }: ServiceDetailHeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const badgeRef = useRef<HTMLSpanElement>(null);
@@ -58,7 +59,7 @@ export function ServiceDetailHero({
   return (
     <section
       ref={sectionRef}
-      className="relative isolate flex min-h-dvh flex-col justify-center overflow-hidden py-16 md:py-20"
+      className="relative isolate flex min-h-dvh flex-col justify-center overflow-hidden pb-10"
     >
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
         <div className="absolute inset-0 bg-linear-to-br from-background via-secondary/25 to-primary/12" />
@@ -96,12 +97,14 @@ export function ServiceDetailHero({
             </h1>
           </div>
 
+
           <div
             ref={descRef}
             className="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground opacity-0 sm:max-w-3xl sm:text-xl"
           >
             {description}
           </div>
+
           <PasHeroCtaSection
             priceSlot={priceSlot}
             primaryLabel={primaryLabel}
@@ -110,7 +113,7 @@ export function ServiceDetailHero({
         </div>
         <div
           ref={scrollRef}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce max-sm:hidden opacity-0 translate-y-10"
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 animate-bounce max-sm:hidden opacity-0 translate-y-10"
         >
           <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex items-start justify-center p-2">
             <div className="w-1 h-2 bg-muted-foreground/50 rounded-full animate-pulse" />
