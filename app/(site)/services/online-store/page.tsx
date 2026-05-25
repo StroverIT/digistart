@@ -4,9 +4,9 @@ import { ServiceDetailReadyStore } from "@/components/services/service-detail-re
 import { getServiceByIdFromDb } from "@/lib/server/services";
 
 export const metadata: Metadata = {
-  title: "Онлайн Магазин",
+  title: "Онлайн магазин · готов за продажби",
   description:
-    "Стартирай онлайн продажби с готов магазин, нисък месечен разход и добавки за плащания и куриери.",
+    "Мобилен онлайн магазин за продавачи в Instagram, Facebook и OLX — абонамент от €20/мес., опционално карти и куриер в количката, старт до 48 часа, 14-дневна гаранция.",
 };
 
 export default async function OnlineStorePage() {

@@ -84,24 +84,26 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   "online-store": {
     title: (
       <>
-        От чат до <span className="gradient-text">поръчки 24/7</span>
+        Restyled: от <span className="gradient-text">„има ли размер S?“</span> до поръчки в 2:00
+        сутринта
       </>
     ),
-    eyebrow: "Казус · Онлайн магазин · Fashion",
+    eyebrow: "Казус · Fashion · Продажби в OLX",
     description: (
       <>
-        Restyled продаваха основно през съобщения - всеки ден същите въпроси за размери, цени и
-        адреси. С готов онлайн магазин (mobile-first) клиентите вече избират и поръчват сами, а
-        поръчките влизат денонощно.
+        <strong className="text-foreground">Преди:</strong> OLX с над 200 запитвания на месец. ~60
+        съобщения на ден — размери, наличности, цени. Преписване на адреси в Еконт за всяка пратка.
+        Около 18–22 поръчки на месец.
         <div className="mt-2" />
-        Без преписване на адреси и без лимит от времето в чата - собствениците се фокусират върху
-        колекциите, а не върху операторска работа.
+        <strong className="text-foreground">След:</strong> Магазин с каталог, адаптиран към бранда им
+        за 48 часа. Клиентите избират размер и цвят сами, поръчват и плащат без да изчакват
+        отговор. Собствениците се върнаха към новите колекции — не към чата.
       </>
     ),
     highlights: [
-      { label: "Ниша", value: "Fashion", icon: Shirt },
-      { label: "Фокус", value: "Mobile-first магазин", icon: Smartphone },
-      { label: "Резултат", value: "Поръчки 24/7 без хаос в съобщенията", icon: ShoppingBag },
+      { label: "Поръчки / месец", value: "~20 → ~80 (30 дни)", icon: ShoppingBag },
+      { label: "Съобщения / ден", value: "~60 → ~8", icon: MessageCircle },
+      { label: "Ръчно Econt/Speedy", value: "всяка пратка → 0", icon: Smartphone },
     ],
     primaryCta: {
       href: restyledSocial.website,
@@ -112,26 +114,28 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   "social-media": {
     title: (
       <>
-        От хаос в чата до <span className="gradient-text">подреден бранд</span>
+        Restyled: от <span className="gradient-text">хаос в feed-а</span> до бранд, който изглежда
+        на място
       </>
     ),
     eyebrow: "Казус · Социални мрежи · Fashion",
     description: (
       <>
-        Restyled създават страхотна мода, но губеха часове в Instagram и Facebook - едни и същи
-        въпроси, без ясна стратегия за съдържание и реклами.
+        <strong className="text-foreground">Преди:</strong> Страхотна мода, но продажбите минаваха
+        само през OLX и лично съобщение — едни и същи въпроси, без стратегия, без редовно постване
+        в Instagram и Facebook.
         <div className="mt-2" />
-        С подредено присъствие и кампании, насочени към бранда им, достигат до повече хора и
-        печелят време за новите колекции - вместо да работят като оператори в чата.
+        <strong className="text-foreground">След:</strong> Подредено присъствие, съдържание в синхрон
+        с бранда, повече време за колекции — по-малко роля „оператор в чата“.
       </>
     ),
     highlights: [
       { label: "Ниша", value: "Fashion", icon: Shirt },
-      { label: "Фокус", value: "Instagram & Facebook", icon: Share2 },
-      { label: "Резултат", value: "По-силна аудитория и по-малко хаос в чата", icon: TrendingUp },
+      { label: "Фокус", value: "Instagram, Facebook & OLX", icon: Share2 },
+      { label: "Резултат", value: "По-силна аудитория · по-малко хаос в DM", icon: TrendingUp },
       {
         label: "Подход",
-        value: "Съдържание и реклами, съобразени с бранда",
+        value: "Съдържание + преход от OLX към социални мрежи",
         icon: MessageCircle,
       },
     ],
@@ -144,26 +148,28 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   "google-business": {
     title: (
       <>
-        От „legit ли сте?“ до <span className="gradient-text">доверие в Google</span>
+        Restyled: продаваха в лични съобщения —{" "}
+        <span className="gradient-text">но Google не убеждаваше клиентите им</span>
       </>
     ),
     eyebrow: "Казус · Google Business · Fashion",
     description: (
       <>
-        Restyled продаваха основно в социалните мрежи — купувачите питаха в DM, но преди поръчка
-        търсеха бранда в Google. Без силен профил губеха доверие спрямо по-големи имена.
+        <strong className="text-foreground">Преди:</strong> Силен продукт в Instagram. Купувачите
+        търсеха бранда в Google — но профилът беше слаб или липсваше. Доверието беше под нивото на
+        продукта.
         <div className="mt-2" />
-        С оптимизиран Google Business профил — отзиви, снимки и линкове към профилите — брандът
-        изглежда официален още преди първото съобщение.
+        <strong className="text-foreground">След:</strong> Оптимизиран Google Business профил, връзка
+        с магазин и социални мрежи — пътят „търсене → доверие → поръчка“ е по-къс.
       </>
     ),
     highlights: [
       { label: "Ниша", value: "Fashion", icon: Shirt },
-      { label: "Фокус", value: "Доверие преди DM", icon: MapPin },
-      { label: "Резултат", value: "Видимост при търсене на бранда", icon: TrendingUp },
+      { label: "Фокус", value: "Google + социални", icon: MapPin },
+      { label: "Резултат", value: "Повече доверие преди поръчка", icon: TrendingUp },
       {
         label: "Подход",
-        value: "Профил за социални продажби, не само физически обект",
+        value: "Локално присъствие + линк към магазин",
         icon: Share2,
       },
     ],
@@ -176,26 +182,27 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   ads: {
     title: (
       <>
-        От boost на сляпо до <span className="gradient-text">структурирани кампании</span>
+        Restyled: имаха продукт и аудитория —{" "}
+        <span className="gradient-text">рекламите не носеха система</span>
       </>
     ),
     eyebrow: "Казус · Реклами · Fashion",
     description: (
       <>
-        Restyled имаха продукт и аудитория, но рекламите не носеха предвидим резултат — липсваха
-        ясна стратегия и профил, готов за клик.
+        <strong className="text-foreground">Преди:</strong> Пускаха boost без ясна стратегия.
+        Бюджетът изчезваше. Профилът не беше готов за реклама с реален бюджет.
         <div className="mt-2" />
-        С подредено съдържание и управлявани кампании достигат до повече купувачи с по-малко
-        хаос — вместо да хвърлят бюджет без система.
+        <strong className="text-foreground">След:</strong> Ясна връзка съдържание → магазин →
+        реклама с проследяване. По-предвидим път от клик към поръчка.
       </>
     ),
     highlights: [
       { label: "Ниша", value: "Fashion", icon: Shirt },
-      { label: "Фокус", value: "Meta реклами", icon: Share2 },
-      { label: "Резултат", value: "По-ясна възвръщаемост на бюджета", icon: TrendingUp },
+      { label: "Фокус", value: "Meta Ads + магазин", icon: Share2 },
+      { label: "Резултат", value: "По-ясно кои реклами носят поръчки", icon: TrendingUp },
       {
         label: "Подход",
-        value: "Съдържание + реклами в един стек",
+        value: "По-малко „boost на сляпо“",
         icon: MessageCircle,
       },
     ],
@@ -253,7 +260,7 @@ export function SocialProofSection({
   return (
     <section
       ref={containerRef}
-      id={isHome ? "social-proof" : undefined}
+      id={isHome ? "social-proof" : "case-study"}
       className={cn(
         isHome
           ? "flex min-h-screen w-full flex-col justify-center py-16 md:py-20 lg:py-24"

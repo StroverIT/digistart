@@ -5,6 +5,7 @@ import { SocialProofSection } from "@/components/home/social-proof-section";
 import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 import { ServicePageBackground } from "@/components/services/service-page-background";
 import { PasAuthoritySection } from "./authority-section";
+import { PasBenefitsSection } from "./benefits-section";
 import { PasFaqSection } from "./faq-section";
 import { PasProblemSection } from "./problem-section";
 import { PasQualificationSection } from "./qualification-section";
@@ -63,6 +64,14 @@ export function ServicePasLanding({
           headingFontClass={headingFontClass}
         />
 
+        {content.benefits ? (
+          <PasBenefitsSection
+            {...content.benefits}
+            headingFontClass={headingFontClass}
+            buyCta={buy("benefits")}
+          />
+        ) : null}
+
         <PasProblemSection
           {...content.problem}
           headingFontClass={headingFontClass}
@@ -114,6 +123,11 @@ export function ServicePasLanding({
 
         {beforeFaq}
 
+        <PasFaqSection
+          {...content.faq}
+          headingFontClass={headingFontClass}
+          buyCta={buy("faq")}
+        />
 
         {children}
       </div>

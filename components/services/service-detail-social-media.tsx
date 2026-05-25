@@ -89,7 +89,7 @@ export function ServiceDetailSocialMedia({ service }: ServiceDetailSocialMediaPr
     >
       <ServiceBuySection
         service={service}
-        title="Купи сега"
+        title="Готов ли си feed-ът да работи без теб?"
         price={planPrice}
         monthlyLabel="/месец"
         upsells={upsells}

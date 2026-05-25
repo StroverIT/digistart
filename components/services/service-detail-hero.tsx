@@ -40,7 +40,7 @@ export function ServiceDetailHero({
   const backWrapRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLSpanElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const descRef = useRef<HTMLParagraphElement>(null);
+  const descRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -103,12 +103,12 @@ export function ServiceDetailHero({
           >
             {title}
           </h1>
-          <p
+          <div
             ref={descRef}
-            className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed opacity-0 translate-y-10"
+            className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed opacity-0 translate-y-10 [&_ul]:mt-4 [&_ul]:space-y-2 [&_ul]:text-base [&_ul]:sm:text-lg [&_li]:flex [&_li]:gap-2"
           >
             {description}
-          </p>
+          </div>
           {socialProof ? (
             <p className="mt-4 max-w-3xl text-sm sm:text-base font-medium text-primary/90">
               {socialProof}

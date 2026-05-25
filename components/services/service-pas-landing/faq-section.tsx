@@ -23,7 +23,7 @@ export function PasFaqSection({
   buyCta,
 }: PasFaqSectionProps) {
   return (
-    <section data-animate-section className="py-8 md:py-20 bg-card/40">
+    <section id="faq" data-animate-section className="py-8 md:py-20 bg-card/40">
       <div className="container mx-auto px-4">
         <PasSectionIntro
           eyebrow={eyebrow}

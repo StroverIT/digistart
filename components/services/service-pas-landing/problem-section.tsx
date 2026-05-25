@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { CircleX } from "lucide-react";
 import {
   ServiceSectionBuyCta,
@@ -9,6 +10,7 @@ import { PasSectionIntro } from "./section-intro";
 interface PasProblemSectionProps {
   eyebrow: string;
   title: string;
+  intro?: ReactNode;
   items: readonly ServicePasPainPoint[];
   headingFontClass?: string;
   buyCta?: ServiceSectionBuyCtaConfig;
@@ -17,18 +19,24 @@ interface PasProblemSectionProps {
 export function PasProblemSection({
   eyebrow,
   title,
+  intro,
   items,
   headingFontClass,
   buyCta,
 }: PasProblemSectionProps) {
   return (
-    <section data-animate-section className="py-8 md:py-20 bg-card/50">
+    <section id="for-you" data-animate-section className="py-8 md:py-20 bg-card/50">
       <div className="container mx-auto px-4">
         <PasSectionIntro
           eyebrow={eyebrow}
           title={title}
           headingFontClass={headingFontClass}
         />
+        {intro ? (
+          <div className="mx-auto mb-8 max-w-3xl space-y-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            {intro}
+          </div>
+        ) : null}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
             <div

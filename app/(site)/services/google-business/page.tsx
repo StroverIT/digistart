@@ -4,9 +4,9 @@ import { ServiceDetailGoogleBusiness } from "@/components/services/service-detai
 import { getServiceByIdFromDb } from "@/lib/server/services";
 
 export const metadata: Metadata = {
-  title: "Google Business",
+  title: "Google Business · локална видимост",
   description:
-    "Google Business профил за малки бизнеси, които искат клиентите да ги намират в Maps и локалните търсения.",
+    "Настройка на Google Business профил за продавачи в Instagram, Facebook и OLX — €49 еднократно, Maps, отзиви, локално SEO.",
 };
 
 export default async function GoogleBusinessPage() {

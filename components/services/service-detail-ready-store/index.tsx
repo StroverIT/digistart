@@ -105,7 +105,7 @@ export function ServiceDetailReadyStore({
     >
       <ServiceBuySection
         service={service}
-        title="Купи сега"
+        title="Готов ли си да излезеш от чата?"
         price={planPrice}
         upsells={upsells}
         onUpsellsChange={setUpsells}

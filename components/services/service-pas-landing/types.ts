@@ -8,6 +8,11 @@ export type ServicePasPainPoint = {
   text: string;
 };
 
+export type ServicePasBenefit = {
+  title: string;
+  text: string;
+};
+
 export type ServicePasStep = {
   title: string;
   body: string;
@@ -29,9 +34,15 @@ export type ServicePasLandingContent = {
     description: ReactNode;
     socialProof?: string;
   };
+  benefits?: {
+    eyebrow: string;
+    title: string;
+    items: readonly ServicePasBenefit[];
+  };
   problem: {
     eyebrow: string;
     title: string;
+    intro?: ReactNode;
     items: readonly ServicePasPainPoint[];
   };
   qualification: {

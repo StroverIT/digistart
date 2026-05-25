@@ -89,7 +89,7 @@ export function ServiceDetailAds({ service }: ServiceDetailAdsProps) {
     >
       <ServiceBuySection
         service={service}
-        title="Купи сега"
+        title="Готов ли си рекламата да носи поръчки, не само покази?"
         price={planPrice}
         monthlyLabel="/месец"
         upsells={upsells}

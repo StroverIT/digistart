@@ -89,7 +89,7 @@ export function ServiceDetailGoogleBusiness({ service }: ServiceDetailGoogleBusi
     >
       <ServiceBuySection
         service={service}
-        title="Купи сега"
+        title="Готов ли си да спреш да губиш купувачи в търсенето?"
         price={planPrice}
         upsells={upsells}
         onUpsellsChange={setUpsells}
