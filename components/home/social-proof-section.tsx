@@ -84,26 +84,26 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   "online-store": {
     title: (
       <>
-        Restyled: от <span className="gradient-text">„има ли размер S?“</span> до поръчки в 2:00
-        сутринта
+        Restyled: от <span className="gradient-text">OLX обяви</span> до магазин, който приема
+        поръчки сам
       </>
     ),
     eyebrow: "Казус · Fashion · Продажби в OLX",
     description: (
       <>
-        <strong className="text-foreground">Преди:</strong> OLX с над 200 запитвания на месец. ~60
-        съобщения на ден — размери, наличности, цени. Преписване на адреси в Еконт за всяка пратка.
-        Около 18–22 поръчки на месец.
+        <strong className="text-foreground">Преди:</strong> Restyled продаваше само в OLX. Цените и
+        размерите бяха видими, но при над 20 артикула усети големият проблем. Всеки продукт имаше свое:
+        уточняване, адрес, куриер и ръчно следене на разговорите.
         <div className="mt-2" />
-        <strong className="text-foreground">След:</strong> Магазин с каталог, адаптиран към бранда им
-        за 48 часа. Клиентите избират размер и цвят сами, поръчват и плащат без да изчакват
-        отговор. Собствениците се върнаха към новите колекции — не към чата.
+        <strong className="text-foreground">След:</strong> Онлайн магазин с каталог, брандирано
+        преживяване и ясен път до поръчка. Клиентът избира артикул, попълва адрес и изпраща
+        заявката без да чака разговор в OLX.
       </>
     ),
     highlights: [
-      { label: "Поръчки / месец", value: "~20 → ~80 (30 дни)", icon: ShoppingBag },
-      { label: "Съобщения / ден", value: "~60 → ~8", icon: MessageCircle },
-      { label: "Ръчно Econt/Speedy", value: "всяка пратка → 0", icon: Smartphone },
+      { label: "Каталог", value: "10 000+ артикула, подредени в собствен магазин", icon: ShoppingBag },
+      { label: "Поръчка", value: "от чат в OLX към бутон „Купувам“", icon: MessageCircle },
+      { label: "Бранд", value: "от обява като всички други към собствено преживяване", icon: Smartphone },
     ],
     primaryCta: {
       href: restyledSocial.website,
@@ -121,12 +121,12 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
     eyebrow: "Казус · Социални мрежи · Fashion",
     description: (
       <>
-        <strong className="text-foreground">Преди:</strong> Страхотна мода, но продажбите минаваха
-        само през OLX и лично съобщение — едни и същи въпроси, без стратегия, без редовно постване
-        в Instagram и Facebook.
+        <strong className="text-foreground">Преди:</strong> Продуктите се продаваха, но брандът
+        оставаше заключен в OLX — до десетки други обяви със същия формат и без собствена визия.
         <div className="mt-2" />
-        <strong className="text-foreground">След:</strong> Подредено присъствие, съдържание в синхрон
-        с бранда, повече време за колекции — по-малко роля „оператор в чата“.
+        <strong className="text-foreground">След:</strong> Подредено присъствие в социалните мрежи,
+        съдържание в синхрон с магазина и по-ясна причина клиентът да запомни Restyled, а не само
+        отделна OLX обява.
       </>
     ),
     highlights: [
@@ -135,7 +135,7 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
       { label: "Резултат", value: "По-силна аудитория · по-малко хаос в DM", icon: TrendingUp },
       {
         label: "Подход",
-        value: "Съдържание + преход от OLX към социални мрежи",
+        value: "Съдържание + преход от OLX към разпознаваем бранд",
         icon: MessageCircle,
       },
     ],
@@ -155,12 +155,12 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
     eyebrow: "Казус · Google Business · Fashion",
     description: (
       <>
-        <strong className="text-foreground">Преди:</strong> Силен продукт в Instagram. Купувачите
-        търсеха бранда в Google — но профилът беше слаб или липсваше. Доверието беше под нивото на
-        продукта.
+        <strong className="text-foreground">Преди:</strong> Когато клиент излезе извън OLX и потърси
+        Restyled, нямаше достатъчно силна следа, която да потвърди бранда и да събере всичко на едно
+        място.
         <div className="mt-2" />
         <strong className="text-foreground">След:</strong> Оптимизиран Google Business профил, връзка
-        с магазин и социални мрежи — пътят „търсене → доверие → поръчка“ е по-къс.
+        към магазина и социалните канали — по-кратък път от търсене до доверие и поръчка.
       </>
     ),
     highlights: [
@@ -189,11 +189,13 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
     eyebrow: "Казус · Реклами · Fashion",
     description: (
       <>
-        <strong className="text-foreground">Преди:</strong> Пускаха boost без ясна стратегия.
-        Бюджетът изчезваше. Профилът не беше готов за реклама с реален бюджет.
+        <strong className="text-foreground">Преди:</strong> В OLX можеш да промотираш основно вътре
+        в самия OLX. Това ограничава скалирането — няма собствена фуния, няма брандирана страница и
+        няма удобен checkout, към който да водиш трафик.
         <div className="mt-2" />
         <strong className="text-foreground">След:</strong> Ясна връзка съдържание → магазин →
-        реклама с проследяване. По-предвидим път от клик към поръчка.
+        реклама с проследяване. Рекламата вече води към собствена среда, където клиентът може да
+        купи, а не само да изпрати съобщение.
       </>
     ),
     highlights: [
@@ -202,7 +204,7 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
       { label: "Резултат", value: "По-ясно кои реклами носят поръчки", icon: TrendingUp },
       {
         label: "Подход",
-        value: "По-малко „boost на сляпо“",
+        value: "От OLX промотиране към трафик към собствен магазин",
         icon: MessageCircle,
       },
     ],

@@ -109,14 +109,6 @@ export function ServicePasLanding({
           buyCta={buy("steps")}
         />
 
-        {content.valueProp ? (
-          <PasValuePropSection
-            paragraphs={content.valueProp.paragraphs}
-            highlights={content.valueProp.highlights}
-            buyCta={buy("value_prop")}
-          />
-        ) : null}
-
         <SocialProofSection
           type={content.socialProofType}
           headingFontClass={headingFontClass}
