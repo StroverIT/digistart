@@ -87,6 +87,35 @@ export type PendingCheckoutUser = {
   company?: string;
 };
 
+/** Maps a signed-in customer session to a Prisma user id (email must match checkout). */
+export async function resolveCheckoutUserId(params: {
+  customerEmail: string;
+  sessionEmail?: string | null;
+  sessionRole?: string | null;
+}): Promise<string | null> {
+  const customerEmail = params.customerEmail.toLowerCase().trim();
+  const sessionEmail = params.sessionEmail?.toLowerCase().trim();
+  if (!sessionEmail || params.sessionRole === "admin") return null;
+  if (sessionEmail !== customerEmail) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { email: customerEmail },
+    select: { id: true },
+  });
+  return user?.id ?? null;
+}
+
+async function verifiedOrderUserId(
+  userId: string | null | undefined
+): Promise<string | undefined> {
+  if (!userId) return undefined;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+  return user?.id;
+}
+
 export async function createOrderInDb(params: {
   cart: Cart;
   customer: CustomerInfo;
@@ -134,14 +163,15 @@ export async function createOrderInDb(params: {
         timeline: sourceService.timeline,
         features: sourceService.features,
         slotCapacity: 20,
-        slotAdjustment: 0,
       },
     });
   }
 
+  const verifiedUserId = await verifiedOrderUserId(userId);
+
   const order = await prisma.order.create({
     data: {
-      userId: userId ?? undefined,
+      userId: verifiedUserId,
       customerName: customer.name,
       customerEmail: customer.email,
       customerPhone: customer.phone,

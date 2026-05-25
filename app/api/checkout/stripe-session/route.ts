@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import { authOptions } from "@/lib/auth";
 import {
   createOrderInDb,
+  resolveCheckoutUserId,
   setOrderStripeSessionInDb,
   type PendingCheckoutUser,
 } from "@/lib/server/orders";
@@ -195,12 +196,14 @@ export async function POST(req: NextRequest) {
     }
 
     const customerEmail = parsed.data.customer.email.toLowerCase().trim();
-    const sessionUserId =
-      session?.user?.id &&
-      session.user.role !== "admin" &&
-      session.user.email?.toLowerCase() === customerEmail
-        ? session.user.id
-        : null;
+    const isSessionCustomerForEmail =
+      session?.user?.email?.toLowerCase() === customerEmail &&
+      session.user.role !== "admin";
+    const sessionUserId = await resolveCheckoutUserId({
+      customerEmail,
+      sessionEmail: session?.user?.email,
+      sessionRole: session?.user?.role,
+    });
 
     let pendingUser: PendingCheckoutUser | null = null;
     let postCheckoutToken: string | null = null;
@@ -208,6 +211,15 @@ export async function POST(req: NextRequest) {
     if (!sessionUserId) {
       const pu = parsed.data.pendingUser;
       if (!pu) {
+        if (isSessionCustomerForEmail) {
+          return NextResponse.json(
+            {
+              error:
+                "Акаунтът не е намерен в системата. Моля, излезте и влезте отново, или създайте нов акаунт.",
+            },
+            { status: 401 }
+          );
+        }
         return NextResponse.json(
           { error: "Липсват данни за акаунт или влезте в профила си." },
           { status: 400 }

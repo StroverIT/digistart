@@ -69,7 +69,7 @@ function AdditionalServicesGrid({
               <TrackedCtaLink
                 href={`/services/${service.slug}#buy-now`}
                 ctaId={`cart_upsell_${service.slug}`}
-                className="flex flex-col xl:flex-row w-full items-center gap-2 xl:gap-4 rounded-xl border border-border bg-background/60 p-5 text-left transition-all duration-300 hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="flex flex-col  w-full items-center gap-2 xl:gap-4 rounded-xl border border-border bg-background/60 p-5 text-left transition-all duration-300 hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <AdditionalServiceSticker service={service} />
                 <div className="flex min-w-0 flex-1 flex-col gap-1 text-center xl:text-left">
@@ -490,10 +490,6 @@ export default function CartPage() {
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </TrackedCtaLink>
-
-                  <p className="text-xs text-muted-foreground text-center">
-                    Плащането ще бъде извършено през Stripe
-                  </p>
                 </CardContent>
               </Card>
             </div>

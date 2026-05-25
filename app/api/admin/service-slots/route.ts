@@ -6,13 +6,12 @@ import {
   SLOT_MANAGED_SERVICE_IDS,
   getServiceSlotAvailability,
   listSlotManagedAvailabilities,
-  updateServiceSlotSettings,
+  updateServiceSlotCapacity,
 } from "@/lib/server/service-slots";
 
 const patchSchema = z.object({
   serviceId: z.enum(SLOT_MANAGED_SERVICE_IDS),
-  slotCapacity: z.number().int().min(0).optional(),
-  slotAdjustment: z.number().int().optional(),
+  slotCapacity: z.number().int().min(0),
 });
 
 export async function GET() {
@@ -41,11 +40,7 @@ export async function PATCH(req: Request) {
       );
     }
 
-    await updateServiceSlotSettings({
-      serviceId: parsed.data.serviceId,
-      slotCapacity: parsed.data.slotCapacity,
-      slotAdjustment: parsed.data.slotAdjustment,
-    });
+    await updateServiceSlotCapacity(parsed.data.serviceId, parsed.data.slotCapacity);
 
     const availability = await getServiceSlotAvailability(parsed.data.serviceId);
     return NextResponse.json({ availability });

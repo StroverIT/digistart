@@ -14,7 +14,6 @@ export interface ServiceSlotAvailability {
   serviceName: string;
   slug: string;
   capacity: number;
-  adjustment: number;
   paidCount: number;
   remaining: number;
   isSoldOut: boolean;
@@ -53,7 +52,6 @@ export async function ensureSlotManagedServiceRow(serviceId: SlotManagedServiceI
     create: {
       ...fields,
       slotCapacity: DEFAULT_SLOT_CAPACITY,
-      slotAdjustment: 0,
     },
     update: fields,
   });
@@ -81,11 +79,9 @@ export async function countPaidPurchasesForService(serviceId: string): Promise<n
 
 export function computeRemainingSlots(params: {
   capacity: number;
-  adjustment: number;
   paidCount: number;
 }): number {
-  const effective = params.capacity + params.adjustment - params.paidCount;
-  return Math.max(0, effective);
+  return Math.max(0, params.capacity - params.paidCount);
 }
 
 export async function getServiceSlotAvailability(
@@ -98,7 +94,6 @@ export async function getServiceSlotAvailability(
       name: true,
       slug: true,
       slotCapacity: true,
-      slotAdjustment: true,
     },
   });
 
@@ -109,15 +104,13 @@ export async function getServiceSlotAvailability(
 
   const paidCount = await countPaidPurchasesForService(serviceId);
   const capacity = service?.slotCapacity ?? DEFAULT_SLOT_CAPACITY;
-  const adjustment = service?.slotAdjustment ?? 0;
-  const remaining = computeRemainingSlots({ capacity, adjustment, paidCount });
+  const remaining = computeRemainingSlots({ capacity, paidCount });
 
   return {
     serviceId,
     serviceName: service?.name ?? fallback!.name,
     slug: service?.slug ?? fallback!.slug,
     capacity,
-    adjustment,
     paidCount,
     remaining,
     isSoldOut: remaining <= 0,
@@ -133,41 +126,24 @@ export async function listSlotManagedAvailabilities(): Promise<ServiceSlotAvaila
   return results;
 }
 
-export async function updateServiceSlotSettings(params: {
-  serviceId: string;
-  slotCapacity?: number;
-  slotAdjustment?: number;
-}) {
-  const { serviceId, slotCapacity, slotAdjustment } = params;
+export async function updateServiceSlotCapacity(serviceId: string, slotCapacity: number) {
   if (!isSlotManagedServiceId(serviceId)) {
     throw new Error(`Service ${serviceId} is not slot-managed.`);
+  }
+  if (!Number.isInteger(slotCapacity) || slotCapacity < 0) {
+    throw new Error("slotCapacity must be a non-negative integer.");
   }
 
   await ensureSlotManagedServiceRow(serviceId);
 
-  const data: { slotCapacity?: number; slotAdjustment?: number } = {};
-  if (slotCapacity !== undefined) {
-    if (!Number.isInteger(slotCapacity) || slotCapacity < 0) {
-      throw new Error("slotCapacity must be a non-negative integer.");
-    }
-    data.slotCapacity = slotCapacity;
-  }
-  if (slotAdjustment !== undefined) {
-    if (!Number.isInteger(slotAdjustment)) {
-      throw new Error("slotAdjustment must be an integer.");
-    }
-    data.slotAdjustment = slotAdjustment;
-  }
-
   return prisma.service.update({
     where: { id: serviceId },
-    data,
+    data: { slotCapacity },
     select: {
       id: true,
       name: true,
       slug: true,
       slotCapacity: true,
-      slotAdjustment: true,
     },
   });
 }

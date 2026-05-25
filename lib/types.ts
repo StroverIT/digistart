@@ -163,7 +163,6 @@ export interface ServiceSlotAvailability {
   serviceName: string;
   slug: string;
   capacity: number;
-  adjustment: number;
   paidCount: number;
   remaining: number;
   isSoldOut: boolean;

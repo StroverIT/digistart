@@ -23,7 +23,6 @@ async function syncServiceRow(service: (typeof services)[number]) {
       timeline: service.timeline,
       features: service.features,
       slotCapacity: 20,
-      slotAdjustment: 0,
     },
     update: {
       slug: service.slug,
@@ -61,7 +60,6 @@ async function main() {
         timeline: "Абонаментен пакет",
         features: plan.features,
         slotCapacity: 20,
-        slotAdjustment: 0,
       },
       update: {
         name: `Пакет ${plan.name}`,

@@ -30,7 +30,7 @@ function createPrismaClient() {
 }
 
 /** Bump when the schema changes so dev HMR does not reuse a stale client. */
-const PRISMA_SCHEMA_CACHE_KEY = "20260525120000-service-slots";
+const PRISMA_SCHEMA_CACHE_KEY = "20260525140000-remove-slot-adjustment";
 
 declare global {
   // eslint-disable-next-line no-var

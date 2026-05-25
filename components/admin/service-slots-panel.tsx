@@ -19,7 +19,6 @@ export function ServiceSlotsPanel() {
   const [availabilities, setAvailabilities] = useState<ServiceSlotAvailability[]>([]);
   const [waitlist, setWaitlist] = useState<ServiceWaitlistEntryRow[]>([]);
   const [draftCapacity, setDraftCapacity] = useState<Record<string, string>>({});
-  const [draftAdjustment, setDraftAdjustment] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
 
@@ -38,13 +37,10 @@ export function ServiceSlotsPanel() {
       setAvailabilities(slotsData.availabilities ?? []);
       setWaitlist(waitlistData.entries ?? []);
       const cap: Record<string, string> = {};
-      const adj: Record<string, string> = {};
       for (const row of slotsData.availabilities ?? []) {
         cap[row.serviceId] = String(row.capacity);
-        adj[row.serviceId] = String(row.adjustment);
       }
       setDraftCapacity(cap);
-      setDraftAdjustment(adj);
     } catch {
       toast.error("Неуспешно зареждане на местата и waitlist.");
     } finally {
@@ -58,13 +54,8 @@ export function ServiceSlotsPanel() {
 
   const handleSave = async (serviceId: string) => {
     const slotCapacity = Number.parseInt(draftCapacity[serviceId] ?? "", 10);
-    const slotAdjustment = Number.parseInt(draftAdjustment[serviceId] ?? "", 10);
     if (Number.isNaN(slotCapacity) || slotCapacity < 0) {
-      toast.error("Капацитетът трябва да е цяло число ≥ 0.");
-      return;
-    }
-    if (Number.isNaN(slotAdjustment)) {
-      toast.error("Корекцията трябва да е цяло число.");
+      toast.error("Броят места трябва да е цяло число ≥ 0.");
       return;
     }
 
@@ -73,7 +64,7 @@ export function ServiceSlotsPanel() {
       const response = await fetch("/api/admin/service-slots", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ serviceId, slotCapacity, slotAdjustment }),
+        body: JSON.stringify({ serviceId, slotCapacity }),
       });
       const data = (await response.json()) as {
         availability?: ServiceSlotAvailability;
@@ -89,6 +80,10 @@ export function ServiceSlotsPanel() {
             row.serviceId === serviceId ? data.availability! : row,
           ),
         );
+        setDraftCapacity((prev) => ({
+          ...prev,
+          [serviceId]: String(data.availability!.capacity),
+        }));
       }
       toast.success("Настройките са запазени.");
     } catch {
@@ -104,8 +99,8 @@ export function ServiceSlotsPanel() {
         <CardHeader>
           <CardTitle>Свободни места по услуга</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Оставащи = капацитет + ръчна корекция − платени покупки (само успешно платени
-            Stripe поръчки).
+            Оставащи = общ брой места − платени покупки. При успешно плащане мястото се
+            отчита автоматично.
           </p>
         </CardHeader>
         <CardContent>
@@ -132,9 +127,9 @@ export function ServiceSlotsPanel() {
                       </span>
                     </p>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label htmlFor={`cap-${row.serviceId}`}>Капацитет</Label>
+                      <Label htmlFor={`cap-${row.serviceId}`}>Общ брой места</Label>
                       <Input
                         id={`cap-${row.serviceId}`}
                         type="number"
@@ -142,20 +137,6 @@ export function ServiceSlotsPanel() {
                         value={draftCapacity[row.serviceId] ?? ""}
                         onChange={(e) =>
                           setDraftCapacity((prev) => ({
-                            ...prev,
-                            [row.serviceId]: e.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor={`adj-${row.serviceId}`}>Ръчна корекция</Label>
-                      <Input
-                        id={`adj-${row.serviceId}`}
-                        type="number"
-                        value={draftAdjustment[row.serviceId] ?? ""}
-                        onChange={(e) =>
-                          setDraftAdjustment((prev) => ({
                             ...prev,
                             [row.serviceId]: e.target.value,
                           }))

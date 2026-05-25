@@ -84,7 +84,6 @@ model Service {
   timeline         String
   features         String[]
   slotCapacity     Int                    @default(20) @map("slot_capacity")
-  slotAdjustment   Int                    @default(0) @map("slot_adjustment")
   createdAt        DateTime               @default(now())
   updatedAt        DateTime               @updatedAt
   orderItems       OrderItem[]
