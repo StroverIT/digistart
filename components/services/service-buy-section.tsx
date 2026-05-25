@@ -85,6 +85,12 @@ export function ServiceBuySection({
   const asideRef = useRef<HTMLElement>(null);
 
   const hasUpsells = useMemo(() => service.upsells.length > 0, [service.upsells.length]);
+  const selectedOption = useMemo(
+    () => service.options.find((option) => option.id === cartSelectedOptionId) ?? service.options[0],
+    [cartSelectedOptionId, service.options],
+  );
+  const basePackageFrequency =
+    monthlyLabel ?? (selectedOption?.isMonthly || service.isMonthly ? "/месец" : "еднократно");
   const ctaText =
     ctaLabel ?? (serviceInCart ? "Промени в кошницата" : "Добави в кошницата");
 
@@ -251,6 +257,42 @@ export function ServiceBuySection({
                 избери нашите готови планове с до 15% отстъпка
               </Link>
             </p>
+            <div className="mb-6 rounded-2xl border border-primary/15 bg-primary/5 p-4">
+              <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                    Базов пакет
+                  </p>
+                  <h3 className="mt-1 text-lg font-semibold">
+                    {selectedOption?.name ?? service.name}
+                  </h3>
+                  {selectedOption?.description ? (
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {selectedOption.description}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="shrink-0 rounded-xl bg-background/80 px-3 py-2 text-left sm:text-right">
+                  <p className="text-xs text-muted-foreground">Включено от</p>
+                  <div className="flex items-end gap-1 sm:justify-end">
+                    <Price value={price} layout="vertical" className="text-xl text-primary" />
+                    <span className="pb-0.5 text-xs text-muted-foreground">
+                      {basePackageFrequency}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {service.features.length ? (
+                <ul className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
+                  {service.features.map((feature) => (
+                    <li key={feature} className="flex gap-2">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
             {isAdding ? (
               <div className="mb-6 space-y-3">
                 <Skeleton className="h-5 w-48" />
