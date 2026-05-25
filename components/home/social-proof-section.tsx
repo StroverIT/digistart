@@ -84,26 +84,26 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   "online-store": {
     title: (
       <>
-        Restyled: от <span className="gradient-text">OLX обяви</span> до магазин, който приема
-        поръчки сам
+        Restyled: от <span className="gradient-text">поръчки в съобщения</span> до подреден онлайн
+        магазин
       </>
     ),
-    eyebrow: "Казус · Fashion · Продажби в OLX",
+    eyebrow: "Казус · Fashion · Онлайн магазин",
     description: (
       <>
-        <strong className="text-foreground">Преди:</strong> Restyled продаваше само в OLX. Цените и
-        размерите бяха видими, но при над 20 артикула усети големият проблем. Всеки продукт имаше свое:
-        уточняване, адрес, куриер и ръчно следене на разговорите.
+        <strong className="text-foreground">Преди:</strong> Restyled продаваше основно през директни
+        разговори. Всеки продукт изискваше уточняване на размер, цена, адрес, куриер и ръчно следене
+        на поръчката.
         <div className="mt-2" />
         <strong className="text-foreground">След:</strong> Онлайн магазин с каталог, брандирано
         преживяване и ясен път до поръчка. Клиентът избира артикул, попълва адрес и изпраща
-        заявката без да чака разговор в OLX.
+        заявката без да чака разговор.
       </>
     ),
     highlights: [
       { label: "Каталог", value: "10 000+ артикула, подредени в собствен магазин", icon: ShoppingBag },
-      { label: "Поръчка", value: "от чат в OLX към бутон „Купувам“", icon: MessageCircle },
-      { label: "Бранд", value: "от обява като всички други към собствено преживяване", icon: Smartphone },
+      { label: "Поръчка", value: "от чат към ясен път за покупка", icon: MessageCircle },
+      { label: "Бранд", value: "от ръчни уточнения към собствено преживяване", icon: Smartphone },
     ],
     primaryCta: {
       href: restyledSocial.website,
@@ -114,8 +114,8 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   "social-media": {
     title: (
       <>
-        Restyled: от <span className="gradient-text">хаос в feed-а</span> до бранд, който изглежда
-        на място
+        Restyled: от <span className="gradient-text">поръчки в съобщения</span> до подреден онлайн
+        магазин
       </>
     ),
     eyebrow: "Казус · Социални мрежи · Fashion",
