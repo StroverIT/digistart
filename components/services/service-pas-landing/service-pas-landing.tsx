@@ -12,7 +12,6 @@ import { PasQualificationSection } from "./qualification-section";
 import { PasSolutionSection } from "./solution-section";
 import { PasStepsSection } from "./steps-section";
 import { PasUrgencySection } from "./urgency-section";
-import { PasValuePropSection } from "./value-prop-section";
 import { buildPasSectionBuyCta, type ServicePasLandingContent } from "./types";
 
 interface ServicePasLandingProps {
