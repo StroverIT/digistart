@@ -23,8 +23,8 @@ import { useTransitionRouter } from "@/components/transitions/useTransitionRoute
 type SurveyStep = "channels" | "orders" | "services";
 
 const STEP_TITLES: Record<SurveyStep, string> = {
-  channels: "Къде продавате в момента?",
-  orders: "Грубо колко поръчки правите на месец?",
+  channels: "Къде продаваш в момента?",
+  orders: "Грубо колко поръчки правиш на месец?",
   services: "От кои услуги се интересуваш?",
 };
 
@@ -46,8 +46,6 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
   const [otherLabel, setOtherLabel] = useState("");
   const [monthlyOrders, setMonthlyOrders] = useState<MonthlyOrderVolume | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
-  /** True only after user adds a selection that leaves exactly one channel (not on pre-fill). */
-  const pendingSingleChannelAdvance = useRef(false);
 
   useEffect(() => {
     if (!isEditMode) return;
@@ -105,34 +103,10 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
   const goToOrders = useCallback(
     (channels = selectedChannels, label = otherLabel) => {
       if (!channelsAreValid(channels, label)) return;
-      pendingSingleChannelAdvance.current = false;
       animateToStep("orders", "forward");
     },
     [selectedChannels, otherLabel, channelsAreValid, animateToStep],
   );
-
-  useEffect(() => {
-    if (step !== "channels" || !pendingSingleChannelAdvance.current) return;
-
-    const timeoutId = window.setTimeout(() => {
-      if (!pendingSingleChannelAdvance.current) return;
-      if (selectedChannels.length !== 1) {
-        pendingSingleChannelAdvance.current = false;
-        return;
-      }
-      const only = selectedChannels[0];
-      if (only === "other") {
-        if (!otherLabel.trim()) return;
-        pendingSingleChannelAdvance.current = false;
-        goToOrders(selectedChannels, otherLabel.trim());
-        return;
-      }
-      pendingSingleChannelAdvance.current = false;
-      goToOrders();
-    }, 0);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [step, selectedChannels, otherLabel, goToOrders]);
 
   const toggleChannel = (channel: SalesChannel) => {
     setSelectedChannels((prev) => {
@@ -146,9 +120,6 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
           page: surveyPage,
           otherLabel: channel === "other" ? otherLabel.trim() : undefined,
         });
-        pendingSingleChannelAdvance.current = next.length === 1 && channel !== "other";
-      } else {
-        pendingSingleChannelAdvance.current = false;
       }
 
       return next;
@@ -163,10 +134,6 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
       page: surveyPage,
       otherLabel: otherLabel.trim(),
     });
-    if (selectedChannels.length === 1 && selectedChannels.includes("other")) {
-      pendingSingleChannelAdvance.current = false;
-      goToOrders(selectedChannels, otherLabel.trim());
-    }
   };
 
   const handleOrderVolumeSelect = (volume: MonthlyOrderVolume) => {
@@ -203,7 +170,7 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
 
   const showContinue =
     step === "channels" &&
-    selectedChannels.length > 1 &&
+    selectedChannels.length > 0 &&
     (!selectedChannels.includes("other") || otherLabel.trim().length > 0);
 
   const otherSelected = selectedChannels.includes("other");
