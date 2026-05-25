@@ -850,7 +850,7 @@ export default function CheckoutPage() {
                               htmlFor="logo-own"
                               className="cursor-pointer font-normal leading-snug"
                             >
-                              Имам готово лого — ще го кача
+                              Имам готово лого - ще го кача
                             </Label>
                           </div>
                           <div className="flex items-start gap-3 rounded-md p-2 hover:bg-secondary/40">

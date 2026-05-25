@@ -7,7 +7,7 @@ import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 export const metadata: Metadata = {
   title: "Социални мрежи · съдържание и стратегия",
   description:
-    "Професионални публикации за продавачи в Instagram и Facebook — от €200/месец, 2 поста седмично, желязна гаранция за 1 месец.",
+    "Професионални публикации за продавачи в Instagram и Facebook - от €200/месец, 2 поста седмично, желязна гаранция за 1 месец.",
 };
 
 export default async function SocialMediaPage() {

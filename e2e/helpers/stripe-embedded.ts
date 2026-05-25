@@ -59,7 +59,7 @@ async function fillCheckoutForm(frame: Frame) {
   await fillStripeField(frame, /Име на картодържателя|Cardholder/i, CARDHOLDER_NAME);
 }
 
-/** Stripe enables Pay only after async card validation — wait until it stays enabled. */
+/** Stripe enables Pay only after async card validation - wait until it stays enabled. */
 async function waitForPayButtonReady(frame: Frame) {
   const button = payButton(frame);
   await expect(button).toBeVisible({ timeout: 60_000 });

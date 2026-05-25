@@ -7,7 +7,7 @@ import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 export const metadata: Metadata = {
   title: "Реклами · Facebook и Instagram Ads",
   description:
-    "Управление на Meta реклами за малки бизнеси — от €150/мес на канал, ясно таргетиране, месечни отчети. Бюджетът към Meta е отделно (мин. €50/мес).",
+    "Управление на Meta реклами за малки бизнеси - от €150/мес на канал, ясно таргетиране, месечни отчети. Бюджетът към Meta е отделно (мин. €50/мес).",
 };
 
 export default async function AdsPage() {

@@ -116,7 +116,7 @@ export function ServicesSection() {
           </p>
         </div>
 
-        {/* Service tiles — explicit 1 col + minmax(0,1fr) on mobile; bleed past container px on small screens */}
+        {/* Service tiles - explicit 1 col + minmax(0,1fr) on mobile; bleed past container px on small screens */}
         <div className="min-w-0 max-sm:-mx-4 sm:mx-auto ">
           <div className="px-4 grid grid-cols-1 sm:grid-cols-2  gap-6 lg:gap-8">
             {services.map((service, index) => (

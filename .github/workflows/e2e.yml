@@ -60,7 +60,7 @@ jobs:
           E2E_CUSTOMER_PASSWORD: ${{ secrets.E2E_CUSTOMER_PASSWORD }}
         run: |
           if [ -z "$E2E_CUSTOMER_PASSWORD" ]; then
-            echo "E2E_CUSTOMER_PASSWORD not set — logged-in checkout test will be skipped."
+            echo "E2E_CUSTOMER_PASSWORD not set - logged-in checkout test will be skipped."
             exit 0
           fi
           npx tsx scripts/ensure-e2e-customer.ts

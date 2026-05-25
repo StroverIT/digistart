@@ -55,7 +55,7 @@ export function ServiceCompanionOffer({
           <p className="text-sm text-muted-foreground">{config.description}</p>
           {alreadyInCart ? (
             <p className="mt-2 text-xs text-muted-foreground">
-              Вече е в кошницата ти — ще добавим само основната услуга от тази страница.
+              Вече е в кошницата ти - ще добавим само основната услуга от тази страница.
             </p>
           ) : null}
           <p className="text-sm mt-2">

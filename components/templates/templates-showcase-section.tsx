@@ -43,7 +43,7 @@ export function TemplatesShowcaseSection({
             data-animate-reveal
             className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
           >
-            Разгледай темплейтите. Избраният дизайн е отправна точка — след старта го оформяме към
+            Разгледай темплейтите. Избраният дизайн е отправна точка - след старта го оформяме към
             твоя бранд, ниша и снимки. Това не е крайният вид.
           </p>
         </div>

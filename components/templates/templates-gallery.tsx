@@ -130,7 +130,7 @@ function TemplatesGrid({
     return (
       <div className="rounded-xl border border-dashed border-border bg-muted/20 px-6 py-16 text-center">
         <p className="text-muted-foreground">
-          Все още няма шаблони за {categoryName}. Работим по нови дизайни — следи ни скоро.
+          Все още няма шаблони за {categoryName}. Работим по нови дизайни - следи ни скоро.
         </p>
         <div className="mt-6 flex justify-center">
           <NicheRecommendationDialog />

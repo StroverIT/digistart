@@ -101,7 +101,7 @@ export function OnboardingIntegrationsStep({
             placeholder="https://g.page/... или Maps линк"
           />
           <p className="text-xs text-muted-foreground">
-            Ако вече имате профил в Google Business / Maps, поставете линка. Ако нямате — оставете
+            Ако вече имате профил в Google Business / Maps, поставете линка. Ако нямате - оставете
             празно и ще създадем профил за вас.
           </p>
         </div>

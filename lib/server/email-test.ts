@@ -100,7 +100,7 @@ export function withTestTextBody(
   if (!testMode) return body;
   const lines = [
     process.env.NODE_ENV === "development"
-      ? "[TEST] Development среда — това писмо не е от production."
+      ? "[TEST] Development среда - това писмо не е от production."
       : "[TEST] Това е тестово съобщение от DigiStart.",
   ];
   if (context?.originalTo) {

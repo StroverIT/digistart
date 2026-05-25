@@ -7,7 +7,7 @@ import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
   description:
-    "Мобилен онлайн магазин за продавачи в Instagram, Facebook и OLX — абонамент от €20/мес., опционално карти и куриер в количката, старт до 48 часа, 14-дневна гаранция.",
+    "Мобилен онлайн магазин за продавачи в Instagram, Facebook и OLX - абонамент от €20/мес., опционално карти и куриер в количката, старт до 48 часа, 14-дневна гаранция.",
 };
 
 export default async function OnlineStorePage() {

@@ -250,7 +250,7 @@ export function serviceIdToPlanId(serviceId: string): PlanId | null {
   return getPlanById(id) ? id : null;
 }
 
-/** Plan components (monthly then one-time) with built-in upsells — for cart line recalculation. */
+/** Plan components (monthly then one-time) with built-in upsells - for cart line recalculation. */
 export function getPlanComponentsForRecalc(planId: PlanId): Array<{
   serviceId: string;
   optionId: string;

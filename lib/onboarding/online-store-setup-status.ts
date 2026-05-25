@@ -34,8 +34,8 @@ export function getOnlineStoreSetupItems(params: {
   const domainHint = (() => {
     if (domainOk) return "";
     const st = params.domain?.status;
-    if (st === "pending") return "Домейнът е изпратен — очаква се потвърждение на DNS.";
-    if (st === "misconfigured") return "DNS записите не съвпадат — виж инструкциите и поправи ги.";
+    if (st === "pending") return "Домейнът е изпратен - очаква се потвърждение на DNS.";
+    if (st === "misconfigured") return "DNS записите не съвпадат - виж инструкциите и поправи ги.";
     return "Добави домейн и DNS записи по инструкциите по-долу.";
   })();
 

@@ -108,12 +108,12 @@ export function SupportChatsTable({ chats }: SupportChatsTableProps) {
               {filtered.map((chat) => (
                 <TableRow key={chat.id}>
                   <TableCell className="font-medium">
-                    {chat.user.name ?? "—"}
+                    {chat.user.name ?? "-"}
                   </TableCell>
                   <TableCell>{chat.user.email}</TableCell>
                   <TableCell className="max-w-[240px]">
                     <span className="line-clamp-2 text-sm text-muted-foreground">
-                      {chat.problemPreview ?? "—"}
+                      {chat.problemPreview ?? "-"}
                     </span>
                   </TableCell>
                   <TableCell>

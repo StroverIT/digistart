@@ -122,7 +122,7 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
     description: (
       <>
         <strong className="text-foreground">Преди:</strong> Продуктите се продаваха, но брандът
-        оставаше заключен в OLX — до десетки други обяви със същия формат и без собствена визия.
+        оставаше заключен в OLX - до десетки други обяви със същия формат и без собствена визия.
         <div className="mt-2" />
         <strong className="text-foreground">След:</strong> Подредено присъствие в социалните мрежи,
         съдържание в синхрон с магазина и по-ясна причина клиентът да запомни Restyled, а не само
@@ -148,7 +148,7 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   "google-business": {
     title: (
       <>
-        Restyled: продаваха в лични съобщения —{" "}
+        Restyled: продаваха в лични съобщения -{" "}
         <span className="gradient-text">но Google не убеждаваше клиентите им</span>
       </>
     ),
@@ -160,7 +160,7 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
         място.
         <div className="mt-2" />
         <strong className="text-foreground">След:</strong> Оптимизиран Google Business профил, връзка
-        към магазина и социалните канали — по-кратък път от търсене до доверие и поръчка.
+        към магазина и социалните канали - по-кратък път от търсене до доверие и поръчка.
       </>
     ),
     highlights: [
@@ -182,7 +182,7 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   ads: {
     title: (
       <>
-        Restyled: имаха продукт и аудитория —{" "}
+        Restyled: имаха продукт и аудитория -{" "}
         <span className="gradient-text">рекламите не носеха система</span>
       </>
     ),
@@ -190,7 +190,7 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
     description: (
       <>
         <strong className="text-foreground">Преди:</strong> В OLX можеш да промотираш основно вътре
-        в самия OLX. Това ограничава скалирането — няма собствена фуния, няма брандирана страница и
+        в самия OLX. Това ограничава скалирането - няма собствена фуния, няма брандирана страница и
         няма удобен checkout, към който да водиш трафик.
         <div className="mt-2" />
         <strong className="text-foreground">След:</strong> Ясна връзка съдържание → магазин →

@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: TemplateDetailPageProps): Pro
   if (!template) return { title: "Шаблон" };
 
   return {
-    title: `${template.name} — шаблон за онлайн магазин`,
+    title: `${template.name} - шаблон за онлайн магазин`,
     description: template.description,
   };
 }

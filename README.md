@@ -13,11 +13,11 @@ Client support chat at `/user/support` uses Postgres persistence (Prisma) and [S
 
 Required env vars (in addition to existing Supabase service role vars):
 
-- `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL (same as `SUPABASE_URL` if already set).
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase **anon** public key (Project Settings → API).
-- `SUPABASE_JWT_SECRET` — Supabase JWT secret (Project Settings → API → JWT Secret). Used to issue short-lived tokens for Realtime RLS.
-- `ADMIN_EMAIL` — receives an email with the chat link when a customer sends their first message.
-- `NEXT_PUBLIC_SITE_URL` — used in admin notification links (e.g. `https://digistart.bg/admin/support/{chatId}`).
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL (same as `SUPABASE_URL` if already set).
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase **anon** public key (Project Settings → API).
+- `SUPABASE_JWT_SECRET` - Supabase JWT secret (Project Settings → API → JWT Secret). Used to issue short-lived tokens for Realtime RLS.
+- `ADMIN_EMAIL` - receives an email with the chat link when a customer sends their first message.
+- `NEXT_PUBLIC_SITE_URL` - used in admin notification links (e.g. `https://digistart.bg/admin/support/{chatId}`).
 
 Admins manage chats at `/admin/support` (sidebar: **Чат за помощ**). Email „Отвори чата“ links open the chat in the admin panel.
 

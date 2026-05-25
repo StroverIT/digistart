@@ -19,7 +19,7 @@ function rowActionLink(item: OnlineStoreSetupItem, orderItemId: string): string 
     case "domain":
       return "#store-domain-setup";
     case "brand":
-      return `mailto:${siteContact.email}?subject=${encodeURIComponent("Бранд материали — онлайн магазин")}`;
+      return `mailto:${siteContact.email}?subject=${encodeURIComponent("Бранд материали - онлайн магазин")}`;
     default:
       return null;
   }
@@ -113,7 +113,7 @@ export function OnlineStoreSetupStatusCard({ orderItemId, items }: OnlineStoreSe
             {needsBrand ? (
               <Button variant="outline" asChild>
                 <Link
-                  href={`mailto:${siteContact.email}?subject=${encodeURIComponent("Бранд материали — онлайн магазин")}`}
+                  href={`mailto:${siteContact.email}?subject=${encodeURIComponent("Бранд материали - онлайн магазин")}`}
                 >
                   Имейл за бранд
                 </Link>

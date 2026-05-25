@@ -59,7 +59,7 @@ export default async function AdminNewsletterPage() {
                         {formatDate(row.createdAt)}
                       </td>
                       <td className="max-w-xs px-4 py-3 text-xs text-muted-foreground">
-                        {row.metadata ? JSON.stringify(row.metadata) : "—"}
+                        {row.metadata ? JSON.stringify(row.metadata) : "-"}
                       </td>
                     </tr>
                   ))}

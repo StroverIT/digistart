@@ -57,7 +57,7 @@ export async function ensureSlotManagedServiceRow(serviceId: SlotManagedServiceI
   });
 }
 
-/** Paid Stripe checkout only — pending orders do not consume slots. */
+/** Paid Stripe checkout only - pending orders do not consume slots. */
 export function paidOrderWhere() {
   return {
     OR: [
