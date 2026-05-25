@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-/** Internal catalog row for admin-only Stripe smoke tests; excluded from public `getServices()`. */
+/** Internal service id for admin-only Stripe smoke tests; not in lib/data/services.ts. */
 export const ADMIN_STRIPE_TEST_SERVICE_ID = "admin-stripe-test";
 
 const ADMIN_TEST_OPTION_KEY = "eur-050-test";

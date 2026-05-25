@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ServiceDetailReadyStore } from "@/components/services/service-detail-ready-store";
-import { getServiceByIdFromDb } from "@/lib/server/services";
+import { getServiceById } from "@/lib/data/services";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function OnlineStorePage() {
-  const service = await getServiceByIdFromDb("ready-store");
+  const service = getServiceById("ready-store");
   if (!service) notFound();
   const availability = await getServiceSlotAvailability("ready-store");
   return <ServiceDetailReadyStore serviceData={service} availability={availability} />;

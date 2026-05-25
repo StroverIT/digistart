@@ -29,10 +29,30 @@ function createPrismaClient() {
   });
 }
 
-/** Dev HMR can keep an old PrismaClient without newly generated models. */
+/** Bump when the schema changes so dev HMR does not reuse a stale client. */
+const PRISMA_SCHEMA_CACHE_KEY = "20260525120000-service-slots";
+
+declare global {
+  // eslint-disable-next-line no-var
+  var prismaSchemaCacheKey: string | undefined;
+}
+
+/** Dev HMR can keep an old PrismaClient without newly generated models/fields. */
 function getCachedPrisma(): PrismaClient | undefined {
   const cached = global.prisma;
   if (!cached) return undefined;
+  if (global.prismaSchemaCacheKey !== PRISMA_SCHEMA_CACHE_KEY) {
+    global.prisma = undefined;
+    return undefined;
+  }
+  const runtime = cached as PrismaClient & {
+    _runtimeDataModel?: { models?: Record<string, { fields?: Record<string, unknown> }> };
+  };
+  const serviceFields = runtime._runtimeDataModel?.models?.Service?.fields;
+  if (serviceFields && !("slotCapacity" in serviceFields)) {
+    global.prisma = undefined;
+    return undefined;
+  }
   if (!("supportChat" in cached) || !("serviceWaitlistEntry" in cached)) {
     global.prisma = undefined;
     return undefined;
@@ -45,4 +65,5 @@ export const prisma = getCachedPrisma() ?? createPrismaClient();
 if (process.env.NODE_ENV !== "production") {
   global.prisma = prisma;
   global.prismaPool = pool;
+  global.prismaSchemaCacheKey = PRISMA_SCHEMA_CACHE_KEY;
 }

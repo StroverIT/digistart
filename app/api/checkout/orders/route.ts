@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createOrderInDb, listOrdersFromDb, updateOrderStatusInDb } from "@/lib/server/orders";
 import type { CartItemUpsell, Order } from "@/lib/types";
-import { getServiceByIdFromDb } from "@/lib/server/services";
+import { getServiceById } from "@/lib/data/services";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
 const upsellSchema: z.ZodType<CartItemUpsell> = z.object({
@@ -60,9 +60,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Re-check that referenced services/options still exist in DB.
     for (const item of parsed.data.cart.items) {
-      const service = await getServiceByIdFromDb(item.serviceId);
+      const service = getServiceById(item.serviceId);
       if (!service) {
         return NextResponse.json(
           { error: `Service not found: ${item.serviceId}` },

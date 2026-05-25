@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ServiceDetailAds } from "@/components/services/service-detail-ads";
-import { getServiceByIdFromDb } from "@/lib/server/services";
+import { getServiceById } from "@/lib/data/services";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdsPage() {
-  const service = await getServiceByIdFromDb("ads");
+  const service = getServiceById("ads");
   if (!service) {
     notFound();
   }

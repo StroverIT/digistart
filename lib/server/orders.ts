@@ -2,7 +2,7 @@ import type { Prisma } from "@prisma/client";
 import type { Cart, ConsultationBooking, CustomerInfo, Order } from "@/lib/types";
 import { prisma } from "@/lib/prisma";
 import { ensureBundlePlanServiceInDb, isBundlePlanServiceId } from "@/lib/server/bundle-plans";
-import { getServiceByIdFromDb } from "@/lib/server/services";
+import { getServiceById } from "@/lib/data/services";
 
 export type OrderWithItemsAndConsultation = Prisma.OrderGetPayload<{
   include: { items: true; consultation: true };
@@ -116,9 +116,9 @@ export async function createOrderInDb(params: {
       continue;
     }
 
-    const sourceService = await getServiceByIdFromDb(serviceId);
+    const sourceService = getServiceById(serviceId);
     if (!sourceService) {
-      throw new Error(`Service ${serviceId} is missing in DB and source catalog.`);
+      throw new Error(`Service ${serviceId} is missing from catalog.`);
     }
 
     await prisma.service.create({
@@ -126,24 +126,15 @@ export async function createOrderInDb(params: {
         id: sourceService.id,
         slug: sourceService.slug,
         name: sourceService.name,
-        shortDescription: sourceService.shortDescription,
-        fullDescription: sourceService.fullDescription,
+        shortDescription: sourceService.description,
+        fullDescription: sourceService.description,
         icon: sourceService.icon,
-        basePrice: sourceService.basePrice,
+        basePrice: Math.round(sourceService.basePrice),
         isMonthly: sourceService.isMonthly ?? false,
         timeline: sourceService.timeline,
         features: sourceService.features,
         slotCapacity: 20,
         slotAdjustment: 0,
-        options: {
-          create: sourceService.options.map((option) => ({
-            optionKey: option.id,
-            name: option.name,
-            description: option.description,
-            price: Math.round(option.price),
-            isMonthly: option.isMonthly ?? false,
-          })),
-        },
       },
     });
   }

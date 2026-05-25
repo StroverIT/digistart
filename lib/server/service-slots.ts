@@ -24,6 +24,41 @@ function isSlotManagedServiceId(id: string): id is SlotManagedServiceId {
   return (SLOT_MANAGED_SERVICE_IDS as readonly string[]).includes(id);
 }
 
+function catalogServiceDbFields(serviceId: string) {
+  const catalog = getServiceById(serviceId);
+  if (!catalog) return null;
+  return {
+    id: catalog.id,
+    slug: catalog.slug,
+    name: catalog.name,
+    shortDescription: catalog.description,
+    fullDescription: catalog.description,
+    icon: catalog.icon,
+    basePrice: Math.round(catalog.basePrice),
+    isMonthly: catalog.isMonthly ?? false,
+    timeline: catalog.timeline,
+    features: catalog.features,
+  };
+}
+
+/** Ensures a Service row exists for FKs, waitlist, and slot settings (catalog stays in lib/data). */
+export async function ensureSlotManagedServiceRow(serviceId: SlotManagedServiceId) {
+  const fields = catalogServiceDbFields(serviceId);
+  if (!fields) {
+    throw new Error(`Service ${serviceId} is missing from catalog.`);
+  }
+
+  return prisma.service.upsert({
+    where: { id: serviceId },
+    create: {
+      ...fields,
+      slotCapacity: DEFAULT_SLOT_CAPACITY,
+      slotAdjustment: 0,
+    },
+    update: fields,
+  });
+}
+
 /** Paid Stripe checkout only — pending orders do not consume slots. */
 export function paidOrderWhere() {
   return {
@@ -108,6 +143,8 @@ export async function updateServiceSlotSettings(params: {
     throw new Error(`Service ${serviceId} is not slot-managed.`);
   }
 
+  await ensureSlotManagedServiceRow(serviceId);
+
   const data: { slotCapacity?: number; slotAdjustment?: number } = {};
   if (slotCapacity !== undefined) {
     if (!Number.isInteger(slotCapacity) || slotCapacity < 0) {
@@ -144,13 +181,7 @@ export async function createWaitlistEntry(params: {
     throw new Error("Invalid service for waitlist.");
   }
 
-  const service = await prisma.service.findUnique({
-    where: { id: params.serviceId },
-    select: { id: true },
-  });
-  if (!service) {
-    throw new Error("Service not found.");
-  }
+  await ensureSlotManagedServiceRow(params.serviceId);
 
   return prisma.serviceWaitlistEntry.create({
     data: {

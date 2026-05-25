@@ -10,7 +10,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import { getServiceById } from "@/lib/data/services";
 import { calculateItemTotal } from "@/lib/pricing/calculate-item-total";
-import { getServiceByIdFromDb } from "@/lib/server/services";
 import type { CartItemUpsell } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { DomainSetupCard } from "@/components/user/domain-setup-card";
@@ -67,7 +66,6 @@ export default async function UserServiceDetailPage({
   const upsells = parseOrderItemUpsells(item.upsells);
   /** Static catalog in `lib/data/services.ts` - preferred for titles and copy. */
   const catalogService = getServiceById(item.serviceId);
-  const dbService = await getServiceByIdFromDb(item.serviceId);
   const storedMonthly = Number(item.totalMonthly) || 0;
   const derivedTotals = calculateItemTotal(item.serviceId, item.selectedOptionId, upsells);
   const displayMonthly =
@@ -300,18 +298,14 @@ export default async function UserServiceDetailPage({
               {upsells.map((u) => {
                 if (u.quantity <= 0) return null;
                 const catalogCfg = catalogService?.upsells.find((x) => x.id === u.upsellId);
-                const dbCfg = dbService?.upsells.find((x) => x.id === u.upsellId);
-                const cfg = catalogCfg ?? dbCfg;
-                const choiceParent = catalogCfg ?? dbCfg;
                 const choiceDef =
-                  choiceParent?.kind === "choice" && u.choiceId
-                    ? choiceParent.choices?.find((c) => c.id === u.choiceId)
+                  catalogCfg?.kind === "choice" && u.choiceId
+                    ? catalogCfg.choices?.find((c) => c.id === u.choiceId)
                     : undefined;
-                const title =
-                  catalogCfg?.name ?? dbCfg?.name ?? humanizeUpsellId(u.upsellId);
-                const description = catalogCfg?.description ?? dbCfg?.description;
-                const isMonthly = catalogCfg?.isMonthly ?? dbCfg?.isMonthly ?? false;
-                const missingInCatalog = !catalogCfg && !dbCfg;
+                const title = catalogCfg?.name ?? humanizeUpsellId(u.upsellId);
+                const description = catalogCfg?.description;
+                const isMonthly = catalogCfg?.isMonthly ?? false;
+                const missingInCatalog = !catalogCfg;
                 return (
                   <li
                     key={u.upsellId}

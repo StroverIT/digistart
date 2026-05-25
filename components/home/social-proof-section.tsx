@@ -323,9 +323,9 @@ export function SocialProofSection({
                 >
                   Restyled
                 </h3>
-                <p className="text-muted-foreground leading-relaxed lg:text-lg">
+                <div className="text-muted-foreground leading-relaxed lg:text-lg">
                   {content.description}
-                </p>
+                </div>
               </div>
 
               <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4" role="list">

@@ -11,7 +11,7 @@ import {
 } from "@/lib/server/orders";
 import type { CartItemUpsell } from "@/lib/types";
 import { isBundlePlanServiceId } from "@/lib/server/bundle-plans";
-import { getServiceByIdFromDb } from "@/lib/server/services";
+import { getServiceById } from "@/lib/data/services";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 import { getStripeServerClient } from "@/lib/server/stripe";
 import {
@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
     for (const item of parsed.data.cart.items) {
       if (isBundlePlanServiceId(item.serviceId)) continue;
 
-      const service = await getServiceByIdFromDb(item.serviceId);
+      const service = getServiceById(item.serviceId);
       if (!service) {
         return NextResponse.json(
           { error: `Service not found: ${item.serviceId}` },
