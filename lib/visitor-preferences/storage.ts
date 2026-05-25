@@ -93,6 +93,12 @@ export function savePreferences(prefs: Omit<VisitorPreferencesV1, "version" | "c
   return next;
 }
 
+export function clearPreferences(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(VISITOR_PREFERENCES_STORAGE_KEY);
+  window.dispatchEvent(new CustomEvent("visitor-preferences-updated"));
+}
+
 export function hasCompletedSurvey(): boolean {
   return getPreferences() !== null;
 }

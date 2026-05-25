@@ -2,7 +2,7 @@
 
 import TransitionLink from "@/components/transitions/TransitionLink";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { useSession, signOut } from "next-auth/react";
 import { AnalyticsToolbar } from "@/components/analytics/analytics-toolbar";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
+import { clearPreferences, hasCompletedSurvey } from "@/lib/visitor-preferences/storage";
 
 const navLinks = [
   { href: "/", label: "Начало", paths: ["/"] },
@@ -44,7 +45,6 @@ const navLinks = [
   },
   { href: "/about", label: "За нас", paths: ["/about"] },
   { href: "/blog", label: "Блог", paths: ["/blog"] },
-  { href: "/?edit=1", label: "Промени си мнението", paths: ["/"] },
 ] as const;
 
 function isPathActive(pathname: string, paths: readonly string[]) {
@@ -100,10 +100,12 @@ function AnimatedNavLink({
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const { data: session } = useSession();
   const [cartCount, setCartCount] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [hasSurveyPreferences, setHasSurveyPreferences] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -128,11 +130,17 @@ export function Header() {
   useEffect(() => {
     setCartCount(getCartItemCount());
     const handleCartUpdate = () => setCartCount(getCartItemCount());
+    const syncSurveyPreferences = () => setHasSurveyPreferences(hasCompletedSurvey());
+    syncSurveyPreferences();
     window.addEventListener("cart-updated", handleCartUpdate);
+    window.addEventListener("visitor-preferences-updated", syncSurveyPreferences);
+    window.addEventListener("storage", syncSurveyPreferences);
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("cart-updated", handleCartUpdate);
+      window.removeEventListener("visitor-preferences-updated", syncSurveyPreferences);
+      window.removeEventListener("storage", syncSurveyPreferences);
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
@@ -168,6 +176,12 @@ export function Header() {
       }
     });
   }, []);
+
+  const resetSurveyPreferences = useCallback(() => {
+    clearPreferences();
+    setHasSurveyPreferences(false);
+    void closeMenu().then(() => router.push("/"));
+  }, [closeMenu, router]);
 
   const openMenu = useCallback(() => {
     setIsOpen(true);
@@ -423,6 +437,18 @@ export function Header() {
                   </Button>
                 </TrackedCtaLink>
               </li>
+              {hasSurveyPreferences ? (
+                <li>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full border-zinc-600 text-zinc-50 bg-transparent hover:bg-zinc-800"
+                    onClick={resetSurveyPreferences}
+                  >
+                    Промени мнението си
+                  </Button>
+                </li>
+              ) : null}
             </ul>
           </nav>
 

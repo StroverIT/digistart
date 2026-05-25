@@ -199,7 +199,7 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
     step === "orders" ? "channels" : step === "services" ? "orders" : null;
 
   return (
-    <section className="relative min-h-[calc(100vh-12rem)] flex items-center justify-center px-4 py-16 md:py-24">
+    <section className="relative min-h-screen flex items-center justify-center px-4 py-16 md:py-24">
       <div className="w-full max-w-2xl">
         <div className="mb-8 text-center">
           <p className="text-sm font-medium text-primary uppercase tracking-wider mb-2">
