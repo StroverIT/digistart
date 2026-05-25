@@ -15,14 +15,18 @@ export function PasHeroBulletsSection({ bullets }: PasHeroBulletsSectionProps) {
   useEffect(() => {
     if (typeof window === "undefined" || !listRef.current) return;
 
+    const items = listRef.current.querySelectorAll<HTMLElement>("[data-hero-bullet]");
+    if (!items.length) return;
+
     const ctx = gsap.context(() => {
-      gsap.set(listRef.current, { opacity: 0, y: 32 });
-      gsap.to(listRef.current, {
+      gsap.set(items, { opacity: 0, y: 28 });
+      gsap.to(items, {
         opacity: 1,
         y: 0,
         duration: 0.5,
         ease: "power2.out",
-        delay: 0.2,
+        stagger: 0.09,
+        delay: 0.25,
       });
     }, sectionRef);
 
@@ -34,15 +38,17 @@ export function PasHeroBulletsSection({ bullets }: PasHeroBulletsSectionProps) {
   return (
     <section
       ref={sectionRef}
-      className="relative z-10 shrink-0 bg-background/80 py-2 md:py-4"
+      className="relative z-10 shrink-0 border-t border-border/50 bg-linear-to-b from-secondary/20 via-background to-background py-10 md:py-14"
       aria-label="Основни предимства"
     >
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/25 to-transparent"
+        aria-hidden
+      />
       <div className="container mx-auto px-4">
-        <HeroBulletsRow
-          ref={listRef}
-          bullets={bullets}
-          className="mt-0 translate-y-10 opacity-0 sm:mt-0"
-        />
+        <div className="mx-auto max-w-4xl">
+          <HeroBulletsRow ref={listRef} bullets={bullets} />
+        </div>
       </div>
     </section>
   );

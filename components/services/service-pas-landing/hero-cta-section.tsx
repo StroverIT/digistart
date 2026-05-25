@@ -48,13 +48,10 @@ export function PasHeroCtaSection({
           ref={rowRef}
           className="mx-auto flex max-w-4xl translate-y-10 flex-col items-center justify-center gap-4 opacity-0"
         >
-          <div className="flex flex-col items-center justify-center gap-1 text-center [&>div]:justify-center">
-            {priceSlot}
-          </div>
           <Button
             onClick={onPrimaryClick}
             size="lg"
-            className={SERVICE_DETAIL_HERO_PRIMARY_BUTTON_CLASSNAME}
+            className="glow-primary text-lg h-14 px-8"
           >
             {primaryLabel}
             <ArrowRight className="ml-2 h-5 w-5" />

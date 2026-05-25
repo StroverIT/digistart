@@ -17,7 +17,7 @@ export const HeroBulletsRow = forwardRef<HTMLUListElement, HeroBulletsRowProps>(
       <ul
         ref={ref}
         className={cn(
-          "mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:mt-8 sm:gap-x-10",
+          "grid gap-3 sm:grid-cols-2 sm:gap-4",
           className,
         )}
         role="list"
@@ -25,15 +25,18 @@ export const HeroBulletsRow = forwardRef<HTMLUListElement, HeroBulletsRowProps>(
         {bullets.map((bullet) => (
           <li
             key={bullet}
-            className="inline-flex max-w-[16rem] items-center gap-2 text-left text-sm text-muted-foreground sm:max-w-xs sm:text-base"
+            data-hero-bullet
+            className="group flex items-start gap-3 rounded-xl border border-border/80 bg-card/70 px-4 py-3.5 shadow-sm backdrop-blur-sm transition-colors hover:border-primary/35 hover:bg-card/90"
           >
             <span
-              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary"
+              className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary ring-1 ring-primary/20 transition-colors group-hover:bg-primary/20"
               aria-hidden
             >
-              <Check className="h-3 w-3" strokeWidth={2.5} />
+              <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
             </span>
-            <span className="text-pretty leading-snug">{bullet}</span>
+            <span className="text-pretty text-sm leading-relaxed text-foreground sm:text-[0.9375rem]">
+              {bullet}
+            </span>
           </li>
         ))}
       </ul>
