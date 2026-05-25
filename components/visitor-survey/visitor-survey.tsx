@@ -12,7 +12,7 @@ import {
 } from "@/lib/visitor-preferences/constants";
 import { getServicePath } from "@/lib/visitor-preferences/paths";
 import { savePreferences, getPreferences } from "@/lib/visitor-preferences/storage";
-import { trackSurveyAnswer } from "@/lib/visitor-preferences/analytics";
+import { trackSurveyAnswer, trackSurveyCompletion } from "@/lib/visitor-preferences/analytics";
 import type {
   MonthlyOrderVolume,
   SalesChannel,
@@ -111,21 +111,20 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
   );
 
   const toggleChannel = (channel: SalesChannel) => {
-    setSelectedChannels((prev) => {
-      const has = prev.includes(channel);
-      const next = has ? prev.filter((c) => c !== channel) : [...prev, channel];
+    const hasBefore = selectedChannels.includes(channel);
 
-      if (!has) {
-        trackSurveyAnswer({
-          question: "sales_channels",
-          answer: channel,
-          page: surveyPage,
-          otherLabel: channel === "other" ? otherLabel.trim() : undefined,
-        });
-      }
+    if (!hasBefore) {
+      trackSurveyAnswer({
+        question: "sales_channels",
+        answer: channel,
+        page: surveyPage,
+        otherLabel: channel === "other" ? otherLabel.trim() : undefined,
+      });
+    }
 
-      return next;
-    });
+    setSelectedChannels((prev) =>
+      hasBefore ? prev.filter((c) => c !== channel) : [...prev, channel],
+    );
   };
 
   const handleOtherLabelBlur = () => {
@@ -154,20 +153,18 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
     if (!channelsAreValid(selectedChannels, otherLabel)) return;
     if (!monthlyOrders) return;
 
-    setSelectedServices((prev) => {
-      const has = prev.includes(serviceId);
-      const next = has ? prev.filter((id) => id !== serviceId) : [...prev, serviceId];
+    const hasBefore = selectedServices.includes(serviceId);
+    if (!hasBefore) {
+      trackSurveyAnswer({
+        question: "service_interest",
+        answer: serviceId,
+        page: surveyPage,
+      });
+    }
 
-      if (!has) {
-        trackSurveyAnswer({
-          question: "service_interest",
-          answer: serviceId,
-          page: surveyPage,
-        });
-      }
-
-      return next;
-    });
+    setSelectedServices((prev) =>
+      hasBefore ? prev.filter((id) => id !== serviceId) : [...prev, serviceId],
+    );
   };
 
   const finishSurvey = () => {
@@ -175,6 +172,15 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
     if (!monthlyOrders || selectedServices.length === 0) return;
 
     const primaryService = selectedServices[0];
+
+    trackSurveyCompletion({
+      salesChannels: selectedChannels,
+      otherChannelLabel: selectedChannels.includes("other") ? otherLabel.trim() : undefined,
+      monthlyOrders,
+      selectedServices,
+      primaryService,
+      page: surveyPage,
+    });
 
     savePreferences({
       salesChannels: selectedChannels,

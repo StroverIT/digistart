@@ -67,6 +67,7 @@ export type AnalyticsAdminResponse = {
     }[];
   };
   surveyStats: SurveyAnalyticsStat[];
+  surveyCombinations: SurveyCombinationsAggregate;
 };
 
 export type UtmLandingEventPayload = {
@@ -99,4 +100,29 @@ export type SurveyAnalyticsStat = {
   answer: string;
   otherLabel?: string;
   count: number;
+};
+
+export type SurveyComboStat = {
+  comboKey: string;
+  code: string;
+  label: string;
+  count: number;
+};
+
+export type SurveyComboDayBreakdown = {
+  comboKey: string;
+  code: string;
+  label: string;
+  count: number;
+};
+
+export type SurveyCombinationsAggregate = {
+  byCombo: SurveyComboStat[];
+  dailyTotals: { date: string; totalResponses: number }[];
+  dailyByCombo: { date: string; comboKey: string; count: number }[];
+  topDay: {
+    date: string;
+    totalResponses: number;
+    combinations: SurveyComboDayBreakdown[];
+  } | null;
 };

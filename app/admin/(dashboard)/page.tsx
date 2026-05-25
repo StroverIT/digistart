@@ -20,6 +20,7 @@ import { UtmDailyViewsChart } from "@/components/admin/utm-daily-views-chart";
 import { UtmMonthlyViewsChart } from "@/components/admin/utm-monthly-views-chart";
 import type { AnalyticsAdminResponse } from "@/lib/analytics/types";
 import { CartAdditionsChart } from "@/components/admin/cart-additions-chart";
+import { SurveyCombinationsChart } from "@/components/admin/survey-combinations-chart";
 import { ViewsPerDayChart } from "@/components/admin/views-per-day-chart";
 import { ServiceSlotsPanel } from "@/components/admin/service-slots-panel";
 
@@ -83,6 +84,12 @@ export default function AdminDashboard() {
       byCombo: [],
     },
     surveyStats: [],
+    surveyCombinations: {
+      byCombo: [],
+      dailyTotals: [],
+      dailyByCombo: [],
+      topDay: null,
+    },
   });
   const [revenueFromDate, setRevenueFromDate] = useState(() => getDateBefore(13));
   const [revenueToDate, setRevenueToDate] = useState(() => getTodayDateKey());
@@ -125,6 +132,12 @@ export default function AdminDashboard() {
               byCombo: [],
             },
             surveyStats: [],
+            surveyCombinations: {
+              byCombo: [],
+              dailyTotals: [],
+              dailyByCombo: [],
+              topDay: null,
+            },
           },
         );
 
@@ -577,65 +590,138 @@ export default function AdminDashboard() {
           <CardHeader>
             <CardTitle>Въпросник посетители</CardTitle>
           </CardHeader>
-          <CardContent>
-            {analytics.surveyStats.length === 0 ? (
-              <p className="text-muted-foreground text-sm">Няма отговори от въпросника.</p>
+          <CardContent className="space-y-8">
+            {analytics.surveyCombinations.byCombo.length === 0 ? (
+              <p className="text-muted-foreground text-sm">
+                Няма завършени комбинации от въпросника. Новите завършени анкети ще се показват тук
+                с кодове A, B, C...
+              </p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <>
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold">Комбинации (легенда)</h3>
+                  <div className="grid grid-cols-1 gap-2 text-sm">
+                    {analytics.surveyCombinations.byCombo.map((combo) => (
+                      <div
+                        key={combo.comboKey}
+                        className="rounded-md border border-border p-3 flex flex-wrap items-baseline justify-between gap-2"
+                      >
+                        <p>
+                          <span className="font-bold text-primary mr-2">{combo.code}</span>
+                          <span className="text-muted-foreground">=</span>{" "}
+                          <span className="font-medium">{combo.label}</span>
+                        </p>
+                        <p className="font-semibold tabular-nums shrink-0">
+                          {combo.code} = {combo.count} пъти
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <div>
-                  <h3 className="text-sm font-semibold mb-3">Къде продавате</h3>
-                  <div className="space-y-2">
-                    {analytics.surveyStats
-                      .filter((s) => s.question === "sales_channels")
-                      .map((entry) => (
+                  <h3 className="text-sm font-semibold mb-3">Отговори по дни</h3>
+                  <SurveyCombinationsChart
+                    dailyTotals={analytics.surveyCombinations.dailyTotals}
+                    dailyByCombo={analytics.surveyCombinations.dailyByCombo}
+                    combos={analytics.surveyCombinations.byCombo}
+                  />
+                </div>
+
+                {analytics.surveyCombinations.topDay ? (
+                  <div className="rounded-lg border border-border p-4 space-y-3">
+                    <h3 className="text-sm font-semibold">Най-силен ден</h3>
+                    <p className="text-muted-foreground text-sm">
+                      {new Date(analytics.surveyCombinations.topDay.date).toLocaleDateString(
+                        "bg-BG",
+                        { weekday: "long", day: "numeric", month: "long", year: "numeric" },
+                      )}{" "}
+                      — {analytics.surveyCombinations.topDay.totalResponses} завършени отговора
+                    </p>
+                    <div className="space-y-2">
+                      {analytics.surveyCombinations.topDay.combinations.map((row) => (
                         <div
-                          key={`${entry.answer}-${entry.otherLabel ?? ""}`}
-                          className="flex items-center justify-between rounded-md border border-border p-3"
+                          key={row.comboKey}
+                          className="flex items-center justify-between rounded-md border border-border/60 p-2 text-sm"
                         >
-                          <p className="font-medium">
-                            {entry.answer === "other" && entry.otherLabel
-                              ? `Друго: ${entry.otherLabel}`
-                              : entry.answer}
+                          <p>
+                            <span className="font-bold text-primary mr-2">{row.code}</span>
+                            {row.label}
                           </p>
-                          <p className="text-primary font-semibold">{entry.count}</p>
+                          <p className="font-semibold tabular-nums">{row.count}</p>
                         </div>
                       ))}
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold mb-3">Поръчки на месец</h3>
-                  <div className="space-y-2">
-                    {analytics.surveyStats
-                      .filter((s) => s.question === "monthly_orders")
-                      .map((entry) => (
-                        <div
-                          key={entry.answer}
-                          className="flex items-center justify-between rounded-md border border-border p-3"
-                        >
-                          <p className="font-medium">{entry.answer}</p>
-                          <p className="text-primary font-semibold">{entry.count}</p>
-                        </div>
-                      ))}
+                ) : null}
+              </>
+            )}
+
+            {analytics.surveyStats.length > 0 ? (
+              <div className="pt-4 border-t border-border">
+                <h3 className="text-sm font-semibold mb-4">По отделни въпроси</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+                      Къде продавате
+                    </h4>
+                    <div className="space-y-2">
+                      {analytics.surveyStats
+                        .filter((s) => s.question === "sales_channels")
+                        .map((entry) => (
+                          <div
+                            key={`${entry.answer}-${entry.otherLabel ?? ""}`}
+                            className="flex items-center justify-between rounded-md border border-border p-3"
+                          >
+                            <p className="font-medium text-sm">
+                              {entry.answer === "other" && entry.otherLabel
+                                ? `Друго: ${entry.otherLabel}`
+                                : entry.answer}
+                            </p>
+                            <p className="text-primary font-semibold">{entry.count}</p>
+                          </div>
+                        ))}
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold mb-3">Интерес към услуги</h3>
-                  <div className="space-y-2">
-                    {analytics.surveyStats
-                      .filter((s) => s.question === "service_interest")
-                      .map((entry) => (
-                        <div
-                          key={entry.answer}
-                          className="flex items-center justify-between rounded-md border border-border p-3"
-                        >
-                          <p className="font-medium">{entry.answer}</p>
-                          <p className="text-primary font-semibold">{entry.count}</p>
-                        </div>
-                      ))}
+                  <div>
+                    <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+                      Поръчки на месец
+                    </h4>
+                    <div className="space-y-2">
+                      {analytics.surveyStats
+                        .filter((s) => s.question === "monthly_orders")
+                        .map((entry) => (
+                          <div
+                            key={entry.answer}
+                            className="flex items-center justify-between rounded-md border border-border p-3"
+                          >
+                            <p className="font-medium text-sm">{entry.answer}</p>
+                            <p className="text-primary font-semibold">{entry.count}</p>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+                      Интерес към услуги
+                    </h4>
+                    <div className="space-y-2">
+                      {analytics.surveyStats
+                        .filter((s) => s.question === "service_interest")
+                        .map((entry) => (
+                          <div
+                            key={entry.answer}
+                            className="flex items-center justify-between rounded-md border border-border p-3"
+                          >
+                            <p className="font-medium text-sm">{entry.answer}</p>
+                            <p className="text-primary font-semibold">{entry.count}</p>
+                          </div>
+                        ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            )}
+            ) : null}
           </CardContent>
         </Card>
 

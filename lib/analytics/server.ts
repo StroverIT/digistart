@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { comboCodeFromIndex } from "@/lib/analytics/survey-combinations";
 import {
   ANALYTICS_EVENT_TYPES,
   type AnalyticsAdminResponse,
@@ -10,6 +11,7 @@ import {
   type UtmDimensionStats,
   type UtmDailyStats,
   type SurveyAnalyticsStat,
+  type SurveyCombinationsAggregate,
   type UtmLandingEventPayload,
   type UtmMonthlyStats,
 } from "@/lib/analytics/types";
@@ -393,15 +395,113 @@ function buildSurveyStats(rows: AnalyticsRow[]): SurveyAnalyticsStat[] {
   return Array.from(byKey.values()).sort((a, b) => b.count - a.count);
 }
 
+const EMPTY_SURVEY_COMBINATIONS: SurveyCombinationsAggregate = {
+  byCombo: [],
+  dailyTotals: [],
+  dailyByCombo: [],
+  topDay: null,
+};
+
+/** combo_key contains "::"; only split date from the first separator. */
+function parseDailyComboEntryKey(key: string): { date: string; comboKey: string } {
+  const sep = key.indexOf("::");
+  if (sep === -1) return { date: key, comboKey: "" };
+  return { date: key.slice(0, sep), comboKey: key.slice(sep + 2) };
+}
+
+function buildSurveyCombinationStats(rows: AnalyticsRow[]): SurveyCombinationsAggregate {
+  const completionRows = rows.filter((row) => row.eventType === "survey_completion");
+  if (completionRows.length === 0) return EMPTY_SURVEY_COMBINATIONS;
+
+  const byComboKey = new Map<string, { comboKey: string; label: string; count: number }>();
+  const dailyTotals = new Map<string, number>();
+  const dailyByCombo = new Map<string, number>();
+
+  for (const row of completionRows) {
+    const metadata = (row.metadata ?? {}) as Record<string, unknown>;
+    const comboKey = String(metadata.combo_key ?? "").trim();
+    const comboLabel = String(metadata.combo_label ?? comboKey).trim();
+    if (!comboKey) continue;
+
+    const date = row.createdAt.toISOString().split("T")[0];
+    dailyTotals.set(date, (dailyTotals.get(date) ?? 0) + 1);
+    const dailyComboKey = `${date}::${comboKey}`;
+    dailyByCombo.set(dailyComboKey, (dailyByCombo.get(dailyComboKey) ?? 0) + 1);
+
+    const existing = byComboKey.get(comboKey) ?? {
+      comboKey,
+      label: comboLabel || comboKey,
+      count: 0,
+    };
+    existing.count += 1;
+    byComboKey.set(comboKey, existing);
+  }
+
+  const sortedCombos = Array.from(byComboKey.values()).sort((a, b) => b.count - a.count);
+  const codeByComboKey = new Map(
+    sortedCombos.map((combo, index) => [combo.comboKey, comboCodeFromIndex(index)]),
+  );
+
+  const byCombo = sortedCombos.map((combo) => ({
+    comboKey: combo.comboKey,
+    code: codeByComboKey.get(combo.comboKey) ?? "?",
+    label: combo.label,
+    count: combo.count,
+  }));
+
+  const dailyTotalsArr = Array.from(dailyTotals.entries())
+    .map(([date, totalResponses]) => ({ date, totalResponses }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  const dailyByComboArr = Array.from(dailyByCombo.entries()).map(([key, count]) => {
+    const { date, comboKey } = parseDailyComboEntryKey(key);
+    return { date, comboKey, count };
+  });
+
+  let topDay: SurveyCombinationsAggregate["topDay"] = null;
+  if (dailyTotalsArr.length > 0) {
+    const peak = [...dailyTotalsArr].sort((a, b) => b.totalResponses - a.totalResponses)[0];
+    const dayComboCounts = new Map<string, number>();
+    for (const row of dailyByComboArr) {
+      if (row.date !== peak.date) continue;
+      dayComboCounts.set(row.comboKey, (dayComboCounts.get(row.comboKey) ?? 0) + row.count);
+    }
+    const combinations = Array.from(dayComboCounts.entries())
+      .map(([comboKey, count]) => {
+        const meta = byComboKey.get(comboKey);
+        return {
+          comboKey,
+          code: codeByComboKey.get(comboKey) ?? "?",
+          label: meta?.label ?? comboKey,
+          count,
+        };
+      })
+      .sort((a, b) => b.count - a.count);
+
+    topDay = {
+      date: peak.date,
+      totalResponses: peak.totalResponses,
+      combinations,
+    };
+  }
+
+  return {
+    byCombo,
+    dailyTotals: dailyTotalsArr,
+    dailyByCombo: dailyByComboArr,
+    topDay,
+  };
+}
+
 export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<AnalyticsAdminResponse> {
   const createdAtFilter =
     from || to
       ? {
-          createdAt: {
-            ...(from ? { gte: from } : {}),
-            ...(to ? { lte: to } : {}),
-          },
-        }
+        createdAt: {
+          ...(from ? { gte: from } : {}),
+          ...(to ? { lte: to } : {}),
+        },
+      }
       : {};
 
   const rows = await prisma.analyticsEvent.findMany({
@@ -452,6 +552,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
   const utmLandingUrls = buildUtmDimensionStats(utmRows, "landingUrl");
   const cartAdditions = buildCartAdditionStats(rows, 30);
   const surveyStats = buildSurveyStats(rows);
+  const surveyCombinations = buildSurveyCombinationStats(rows);
 
   return {
     pageStats,
@@ -466,6 +567,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     utmLandingUrls,
     cartAdditions,
     surveyStats,
+    surveyCombinations,
   };
 }
 

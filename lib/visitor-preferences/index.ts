@@ -4,4 +4,4 @@ export * from "@/lib/visitor-preferences/paths";
 export * from "@/lib/visitor-preferences/personalize";
 export * from "@/lib/visitor-preferences/storage";
 export * from "@/lib/visitor-preferences/types";
-export { trackSurveyAnswer } from "@/lib/visitor-preferences/analytics";
+export { trackSurveyAnswer, trackSurveyCompletion } from "@/lib/visitor-preferences/analytics";
