@@ -6,6 +6,7 @@ import { ServiceDetailHero } from "@/components/services/service-detail-hero";
 import { ServicePageBackground } from "@/components/services/service-page-background";
 import { PasAuthoritySection } from "./authority-section";
 import { PasBenefitsSection } from "./benefits-section";
+import { PasHeroBulletsSection } from "./hero-bullets-section";
 import { PasFaqSection } from "./faq-section";
 import { PasProblemSection } from "./problem-section";
 import { PasQualificationSection } from "./qualification-section";
@@ -63,6 +64,13 @@ export function ServicePasLanding({
           backCtaId={backCtaId}
           headingFontClass={headingFontClass}
         />
+
+        {content.hero.bullets?.length ? (
+          <PasHeroBulletsSection
+            bullets={content.hero.bullets}
+            headingFontClass={headingFontClass}
+          />
+        ) : null}
 
         {content.benefits ? (
           <PasBenefitsSection

@@ -105,7 +105,7 @@ export function ServiceDetailHero({
           </h1>
           <div
             ref={descRef}
-            className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed opacity-0 translate-y-10 [&_ul]:mt-4 [&_ul]:space-y-2 [&_ul]:text-base [&_ul]:sm:text-lg [&_li]:flex [&_li]:gap-2"
+            className="mt-5 max-w-3xl text-lg sm:text-xl text-muted-foreground leading-relaxed opacity-0 translate-y-10"
           >
             {description}
           </div>

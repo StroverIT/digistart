@@ -32,6 +32,7 @@ export type ServicePasLandingContent = {
     badgeText: string;
     title: ReactNode;
     description: ReactNode;
+    bullets?: readonly string[];
     socialProof?: string;
   };
   benefits?: {

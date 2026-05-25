@@ -13,32 +13,15 @@ export const GOOGLE_BUSINESS_LANDING: ServicePasLandingContent = {
         <span className="gradient-text">те търсят в Google</span>.
       </>
     ),
-    description: (
-      <>
-        <p>
-          За продавачи в Instagram, Facebook и OLX, които губят купувачи, защото в Google Maps и в
-          търсенето изглеждат невидими.
-        </p>
-        <ul className="list-none">
-          <li>
-            <span aria-hidden>•</span> Купувачите те намират в Google, когато търсят какво продаваш
-          </li>
-          <li>
-            <span aria-hidden>•</span> Изглеждаш сериозно — с отзиви и снимки — още преди да те
-            потърсят
-          </li>
-          <li>
-            <span aria-hidden>•</span> Профилът работи за теб 24/7, без да го поддържаш сам
-          </li>
-          <li>
-            <span aria-hidden>•</span> Пряк път от търсене до поръчка — свързан с магазина ти
-          </li>
-          <li>
-            <span aria-hidden>•</span> Плащаш €49 еднократно — без месечна такса към Google
-          </li>
-        </ul>
-      </>
-    ),
+    description:
+      "За продавачи в Instagram, Facebook и OLX, които губят купувачи, защото в Google Maps и в търсенето изглеждат невидими.",
+    bullets: [
+      "Купувачите те намират в Google, когато търсят какво продаваш",
+      "Изглеждаш сериозно — с отзиви и снимки — още преди да те потърсят",
+      "Профилът работи за теб 24/7, без да го поддържаш сам",
+      "Пряк път от търсене до поръчка — свързан с магазина ти",
+      "Плащаш €49 еднократно — без месечна такса към Google",
+    ],
     socialProof: "Без месечна такса към Google · Не PDF наръчник, а настройка от нашия екип.",
   },
   benefits: {
