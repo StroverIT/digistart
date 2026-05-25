@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { trackCtaClick } from "@/lib/analytics/tracker";
@@ -20,6 +20,8 @@ import {
   ONLINE_STORE_OPTION_ID,
   ONLINE_STORE_SERVICE_ID,
 } from "@/config/service-landing/online-store";
+import { useVisitorPreferences } from "@/components/visitor-preferences/visitor-preferences-provider";
+import { personalizePasLanding } from "@/lib/visitor-preferences/personalize";
 
 interface ServiceDetailReadyStoreProps {
   headingFontClass?: string;
@@ -41,12 +43,17 @@ export function ServiceDetailReadyStore({
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
   const pageRootRef = useRef<HTMLDivElement>(null);
+  const { effectiveChannels, otherChannelLabel } = useVisitorPreferences();
 
   useServicePasScrollAnimations(pageRootRef);
 
+  const content = useMemo(
+    () => personalizePasLanding(ONLINE_STORE_LANDING, effectiveChannels, otherChannelLabel),
+    [effectiveChannels, otherChannelLabel],
+  );
+
   if (!service) return null;
 
-  const content = ONLINE_STORE_LANDING;
   const planPrice = getServicePlanPrice(service, ONLINE_STORE_OPTION_ID);
 
   const scrollToBuySection = () => {

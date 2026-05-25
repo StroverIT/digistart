@@ -44,8 +44,7 @@ const navLinks = [
   },
   { href: "/about", label: "За нас", paths: ["/about"] },
   { href: "/blog", label: "Блог", paths: ["/blog"] },
-
-
+  { href: "/?edit=1", label: "Промени си мнението", paths: ["/"] },
 ] as const;
 
 function isPathActive(pathname: string, paths: readonly string[]) {

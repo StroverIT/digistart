@@ -1,19 +1,12 @@
-import { HeroSection } from "@/components/home/hero-section";
-import { ServicesSection } from "@/components/home/services-section";
-import { ProcessSection } from "@/components/home/process-section";
-import { SocialProofSection } from "@/components/home/social-proof-section";
-// import { StatsSection } from "@/components/home/stats-section";
-import { CTASection } from "@/components/home/cta-section";
+import type { Metadata } from "next";
+import { HomePageClient } from "@/components/visitor-survey/home-page-client";
+
+export const metadata: Metadata = {
+  title: "DigiStart — кажи ни какво търсиш",
+  description:
+    "Кратък въпросник: къде продаваш и коя услуга те интересува — за персонализирано изживяване в DigiStart.",
+};
 
 export default function HomePage() {
-  return (
-    <>
-      <HeroSection />
-      <ProcessSection />
-      <SocialProofSection />
-      <ServicesSection />
-      {/* <StatsSection /> */}
-      <CTASection />
-    </>
-  );
+  return <HomePageClient />;
 }

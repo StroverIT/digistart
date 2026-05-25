@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Smartphone } from "lucide-react";
 import {
   cartItemToMetaLineItem,
@@ -18,6 +18,8 @@ import { PlansSection } from "@/components/plans/plans-section";
 import { ServicePasLanding } from "@/components/services/service-pas-landing/service-pas-landing";
 import { useServicePasScrollAnimations } from "@/components/services/service-pas-landing/use-service-pas-scroll-animations";
 import { SOCIAL_MEDIA_LANDING } from "@/config/service-landing/social-media";
+import { useVisitorPreferences } from "@/components/visitor-preferences/visitor-preferences-provider";
+import { personalizePasLanding } from "@/lib/visitor-preferences/personalize";
 
 interface ServiceDetailSocialMediaProps {
   service: Service;
@@ -32,11 +34,15 @@ export function ServiceDetailSocialMedia({
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
   const pageRootRef = useRef<HTMLDivElement>(null);
+  const { effectiveChannels, otherChannelLabel } = useVisitorPreferences();
 
   useServicePasScrollAnimations(pageRootRef);
 
   const planPrice = getServicePlanPrice(service);
-  const content = SOCIAL_MEDIA_LANDING;
+  const content = useMemo(
+    () => personalizePasLanding(SOCIAL_MEDIA_LANDING, effectiveChannels, otherChannelLabel),
+    [effectiveChannels, otherChannelLabel],
+  );
   const optionId = service.options[0]?.id;
 
   const scrollToBuySection = () => {

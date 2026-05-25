@@ -9,6 +9,7 @@ import {
   type PageAnalyticsStats,
   type UtmDimensionStats,
   type UtmDailyStats,
+  type SurveyAnalyticsStat,
   type UtmLandingEventPayload,
   type UtmMonthlyStats,
 } from "@/lib/analytics/types";
@@ -363,6 +364,35 @@ function buildCartAdditionStats(rows: AnalyticsRow[], days = 30): CartAdditionAg
   };
 }
 
+function buildSurveyStats(rows: AnalyticsRow[]): SurveyAnalyticsStat[] {
+  const byKey = new Map<string, SurveyAnalyticsStat>();
+
+  for (const row of rows) {
+    if (row.eventType !== "survey_answer") continue;
+    const metadata = (row.metadata ?? {}) as Record<string, unknown>;
+    const question = String(metadata.question ?? "").trim();
+    const answer = String(metadata.answer ?? "").trim();
+    const otherLabel =
+      typeof metadata.other_label === "string" && metadata.other_label.trim().length > 0
+        ? metadata.other_label.trim()
+        : undefined;
+
+    if (!question || !answer) continue;
+
+    const key = `${question}::${answer}::${otherLabel ?? ""}`;
+    const existing = byKey.get(key) ?? {
+      question,
+      answer,
+      otherLabel,
+      count: 0,
+    };
+    existing.count += 1;
+    byKey.set(key, existing);
+  }
+
+  return Array.from(byKey.values()).sort((a, b) => b.count - a.count);
+}
+
 export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<AnalyticsAdminResponse> {
   const createdAtFilter =
     from || to
@@ -421,6 +451,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
   const utmCampaigns = buildUtmDimensionStats(utmRows, "utmCampaign");
   const utmLandingUrls = buildUtmDimensionStats(utmRows, "landingUrl");
   const cartAdditions = buildCartAdditionStats(rows, 30);
+  const surveyStats = buildSurveyStats(rows);
 
   return {
     pageStats,
@@ -434,6 +465,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     utmCampaigns,
     utmLandingUrls,
     cartAdditions,
+    surveyStats,
   };
 }
 

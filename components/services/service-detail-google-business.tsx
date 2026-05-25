@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import {
   cartItemToMetaLineItem,
@@ -20,6 +20,8 @@ import {
   GOOGLE_BUSINESS_LANDING,
   GOOGLE_BUSINESS_PROFILE_OPTION_ID,
 } from "@/config/service-landing/google-business";
+import { useVisitorPreferences } from "@/components/visitor-preferences/visitor-preferences-provider";
+import { personalizePasLanding } from "@/lib/visitor-preferences/personalize";
 
 interface ServiceDetailGoogleBusinessProps {
   service: Service;
@@ -34,11 +36,15 @@ export function ServiceDetailGoogleBusiness({
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
   const pageRootRef = useRef<HTMLDivElement>(null);
+  const { effectiveChannels, otherChannelLabel } = useVisitorPreferences();
 
   useServicePasScrollAnimations(pageRootRef);
 
   const planPrice = getServicePlanPrice(service, GOOGLE_BUSINESS_PROFILE_OPTION_ID);
-  const content = GOOGLE_BUSINESS_LANDING;
+  const content = useMemo(
+    () => personalizePasLanding(GOOGLE_BUSINESS_LANDING, effectiveChannels, otherChannelLabel),
+    [effectiveChannels, otherChannelLabel],
+  );
 
   const scrollToBuySection = () => {
     document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });

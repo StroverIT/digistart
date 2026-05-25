@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Megaphone } from "lucide-react";
 import {
   cartItemToMetaLineItem,
@@ -18,6 +18,8 @@ import { PlansSection } from "@/components/plans/plans-section";
 import { ServicePasLanding } from "@/components/services/service-pas-landing/service-pas-landing";
 import { useServicePasScrollAnimations } from "@/components/services/service-pas-landing/use-service-pas-scroll-animations";
 import { ADS_LANDING } from "@/config/service-landing/ads";
+import { useVisitorPreferences } from "@/components/visitor-preferences/visitor-preferences-provider";
+import { personalizePasLanding } from "@/lib/visitor-preferences/personalize";
 
 interface ServiceDetailAdsProps {
   service: Service;
@@ -29,11 +31,15 @@ export function ServiceDetailAds({ service, availability }: ServiceDetailAdsProp
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
   const pageRootRef = useRef<HTMLDivElement>(null);
+  const { effectiveChannels, otherChannelLabel } = useVisitorPreferences();
 
   useServicePasScrollAnimations(pageRootRef);
 
   const planPrice = getServicePlanPrice(service);
-  const content = ADS_LANDING;
+  const content = useMemo(
+    () => personalizePasLanding(ADS_LANDING, effectiveChannels, otherChannelLabel),
+    [effectiveChannels, otherChannelLabel],
+  );
   const optionId = service.options[0]?.id;
 
   const scrollToBuySection = () => {

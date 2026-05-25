@@ -82,6 +82,7 @@ export default function AdminDashboard() {
       byService: [],
       byCombo: [],
     },
+    surveyStats: [],
   });
   const [revenueFromDate, setRevenueFromDate] = useState(() => getDateBefore(13));
   const [revenueToDate, setRevenueToDate] = useState(() => getTodayDateKey());
@@ -123,6 +124,7 @@ export default function AdminDashboard() {
               byService: [],
               byCombo: [],
             },
+            surveyStats: [],
           },
         );
 
@@ -564,6 +566,75 @@ export default function AdminDashboard() {
                   )}
                 </div>
               </>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)] lg:col-span-2"
+        >
+          <CardHeader>
+            <CardTitle>Въпросник посетители</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analytics.surveyStats.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Няма отговори от въпросника.</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <h3 className="text-sm font-semibold mb-3">Къде продавате</h3>
+                  <div className="space-y-2">
+                    {analytics.surveyStats
+                      .filter((s) => s.question === "sales_channels")
+                      .map((entry) => (
+                        <div
+                          key={`${entry.answer}-${entry.otherLabel ?? ""}`}
+                          className="flex items-center justify-between rounded-md border border-border p-3"
+                        >
+                          <p className="font-medium">
+                            {entry.answer === "other" && entry.otherLabel
+                              ? `Друго: ${entry.otherLabel}`
+                              : entry.answer}
+                          </p>
+                          <p className="text-primary font-semibold">{entry.count}</p>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold mb-3">Поръчки на месец</h3>
+                  <div className="space-y-2">
+                    {analytics.surveyStats
+                      .filter((s) => s.question === "monthly_orders")
+                      .map((entry) => (
+                        <div
+                          key={entry.answer}
+                          className="flex items-center justify-between rounded-md border border-border p-3"
+                        >
+                          <p className="font-medium">{entry.answer}</p>
+                          <p className="text-primary font-semibold">{entry.count}</p>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold mb-3">Интерес към услуги</h3>
+                  <div className="space-y-2">
+                    {analytics.surveyStats
+                      .filter((s) => s.question === "service_interest")
+                      .map((entry) => (
+                        <div
+                          key={entry.answer}
+                          className="flex items-center justify-between rounded-md border border-border p-3"
+                        >
+                          <p className="font-medium">{entry.answer}</p>
+                          <p className="text-primary font-semibold">{entry.count}</p>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
             )}
           </CardContent>
         </Card>

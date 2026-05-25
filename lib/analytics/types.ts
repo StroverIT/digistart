@@ -66,6 +66,7 @@ export type AnalyticsAdminResponse = {
       count: number;
     }[];
   };
+  surveyStats: SurveyAnalyticsStat[];
 };
 
 export type UtmLandingEventPayload = {
@@ -91,4 +92,11 @@ export type UtmMonthlyStats = {
 export type UtmDimensionStats = {
   key: string;
   views: number;
+};
+
+export type SurveyAnalyticsStat = {
+  question: string;
+  answer: string;
+  otherLabel?: string;
+  count: number;
 };
