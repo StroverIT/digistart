@@ -31,7 +31,7 @@ const STEP_TITLES: Record<SurveyStep, string> = {
 const STEP_HINTS: Record<SurveyStep, string> = {
   channels: "Можеш да избереш повече от един отговор.",
   orders: "Избери един отговор.",
-  services: "Избери услугата, с която искаш да започнеш.",
+  services: "Можеш да избереш повече от една услуга.",
 };
 
 type VisitorSurveyProps = {
@@ -45,6 +45,7 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
   const [selectedChannels, setSelectedChannels] = useState<SalesChannel[]>([]);
   const [otherLabel, setOtherLabel] = useState("");
   const [monthlyOrders, setMonthlyOrders] = useState<MonthlyOrderVolume | null>(null);
+  const [selectedServices, setSelectedServices] = useState<VisitorServiceId[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
     setSelectedChannels([...prefs.salesChannels]);
     setOtherLabel(prefs.otherChannelLabel ?? "");
     setMonthlyOrders(prefs.monthlyOrders);
+    setSelectedServices([...prefs.selectedServices]);
   }, [isEditMode]);
 
   const surveyPage = isEditMode ? "/?edit=1" : "/";
@@ -148,30 +150,48 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
     animateToStep("services", "forward");
   };
 
-  const handleServiceSelect = (serviceId: VisitorServiceId) => {
+  const toggleService = (serviceId: VisitorServiceId) => {
     if (!channelsAreValid(selectedChannels, otherLabel)) return;
     if (!monthlyOrders) return;
 
-    trackSurveyAnswer({
-      question: "service_interest",
-      answer: serviceId,
-      page: surveyPage,
+    setSelectedServices((prev) => {
+      const has = prev.includes(serviceId);
+      const next = has ? prev.filter((id) => id !== serviceId) : [...prev, serviceId];
+
+      if (!has) {
+        trackSurveyAnswer({
+          question: "service_interest",
+          answer: serviceId,
+          page: surveyPage,
+        });
+      }
+
+      return next;
     });
+  };
+
+  const finishSurvey = () => {
+    if (!channelsAreValid(selectedChannels, otherLabel)) return;
+    if (!monthlyOrders || selectedServices.length === 0) return;
+
+    const primaryService = selectedServices[0];
 
     savePreferences({
       salesChannels: selectedChannels,
       otherChannelLabel: selectedChannels.includes("other") ? otherLabel.trim() : undefined,
       monthlyOrders,
-      primaryService: serviceId,
+      selectedServices,
+      primaryService,
     });
 
-    push(getServicePath(serviceId));
+    push(getServicePath(primaryService));
   };
 
   const showContinue =
     step === "channels" &&
     selectedChannels.length > 0 &&
     (!selectedChannels.includes("other") || otherLabel.trim().length > 0);
+  const showServicesContinue = step === "services" && selectedServices.length > 0;
 
   const otherSelected = selectedChannels.includes("other");
 
@@ -284,20 +304,35 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
                 </Button>
               ) : null}
               <div className="grid grid-cols-1 gap-3">
-                {SERVICE_SURVEY_OPTIONS.map((option) => (
-                  <button
-                    key={option.id}
-                    type="button"
-                    onClick={() => handleServiceSelect(option.id)}
-                    className="rounded-xl border-2 border-border bg-card hover:border-primary px-5 py-4 text-left transition-colors"
-                  >
-                    <span className="block text-lg font-semibold">{option.label}</span>
-                    <span className="block text-sm text-muted-foreground mt-1">
-                      {option.description}
-                    </span>
-                  </button>
-                ))}
+                {SERVICE_SURVEY_OPTIONS.map((option) => {
+                  const active = selectedServices.includes(option.id);
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => toggleService(option.id)}
+                      className={cn(
+                        "rounded-xl border-2 bg-card px-5 py-4 text-left transition-colors",
+                        active
+                          ? "border-primary bg-primary/10 text-foreground"
+                          : "border-border hover:border-primary",
+                      )}
+                    >
+                      <span className="block text-lg font-semibold">{option.label}</span>
+                      <span className="block text-sm text-muted-foreground mt-1">
+                        {option.description}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
+              {showServicesContinue ? (
+                <div className="pt-6 flex justify-center">
+                  <Button size="lg" onClick={finishSurvey} className="min-w-[200px]">
+                    Продължи
+                  </Button>
+                </div>
+              ) : null}
             </div>
           )}
         </div>

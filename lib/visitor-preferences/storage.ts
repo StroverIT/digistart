@@ -37,6 +37,10 @@ function parsePreferences(raw: string): VisitorPreferencesV1 | null {
     const salesChannels = parsed.salesChannels.filter(isSalesChannel);
     if (salesChannels.length === 0) return null;
     if (!isVisitorServiceId(parsed.primaryService)) return null;
+    const selectedServices = Array.isArray(parsed.selectedServices)
+      ? parsed.selectedServices.filter(isVisitorServiceId)
+      : [parsed.primaryService];
+    if (selectedServices.length === 0) return null;
     if (!isMonthlyOrderVolume(parsed.monthlyOrders)) return null;
     if (typeof parsed.completedAt !== "string") return null;
 
@@ -52,6 +56,7 @@ function parsePreferences(raw: string): VisitorPreferencesV1 | null {
       salesChannels,
       otherChannelLabel,
       monthlyOrders: parsed.monthlyOrders,
+      selectedServices,
       primaryService: parsed.primaryService,
       completedAt: parsed.completedAt,
     };
@@ -75,6 +80,7 @@ export function savePreferences(prefs: Omit<VisitorPreferencesV1, "version" | "c
     salesChannels: prefs.salesChannels,
     otherChannelLabel: prefs.otherChannelLabel,
     monthlyOrders: prefs.monthlyOrders,
+    selectedServices: prefs.selectedServices,
     primaryService: prefs.primaryService,
     completedAt: prefs.completedAt ?? new Date().toISOString(),
   };

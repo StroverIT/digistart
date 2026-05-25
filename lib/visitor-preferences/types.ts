@@ -20,6 +20,7 @@ export type VisitorPreferencesV1 = {
   salesChannels: SalesChannel[];
   otherChannelLabel?: string;
   monthlyOrders: MonthlyOrderVolume;
+  selectedServices: VisitorServiceId[];
   primaryService: VisitorServiceId;
   completedAt: string;
 };
