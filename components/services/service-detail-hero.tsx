@@ -3,6 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import gsap from "gsap";
 import { cn } from "@/lib/utils";
+import { PasHeroCtaSection } from "./service-pas-landing/hero-cta-section";
 
 interface ServiceDetailHeroProps {
   badgeIcon: ReactNode;
@@ -12,6 +13,9 @@ interface ServiceDetailHeroProps {
   /** Optional social proof line below the description (direct-response style). */
   socialProof?: string;
   headingFontClass?: string;
+  priceSlot: ReactNode;
+  primaryLabel: string;
+  onPrimaryClick: () => void;
 }
 
 export function ServiceDetailHero({
@@ -21,6 +25,9 @@ export function ServiceDetailHero({
   description,
   socialProof,
   headingFontClass,
+  priceSlot,
+  primaryLabel,
+  onPrimaryClick,
 }: ServiceDetailHeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const badgeRef = useRef<HTMLSpanElement>(null);
@@ -84,6 +91,11 @@ export function ServiceDetailHero({
               {socialProof}
             </p>
           ) : null}
+          <PasHeroCtaSection
+            priceSlot={priceSlot}
+            primaryLabel={primaryLabel}
+            onPrimaryClick={onPrimaryClick}
+          />
         </div>
       </div>
     </section>

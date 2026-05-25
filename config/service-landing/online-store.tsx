@@ -9,7 +9,8 @@ export const ONLINE_STORE_LANDING: ServicePasLandingContent = {
     badgeText: "Готов онлайн магазин",
     title: (
       <>
-        Спри да <span className="gradient-text">губиш време в чата</span> Приемай поръчки дори когато <span className="gradient-text">не си на телефона</span>
+        Спри да <span className="gradient-text">губиш време в чата</span>. Пусни онлайн магазин,
+        който приема поръчки дори когато не си на телефона.
       </>
     ),
     description:

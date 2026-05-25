@@ -59,13 +59,12 @@ export function ServicePasLanding({
             description={content.hero.description}
             socialProof={content.hero.socialProof}
             headingFontClass={headingFontClass}
-          />
-
-          <PasHeroCtaSection
             priceSlot={priceSlot}
             primaryLabel={content.primaryCtaLabel}
             onPrimaryClick={onHeroPrimaryClick}
           />
+
+
         </div>
 
         {content.hero.bullets?.length ? (
