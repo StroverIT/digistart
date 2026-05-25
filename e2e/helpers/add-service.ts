@@ -1,11 +1,16 @@
 import { expect, type Page } from "@playwright/test";
 
-export type ServiceSlug = "online-store" | "social-media" | "google-business";
+export type ServiceSlug =
+  | "online-store"
+  | "social-media"
+  | "google-business"
+  | "ads";
 
 const SERVICE_LABELS: Record<ServiceSlug, string> = {
   "online-store": "Онлайн Магазин",
   "social-media": "Социални мрежи",
   "google-business": "Google Business",
+  ads: "Реклами",
 };
 
 export function getServiceLabel(slug: ServiceSlug): string {
@@ -51,6 +56,7 @@ export async function addServiceFromCartUpsell(page: Page, slug: ServiceSlug) {
     "online-store": /онлайн магазин/i,
     "social-media": /още повече клиенти/i,
     "google-business": /локално/i,
+    ads: /реклам/i,
   };
 
   const link = page.getByRole("link", { name: promptPatterns[slug] });
