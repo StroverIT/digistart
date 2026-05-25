@@ -51,46 +51,43 @@ export function ServiceDetailHero({
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative isolate flex flex-1 flex-col justify-center py-8 md:py-10">
-      <div className="absolute inset-0 bg-linear-to-br from-background via-background to-primary/5" />
-      <div
-        className="absolute inset-0 opacity-[0.02]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
-        }}
-      />
+    <section
+      ref={sectionRef}
+      className="relative isolate flex min-h-dvh flex-col justify-center py-16 md:py-20"
+    >
+      <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+        <div className="absolute inset-0 bg-linear-to-br from-background via-secondary/25 to-primary/12" />
+        <div className="absolute inset-0 bg-linear-to-tr from-transparent via-primary/10 to-chart-6/12" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_55%_at_50%_-15%,oklch(0.65_0.22_250_/_0.14),transparent_65%)]" />
+      </div>
 
-      <div className="container relative z-10 mx-auto flex flex-1 flex-col justify-center px-4">
-        <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center text-center">
-          <span
-            ref={badgeRef}
-            className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary opacity-0"
-          >
-            {badgeIcon}
-            {badgeText}
-          </span>
-          <h1
-            ref={titleRef}
-            className={cn(
-              headingFontClass,
-              "mt-6 text-4xl leading-tight text-balance opacity-0 sm:text-5xl lg:text-6xl",
-            )}
-          >
-            {title}
-          </h1>
+      <div className="container relative z-10 mx-auto flex flex-1 flex-col justify-center">
+        <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center text-center gap-6">
+          <div>
+            <span
+              ref={badgeRef}
+              className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary opacity-0"
+            >
+              {badgeIcon}
+              {badgeText}
+            </span>
+            <h1
+              ref={titleRef}
+              className={cn(
+                headingFontClass,
+                "mt-6 text-4xl leading-tight text-balance opacity-0 sm:text-5xl lg:text-6xl",
+              )}
+            >
+              {title}
+            </h1>
+          </div>
+
           <div
             ref={descRef}
             className="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground opacity-0 sm:max-w-3xl sm:text-xl"
           >
             {description}
           </div>
-          {socialProof ? (
-            <p className="mt-4 max-w-2xl text-sm font-medium text-primary/90 sm:text-base">
-              {socialProof}
-            </p>
-          ) : null}
           <PasHeroCtaSection
             priceSlot={priceSlot}
             primaryLabel={primaryLabel}

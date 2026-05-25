@@ -51,7 +51,7 @@ export function ServicePasLanding({
     >
       {withPageBackground ? <ServicePageBackground /> : null}
       <div className={withPageBackground ? "relative z-10" : undefined}>
-        <div className="relative isolate flex min-h-[calc(100dvh-4rem)] flex-col md:min-h-[calc(100dvh-5rem)]">
+        <div className="relative isolate">
           <ServiceDetailHero
             badgeIcon={badgeIcon}
             badgeText={content.hero.badgeText}
@@ -63,8 +63,6 @@ export function ServicePasLanding({
             primaryLabel={content.primaryCtaLabel}
             onPrimaryClick={onHeroPrimaryClick}
           />
-
-
         </div>
 
         {content.hero.bullets?.length ? (

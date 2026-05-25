@@ -41,7 +41,7 @@ export function PasHeroCtaSection({
   return (
     <div
       ref={sectionRef}
-      className="relative z-10 shrink-0 border-b border-border/40 bg-background/80 pb-10 md:pb-12"
+      className="relative z-10 shrink-0 pb-10 md:pb-12"
     >
       <div className="container mx-auto px-4">
         <div

@@ -8,10 +8,10 @@ export const ONLINE_STORE_LANDING: ServicePasLandingContent = {
   hero: {
     badgeText: "Готов онлайн магазин",
     title: (
-      <>
-        Спри да <span className="gradient-text">губиш време в чата</span>. Пусни онлайн магазин,
-        който приема поръчки дори когато не си на телефона.
-      </>
+      <div>
+        Спри да <span className="gradient-text">губиш време в чата</span><div className="mt-2" />
+        Приемай поръчки дори <span className="gradient-text">когато не си на телефона</span>
+      </div>
     ),
     description:
       "Имаш 50 продажби в Instagram на месец? Можеш да имаш 150 — без да отговаряш на 300 съобщения.",
