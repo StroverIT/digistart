@@ -261,14 +261,11 @@ export function ServiceBuySection({
             <ServiceWaitlistOverlay availability={availability} />
           ) : null}
           <div
-            className={cn(
-              "contents",
-              isSoldOut && "pointer-events-none select-none blur-sm opacity-60",
-            )}
-          >
-          <div
             ref={mainPanelRef}
-            className="rounded-2xl border border-border bg-card p-5 sm:p-6 opacity-0 translate-y-10"
+            className={cn(
+              "rounded-2xl border border-border bg-card p-5 sm:p-6 opacity-0 translate-y-10",
+              isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
+            )}
           >
             <h2 className="text-2xl font-bold mb-2">{title}</h2>
             <p className="mb-5 text-sm text-pretty text-muted-foreground">
@@ -354,7 +351,10 @@ export function ServiceBuySection({
 
           <aside
             ref={asideRef}
-            className="hidden self-start lg:sticky lg:top-24 lg:block opacity-0 translate-y-10"
+            className={cn(
+              "hidden self-start lg:sticky lg:top-24 lg:block opacity-0 translate-y-10",
+              isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
+            )}
           >
             <div className="rounded-2xl border border-border bg-card p-5">
               <p className="text-sm text-muted-foreground mb-2">Общо</p>
@@ -375,7 +375,6 @@ export function ServiceBuySection({
               </Button>
             </div>
           </aside>
-          </div>
         </div>
       </div>
 

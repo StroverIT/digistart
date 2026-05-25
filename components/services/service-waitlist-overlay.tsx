@@ -50,7 +50,11 @@ export function ServiceWaitlistOverlay({ availability }: ServiceWaitlistOverlayP
 
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-md rounded-2xl border border-border bg-background/95 p-5 shadow-xl backdrop-blur-sm sm:p-6">
+      <div
+        className="absolute inset-0 bg-background/15 backdrop-blur-[3px] supports-backdrop-filter:bg-background/10"
+        aria-hidden
+      />
+      <div className="relative z-10 w-full max-w-md rounded-2xl border border-border bg-background p-5 shadow-xl sm:p-6">
         <h3 className="text-lg font-bold text-foreground sm:text-xl">
           Местата приключиха
         </h3>
