@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { TemplatesGallery } from "@/components/templates/templates-gallery";
-import { productCategories, storeTemplates } from "@/lib/data/templates";
+import { storeTemplates } from "@/lib/data/templates";
 
 export const metadata: Metadata = {
   title: "Шаблони за онлайн магазин",
   description:
-    "Разгледай готовите шаблони за онлайн магазин - дрехи, козметика и още. Виж live преглед и избери дизайн за твоя бизнес.",
+    "Разгледай готовите стилове за онлайн магазин. Виж live преглед, избери визия и я адаптираме към твоите продукти и бизнес нужди.",
 };
 
 export default function TemplatesPage() {
-  return <TemplatesGallery categories={productCategories} templates={storeTemplates} />;
+  return <TemplatesGallery templates={storeTemplates} />;
 }
