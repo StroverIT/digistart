@@ -43,7 +43,7 @@ export function OnboardingIntegrationsStep({
     <div className="space-y-6">
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Добавете социалните мрежи на бизнеса си — платформа и линк към профила.
+          Добавете социалните мрежи на бизнеса си - платформа и линк към профила.
         </p>
         {channels.map((channel, index) => (
           <div key={index} className="rounded-lg border border-border p-4 space-y-3">

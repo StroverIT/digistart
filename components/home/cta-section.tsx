@@ -53,13 +53,15 @@ export function CTASection() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl mx-auto text-center">
-          <div
-            ref={badgeRef}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8 opacity-0 translate-y-10"
-          >
-            <MessageCircle className="h-4 w-4" />
-            Безплатна дигитална пътна карта
-          </div>
+          <TrackedCtaLink href="/digital-roadmap" ctaId="bottom_digital_roadmap_badge">
+            <div
+              ref={badgeRef}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8 opacity-0 translate-y-10 cursor-pointer hover:bg-primary/15 transition-colors"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Безплатна дигитална пътна карта
+            </div>
+          </TrackedCtaLink>
 
           <h2
             ref={titleRef}
@@ -81,7 +83,7 @@ export function CTASection() {
             ref={ctaRef}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 translate-y-10"
           >
-            <TrackedCtaLink href="/consultation" ctaId="bottom_free_consultation">
+            <TrackedCtaLink href="/digital-roadmap" ctaId="bottom_digital_roadmap">
               <Button size="lg" className="glow-primary text-lg h-14 px-8">
                 Запази безплатна дигитална пътна карта
                 <ArrowRight className="ml-2 h-5 w-5" />

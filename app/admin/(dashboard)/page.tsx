@@ -23,6 +23,7 @@ import { CartAdditionsChart } from "@/components/admin/cart-additions-chart";
 import { SurveyCombinationsChart } from "@/components/admin/survey-combinations-chart";
 import { ViewsPerDayChart } from "@/components/admin/views-per-day-chart";
 import { ServiceSlotsPanel } from "@/components/admin/service-slots-panel";
+import { DigitalRoadmapLeadsPanel } from "@/components/admin/digital-roadmap-leads-panel";
 
 interface StatCardProps {
   title: string;
@@ -326,6 +327,8 @@ export default function AdminDashboard() {
       </div>
 
       <ServiceSlotsPanel />
+
+      <DigitalRoadmapLeadsPanel />
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -636,7 +639,7 @@ export default function AdminDashboard() {
                         "bg-BG",
                         { weekday: "long", day: "numeric", month: "long", year: "numeric" },
                       )}{" "}
-                      — {analytics.surveyCombinations.topDay.totalResponses} завършени отговора
+                      - {analytics.surveyCombinations.topDay.totalResponses} завършени отговора
                     </p>
                     <div className="space-y-2">
                       {analytics.surveyCombinations.topDay.combinations.map((row) => (

@@ -121,7 +121,7 @@ export function SurveyCombinationsChart({
               if (name === "other") return [value, "Други"];
               const code = codeByComboKey.get(name);
               const combo = topCombos.find((c) => c.comboKey === name);
-              return [value, code ? `${code} — ${combo?.label ?? name}` : name];
+              return [value, code ? `${code} - ${combo?.label ?? name}` : name];
             }}
           />
           <Legend

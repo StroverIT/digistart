@@ -177,6 +177,14 @@ export interface ServiceWaitlistEntryRow {
   createdAt: string;
 }
 
+export interface DigitalRoadmapLeadRow {
+  id: string;
+  name: string;
+  email: string;
+  source: string;
+  createdAt: string;
+}
+
 // Business Lead types
 export type LeadStatus = "prospect" | "contacted" | "accepted" | "declined";
 

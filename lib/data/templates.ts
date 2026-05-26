@@ -29,11 +29,11 @@ export const productCategories: {
   name: string;
   enabled: boolean;
 }[] = [
-  { id: "clothing", name: "Дрехи", enabled: true },
-  { id: "cosmetics", name: "Козметика", enabled: true },
-  { id: "food", name: "Храни и напитки", enabled: true },
-  { id: "other", name: "Друго", enabled: true },
-];
+    { id: "clothing", name: "Дрехи", enabled: true },
+    { id: "cosmetics", name: "Козметика", enabled: true },
+    { id: "food", name: "Храни и напитки", enabled: true },
+    { id: "other", name: "Друго", enabled: true },
+  ];
 
 const defaultBuiltWith =
   "Next.js магазин с бързо зареждане, mobile-first оформление и готови интеграции за плащания и куриери през DigiStart.";
@@ -304,7 +304,7 @@ export function getTemplateForOnboarding(
   return getTemplate(productCategory, id) ?? getTemplate("clothing", id);
 }
 
-/** Templates shown in onboarding — same clothing catalog for every product category. */
+/** Templates shown in onboarding - same clothing catalog for every product category. */
 export function getOnboardingTemplates(_productCategory?: string): StoreTemplate[] {
   return storeTemplates;
 }

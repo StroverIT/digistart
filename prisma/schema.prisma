@@ -302,3 +302,15 @@ model UtmLandingEvent {
   @@index([utmCampaign])
   @@map("utm_landing_events")
 }
+
+model DigitalRoadmapLead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  source    String   @default("digital-roadmap")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([createdAt(sort: Desc)])
+  @@map("digital_roadmap_leads")
+}

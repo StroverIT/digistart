@@ -428,8 +428,8 @@ export function Header() {
               })}
               <li>
                 <TrackedCtaLink
-                  href="/consultation"
-                  ctaId="menu_free_consultation"
+                  href="/digital-roadmap"
+                  ctaId="menu_digital_roadmap"
                   onClick={() => closeMenu()}
                 >
                   <Button className="w-full glow-primary mt-2" size="lg">

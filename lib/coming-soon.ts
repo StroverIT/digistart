@@ -19,6 +19,7 @@ export function isComingSoonBypassPath(pathname: string): boolean {
   if (path.startsWith("/api/newsletter/subscribe")) return true;
   if (path.startsWith("/api/stripe/webhook")) return true;
   if (path.startsWith("/user")) return true;
+  if (path.startsWith("/digital-roadmap")) return true;
   return false;
 }
 
@@ -31,6 +32,7 @@ export function isComingSoonAllowedApiPath(pathname: string): boolean {
   if (path.startsWith("/api/newsletter/subscribe")) return true;
   if (path.startsWith("/api/stripe/webhook")) return true;
   if (path.startsWith("/api/support-chats")) return true;
+  if (path.startsWith("/api/digital-roadmap")) return true;
   return false;
 }
 
