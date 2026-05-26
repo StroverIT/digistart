@@ -237,6 +237,23 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
         return false;
       }
     }
+
+    const validCount = active.filter((c) => isValidUrl(c.profileUrl)).length;
+    if (requirements.socialChannelCount > 0 && validCount < requirements.socialChannelCount) {
+      toast.error(
+        `Моля, добавете поне ${requirements.socialChannelCount} валидни линка към социални мрежи.`,
+      );
+      return false;
+    }
+
+    if (requirements.showGoogleBusinessLink) {
+      const url = googleBusinessUrl.trim();
+      if (!url || !isValidUrl(url)) {
+        toast.error("Моля, въведете валиден линк към Google Business профила.");
+        return false;
+      }
+    }
+
     return true;
   };
 
@@ -280,7 +297,13 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
   const handleFinish = async () => {
     if (!validateSocialNetworks()) return;
     const ok = await save(4, { setupStatus: "in_progress" });
-    if (ok) router.push("/user");
+    if (ok) {
+      if (orderItemId) {
+        router.push(`/user/services/${orderItemId}`);
+      } else {
+        router.push("/user");
+      }
+    }
   };
 
   if (loading) {

@@ -1,11 +1,14 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
-import { LayoutDashboard, MessageCircle, PackageCheck } from "lucide-react";
+import { LayoutDashboard, MessageCircle } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Header } from "@/components/layout/header";
+import { UserNavItemLink } from "@/components/user/user-nav-item-link";
 import PageTransitionProvider from "@/components/transitions/PageTransitionProvider";
+import { getServiceNavSetupHints } from "@/lib/server/user-nav-setup-hints";
+import { getTenantProjectForUser } from "@/lib/server/tenant-projects";
 import { cn } from "@/lib/utils";
 
 export default async function UserLayout({
@@ -28,13 +31,35 @@ export default async function UserLayout({
     orderBy: { createdAt: "desc" },
   });
 
-  const navItems = orders.flatMap((order) =>
+  const tenantProject = await getTenantProjectForUser(session.user.id);
+
+  const flatOrderItems = orders.flatMap((order) =>
     order.items.map((item) => ({
       id: item.id,
-      label: item.serviceName,
-      href: `/user/services/${item.id}` as const,
-    }))
+      serviceId: item.serviceId,
+      serviceName: item.serviceName,
+      upsells: item.upsells,
+      order: {
+        brandAssets: order.brandAssets,
+        items: order.items.map((row) => ({
+          serviceId: row.serviceId,
+          upsells: row.upsells,
+        })),
+      },
+    })),
   );
+
+  const setupHints = await getServiceNavSetupHints({
+    orderItems: flatOrderItems,
+    tenantProject,
+  });
+
+  const navItems = flatOrderItems.map((item) => ({
+    id: item.id,
+    label: item.serviceName,
+    href: `/user/services/${item.id}` as const,
+    setupHint: setupHints[item.id],
+  }));
 
   return (
     <PageTransitionProvider>
@@ -79,17 +104,13 @@ export default async function UserLayout({
                   </p>
                 ) : (
                   navItems.map((item) => (
-                    <Link
+                    <UserNavItemLink
                       key={item.id}
                       href={item.href}
-                      className={cn(
-                        "flex items-start gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                        "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                      )}
-                    >
-                      <PackageCheck className="mt-0.5 h-4 w-4 shrink-0" />
-                      <span className="line-clamp-2">{item.label}</span>
-                    </Link>
+                      label={item.label}
+                      showSetupAlert={Boolean(item.setupHint?.incomplete)}
+                      missingCount={item.setupHint?.missingCount}
+                    />
                   ))
                 )}
               </nav>

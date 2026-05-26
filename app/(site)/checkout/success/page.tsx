@@ -12,6 +12,10 @@ import { Price } from "@/components/ui/price";
 import { siteContact } from "@/lib/site-contact";
 import { cartItemToMetaLineItem, trackMetaPurchase } from "@/lib/analytics/meta-pixel";
 import { clearCart } from "@/lib/store/cart";
+import {
+  findFirstOnboardingOrderItem,
+  getCheckoutSuccessSetupCta,
+} from "@/lib/onboarding/service-setup-status";
 import type { Order } from "@/lib/types";
 
 const META_PURCHASE_STORAGE_PREFIX = "digistart_meta_purchase_";
@@ -221,6 +225,11 @@ function SuccessContent() {
     );
   }
 
+  const onboardingItem = order ? findFirstOnboardingOrderItem(order.cart.items) : null;
+  const setupCtaLabel = onboardingItem
+    ? getCheckoutSuccessSetupCta(onboardingItem.serviceId).label
+    : "Продължи настройката";
+
   return (
     <div ref={successRootRef} className="max-w-2xl mx-auto text-center">
       <div data-success-icon className="relative mb-8 opacity-0 translate-y-10">
@@ -367,15 +376,18 @@ function SuccessContent() {
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </TrackedCtaLink>
-        {session?.user?.role === "customer" ? (
-          <TrackedCtaLink href="/onboarding" ctaId="checkout_success_onboarding">
+        {session?.user?.role === "customer" && onboardingItem ? (
+          <TrackedCtaLink
+            href={`/user/services/${onboardingItem.id}`}
+            ctaId="checkout_success_service_setup"
+          >
             <Button size="lg" className="glow-primary">
-              Настрой магазина
+              {setupCtaLabel}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </TrackedCtaLink>
         ) : null}
-        {session?.user?.role === "customer" && order?.cart?.items?.[0]?.id ? (
+        {session?.user?.role === "customer" && order?.cart?.items?.[0]?.id && !onboardingItem ? (
           <TrackedCtaLink
             href={`/user/services/${order.cart.items[0].id}`}
             ctaId="checkout_success_open_user_panel_order"

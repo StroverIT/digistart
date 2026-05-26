@@ -6,12 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import { PreviewLink } from "@/components/preview/preview-link";
-import { isOnboardingIncomplete } from "@/lib/onboarding/is-onboarding-incomplete";
 import { getTenantProjectForUser } from "@/lib/server/tenant-projects";
+import { getServiceNavSetupHints } from "@/lib/server/user-nav-setup-hints";
 
 export default async function UserHomePage() {
   const session = await getServerSession(authOptions);
-  const userId = session!.user!.id;
+  const userId = session?.user?.id;
+  if (!userId) {
+    return null;
+  }
 
   const orders = await prisma.order.findMany({
     where: { userId, status: { in: ["paid", "in_progress", "completed"] } },
@@ -42,7 +45,28 @@ export default async function UserHomePage() {
     : [];
 
   const tenantProject = await getTenantProjectForUser(userId);
-  const onboardingIncomplete = isOnboardingIncomplete(tenantProject);
+
+  const flatOrderItems = orders.flatMap((order) =>
+    order.items.map((item) => ({
+      id: item.id,
+      serviceId: item.serviceId,
+      upsells: item.upsells,
+      order: {
+        brandAssets: order.brandAssets,
+        items: order.items.map((row) => ({
+          serviceId: row.serviceId,
+          upsells: row.upsells,
+        })),
+      },
+    })),
+  );
+
+  const setupHints = await getServiceNavSetupHints({
+    orderItems: flatOrderItems,
+    tenantProject,
+  });
+
+  const firstIncompleteService = flatOrderItems.find((item) => setupHints[item.id]?.incomplete);
 
   return (
     <div className="space-y-8">
@@ -53,17 +77,24 @@ export default async function UserHomePage() {
         </p>
       </div>
 
-      {(onboardingIncomplete || tenantProject?.previewPath) && (
+      {(firstIncompleteService || tenantProject?.previewPath) && (
         <Card className="border-primary/30">
           <CardHeader>
-            <CardTitle className="text-lg">Онлайн магазин</CardTitle>
+            <CardTitle className="text-lg">
+              {firstIncompleteService ? "Довърши настройката" : "Проект"}
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap items-center gap-3">
-            {onboardingIncomplete && (
+            {firstIncompleteService ? (
               <Button asChild>
-                <Link href="/onboarding">Продължи настройката</Link>
+                <Link href={`/user/services/${firstIncompleteService.id}`}>
+                  Продължи настройката
+                  {setupHints[firstIncompleteService.id]?.missingCount
+                    ? ` (${setupHints[firstIncompleteService.id].missingCount})`
+                    : ""}
+                </Link>
               </Button>
-            )}
+            ) : null}
             {tenantProject?.previewPath && (
               <PreviewLink
                 href={tenantProject.previewPath}

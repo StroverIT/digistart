@@ -130,7 +130,6 @@ export async function PATCH(req: Request) {
       ? { socialSettings: parsed.data.socialSettings as Prisma.InputJsonValue }
       : {}),
     ...(parsed.data.setupStatus ? { setupStatus: parsed.data.setupStatus } : {}),
-    ...(parsed.data.step === 4 ? { setupStatus: "in_progress" } : {}),
   });
 
   return NextResponse.json({ project });

@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import { getServerSession } from "next-auth";
-import { ArrowRight, CalendarClock, PackageCheck, ReceiptText, Sparkles } from "lucide-react";
+import { CalendarClock, PackageCheck, ReceiptText, Sparkles } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getStripeServerClient } from "@/lib/server/stripe";
@@ -11,18 +10,16 @@ import { Price } from "@/components/ui/price";
 import { getServiceById } from "@/lib/data/services";
 import { calculateItemTotal } from "@/lib/pricing/calculate-item-total";
 import type { CartItemUpsell } from "@/lib/types";
-import { Button } from "@/components/ui/button";
 import { DomainSetupCard } from "@/components/user/domain-setup-card";
-import { isOnboardingIncomplete } from "@/lib/onboarding/is-onboarding-incomplete";
-import { getOnlineStoreSetupItems } from "@/lib/onboarding/online-store-setup-status";
+import { ServiceSetupGuide } from "@/components/user/service-setup-guide";
+import { ONBOARDING_SERVICE_IDS } from "@/lib/onboarding/requirements";
 import {
-  getOnboardingBannerCopy,
-  ONBOARDING_SERVICE_IDS,
-} from "@/lib/onboarding/requirements";
+  buildServiceSetupProgress,
+  getRequirementsForOrderItem,
+} from "@/lib/onboarding/service-setup-status";
 import { getStoreDomainByOrderItemId } from "@/lib/server/store-domains";
 import { getTenantProjectForUser } from "@/lib/server/tenant-projects";
 import { getStoreVpsIp, ONLINE_STORE_SERVICE_ID } from "@/lib/store-dns";
-import { OnlineStoreSetupStatusCard } from "@/components/user/online-store-setup-status";
 
 /** Last-resort label when no catalog/DB name exists (kebab-case → words). */
 function humanizeUpsellId(id: string): string {
@@ -58,7 +55,7 @@ export default async function UserServiceDetailPage({
       id: orderItemId,
       order: { userId: session.user.id },
     },
-    include: { order: true },
+    include: { order: { include: { items: true } } },
   });
 
   if (!item) notFound();
@@ -117,40 +114,36 @@ export default async function UserServiceDetailPage({
     }
   }
 
-  const onlineStoreSetupItems = isOnlineStore
-    ? getOnlineStoreSetupItems({
+  const isOnboardingService = (ONBOARDING_SERVICE_IDS as readonly string[]).includes(
+    item.serviceId,
+  );
+
+  const setupProgress = isOnboardingService
+    ? buildServiceSetupProgress({
+      serviceId: item.serviceId,
+      orderItemId: item.id,
       project: tenantProject,
+      requirements: getRequirementsForOrderItem(
+        item.order.items.map((row) => ({
+          serviceId: row.serviceId,
+          upsells: row.upsells,
+        })),
+        item.serviceId,
+      ),
       hasLogo: Boolean(logoUrl),
       hasPalette: Boolean(paletteUrl),
       domain: storeDomain,
     })
     : null;
 
-  const showOnboardingBanner =
-    isOnboardingIncomplete(tenantProject) &&
-    (ONBOARDING_SERVICE_IDS as readonly string[]).includes(item.serviceId) &&
-    !isOnlineStore;
-  const onboardingCopy = showOnboardingBanner
-    ? getOnboardingBannerCopy(item.serviceId)
-    : null;
-
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      {showOnboardingBanner && onboardingCopy ? (
-        <Card className="border-primary/40 bg-primary/5 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
-          <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-lg font-semibold">{onboardingCopy.title}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{onboardingCopy.description}</p>
-            </div>
-            <Button asChild>
-              <Link href={`/onboarding?orderItemId=${item.id}`}>
-                Продължи настройката
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+      {setupProgress?.incomplete ? (
+        <ServiceSetupGuide
+          orderItemId={item.id}
+          serviceName={item.serviceName}
+          items={setupProgress.items}
+        />
       ) : null}
 
       <div className="rounded-3xl border border-border bg-card/80 p-6 shadow-sm backdrop-blur md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
@@ -242,10 +235,6 @@ export default async function UserServiceDetailPage({
           </Card>
         )}
       </div>
-
-      {isOnlineStore && onlineStoreSetupItems ? (
-        <OnlineStoreSetupStatusCard orderItemId={item.id} items={onlineStoreSetupItems} />
-      ) : null}
 
       {isOnlineStore ? (
         <div id="store-domain-setup">

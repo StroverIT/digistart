@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { getServerSession } from "next-auth";
 import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard";
+import { authOptions } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Настройка на проекта",
@@ -13,6 +16,13 @@ type OnboardingPageProps = {
 
 export default async function OnboardingPage({ searchParams }: OnboardingPageProps) {
   const { orderItemId } = await searchParams;
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    const callbackPath = orderItemId
+      ? `/onboarding?orderItemId=${encodeURIComponent(orderItemId)}`
+      : "/onboarding";
+    redirect(`/sign-in?callbackUrl=${encodeURIComponent(callbackPath)}`);
+  }
 
   return (
     <main className="pt-24 pb-16">

@@ -1,4 +1,5 @@
-import { isOnboardingIncomplete } from "@/lib/onboarding/is-onboarding-incomplete";
+import { isIntegrationsStepComplete } from "@/lib/onboarding/completion";
+import type { OnboardingRequirements } from "@/lib/onboarding/requirements";
 import type { TenantProjectDto } from "@/lib/server/tenant-projects";
 import type { StoreDomainRow } from "@/lib/server/store-domains";
 
@@ -17,6 +18,7 @@ export function getOnlineStoreSetupItems(params: {
   hasLogo: boolean;
   hasPalette: boolean;
   domain: StoreDomainRow | null;
+  requirements?: OnboardingRequirements;
 }): OnlineStoreSetupItem[] {
   const p = params.project;
   const bs = p?.businessSettings ?? {};
@@ -28,7 +30,17 @@ export function getOnlineStoreSetupItems(params: {
   const templateOk = Boolean(p?.templateId);
   const businessOk = Boolean(name && phone && email);
   const productsOk = productNotes.length > 0;
-  const onboardingOk = Boolean(p && !isOnboardingIncomplete(p));
+  const requirements =
+    params.requirements ??
+    ({
+      showCategoryTemplate: true,
+      showBusiness: true,
+      showIntegrations: true,
+      socialChannelCount: 0,
+      showGoogleBusinessLink: false,
+      showStoreSocialFields: true,
+    } satisfies OnboardingRequirements);
+  const onboardingOk = Boolean(p && isIntegrationsStepComplete(p, requirements));
   const brandOk = params.hasLogo && params.hasPalette;
   const domainOk = params.domain?.status === "configured";
   const domainHint = (() => {
