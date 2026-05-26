@@ -65,7 +65,7 @@ export function ServiceSetupGuide({ orderItemId, serviceName, items }: ServiceSe
         type="button"
         onClick={() => setPrefs({ mode: "open" })}
         className={cn(
-          "fixed bottom-5 left-5 z-50 flex h-14 w-14 items-center justify-center rounded-full border border-amber-500/50 bg-amber-500 p-0 text-white shadow-lg transition hover:scale-105",
+          "fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full border border-amber-500/50 bg-amber-500 p-0 text-white shadow-lg transition hover:scale-105",
         )}
         aria-label={`Отвори ръководството за настройка. Остават ${remainingCount} стъпки.`}
       >
