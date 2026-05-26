@@ -8,6 +8,7 @@ import {
   trackAnalyticsEvent,
 } from "@/lib/analytics/tracker";
 import { useAnalyticsMode } from "@/components/analytics/analytics-mode-provider";
+import { cn } from "@/lib/utils";
 
 type TrackedCtaLinkProps = {
   href: string;
@@ -50,11 +51,11 @@ export function TrackedCtaLink({
   const showBadge = shouldRenderOverlay && (showAllCtaStats || clicks > 0);
 
   return (
-    <span className="relative inline-flex group">
+    <span className="relative inline-flex min-w-0 max-w-full group">
       <TransitionLink
         href={href}
         target={_blank ? "_blank" : undefined}
-        className={className}
+        className={cn("min-w-0 max-w-full", className)}
         onClick={async () => {
           if (onClick) await onClick();
           trackAnalyticsEvent("cta_click", currentPage, { cta_id: ctaId });
