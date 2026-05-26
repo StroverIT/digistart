@@ -149,7 +149,7 @@ export function ProjectsPageClient() {
 
             {selected.socialSettings && (
               <div>
-                <p className="text-muted-foreground mb-1">Интеграции</p>
+                <p className="text-muted-foreground mb-1">Социални мрежи</p>
                 {typeof selected.socialSettings.googleBusinessUrl === "string" &&
                 selected.socialSettings.googleBusinessUrl ? (
                   <p className="mb-2 text-sm break-all">

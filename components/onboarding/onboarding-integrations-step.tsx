@@ -1,8 +1,14 @@
 "use client";
 
+import { Plus, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { OnboardingRequirements, SocialChannelInput } from "@/lib/onboarding/requirements";
+import {
+  EMPTY_SOCIAL_CHANNEL,
+  type OnboardingRequirements,
+  type SocialChannelInput,
+} from "@/lib/onboarding/requirements";
 
 type OnboardingIntegrationsStepProps = {
   requirements: OnboardingRequirements;
@@ -10,10 +16,6 @@ type OnboardingIntegrationsStepProps = {
   onChannelsChange: (channels: SocialChannelInput[]) => void;
   googleBusinessUrl: string;
   onGoogleBusinessUrlChange: (value: string) => void;
-  storeFacebook: string;
-  onStoreFacebookChange: (value: string) => void;
-  storeInstagram: string;
-  onStoreInstagramChange: (value: string) => void;
 };
 
 export function OnboardingIntegrationsStep({
@@ -22,74 +24,69 @@ export function OnboardingIntegrationsStep({
   onChannelsChange,
   googleBusinessUrl,
   onGoogleBusinessUrlChange,
-  storeFacebook,
-  onStoreFacebookChange,
-  storeInstagram,
-  onStoreInstagramChange,
 }: OnboardingIntegrationsStepProps) {
   const updateChannel = (index: number, patch: Partial<SocialChannelInput>) => {
     const next = channels.map((c, i) => (i === index ? { ...c, ...patch } : c));
     onChannelsChange(next);
   };
 
+  const addChannel = () => {
+    onChannelsChange([...channels, { ...EMPTY_SOCIAL_CHANNEL }]);
+  };
+
+  const removeChannel = (index: number) => {
+    if (channels.length <= 1) return;
+    onChannelsChange(channels.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="space-y-6">
-      {requirements.socialChannelCount > 0 ? (
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            За всеки закупен канал посочете платформа (по избор) и линк към профила.
-          </p>
-          {channels.map((channel, index) => (
-            <div key={index} className="rounded-lg border border-border p-4 space-y-3">
-              <p className="text-sm font-medium">Канал {index + 1}</p>
-              <div className="space-y-2">
-                <Label htmlFor={`channel-label-${index}`}>Платформа (по избор)</Label>
-                <Input
-                  id={`channel-label-${index}`}
-                  value={channel.label ?? ""}
-                  onChange={(e) => updateChannel(index, { label: e.target.value })}
-                  placeholder="Facebook, Instagram, TikTok..."
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor={`channel-url-${index}`}>Линк към профила *</Label>
-                <Input
-                  id={`channel-url-${index}`}
-                  value={channel.profileUrl}
-                  onChange={(e) => updateChannel(index, { profileUrl: e.target.value })}
-                  placeholder="https://..."
-                />
-              </div>
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Добавете социалните мрежи на бизнеса си — платформа и линк към профила.
+        </p>
+        {channels.map((channel, index) => (
+          <div key={index} className="rounded-lg border border-border p-4 space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-medium">Социална мрежа {index + 1}</p>
+              {channels.length > 1 ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-destructive"
+                  onClick={() => removeChannel(index)}
+                  aria-label={`Премахни социална мрежа ${index + 1}`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              ) : null}
             </div>
-          ))}
-        </div>
-      ) : null}
-
-      {requirements.showStoreSocialFields ? (
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Линкове към социалните профили на магазина (ако вече имате).
-          </p>
-          <div className="space-y-2">
-            <Label htmlFor="storeFacebook">Facebook страница</Label>
-            <Input
-              id="storeFacebook"
-              value={storeFacebook}
-              onChange={(e) => onStoreFacebookChange(e.target.value)}
-              placeholder="https://facebook.com/..."
-            />
+            <div className="space-y-2">
+              <Label htmlFor={`channel-label-${index}`}>Платформа</Label>
+              <Input
+                id={`channel-label-${index}`}
+                value={channel.label ?? ""}
+                onChange={(e) => updateChannel(index, { label: e.target.value })}
+                placeholder="Facebook, Instagram, TikTok..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor={`channel-url-${index}`}>Линк към профила</Label>
+              <Input
+                id={`channel-url-${index}`}
+                value={channel.profileUrl}
+                onChange={(e) => updateChannel(index, { profileUrl: e.target.value })}
+                placeholder="https://..."
+              />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="storeInstagram">Instagram</Label>
-            <Input
-              id="storeInstagram"
-              value={storeInstagram}
-              onChange={(e) => onStoreInstagramChange(e.target.value)}
-              placeholder="https://instagram.com/..."
-            />
-          </div>
-        </div>
-      ) : null}
+        ))}
+        <Button type="button" variant="outline" size="sm" onClick={addChannel} className="gap-2">
+          <Plus className="h-4 w-4" />
+          Добави социална мрежа
+        </Button>
+      </div>
 
       {requirements.showGoogleBusinessLink ? (
         <div className="space-y-2">

@@ -65,8 +65,25 @@ export const WIZARD_STEP_DEFS = [
   { id: 1 as const, title: "Категория" },
   { id: 2 as const, title: "Шаблон" },
   { id: 3 as const, title: "Бизнес и продукти" },
-  { id: 4 as const, title: "Интеграции" },
+  { id: 4 as const, title: "Социални мрежи" },
 ];
+
+export const EMPTY_SOCIAL_CHANNEL: SocialChannelInput = { label: "", profileUrl: "" };
+
+export function normalizeSocialChannels(
+  channels: SocialChannelInput[],
+  minCount = 1,
+): SocialChannelInput[] {
+  const trimmed = channels.filter(
+    (c) => c.label?.trim() || c.profileUrl.trim(),
+  );
+  if (trimmed.length >= minCount) return trimmed;
+  const padded = [...channels];
+  while (padded.length < minCount) {
+    padded.push({ ...EMPTY_SOCIAL_CHANNEL });
+  }
+  return padded;
+}
 
 export function getActiveWizardSteps(requirements: OnboardingRequirements) {
   return WIZARD_STEP_DEFS.filter((s) => {
@@ -113,17 +130,18 @@ export function normalizeWizardStep(
 
 export function parseSocialChannelsFromSettings(
   socialSettings: Record<string, unknown> | null | undefined,
-  channelCount: number,
+  minCount = 1,
 ): SocialChannelInput[] {
   const channels = socialSettings?.channels;
   if (Array.isArray(channels) && channels.length > 0) {
-    return channels.map((c) => {
+    const parsed = channels.map((c) => {
       const row = c as Record<string, unknown>;
       return {
         label: typeof row.label === "string" ? row.label : "",
         profileUrl: typeof row.profileUrl === "string" ? row.profileUrl : "",
       };
     });
+    return normalizeSocialChannels(parsed, minCount);
   }
 
   const legacy: SocialChannelInput[] = [];
@@ -133,16 +151,10 @@ export function parseSocialChannelsFromSettings(
   if (typeof ig === "string" && ig) legacy.push({ label: "Instagram", profileUrl: ig });
 
   if (legacy.length > 0) {
-    while (legacy.length < channelCount) {
-      legacy.push({ label: "", profileUrl: "" });
-    }
-    return legacy.slice(0, channelCount);
+    return normalizeSocialChannels(legacy, minCount);
   }
 
-  return Array.from({ length: Math.max(channelCount, 0) }, () => ({
-    label: "",
-    profileUrl: "",
-  }));
+  return normalizeSocialChannels([], minCount);
 }
 
 export function isValidEmail(value: string): boolean {

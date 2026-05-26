@@ -63,7 +63,7 @@ export function getOnlineStoreSetupItems(params: {
     },
     {
       id: "onboarding",
-      label: "Интеграции (онбординг)",
+      label: "Социални мрежи (онбординг)",
       ok: onboardingOk,
       missingHint: "Завърши последната стъпка от онбординга.",
       action: "onboarding",

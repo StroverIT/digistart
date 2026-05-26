@@ -9,12 +9,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { OnboardingIntegrationsStep } from "@/components/onboarding/onboarding-integrations-step";
-import { productCategories, storeTemplates } from "@/lib/data/templates";
+import {
+  getOnboardingTemplates,
+  productCategories,
+  type ProductCategory,
+} from "@/lib/data/templates";
 import {
   getActiveWizardSteps,
   getNextWizardStep,
   getPrevWizardStep,
+  isValidEmail,
   isValidUrl,
+  normalizeSocialChannels,
   normalizeWizardStep,
   parseSocialChannelsFromSettings,
   type OnboardingRequirements,
@@ -38,6 +44,13 @@ type OnboardingWizardProps = {
   orderItemId?: string | null;
 };
 
+type SavePayload = {
+  productCategory?: string;
+  templateId?: string | null;
+  businessSettings?: Record<string, string>;
+  socialSettings?: Record<string, unknown>;
+};
+
 export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWizardProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,7 +61,8 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
   const [saving, setSaving] = useState(false);
   const [project, setProject] = useState<TenantProjectDto | null>(null);
   const [requirements, setRequirements] = useState<OnboardingRequirements>(DEFAULT_REQUIREMENTS);
-  const [category, setCategory] = useState("clothing");
+  const [category, setCategory] = useState<ProductCategory>("clothing");
+  const [otherCategoryLabel, setOtherCategoryLabel] = useState("");
   const [templateId, setTemplateId] = useState<string | null>(null);
   const [businessName, setBusinessName] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
@@ -56,29 +70,34 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
   const [productNotes, setProductNotes] = useState("");
   const [channels, setChannels] = useState<SocialChannelInput[]>([]);
   const [googleBusinessUrl, setGoogleBusinessUrl] = useState("");
-  const [storeFacebook, setStoreFacebook] = useState("");
-  const [storeInstagram, setStoreInstagram] = useState("");
 
   const activeSteps = useMemo(() => getActiveWizardSteps(requirements), [requirements]);
   const isLastStep = step === activeSteps[activeSteps.length - 1]?.id;
   const isFirstStep = step === activeSteps[0]?.id;
+  const isOtherCategory = category === "other";
+  const minSocialChannels = Math.max(requirements.socialChannelCount, 1);
 
   const hydrateFromProject = useCallback(
     (p: TenantProjectDto, req: OnboardingRequirements) => {
       setProject(p);
       setStep(normalizeWizardStep(p.onboardingStep || 1, req));
-      setCategory(p.productCategory);
+      const cat = p.productCategory as ProductCategory;
+      setCategory(
+        cat === "clothing" || cat === "cosmetics" || cat === "food" || cat === "other"
+          ? cat
+          : "clothing",
+      );
       setTemplateId(p.templateId);
       const bs = p.businessSettings ?? {};
       setBusinessName(String(bs.businessName ?? ""));
       setBusinessPhone(String(bs.phone ?? ""));
       setBusinessEmail(String(bs.email ?? ""));
       setProductNotes(String(bs.productNotes ?? ""));
+      setOtherCategoryLabel(String(bs.customCategoryLabel ?? ""));
       const ss = p.socialSettings ?? {};
       setGoogleBusinessUrl(String(ss.googleBusinessUrl ?? ""));
-      setStoreFacebook(String(ss.facebook ?? ""));
-      setStoreInstagram(String(ss.instagram ?? ""));
-      setChannels(parseSocialChannelsFromSettings(ss, req.socialChannelCount));
+      const minChannels = Math.max(req.socialChannelCount, 1);
+      setChannels(parseSocialChannelsFromSettings(ss, minChannels));
     },
     [],
   );
@@ -91,93 +110,160 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
         (data: { project?: TenantProjectDto; requirements?: OnboardingRequirements }) => {
           const req = data.requirements ?? DEFAULT_REQUIREMENTS;
           setRequirements(req);
-          if (data.project) hydrateFromProject(data.project, req);
-          setChannels((prev) => {
-            if (prev.length > 0) return prev;
-            return parseSocialChannelsFromSettings(data.project?.socialSettings ?? {}, req.socialChannelCount);
-          });
+          if (data.project) {
+            hydrateFromProject(data.project, req);
+          } else {
+            const minChannels = Math.max(req.socialChannelCount, 1);
+            setChannels(parseSocialChannelsFromSettings({}, minChannels));
+          }
         },
       )
       .finally(() => setLoading(false));
   }, [orderItemId, hydrateFromProject]);
 
-  useEffect(() => {
-    if (requirements.socialChannelCount <= 0) return;
-    setChannels((prev) => {
-      const parsed = parseSocialChannelsFromSettings(
-        project?.socialSettings ?? {},
-        requirements.socialChannelCount,
-      );
-      if (prev.length === requirements.socialChannelCount) return prev;
-      return parsed;
-    });
-  }, [requirements.socialChannelCount, project?.socialSettings]);
+  const buildBusinessSettings = (): Record<string, string> => ({
+    businessName: businessName.trim(),
+    phone: businessPhone.trim(),
+    email: businessEmail.trim(),
+    productNotes: productNotes.trim(),
+    ...(category === "other" && otherCategoryLabel.trim()
+      ? { customCategoryLabel: otherCategoryLabel.trim() }
+      : {}),
+  });
 
-  const buildPayload = () => {
-    const socialSettings: Record<string, unknown> = {
-      ...(requirements.socialChannelCount > 0
-        ? {
-            channels: channels.map((c) => ({
-              label: c.label?.trim() || undefined,
-              profileUrl: c.profileUrl.trim(),
-            })),
-          }
-        : {}),
-      ...(requirements.showStoreSocialFields
-        ? { facebook: storeFacebook, instagram: storeInstagram }
-        : {}),
+  const buildSocialSettings = (): Record<string, unknown> => {
+    const filledChannels = channels
+      .filter((c) => c.label?.trim() || c.profileUrl.trim())
+      .map((c) => ({
+        label: c.label?.trim() || undefined,
+        profileUrl: c.profileUrl.trim(),
+      }));
+
+    return {
+      channels: filledChannels,
       ...(requirements.showGoogleBusinessLink
         ? { googleBusinessUrl: googleBusinessUrl.trim() || undefined }
         : {}),
     };
-
-    return {
-      productCategory: category,
-      templateId: templateId ?? undefined,
-      businessSettings: {
-        businessName,
-        phone: businessPhone,
-        email: businessEmail,
-        productNotes,
-      },
-      socialSettings,
-    };
   };
 
-  const save = async (nextStep: number, extra?: Record<string, unknown>) => {
+  const buildPayload = (overrides?: Partial<SavePayload>): SavePayload => ({
+    productCategory: category,
+    templateId: templateId ?? undefined,
+    businessSettings: buildBusinessSettings(),
+    socialSettings: buildSocialSettings(),
+    ...overrides,
+  });
+
+  const save = async (
+    nextStep: number,
+    extra?: Record<string, unknown>,
+    payloadOverrides?: Partial<SavePayload>,
+  ) => {
     setSaving(true);
+    const payload = buildPayload(payloadOverrides);
     const res = await fetch("/api/onboarding", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         step: nextStep,
-        ...buildPayload(),
+        ...payload,
         ...extra,
       }),
     });
     const data = await res.json();
     if (data.project) setProject(data.project);
     setSaving(false);
+    if (!res.ok) {
+      toast.error("Неуспешно запазване. Опитайте отново.");
+    }
     return res.ok;
   };
 
-  const validateIntegrations = (): boolean => {
-    if (requirements.socialChannelCount > 0) {
-      for (let i = 0; i < requirements.socialChannelCount; i++) {
-        const url = channels[i]?.profileUrl ?? "";
-        if (!isValidUrl(url)) {
-          toast.error(`Моля, въведете валиден линк за канал ${i + 1}.`);
-          return false;
-        }
+  const advanceToStep = async (
+    nextStep: number,
+    payloadOverrides?: Partial<SavePayload>,
+  ) => {
+    if (saving) return false;
+    const ok = await save(nextStep, undefined, payloadOverrides);
+    if (ok) setStep(nextStep);
+    return ok;
+  };
+
+  const validateCategoryStep = (): boolean => {
+    if (!category) {
+      toast.error("Моля, изберете категория.");
+      return false;
+    }
+    if (category === "other" && !otherCategoryLabel.trim()) {
+      toast.error("Моля, опишете вашата категория.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateBusinessStep = (): boolean => {
+    if (!businessName.trim()) {
+      toast.error("Моля, въведете име на бизнеса.");
+      return false;
+    }
+    if (!businessPhone.trim()) {
+      toast.error("Моля, въведете телефон.");
+      return false;
+    }
+    if (!businessEmail.trim()) {
+      toast.error("Моля, въведете имейл за контакт.");
+      return false;
+    }
+    if (!isValidEmail(businessEmail)) {
+      toast.error("Моля, въведете валиден имейл адрес.");
+      return false;
+    }
+    if (requirements.showCategoryTemplate && !productNotes.trim()) {
+      toast.error("Моля, опишете продуктите и бележките.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateSocialNetworks = (): boolean => {
+    const active = channels.filter((c) => c.label?.trim() || c.profileUrl.trim());
+    for (let i = 0; i < active.length; i++) {
+      const ch = active[i];
+      if (!isValidUrl(ch.profileUrl)) {
+        toast.error(
+          `Моля, въведете валиден линк за социална мрежа ${i + 1}.`,
+        );
+        return false;
       }
     }
     return true;
   };
 
+  const handleCategorySelect = (catId: ProductCategory) => {
+    setCategory(catId);
+    if (catId === "other") return;
+
+    const next = getNextWizardStep(1, requirements);
+    if (next == null) return;
+    void advanceToStep(next, { productCategory: catId });
+  };
+
+  const handleTemplateSelect = (id: string) => {
+    setTemplateId(id);
+    const next = getNextWizardStep(2, requirements);
+    if (next == null) return;
+    void advanceToStep(next, { templateId: id });
+  };
+
   const handleNext = async () => {
-    if (step === 1 && !category) return;
-    if (step === 2 && !templateId) return;
-    if (step === 4 && !validateIntegrations()) return;
+    if (step === 1 && !validateCategoryStep()) return;
+    if (step === 2 && !templateId) {
+      toast.error("Моля, изберете шаблон.");
+      return;
+    }
+    if (step === 3 && !validateBusinessStep()) return;
+    if (step === 4 && !validateSocialNetworks()) return;
 
     const next = getNextWizardStep(step, requirements);
     if (next == null) return;
@@ -192,7 +278,7 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
   };
 
   const handleFinish = async () => {
-    if (!validateIntegrations()) return;
+    if (!validateSocialNetworks()) return;
     const ok = await save(4, { setupStatus: "in_progress" });
     if (ok) router.push("/user");
   };
@@ -205,8 +291,9 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
     );
   }
 
-  const templates = storeTemplates.filter((t) => t.category === category);
+  const templates = getOnboardingTemplates(category);
   const currentStepTitle = activeSteps.find((s) => s.id === step)?.title ?? "";
+  const showStep1Continue = step === 1 && isOtherCategory && otherCategoryLabel.trim().length > 0;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -236,14 +323,14 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
           {step === 1 && requirements.showCategoryTemplate ? (
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                За момента поддържаме категория дрехи. Скоро ще добавим още ниши.
+                Изберете категорията, която най-добре описва вашия бизнес.
               </p>
               {productCategories.map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
-                  disabled={!cat.enabled}
-                  onClick={() => setCategory(cat.id)}
+                  disabled={!cat.enabled || saving}
+                  onClick={() => handleCategorySelect(cat.id)}
                   className={cn(
                     "w-full text-left rounded-lg border p-4 transition-colors",
                     category === cat.id
@@ -255,6 +342,18 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
                   <span className="font-medium">{cat.name}</span>
                 </button>
               ))}
+
+              {isOtherCategory ? (
+                <div className="space-y-2 pt-2">
+                  <Label htmlFor="otherCategory">Вашата категория</Label>
+                  <Input
+                    id="otherCategory"
+                    value={otherCategoryLabel}
+                    onChange={(e) => setOtherCategoryLabel(e.target.value)}
+                    placeholder="напр. Спортни стоки, подаръци..."
+                  />
+                </div>
+              ) : null}
             </div>
           ) : null}
 
@@ -292,7 +391,8 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
                     type="button"
                     size="sm"
                     variant={templateId === t.id ? "default" : "outline"}
-                    onClick={() => setTemplateId(t.id)}
+                    disabled={saving}
+                    onClick={() => handleTemplateSelect(t.id)}
                   >
                     {templateId === t.id ? "Избран" : "Избери"}
                   </Button>
@@ -304,35 +404,47 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
           {step === 3 && requirements.showBusiness ? (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="businessName">Име на бизнеса</Label>
+                <Label htmlFor="businessName">
+                  Име на бизнеса <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="businessName"
+                  required
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="businessPhone">Телефон</Label>
+                <Label htmlFor="businessPhone">
+                  Телефон <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="businessPhone"
+                  required
                   value={businessPhone}
                   onChange={(e) => setBusinessPhone(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="businessEmail">Имейл за контакт</Label>
+                <Label htmlFor="businessEmail">
+                  Имейл за контакт <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="businessEmail"
                   type="email"
+                  required
                   value={businessEmail}
                   onChange={(e) => setBusinessEmail(e.target.value)}
                 />
               </div>
               {requirements.showCategoryTemplate ? (
                 <div className="space-y-2">
-                  <Label htmlFor="productNotes">Продукти и бележки</Label>
+                  <Label htmlFor="productNotes">
+                    Продукти и бележки <span className="text-destructive">*</span>
+                  </Label>
                   <Textarea
                     id="productNotes"
+                    required
                     rows={4}
                     placeholder="Опиши продуктите, снимки, цени или линк към каталог..."
                     value={productNotes}
@@ -347,13 +459,11 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
             <OnboardingIntegrationsStep
               requirements={requirements}
               channels={channels}
-              onChannelsChange={setChannels}
+              onChannelsChange={(next) =>
+                setChannels(normalizeSocialChannels(next, minSocialChannels))
+              }
               googleBusinessUrl={googleBusinessUrl}
               onGoogleBusinessUrlChange={setGoogleBusinessUrl}
-              storeFacebook={storeFacebook}
-              onStoreFacebookChange={setStoreFacebook}
-              storeInstagram={storeInstagram}
-              onStoreInstagramChange={setStoreInstagram}
             />
           ) : null}
 
@@ -362,9 +472,13 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
               Назад
             </Button>
             {!isLastStep ? (
-              <Button type="button" onClick={handleNext} disabled={saving}>
-                {saving ? "Запазване..." : "Напред"}
-              </Button>
+              step === 2 || (step === 1 && !showStep1Continue) ? (
+                <div />
+              ) : (
+                <Button type="button" onClick={handleNext} disabled={saving}>
+                  {saving ? "Запазване..." : "Напред"}
+                </Button>
+              )
             ) : (
               <Button type="button" onClick={handleFinish} disabled={saving}>
                 {saving ? "Запазване..." : "Завърши"}

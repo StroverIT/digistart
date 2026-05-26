@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
-import { getTemplate } from "@/lib/data/templates";
+import { getTemplateForOnboarding } from "@/lib/data/templates";
 import {
   getOnboardingRequirements,
   type OnboardingRequirements,
@@ -17,7 +17,7 @@ import { prisma } from "@/lib/prisma";
 
 const patchSchema = z.object({
   step: z.number().int().min(1).max(4).optional(),
-  productCategory: z.enum(["clothing"]).optional(),
+  productCategory: z.enum(["clothing", "cosmetics", "food", "other"]).optional(),
   templateId: z.string().optional(),
   businessSettings: z.record(z.unknown()).optional(),
   socialSettings: z.record(z.unknown()).optional(),
@@ -112,7 +112,7 @@ export async function PATCH(req: Request) {
 
   let previewSlug: string | undefined;
   if (parsed.data.templateId && category) {
-    const template = getTemplate(category, parsed.data.templateId);
+    const template = getTemplateForOnboarding(category, parsed.data.templateId);
     if (template) {
       previewSlug = `${category}/${template.id}`;
     }

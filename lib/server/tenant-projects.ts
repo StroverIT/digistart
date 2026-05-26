@@ -1,5 +1,5 @@
 import type { Prisma } from "@prisma/client";
-import { getTemplate } from "@/lib/data/templates";
+import { getTemplateForOnboarding } from "@/lib/data/templates";
 import {
   resolvePreviewPathBySlug,
   resolveTemplatePreviewUrl,
@@ -42,7 +42,7 @@ function mapProject(row: {
 }): TenantProjectDto {
   const template =
     row.templateId && row.productCategory
-      ? getTemplate(row.productCategory, row.templateId)
+      ? getTemplateForOnboarding(row.productCategory, row.templateId)
       : undefined;
 
   return {

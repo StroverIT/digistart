@@ -1,4 +1,4 @@
-export type ProductCategory = "clothing" | "cosmetics" | "food";
+export type ProductCategory = "clothing" | "cosmetics" | "food" | "other";
 
 export type TemplateCategoryFilter = ProductCategory | "all";
 
@@ -30,8 +30,9 @@ export const productCategories: {
   enabled: boolean;
 }[] = [
   { id: "clothing", name: "Дрехи", enabled: true },
-  { id: "cosmetics", name: "Козметика", enabled: false },
-  { id: "food", name: "Храни и напитки", enabled: false },
+  { id: "cosmetics", name: "Козметика", enabled: true },
+  { id: "food", name: "Храни и напитки", enabled: true },
+  { id: "other", name: "Друго", enabled: true },
 ];
 
 const defaultBuiltWith =
@@ -293,6 +294,19 @@ export const storeTemplates: StoreTemplate[] = [
 
 export function getTemplate(category: string, id: string): StoreTemplate | undefined {
   return storeTemplates.find((t) => t.category === category && t.id === id);
+}
+
+/** Resolves a template during onboarding (all catalog templates are under clothing). */
+export function getTemplateForOnboarding(
+  productCategory: string,
+  id: string,
+): StoreTemplate | undefined {
+  return getTemplate(productCategory, id) ?? getTemplate("clothing", id);
+}
+
+/** Templates shown in onboarding — same clothing catalog for every product category. */
+export function getOnboardingTemplates(_productCategory?: string): StoreTemplate[] {
+  return storeTemplates;
 }
 
 export function getTemplatesByCategory(category: ProductCategory): StoreTemplate[] {
