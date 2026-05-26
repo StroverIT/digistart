@@ -243,89 +243,89 @@ export function Header() {
   return (
     <>
       <div className="fixed top-0 left-0 right-0 z-50">
-      <header
-        className={`transition-all duration-300 ${isScrolled
-          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg"
-          : "bg-transparent"
-          }`}
-      >
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16 md:h-20">
-            <TransitionLink href="/" className="flex items-center gap-2 group rounded-lg z-60 relative">
-              <Image
-                src="/logo.png"
-                alt="DigiStart logo"
-                width={32}
-                height={32}
-                className="h-8 w-8 transition-transform group-hover:scale-110"
-                priority
-              />
-              <span className="flex flex-col leading-tight">
-                <span className="text-xl font-bold tracking-tight">
-                  Digi<span className="text-primary">Start</span>
+        <header
+          className={`transition-all duration-300 ${isScrolled
+            ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg"
+            : "bg-transparent"
+            }`}
+        >
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between h-16 md:h-20">
+              <TransitionLink href="/" className="flex items-center gap-2 group rounded-lg z-60 relative">
+                <Image
+                  src="/logo.png"
+                  alt="DigiStart logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 transition-transform group-hover:scale-110"
+                  priority
+                />
+                <span className="flex flex-col leading-tight">
+                  <span className="text-xl font-bold tracking-tight">
+                    Digi<span className="text-primary">Start</span>
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-muted-foreground font-medium tracking-widest uppercase">
+                    Easy Start
+                  </span>
                 </span>
-                <span className="text-[10px] sm:text-xs text-muted-foreground font-medium tracking-widest uppercase">
-                  Easy Start
-                </span>
-              </span>
-            </TransitionLink>
+              </TransitionLink>
 
-            <div className="flex items-center gap-2 z-60 relative">
-              <AnalyticsToolbar />
-              {isCartPage ? (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative bg-primary/10 ring-2 ring-primary/25 pointer-events-none"
-                  tabIndex={-1}
-                  aria-current="page"
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
-                      {cartCount}
-                    </span>
-                  )}
-                  <span className="sr-only">Кошница (текуща страница)</span>
-                </Button>
-              ) : (
-                <TransitionLink href="/cart">
+              <div className="flex items-center gap-2 z-60 relative">
+                <AnalyticsToolbar />
+                {isCartPage ? (
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={cn(
-                      "relative group rounded-xl transition-all duration-200 ease-out",
-                      "text-muted-foreground hover:text-primary",
-                      "hover:bg-primary/10 hover:ring-1 hover:ring-primary/20",
-                      "hover:shadow-[0_0_24px_-8px] hover:shadow-primary/30",
-                      "active:scale-[0.96] motion-reduce:active:scale-100"
-                    )}
+                    className="relative bg-primary/10 ring-2 ring-primary/25 pointer-events-none"
+                    tabIndex={-1}
+                    aria-current="page"
                   >
-                    <ShoppingCart className="h-5 w-5 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:scale-100" />
+                    <ShoppingCart className="h-5 w-5" />
                     {cartCount > 0 && (
                       <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
                         {cartCount}
                       </span>
                     )}
-                    <span className="sr-only">Кошница</span>
+                    <span className="sr-only">Кошница (текуща страница)</span>
                   </Button>
-                </TransitionLink>
-              )}
+                ) : (
+                  <TransitionLink href="/cart">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={cn(
+                        "relative group rounded-xl transition-all duration-200 ease-out",
+                        "text-muted-foreground hover:text-primary",
+                        "hover:bg-primary/10 hover:ring-1 hover:ring-primary/20",
+                        "hover:shadow-[0_0_24px_-8px] hover:shadow-primary/30",
+                        "active:scale-[0.96] motion-reduce:active:scale-100"
+                      )}
+                    >
+                      <ShoppingCart className="h-5 w-5 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:scale-100" />
+                      {cartCount > 0 && (
+                        <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                          {cartCount}
+                        </span>
+                      )}
+                      <span className="sr-only">Кошница</span>
+                    </Button>
+                  </TransitionLink>
+                )}
 
-              <div className="flex items-center justify-center rounded-full bg-card border border-border w-12 h-12">
-                <Hamburger
-                  toggled={isOpen}
-                  toggle={toggleMenu}
-                  size={18}
-                  rounded
-                  label={isOpen ? "Затвори менюто" : "Отвори менюто"}
-                />
+                <div className="flex items-center justify-center rounded-full bg-card border border-border w-12 h-12">
+                  <Hamburger
+                    toggled={isOpen}
+                    toggle={toggleMenu}
+                    size={18}
+                    rounded
+                    label={isOpen ? "Затвори менюто" : "Отвори менюто"}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </header>
-      <ServiceSlotsBanner />
+        </header>
+        <ServiceSlotsBanner />
       </div>
 
       <div
