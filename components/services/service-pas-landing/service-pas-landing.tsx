@@ -109,14 +109,12 @@ export function ServicePasLanding({
         /> : null}
 
         {beforeFaq}
-
+        {children}
         <PasFaqSection
           {...content.faq}
           headingFontClass={headingFontClass}
           buyCta={buy("faq")}
         />
-
-        {children}
       </div>
     </div>
   );
