@@ -16,6 +16,7 @@ const VALID_SALES_ANSWERS = new Set(["instagram", "facebook", "olx", "other"]);
 const VALID_MONTHLY_ORDER_ANSWERS = new Set(["0-10", "10-50", "50-100", "100+"]);
 const VALID_SERVICE_ANSWERS = new Set([
   "online-store",
+  "ai-automation",
   "social-media",
   "ads",
   "google-business",

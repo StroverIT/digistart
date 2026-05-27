@@ -4,6 +4,7 @@ export type SalesChannel = "instagram" | "facebook" | "olx" | "other";
 
 export type VisitorServiceId =
   | "online-store"
+  | "ai-automation"
   | "social-media"
   | "ads"
   | "google-business";

@@ -39,6 +39,11 @@ export const SERVICE_SURVEY_OPTIONS: readonly {
     description: "Готов магазин за поръчки извън чата",
   },
   {
+    id: "ai-automation",
+    label: "AI Automation",
+    description: "Автоматизирай съобщенията в Instagram",
+  },
+  {
     id: "ads",
     label: "Реклами",
     description: "Facebook и Instagram реклами",

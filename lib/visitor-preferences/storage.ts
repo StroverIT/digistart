@@ -23,6 +23,7 @@ function isMonthlyOrderVolume(value: unknown): value is MonthlyOrderVolume {
 function isVisitorServiceId(value: unknown): value is VisitorServiceId {
   return (
     value === "online-store" ||
+    value === "ai-automation" ||
     value === "social-media" ||
     value === "ads" ||
     value === "google-business"

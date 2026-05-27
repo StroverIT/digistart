@@ -26,6 +26,7 @@ const CHANNEL_LABELS: Record<SalesChannel, string> = {
 
 const SERVICE_LABELS: Record<VisitorServiceId, string> = {
   "online-store": "Онлайн магазин",
+  "ai-automation": "AI Automation",
   ads: "Реклами",
   "social-media": "Социални мрежи",
   "google-business": "Google My Business",
