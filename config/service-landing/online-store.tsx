@@ -47,7 +47,7 @@ export const ONLINE_STORE_LANDING: ServicePasLandingContent = {
   },
   problem: {
     eyebrow: "Системата те държи в чата",
-    title: "Продаваш добре в Instagram - но едно съобщение = 20 минути. Мащабът ти е таванът на времето.",
+    title: "Продаваш добре в Instagram, но едно съобщение = 20 минути. Мащабът ти е таванът на времето.",
     intro: (
       <p>
         Агенциите искат €1500-3000 преди първата поръчка. WordPress / Shopify иска дизайн умения и
