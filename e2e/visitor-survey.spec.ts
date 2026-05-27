@@ -28,7 +28,7 @@ test.describe("Visitor survey", () => {
     ).toBeVisible();
 
     const completionPromise = waitForSurveyAnalytics(page, "completion");
-    await page.getByRole("button", { name: "10–50", exact: true }).click();
+    await page.getByRole("button", { name: "10-50", exact: true }).click();
     await expect(
       page.getByRole("heading", { name: "От кои услуги се интересуваш?" }),
     ).toBeVisible();

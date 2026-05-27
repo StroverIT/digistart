@@ -242,7 +242,7 @@ export function DomainSetupCard({ orderItemId, vpsIp }: DomainSetupCardProps) {
               <span className="font-medium text-foreground">Стойност:</span> IP адресът по-горе
             </p>
             <p className="text-xs pt-1">
-              TTL: по подразбиране или 300–3600 сек. Промените могат да отнемат до 24 часа.
+              TTL: по подразбиране или 300-3600 сек. Промените могат да отнемат до 24 часа.
             </p>
           </div>
         </div>

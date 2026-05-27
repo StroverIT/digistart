@@ -9,7 +9,7 @@ test.describe("Survey analytics on admin dashboard", () => {
     await completeVisitorSurvey(page, {
       channels: ["instagram", "olx"],
       channelLabels: ["Instagram", "OLX"],
-      orderVolumeLabel: "50–100",
+      orderVolumeLabel: "50-100",
       serviceLabels: ["Реклами", "Социални мрежи"],
       primaryServiceIndex: 0,
     });

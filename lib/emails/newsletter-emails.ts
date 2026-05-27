@@ -346,7 +346,7 @@ export async function sendNewsletterSignupEmails(params: {
   });
 
   const subscriberSubject = withTestSubject(
-    "Благодарим за записването в бюлетина – DigiStart",
+    "Благодарим за записването в бюлетина - DigiStart",
     delivery.testMode,
   );
   const adminSubject = withTestSubject(

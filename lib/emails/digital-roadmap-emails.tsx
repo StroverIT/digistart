@@ -106,7 +106,7 @@ async function renderSubscriberEmailHtml(params: { name: string }) {
       React.createElement(
         Preview,
         null,
-        "Вашата безплатна дигитална пътна карта – DigiStart",
+        "Вашата безплатна дигитална пътна карта - DigiStart",
       ),
       React.createElement(
         Body,
@@ -366,7 +366,7 @@ export async function sendDigitalRoadmapLeadEmails(params: {
   });
 
   const subscriberSubject = withTestSubject(
-    "Вашата дигитална пътна карта – DigiStart",
+    "Вашата дигитална пътна карта - DigiStart",
     delivery.testMode,
   );
   const adminSubject = withTestSubject(

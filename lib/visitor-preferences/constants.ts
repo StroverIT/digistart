@@ -22,9 +22,9 @@ export const MONTHLY_ORDER_VOLUME_OPTIONS: readonly {
   id: MonthlyOrderVolume;
   label: string;
 }[] = [
-  { id: "0-10", label: "0–10" },
-  { id: "10-50", label: "10–50" },
-  { id: "50-100", label: "50–100" },
+  { id: "0-10", label: "0-10" },
+  { id: "10-50", label: "10-50" },
+  { id: "50-100", label: "50-100" },
   { id: "100+", label: "100+" },
 ] as const;
 

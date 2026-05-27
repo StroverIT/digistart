@@ -33,7 +33,7 @@ const SERVICE_LABELS: Record<VisitorServiceId, string> = {
 };
 
 const DEFAULT_CHANNELS: SalesChannel[] = ["instagram", "facebook"];
-const DEFAULT_ORDER_LABEL = "10–50";
+const DEFAULT_ORDER_LABEL = "10-50";
 const DEFAULT_SERVICE: VisitorServiceId = "online-store";
 
 function surveyPostBody(request: { postDataJSON: () => unknown }): { kind?: string } | null {

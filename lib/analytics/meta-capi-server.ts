@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 /**
  * Server-side Meta Conversions API forwarder via Stape CAPIG.
  *
- * Posts Meta CAPI–shaped events to https://capig.digistart.bg with the API key.
+ * Posts Meta CAPI-shaped events to https://capig.digistart.bg with the API key.
  * Browser-side `fbq('track', ..., { eventID })` and these server events share an
  * `event_id`, so Meta dedupes them.
  *

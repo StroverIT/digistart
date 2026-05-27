@@ -83,7 +83,7 @@ test.describe("Logged-in checkout", () => {
     await signInAsE2eCustomer(page, "/cart");
   });
 
-  test("6. Логнат потребител – една услуга", async ({ page }) => {
+  test("6. Логнат потребител - една услуга", async ({ page }) => {
     await addServiceFromPage(page, "online-store", 1);
     await expectCartContainsService(page, "online-store");
 
