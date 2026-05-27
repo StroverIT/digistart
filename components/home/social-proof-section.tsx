@@ -84,8 +84,7 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   "online-store": {
     title: (
       <>
-        Restyled: от <span className="gradient-text">поръчки в съобщения</span> до подреден онлайн
-        магазин
+        Клиенти които ни се довериха
       </>
     ),
     eyebrow: "Казус · Fashion · Онлайн магазин",
@@ -114,8 +113,7 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   "social-media": {
     title: (
       <>
-        Restyled: от <span className="gradient-text">поръчки в съобщения</span> до подреден онлайн
-        магазин
+        Клиенти които ни се довериха
       </>
     ),
     eyebrow: "Казус · Социални мрежи · Fashion",
@@ -148,8 +146,7 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   "google-business": {
     title: (
       <>
-        Restyled: продаваха в лични съобщения -{" "}
-        <span className="gradient-text">но Google не убеждаваше клиентите им</span>
+        Клиенти които ни се довериха
       </>
     ),
     eyebrow: "Казус · Google Business · Fashion",
@@ -182,8 +179,7 @@ const CONTENT: Record<SocialProofSectionType, SocialProofContent> = {
   ads: {
     title: (
       <>
-        Restyled: имаха продукт и аудитория -{" "}
-        <span className="gradient-text">рекламите не носеха система</span>
+        Клиенти които ни се довериха
       </>
     ),
     eyebrow: "Казус · Реклами · Fashion",

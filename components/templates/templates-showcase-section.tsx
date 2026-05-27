@@ -37,7 +37,7 @@ export function TemplatesShowcaseSection({
               "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10",
             )}
           >
-            Виж магазина си <span className="gradient-text">преди</span> да платиш
+            <span className="gradient-text">Виж магазина си</span> преди да платиш
           </h2>
           <p
             data-animate-reveal
