@@ -103,10 +103,10 @@ export function ServicePasLanding({
           buyCta={buy("steps")}
         />
 
-        <SocialProofSection
+        {content.socialProofType ? <SocialProofSection
           type={content.socialProofType}
           headingFontClass={headingFontClass}
-        />
+        /> : null}
 
         {beforeFaq}
 

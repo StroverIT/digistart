@@ -147,7 +147,7 @@ export const GOOGLE_BUSINESS_LANDING: ServicePasLandingContent = {
       },
     ],
   },
-  socialProofType: "google-business",
+  socialProofType: null,
   faq: {
     eyebrow: "Въпроси",
     title: "Често задавани въпроси",

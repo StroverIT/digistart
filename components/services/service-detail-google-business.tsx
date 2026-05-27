@@ -7,7 +7,6 @@ import {
   trackMetaAddToCart,
 } from "@/lib/analytics/meta-pixel";
 import { trackCtaClick } from "@/lib/analytics/tracker";
-import { Price } from "@/components/ui/price";
 import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
 import type { CartItemUpsell, Service, ServiceSlotAvailability } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
@@ -85,12 +84,6 @@ export function ServiceDetailGoogleBusiness({
       pageRootRef={pageRootRef}
       withPageBackground
       badgeIcon={<Search className="h-4 w-4" />}
-      priceSlot={
-        <div className="flex items-baseline gap-2">
-          <Price value={planPrice} className="text-3xl sm:text-4xl text-primary" />
-          <span className="text-muted-foreground">еднократно</span>
-        </div>
-      }
       onHeroPrimaryClick={() => {
         trackCtaClick(content.pagePath, `${content.ctaIdPrefix}_scroll_to_buy`);
         scrollToBuySection();
