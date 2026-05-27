@@ -1041,6 +1041,14 @@ export default function CheckoutPage() {
                     <div>
                       <p className="font-medium">{item.serviceName}</p>
                       <p className="text-sm text-muted-foreground">{item.selectedOptionName}</p>
+                      {item.billingCycle === "annual-prepaid" ? (
+                        <p className="mt-1 text-xs font-medium text-primary">
+                          Предплатено за 1 година
+                          {item.annualDiscountAmount
+                            ? ` с ${Math.round((item.annualDiscountRate ?? 0) * 100)}% отстъпка`
+                            : ""}
+                        </p>
+                      ) : null}
                       {item.upsells.length > 0 && (
                         <ul className="mt-2 space-y-1">
                           {item.upsells.map((upsell) => {
@@ -1067,7 +1075,11 @@ export default function CheckoutPage() {
                     </div>
                     <div className="text-right shrink-0">
                       <Price value={item.totalPrice} className="font-semibold" />
-                      {item.isMonthly && <span className="text-sm text-muted-foreground">/мес</span>}
+                      {item.billingCycle === "annual-prepaid" ? (
+                        <div className="text-xs text-muted-foreground">за 1 година</div>
+                      ) : item.isMonthly ? (
+                        <span className="text-sm text-muted-foreground">/мес</span>
+                      ) : null}
                     </div>
                   </div>
                 ))}
@@ -1075,7 +1087,11 @@ export default function CheckoutPage() {
                 <div className="space-y-2 pt-2">
                   {cart.totalOneTime > 0 && (
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Еднократни услуги</span>
+                      <span className="text-muted-foreground">
+                        {cart.items.some((item) => item.billingCycle === "annual-prepaid")
+                          ? "Еднократни плащания и предплащания"
+                          : "Еднократни услуги"}
+                      </span>
                       <Price value={cart.totalOneTime} />
                     </div>
                   )}

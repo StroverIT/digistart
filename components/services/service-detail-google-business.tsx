@@ -8,7 +8,12 @@ import {
 } from "@/lib/analytics/meta-pixel";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
-import type { CartItemUpsell, Service, ServiceSlotAvailability } from "@/lib/types";
+import type {
+  CartBillingCycle,
+  CartItemUpsell,
+  Service,
+  ServiceSlotAvailability,
+} from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServicePlanPrice } from "@/lib/data/services";
@@ -49,15 +54,20 @@ export function ServiceDetailGoogleBusiness({
     document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleGoogleCheckout = () => {
+  const handleGoogleCheckout = (options?: { billingCycle?: CartBillingCycle }) => {
     setIsAdding(true);
     const existing = findCartItemByService(service.id, GOOGLE_BUSINESS_PROFILE_OPTION_ID);
     if (existing) {
-      updateCartItemUpsells(existing.id, upsells);
+      updateCartItemUpsells(existing.id, upsells, options?.billingCycle);
       setIsAdding(false);
       return;
     }
-    const result = addToCart(service.id, GOOGLE_BUSINESS_PROFILE_OPTION_ID, upsells);
+    const result = addToCart(
+      service.id,
+      GOOGLE_BUSINESS_PROFILE_OPTION_ID,
+      upsells,
+      options?.billingCycle,
+    );
     if (!result.added) {
       setIsAdding(false);
       return;

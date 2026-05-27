@@ -1,6 +1,6 @@
 "use client";
 
-import type { Cart, CartItem, CartItemUpsell } from "@/lib/types";
+import type { Cart, CartBillingCycle, CartItem, CartItemUpsell } from "@/lib/types";
 import {
   getPlanById,
   getPlanComponentsForRecalc,
@@ -10,7 +10,10 @@ import {
 } from "@/lib/data/plans";
 import { calculatePlanTotal } from "@/lib/pricing/calculate-plan-total";
 import { getServiceById } from "@/lib/data/services";
-import { calculateItemTotal } from "@/lib/pricing/calculate-item-total";
+import {
+  calculateItemTotal,
+  type ItemTotalCalculation,
+} from "@/lib/pricing/calculate-item-total";
 import { recordCartAddition } from "@/lib/store/cart-analytics";
 
 const CART_STORAGE_KEY = "digistart-cart";
@@ -68,7 +71,8 @@ export { calculateItemTotal };
 export function addToCart(
   serviceId: string,
   optionId: string,
-  upsells: CartItemUpsell[]
+  upsells: CartItemUpsell[],
+  billingCycle: CartBillingCycle = "monthly",
 ): AddToCartResult {
   const cart = getCart();
   const service = getServiceById(serviceId);
@@ -81,11 +85,7 @@ export function addToCart(
   const option = service.options.find((o) => o.id === optionId);
   if (!option) return { cart, added: false, reason: "invalid" };
 
-  const { total, isMonthly, oneTimeTotal, monthlyTotal } = calculateItemTotal(
-    serviceId,
-    optionId,
-    upsells
-  );
+  const totals = calculateItemTotal(serviceId, optionId, upsells, billingCycle);
 
   const newItem: CartItem = {
     id: `${serviceId}-${optionId}-${Date.now()}`,
@@ -95,10 +95,14 @@ export function addToCart(
     selectedOptionName: option.name,
     basePrice: option.price,
     upsells,
-    totalPrice: total,
-    totalOneTime: oneTimeTotal,
-    totalMonthly: monthlyTotal,
-    isMonthly,
+    totalPrice: totals.total,
+    totalOneTime: totals.oneTimeTotal,
+    totalMonthly: totals.monthlyTotal,
+    isMonthly: totals.isMonthly,
+    billingCycle: totals.billingCycle,
+    annualPrepaySubtotal: totals.annualPrepaySubtotal,
+    annualDiscountAmount: totals.annualDiscountAmount,
+    annualDiscountRate: totals.annualDiscountRate,
   };
 
   cart.items.push(newItem);
@@ -117,23 +121,29 @@ export function addOrUpdateServiceInCart(
     includeCompanion?: boolean;
     companionServiceId?: string;
     companionOptionId?: string;
+    billingCycle?: CartBillingCycle;
   },
 ): AddToCartResult {
   const existing = findCartItemByService(serviceId, optionId);
   if (existing) {
-    updateCartItemUpsells(existing.id, upsells);
+    updateCartItemUpsells(existing.id, upsells, options?.billingCycle);
     if (
       options?.includeCompanion &&
       options.companionServiceId &&
       options.companionOptionId &&
       !findCartItemByService(options.companionServiceId, options.companionOptionId)
     ) {
-      addToCart(options.companionServiceId, options.companionOptionId, []);
+      addToCart(
+        options.companionServiceId,
+        options.companionOptionId,
+        [],
+        options.billingCycle,
+      );
     }
     return { cart: getCart(), added: false, reason: "duplicate" };
   }
 
-  const result = addToCart(serviceId, optionId, upsells);
+  const result = addToCart(serviceId, optionId, upsells, options?.billingCycle);
   if (!result.added) return result;
 
   if (
@@ -142,7 +152,12 @@ export function addOrUpdateServiceInCart(
     options.companionOptionId &&
     !findCartItemByService(options.companionServiceId, options.companionOptionId)
   ) {
-    addToCart(options.companionServiceId, options.companionOptionId, []);
+    addToCart(
+      options.companionServiceId,
+      options.companionOptionId,
+      [],
+      options.billingCycle,
+    );
   }
 
   return result;
@@ -186,13 +201,17 @@ function planCartUpsellExtras(planId: PlanId, userUpsells: CartItemUpsell[]): {
   return { oneTimeTotal, monthlyTotal };
 }
 
-export function updateCartItemUpsells(itemId: string, upsells: CartItemUpsell[]): Cart {
+export function updateCartItemUpsells(
+  itemId: string,
+  upsells: CartItemUpsell[],
+  billingCycle?: CartBillingCycle,
+): Cart {
   const cart = getCart();
   const item = cart.items.find((cartItem) => cartItem.id === itemId);
   if (!item) return cart;
 
-  const planId = item.planId ?? serviceIdToPlanId(item.serviceId);
-  const totals =
+  const planId = (item.planId ?? serviceIdToPlanId(item.serviceId)) as PlanId | undefined;
+  const totals: ItemTotalCalculation =
     planId != null
       ? (() => {
           const planTotals = calculatePlanTotal(planId);
@@ -204,14 +223,24 @@ export function updateCartItemUpsells(itemId: string, upsells: CartItemUpsell[])
             isMonthly: true,
             oneTimeTotal,
             monthlyTotal,
+            billingCycle: "monthly" as const,
           };
         })()
-      : calculateItemTotal(item.serviceId, item.selectedOptionId, upsells);
+      : calculateItemTotal(
+          item.serviceId,
+          item.selectedOptionId,
+          upsells,
+          billingCycle ?? item.billingCycle ?? "monthly",
+        );
   item.upsells = upsells;
   item.totalPrice = totals.total;
   item.totalOneTime = totals.oneTimeTotal;
   item.totalMonthly = totals.monthlyTotal;
   item.isMonthly = totals.isMonthly;
+  item.billingCycle = totals.billingCycle;
+  item.annualPrepaySubtotal = totals.annualPrepaySubtotal;
+  item.annualDiscountAmount = totals.annualDiscountAmount;
+  item.annualDiscountRate = totals.annualDiscountRate;
 
   recalculateTotals(cart);
   saveCart(cart);

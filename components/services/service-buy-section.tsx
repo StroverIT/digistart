@@ -15,8 +15,12 @@ import {
   validateUpsellEntries,
   type UpsellEntryErrors,
 } from "@/components/services/upsell-validation";
-import type { CartItemUpsell, Service } from "@/lib/types";
+import type { CartBillingCycle, CartItemUpsell, Service } from "@/lib/types";
 import { getServiceById } from "@/lib/data/services";
+import {
+  ANNUAL_PREPAY_DISCOUNT_RATE,
+  calculateItemTotal,
+} from "@/lib/pricing/calculate-item-total";
 import { findCartItemByService } from "@/lib/store/cart";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
@@ -40,6 +44,20 @@ function setActiveMobileSticky(id: string | null) {
   notifyMobileStickySubscribers();
 }
 
+function formatSavedMonths(months: number) {
+  if (!Number.isFinite(months) || months <= 0) {
+    return "Спестяваш от цялата годишна сума.";
+  }
+
+  if (months > 2 && months < 3) {
+    return "Спестяваш почти 3 месеца.";
+  }
+
+  const roundedMonths = Math.round(months);
+  const monthLabel = roundedMonths === 1 ? "месец" : "месеца";
+  return `Спестяваш ${roundedMonths} ${monthLabel}.`;
+}
+
 interface ServiceBuySectionProps {
   service: Service;
   title: string;
@@ -48,7 +66,10 @@ interface ServiceBuySectionProps {
   ctaLabel?: string;
   upsells: CartItemUpsell[];
   onUpsellsChange: (nextUpsells: CartItemUpsell[]) => void;
-  onAddToCart: (options?: { includeCompanion?: boolean }) => void;
+  onAddToCart: (options?: {
+    includeCompanion?: boolean;
+    billingCycle?: CartBillingCycle;
+  }) => void;
   companion?: ServiceCompanionOfferConfig;
   isAdding: boolean;
   ctaId?: string;
@@ -80,6 +101,7 @@ export function ServiceBuySection({
 }: ServiceBuySectionProps) {
   const { push } = useTransitionRouter();
   const [includeCompanion, setIncludeCompanion] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<CartBillingCycle>("monthly");
   const [errors, setErrors] = useState<UpsellEntryErrors>({});
   const [serviceInCart, setServiceInCart] = useState(false);
   const hadCartLineRef = useRef(false);
@@ -113,9 +135,11 @@ export function ServiceBuySection({
       setServiceInCart(Boolean(item));
       if (item) {
         onUpsellsChange(cloneUpsells(item.upsells));
+        setBillingCycle(item.billingCycle ?? "monthly");
         hadCartLineRef.current = true;
       } else if (hadCartLineRef.current) {
         onUpsellsChange([]);
+        setBillingCycle("monthly");
         hadCartLineRef.current = false;
       }
     };
@@ -124,38 +148,67 @@ export function ServiceBuySection({
     return () => window.removeEventListener("cart-updated", syncFromCart);
   }, [service.id, cartSelectedOptionId, onUpsellsChange]);
 
-  const companionPrice = useMemo(() => {
-    if (!companion || !includeCompanion) return 0;
+  const serviceMonthlyTotals = useMemo(
+    () =>
+      selectedOption
+        ? calculateItemTotal(service.id, selectedOption.id, upsells, "monthly")
+        : { total: price, oneTimeTotal: 0, monthlyTotal: price },
+    [price, selectedOption, service.id, upsells],
+  );
+
+  const companionMonthlyTotals = useMemo(() => {
+    if (!companion || !includeCompanion) {
+      return { total: 0, oneTimeTotal: 0, monthlyTotal: 0 };
+    }
     const companionService = getServiceById(companion.serviceId);
     const option = companionService?.options.find((o) => o.id === companion.optionId);
-    return option?.price ?? 0;
+    if (!option) return { total: 0, oneTimeTotal: 0, monthlyTotal: 0 };
+    return {
+      total: option.price,
+      oneTimeTotal: option.isMonthly ? 0 : option.price,
+      monthlyTotal: option.isMonthly ? option.price : 0,
+    };
   }, [companion, includeCompanion]);
 
+  const canPrepayAnnually =
+    serviceMonthlyTotals.monthlyTotal + companionMonthlyTotals.monthlyTotal > 0;
+  const effectiveBillingCycle: CartBillingCycle =
+    canPrepayAnnually ? billingCycle : "monthly";
+
   const totalPrice = useMemo(() => {
-    let total = price + companionPrice;
-
-    for (const item of upsells) {
-      if (item.quantity <= 0) continue;
-      const upsell = service.upsells.find((u) => u.id === item.upsellId);
-      if (!upsell) continue;
-
-      if (upsell.kind === "choice" && upsell.choices?.length) {
-        const selectedChoice = upsell.choices.find((choice) => choice.id === item.choiceId);
-        total += (selectedChoice?.pricePerUnit ?? 0) * item.quantity;
-        continue;
-      }
-
-      const includedUnits = upsell.includedUnits ?? 0;
-      const billableUnits = Math.max(0, item.quantity - includedUnits);
-      if (upsell.tierStep && upsell.tierPrice) {
-        total += Math.ceil(billableUnits / upsell.tierStep) * upsell.tierPrice;
-        continue;
-      }
-      total += (upsell.pricePerUnit ?? 0) * billableUnits;
+    const subtotal =
+      serviceMonthlyTotals.oneTimeTotal +
+      companionMonthlyTotals.oneTimeTotal +
+      serviceMonthlyTotals.monthlyTotal * 12 +
+      companionMonthlyTotals.monthlyTotal * 12;
+    if (effectiveBillingCycle === "annual-prepaid") {
+      return Math.round(subtotal * (1 - ANNUAL_PREPAY_DISCOUNT_RATE) * 100) / 100;
     }
+    return serviceMonthlyTotals.total + companionMonthlyTotals.total;
+  }, [companionMonthlyTotals, effectiveBillingCycle, serviceMonthlyTotals]);
 
-    return total;
-  }, [price, companionPrice, upsells, service.upsells]);
+  const annualPrepaySubtotal =
+    serviceMonthlyTotals.oneTimeTotal +
+    companionMonthlyTotals.oneTimeTotal +
+    serviceMonthlyTotals.monthlyTotal * 12 +
+    companionMonthlyTotals.monthlyTotal * 12;
+  const annualDiscountAmount =
+    Math.round(annualPrepaySubtotal * ANNUAL_PREPAY_DISCOUNT_RATE * 100) / 100;
+  const annualDiscountPercent = Math.round(ANNUAL_PREPAY_DISCOUNT_RATE * 100);
+  const annualSavingsMonths =
+    annualDiscountAmount /
+    (serviceMonthlyTotals.monthlyTotal + companionMonthlyTotals.monthlyTotal);
+  const annualSavingsDescription = formatSavedMonths(annualSavingsMonths);
+  const totalFrequencyLabel =
+    effectiveBillingCycle === "annual-prepaid"
+      ? "за 1 година"
+      : monthlyLabel ?? (serviceMonthlyTotals.monthlyTotal > 0 ? "/месец" : null);
+
+  useEffect(() => {
+    if (!canPrepayAnnually && billingCycle === "annual-prepaid") {
+      setBillingCycle("monthly");
+    }
+  }, [billingCycle, canPrepayAnnually]);
 
   const handleChange = (nextUpsells: CartItemUpsell[]) => {
     onUpsellsChange(nextUpsells);
@@ -176,7 +229,9 @@ export function ServiceBuySection({
     }
     const wasInCart = serviceInCart;
     onAddToCart(
-      companion && includeCompanion ? { includeCompanion: true } : undefined,
+      companion && includeCompanion
+        ? { includeCompanion: true, billingCycle: effectiveBillingCycle }
+        : { billingCycle: effectiveBillingCycle },
     );
     if (wasInCart) {
       push("/cart");
@@ -250,11 +305,69 @@ export function ServiceBuySection({
   return (
     <section ref={sectionRef} id="buy-now" className="py-12 md:py-16">
       <div className="container mx-auto px-4">
-        {availability && remainingSlots !== undefined && !isSoldOut ? (
-          <p className="mb-4 text-center text-sm font-medium text-foreground">
-            Свободни места:{" "}
-            <span className="font-bold text-primary tabular-nums">{remainingSlots}</span>
-          </p>
+        {(availability && remainingSlots !== undefined && !isSoldOut) || canPrepayAnnually ? (
+          <div
+            className={cn(
+              "relative mb-5 rounded-2xl border border-primary/20 bg-primary/5 p-4",
+              isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
+            )}
+          >
+            <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <div className="space-y-1.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  {availability && remainingSlots !== undefined && !isSoldOut ? (
+                    <span className="rounded-full bg-background/80 px-3 py-1 text-sm font-medium text-foreground">
+                      Свободни места:{" "}
+                      <span className="font-bold text-primary tabular-nums">{remainingSlots}</span>
+                    </span>
+                  ) : null}
+                </div>
+                {canPrepayAnnually ? (
+                  <p className="text-sm text-muted-foreground">
+                    Отстъпката важи за всички включени суми, включително фиксираните
+                    еднократни цени.
+                  </p>
+                ) : null}
+              </div>
+              {canPrepayAnnually ? (
+                <div className="grid gap-2 sm:grid-cols-2 md:min-w-[420px]">
+                  <button
+                    type="button"
+                    onClick={() => setBillingCycle("monthly")}
+                    className={cn(
+                      "w-full rounded-xl border bg-background/70 p-3 text-left transition-colors",
+                      effectiveBillingCycle === "monthly"
+                        ? "border-primary ring-1 ring-primary"
+                        : "border-border hover:border-primary/40",
+                    )}
+                  >
+                    <span className="block text-sm font-semibold">Месечно</span>
+                    <span className="mt-1 block text-xs text-muted-foreground">
+                      Плащаш всеки месец.
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBillingCycle("annual-prepaid")}
+                    className={cn(
+                      "relative w-full overflow-hidden rounded-xl border bg-background/70 p-3 pr-14 pt-3 text-left transition-colors",
+                      effectiveBillingCycle === "annual-prepaid"
+                        ? "border-primary ring-1 ring-primary"
+                        : "border-border hover:border-primary/40",
+                    )}
+                  >
+                    <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground shadow-sm">
+                      -{annualDiscountPercent}%
+                    </span>
+                    <span className="block text-sm font-semibold">За година</span>
+                    <span className="mt-1 block text-xs text-muted-foreground">
+                      {annualSavingsDescription}
+                    </span>
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          </div>
         ) : null}
         <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           {isSoldOut && availability ? (
@@ -360,9 +473,15 @@ export function ServiceBuySection({
               <p className="text-sm text-muted-foreground mb-2">Общо</p>
               <div data-total-pulse className="mb-1 flex items-end gap-2">
                 <Price value={totalPrice} layout="vertical" className="text-3xl text-primary" />
-                {monthlyLabel ? <span className="pb-1 text-muted-foreground">{monthlyLabel}</span> : null}
+                {totalFrequencyLabel ? (
+                  <span className="pb-1 text-muted-foreground">{totalFrequencyLabel}</span>
+                ) : null}
               </div>
-              <p className="mb-5 text-xs text-muted-foreground">Включва избраните допълнителни услуги</p>
+              <p className="mb-5 text-xs text-muted-foreground">
+                {effectiveBillingCycle === "annual-prepaid"
+                  ? `Включва 12 месеца, еднократните суми и ${annualDiscountPercent}% отстъпка`
+                  : "Включва избраните допълнителни услуги"}
+              </p>
               <Button
                 onClick={handleAddClick}
                 size="lg"
@@ -393,7 +512,9 @@ export function ServiceBuySection({
                 layout="vertical"
                 className="text-base sm:text-lg text-primary leading-none"
               />
-              {monthlyLabel ? <span className="text-xs text-muted-foreground">{monthlyLabel}</span> : null}
+              {totalFrequencyLabel ? (
+                <span className="text-xs text-muted-foreground">{totalFrequencyLabel}</span>
+              ) : null}
             </div>
           </div>
           <Button

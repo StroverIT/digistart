@@ -69,6 +69,8 @@ export interface CartItemUpsell {
   note?: string;
 }
 
+export type CartBillingCycle = "monthly" | "annual-prepaid";
+
 export interface CartItem {
   id: string;
   /** Set for bundle subscription plans (`bundle-plan-*`). */
@@ -83,6 +85,10 @@ export interface CartItem {
   totalOneTime: number;
   totalMonthly: number;
   isMonthly?: boolean;
+  billingCycle?: CartBillingCycle;
+  annualPrepaySubtotal?: number;
+  annualDiscountAmount?: number;
+  annualDiscountRate?: number;
 }
 
 export interface Cart {

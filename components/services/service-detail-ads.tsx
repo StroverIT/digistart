@@ -10,7 +10,12 @@ import { trackCtaClick } from "@/lib/analytics/tracker";
 import { Price } from "@/components/ui/price";
 import { ADS_SOCIAL_MEDIA_COMPANION } from "@/lib/data/service-companions";
 import { addOrUpdateServiceInCart } from "@/lib/store/cart";
-import type { CartItemUpsell, Service, ServiceSlotAvailability } from "@/lib/types";
+import type {
+  CartBillingCycle,
+  CartItemUpsell,
+  Service,
+  ServiceSlotAvailability,
+} from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServicePlanPrice } from "@/lib/data/services";
@@ -46,12 +51,16 @@ export function ServiceDetailAds({ service, availability }: ServiceDetailAdsProp
     document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleAdsCheckout = (options?: { includeCompanion?: boolean }) => {
+  const handleAdsCheckout = (options?: {
+    includeCompanion?: boolean;
+    billingCycle?: CartBillingCycle;
+  }) => {
     setIsAdding(true);
     const result = addOrUpdateServiceInCart(service.id, optionId, upsells, {
       includeCompanion: options?.includeCompanion,
       companionServiceId: ADS_SOCIAL_MEDIA_COMPANION.serviceId,
       companionOptionId: ADS_SOCIAL_MEDIA_COMPANION.optionId,
+      billingCycle: options?.billingCycle,
     });
     if (!result.added && result.reason === "duplicate") {
       setIsAdding(false);

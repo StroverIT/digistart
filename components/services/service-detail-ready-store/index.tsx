@@ -7,7 +7,12 @@ import { trackCtaClick } from "@/lib/analytics/tracker";
 import { Price } from "@/components/ui/price";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServiceById, getServicePlanPrice } from "@/lib/data/services";
-import type { CartItemUpsell, Service, ServiceSlotAvailability } from "@/lib/types";
+import type {
+  CartBillingCycle,
+  CartItemUpsell,
+  Service,
+  ServiceSlotAvailability,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
@@ -60,15 +65,20 @@ export function ServiceDetailReadyStore({
     document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = (options?: { billingCycle?: CartBillingCycle }) => {
     setIsAdding(true);
     const existing = findCartItemByService(ONLINE_STORE_SERVICE_ID, ONLINE_STORE_OPTION_ID);
     if (existing) {
-      updateCartItemUpsells(existing.id, upsells);
+      updateCartItemUpsells(existing.id, upsells, options?.billingCycle);
       setIsAdding(false);
       return;
     }
-    const result = addToCart(ONLINE_STORE_SERVICE_ID, ONLINE_STORE_OPTION_ID, upsells);
+    const result = addToCart(
+      ONLINE_STORE_SERVICE_ID,
+      ONLINE_STORE_OPTION_ID,
+      upsells,
+      options?.billingCycle,
+    );
     if (!result.added) {
       setIsAdding(false);
       return;

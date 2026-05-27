@@ -217,10 +217,16 @@ function CartItemCard({
           {/* Price */}
           <div className="text-right shrink-0">
             <Price value={item.totalPrice} className="text-2xl text-primary" />
+            {item.billingCycle === "annual-prepaid" ? (
+              <div className="text-xs font-medium text-primary mt-1">
+                Предплатено за 1 година
+              </div>
+            ) : null}
             <div className="text-xs text-muted-foreground mt-1">
               {item.totalOneTime > 0 ? (
                 <span>
-                  Еднократно: <Price value={item.totalOneTime} />
+                  {item.billingCycle === "annual-prepaid" ? "Дължимо сега" : "Еднократно"}:{" "}
+                  <Price value={item.totalOneTime} />
                 </span>
               ) : null}
               {item.totalOneTime > 0 && item.totalMonthly > 0 ? <span> • </span> : null}
@@ -230,6 +236,11 @@ function CartItemCard({
                 </span>
               ) : null}
             </div>
+            {item.billingCycle === "annual-prepaid" && item.annualDiscountAmount ? (
+              <div className="text-xs text-muted-foreground mt-1">
+                Отстъпка: <Price value={item.annualDiscountAmount} />
+              </div>
+            ) : null}
           </div>
         </div>
       </CardContent>
@@ -455,7 +466,9 @@ export default function CartPage() {
                   {cart.totalOneTime > 0 && (
                     <div className="flex items-center justify-between">
                       <span className="text-muted-foreground">
-                        Еднократни услуги
+                        {cart.items.some((item) => item.billingCycle === "annual-prepaid")
+                          ? "Еднократни плащания и предплащания"
+                          : "Еднократни услуги"}
                       </span>
                       <Price value={cart.totalOneTime} className="font-semibold" />
                     </div>

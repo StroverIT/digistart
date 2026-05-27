@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import type Stripe from "stripe";
 import { authOptions } from "@/lib/auth";
 import {
   createOrderInDb,
@@ -61,6 +62,10 @@ const payloadSchema = z.object({
         totalOneTime: z.number(),
         totalMonthly: z.number(),
         isMonthly: z.boolean().optional(),
+        billingCycle: z.enum(["monthly", "annual-prepaid"]).optional(),
+        annualPrepaySubtotal: z.number().optional(),
+        annualDiscountAmount: z.number().optional(),
+        annualDiscountRate: z.number().optional(),
         planId: z.string().optional(),
       })
     ),
@@ -103,11 +108,16 @@ async function buildLineItems(
 
   for (const item of items) {
     if (item.totalOneTime > 0) {
+      const isAnnualPrepaid = item.billingCycle === "annual-prepaid";
       const mapped = await resolveOrCreateCatalogPrice({
         serviceId: item.serviceId,
         serviceName: item.serviceName,
-        selectedOptionId: `${item.selectedOptionId}:one_time`,
-        selectedOptionName: item.selectedOptionName,
+        selectedOptionId: isAnnualPrepaid
+          ? `${item.selectedOptionId}:annual_prepaid`
+          : `${item.selectedOptionId}:one_time`,
+        selectedOptionName: isAnnualPrepaid
+          ? `${item.selectedOptionName} (Annual prepaid)`
+          : item.selectedOptionName,
         billingType: "one_time",
         unitAmount: amountToMinorUnits(item.totalOneTime),
       });
@@ -269,26 +279,25 @@ export async function POST(req: NextRequest) {
     });
 
     const selectedTemplate = parsed.data.selectedTemplate;
-    const templateMetadata = selectedTemplate
-      ? {
-          templateCategory: selectedTemplate.productCategory,
-          templateId: selectedTemplate.templateId,
-        }
-      : {};
+    const planItem = parsed.data.cart.items.find((i) => i.planId);
+    const checkoutMetadata: Stripe.MetadataParam = {
+      orderId: order.id,
+      ...(selectedTemplate
+        ? {
+            templateCategory: selectedTemplate.productCategory,
+            templateId: selectedTemplate.templateId,
+          }
+        : {}),
+      ...(planItem?.planId ? { planId: planItem.planId } : {}),
+      ...(purchaseAsBusiness ? { purchaseAsBusiness: "true" } : {}),
+    };
 
     const uiMode = parsed.data.uiMode ?? "redirect";
-    const sessionBase: Parameters<typeof stripe.checkout.sessions.create>[0] = {
+    const sessionBase: Stripe.Checkout.SessionCreateParams = {
       mode,
       line_items: lineItems,
       customer: stripeCustomer.stripeCustomerId,
-      metadata: {
-        orderId: order.id,
-        ...templateMetadata,
-        ...(parsed.data.cart.items.find((i) => i.planId)
-          ? { planId: parsed.data.cart.items.find((i) => i.planId)!.planId! }
-          : {}),
-        ...(purchaseAsBusiness ? { purchaseAsBusiness: "true" } : {}),
-      },
+      metadata: checkoutMetadata,
       // Tax ID collection is often hidden (e.g. Customer already has a tax ID, or Stripe UI
       // heuristics). Custom fields always render in embedded Checkout for collectable VAT.
       billing_address_collection: purchaseAsBusiness ? "required" : "auto",
@@ -311,14 +320,7 @@ export async function POST(req: NextRequest) {
 
     if (mode === "subscription") {
       sessionBase.subscription_data = {
-        metadata: {
-          orderId: order.id,
-          ...templateMetadata,
-          ...(parsed.data.cart.items.find((i) => i.planId)
-            ? { planId: parsed.data.cart.items.find((i) => i.planId)!.planId! }
-            : {}),
-          ...(purchaseAsBusiness ? { purchaseAsBusiness: "true" } : {}),
-        },
+        metadata: checkoutMetadata,
       };
     }
 
