@@ -1,6 +1,7 @@
 /** Service ids that participate in slot capacity (public landing pages). */
 export const SLOT_MANAGED_SERVICE_IDS = [
   "ready-store",
+  "ai-automation",
   "social-media",
   "ads",
   "google-business",
@@ -12,6 +13,7 @@ export type SlotManagedServiceId = (typeof SLOT_MANAGED_SERVICE_IDS)[number];
 export function serviceIdFromPathSlug(pathSlug: string): SlotManagedServiceId | null {
   const map: Record<string, SlotManagedServiceId> = {
     "online-store": "ready-store",
+    "ai-automation": "ai-automation",
     "social-media": "social-media",
     ads: "ads",
     "google-business": "google-business",

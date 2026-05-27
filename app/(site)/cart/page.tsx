@@ -16,6 +16,7 @@ import { getServiceById, services } from "@/lib/data/services";
 import { UpsellConfigurator } from "@/components/services/upsell-configurator";
 
 const additionalServicePrompts: Record<string, string> = {
+  "ai-automation": "Искаш ли AI Automation за Instagram продажби на автопилот?",
   "ready-store": "Искаш ли онлайн магазин за 20 евро на месец?",
   "social-media": "Искаш ли редовно съдържание в профилите си?",
   ads: "Искаш ли платени реклами с управление от нас?",
@@ -23,6 +24,7 @@ const additionalServicePrompts: Record<string, string> = {
 };
 
 const serviceStickerMap: Record<string, string> = {
+  "ai-automation": "/stickers/social-media.png",
   "ready-store": "/stickers/online-shop.png",
   "google-business": "/stickers/my-business.png",
   "social-media": "/stickers/social-media.png",

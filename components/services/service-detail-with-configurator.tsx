@@ -7,6 +7,7 @@ import {
   Clock,
   MapPin,
   Share2,
+  Sparkles,
   ShoppingCart,
 } from "lucide-react";
 import gsap from "gsap";
@@ -25,6 +26,7 @@ const iconMap: Record<string, ReactNode> = {
   ShoppingCart: <ShoppingCart className="h-12 w-12" />,
   MapPin: <MapPin className="h-12 w-12" />,
   Share2: <Share2 className="h-12 w-12" />,
+  Sparkles: <Sparkles className="h-12 w-12" />,
 };
 
 interface ServiceDetailWithConfiguratorProps {

@@ -1,12 +1,14 @@
 import { expect, type Page } from "@playwright/test";
 
 export type ServiceSlug =
+  | "ai-automation"
   | "online-store"
   | "social-media"
   | "google-business"
   | "ads";
 
 const SERVICE_LABELS: Record<ServiceSlug, string> = {
+  "ai-automation": "AI Automation",
   "online-store": "Онлайн Магазин",
   "social-media": "Социални мрежи",
   "google-business": "Google Business",
@@ -53,6 +55,7 @@ export async function expectCartContainsService(page: Page, slug: ServiceSlug) {
 /** From cart, open an additional-service upsell link and add that service. */
 export async function addServiceFromCartUpsell(page: Page, slug: ServiceSlug) {
   const promptPatterns: Record<ServiceSlug, RegExp> = {
+    "ai-automation": /automation|ai/i,
     "online-store": /онлайн магазин/i,
     "social-media": /още повече клиенти/i,
     "google-business": /локално/i,

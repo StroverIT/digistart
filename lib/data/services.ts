@@ -242,6 +242,36 @@ export const services: Service[] = [
     timeline: "Постоянна услуга",
   },
   {
+    id: "ai-automation",
+    slug: "ai-automation",
+    name: "AI Automation",
+    description:
+      "AI автоматизация за Instagram продажби: отговори в DM, comment-to-DM, реактивация на изоставени чатове и квалификация на запитвания.",
+    icon: "Sparkles",
+    basePrice: 28,
+    isMonthly: true,
+    options: [
+      {
+        id: "subscription",
+        name: "AI Automation за Instagram",
+        description:
+          "24/7 AI асистент за продажби с човешки звучащи скриптове и настройка до 24 часа.",
+        price: 28,
+        isMonthly: true,
+      },
+    ],
+    upsells: [...brandUpsells],
+    features: [
+      "DM Sales Closer: автоматични отговори за цена, размер и наличност",
+      "Comment-to-DM: автоматично съобщение при ключова дума в коментар",
+      "Chat Retargeting: follow-up към изоставени разговори след 24 часа",
+      "Lead Scoring: 2-3 въпроса за квалификация преди включване на човек",
+      "Маршрутизиране към онлайн магазина и линкове към конкретни продукти",
+      "Вграден чат за клиенти (9:00 - 22:00)",
+    ],
+    timeline: "До 24 часа",
+  },
+  {
     id: "ads",
     slug: "ads",
     name: "Реклами",

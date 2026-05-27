@@ -11,6 +11,7 @@ import { siteContact } from "@/lib/site-contact";
 gsap.registerPlugin(ScrollTrigger);
 
 const services = [
+  { href: "/services/ai-automation", label: "AI Automation" },
   { href: "/services/online-store", label: "Онлайн магазин" },
   { href: "/services/google-business", label: "Google Business" },
   { href: "/services/social-media", label: "Социални мрежи" },

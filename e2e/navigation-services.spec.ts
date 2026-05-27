@@ -8,6 +8,7 @@ import {
 import { navigateViaMenu } from "./helpers/navigation";
 
 const CYRILLIC_REWRITES: { path: string; serviceSlug: ServiceSlug }[] = [
+  { path: "/услуги/ai-automation", serviceSlug: "ai-automation" },
   { path: "/услуги/онлайн-магазин", serviceSlug: "online-store" },
   { path: "/услуги/социални-мрежи", serviceSlug: "social-media" },
   { path: "/услуги/реклами", serviceSlug: "ads" },
@@ -56,6 +57,7 @@ test.describe("Navigation and services", () => {
 
   test.describe("Add to cart", () => {
     const services: ServiceSlug[] = [
+      "ai-automation",
       "online-store",
       "social-media",
       "google-business",

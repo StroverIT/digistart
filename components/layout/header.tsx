@@ -19,6 +19,11 @@ import { clearPreferences, hasCompletedSurvey } from "@/lib/visitor-preferences/
 const navLinks = [
   { href: "/", label: "Начало", paths: ["/"] },
   {
+    href: "/services/ai-automation",
+    label: "AI Automation",
+    paths: ["/услуги/ai-automation", "/services/ai-automation"],
+  },
+  {
     href: "/services/online-store",
     label: "Онлайн магазин",
     paths: ["/услуги/онлайн-магазин", "/services/online-store"],

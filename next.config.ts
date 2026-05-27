@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
         destination: "/services/online-store",
       },
       {
+        source: "/услуги/ai-automation",
+        destination: "/services/ai-automation",
+      },
+      {
         source: "/услуги/google-business",
         destination: "/services/google-business",
       },

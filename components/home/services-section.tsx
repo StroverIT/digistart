@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 gsap.registerPlugin(ScrollTrigger);
 
 const stickerMap: Record<string, string> = {
+  "ai-automation": "/stickers/social-media.png",
   "ready-store": "/stickers/online-shop.png",
   "google-business": "/stickers/my-business.png",
   "social-media": "/stickers/social-media.png",
