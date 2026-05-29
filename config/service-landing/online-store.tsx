@@ -9,7 +9,7 @@ export const ONLINE_STORE_LANDING: ServicePasLandingContent = {
     badgeText: "14 дни безплатен тест без риск",
     title: (
       <div>
-        Онлайн магазин, <span className="gradient-text">адаптиран за твоя бизнес</span>. <div className="mt-2" /> Екип, който е <span className="gradient-text">винаги до теб</span>
+        Онлайн магазин, <span className="gradient-text">адаптиран за твоя бизнес</span> и екип, който е <span className="gradient-text">винаги до теб</span>
       </div>
     ),
     description:
