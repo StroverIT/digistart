@@ -5,6 +5,10 @@ import { getStripeServerClient } from "@/lib/server/stripe";
 import { trySendOrderPaidConfirmationEmails } from "@/lib/server/order-emails";
 import { applyCheckoutTemplateFromOrderMetadata } from "@/lib/server/checkout-template";
 import {
+  isStripeCheckoutSessionFulfilled,
+  stripeCheckoutPaidAt,
+} from "@/lib/server/online-store-trial";
+import {
   ensureGuestUserForOrderInDb,
   setOrderStripeSnapshotInDb,
   setOrderSubscriptionRenewsAtInDb,
@@ -78,7 +82,8 @@ async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
       : session.subscription?.id;
   const customerId =
     typeof session.customer === "string" ? session.customer : session.customer?.id;
-  const paidAt = session.payment_status === "paid" ? new Date() : null;
+  const fulfilled = isStripeCheckoutSessionFulfilled(session);
+  const paidAt = stripeCheckoutPaidAt(session);
 
   const vat = companyVatFromCheckoutSession(session);
   const baseMeta =
@@ -101,10 +106,10 @@ async function handleCheckoutSessionEvent(session: Stripe.Checkout.Session) {
     metadata: baseMeta,
     checkoutCompletedAt: toIsoDate(session.created),
     paidAt,
-    markAsPaid: session.payment_status === "paid",
+    markAsPaid: fulfilled,
   });
 
-  if (session.payment_status === "paid") {
+  if (fulfilled) {
     await provisionGuestUserFromOrder(orderId);
     const orderUser = await prisma.order.findUnique({
       where: { id: orderId },

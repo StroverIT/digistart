@@ -17,6 +17,10 @@ import { getServiceById } from "@/lib/data/services";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 import { getStripeServerClient } from "@/lib/server/stripe";
 import {
+  cartQualifiesForOnlineStoreTrial,
+  ONLINE_STORE_TRIAL_DAYS,
+} from "@/lib/server/online-store-trial";
+import {
   resolveOrCreateCatalogPrice,
   resolveOrCreateStripeCustomer,
 } from "@/lib/server/stripe-catalog";
@@ -319,8 +323,13 @@ export async function POST(req: NextRequest) {
     };
 
     if (mode === "subscription") {
+      const applyStoreTrial = cartQualifiesForOnlineStoreTrial(parsed.data.cart.items);
       sessionBase.subscription_data = {
-        metadata: checkoutMetadata,
+        metadata: {
+          ...checkoutMetadata,
+          ...(applyStoreTrial ? { trialDays: String(ONLINE_STORE_TRIAL_DAYS) } : {}),
+        },
+        ...(applyStoreTrial ? { trial_period_days: ONLINE_STORE_TRIAL_DAYS } : {}),
       };
     }
 

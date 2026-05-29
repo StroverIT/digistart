@@ -37,14 +37,14 @@ export function TemplatesShowcaseSection({
               "text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-balance opacity-0 translate-y-10",
             )}
           >
-            <span className="gradient-text">Виж магазина си</span> преди да платиш
+            <span className="gradient-text">Темплейта</span> е начало, а не край.
           </h2>
           <p
             data-animate-reveal
             className="text-muted-foreground text-lg leading-relaxed opacity-0 translate-y-10"
           >
             Разгледай темплейтите. Избраният дизайн е отправна точка - след старта го оформяме към
-            твоя бранд, ниша и снимки. Това не е крайният вид.
+            твоя бранд, ниша и снимки.
           </p>
         </div>
 

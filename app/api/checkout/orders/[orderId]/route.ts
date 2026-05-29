@@ -4,6 +4,10 @@ import { trySendOrderPaidConfirmationEmails } from "@/lib/server/order-emails";
 import { getStripeServerClient } from "@/lib/server/stripe";
 import { applyCheckoutTemplateFromOrderMetadata } from "@/lib/server/checkout-template";
 import {
+  isStripeCheckoutSessionFulfilled,
+  stripeCheckoutPaidAt,
+} from "@/lib/server/online-store-trial";
+import {
   ensureGuestUserForOrderInDb,
   getOrderByIdFromDb,
   setOrderStripeSnapshotInDb,
@@ -87,7 +91,8 @@ export async function POST(
       : session.subscription?.id;
   const customerId =
     typeof session.customer === "string" ? session.customer : session.customer?.id;
-  const paidAt = session.payment_status === "paid" ? new Date() : null;
+  const fulfilled = isStripeCheckoutSessionFulfilled(session);
+  const paidAt = stripeCheckoutPaidAt(session);
 
   await setOrderStripeSnapshotInDb({
     orderId,
@@ -103,10 +108,10 @@ export async function POST(
     metadata: session.metadata ?? {},
     checkoutCompletedAt: new Date(session.created * 1000),
     paidAt,
-    markAsPaid: false,
+    markAsPaid: fulfilled,
   });
 
-  if (session.payment_status === "paid") {
+  if (fulfilled) {
     const ensured = await ensureGuestUserForOrderInDb(orderId);
     const userId =
       ensured.userId ??
