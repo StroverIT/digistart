@@ -1,10 +1,10 @@
 "use client";
 
 import TransitionLink from "@/components/transitions/TransitionLink";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import { ShoppingCart } from "lucide-react";
+import { ChevronDown, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCartItemCount } from "@/lib/store/cart";
 import { cn } from "@/lib/utils";
@@ -16,8 +16,7 @@ import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
 import { clearPreferences, hasCompletedSurvey } from "@/lib/visitor-preferences/storage";
 
-const navLinks = [
-  { href: "/", label: "Начало", paths: ["/"] },
+const serviceNavLinks = [
   {
     href: "/services/ai-automation",
     label: "AI Automation",
@@ -43,6 +42,10 @@ const navLinks = [
     label: "Google Business",
     paths: ["/услуги/google-business", "/services/google-business"],
   },
+] as const;
+
+const navLinks = [
+  { href: "/", label: "Начало", paths: ["/"] },
   {
     href: "/templates",
     label: "Шаблони",
@@ -70,23 +73,30 @@ function isPathActive(pathname: string, paths: readonly string[]) {
   });
 }
 
+function isServicesNavActive(pathname: string) {
+  return serviceNavLinks.some((link) => isPathActive(pathname, link.paths));
+}
+
 function AnimatedNavLink({
   href,
   children,
   isActive,
   onNavigate,
+  variant = "default",
 }: {
   href: string;
   children: string;
   isActive: boolean;
   onNavigate: () => void;
+  variant?: "default" | "sub";
 }) {
   return (
     <TransitionLink
       href={href}
       onClick={onNavigate}
       className={cn(
-        "block text-zinc-100 text-2xl md:text-3xl font-bold relative overflow-hidden nav-link py-1",
+        "block text-zinc-100 font-bold relative overflow-hidden nav-link py-1",
+        variant === "default" ? "text-2xl md:text-3xl" : "text-lg md:text-xl",
         isActive && "nav-link-active"
       )}
     >
@@ -103,6 +113,166 @@ function AnimatedNavLink({
   );
 }
 
+function ServicesNavGroup({
+  pathname,
+  isExpanded,
+  onToggle,
+  onNavigate,
+}: {
+  pathname: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+  onNavigate: () => void;
+}) {
+  const isActive = isServicesNavActive(pathname);
+  const submenuRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLUListElement>(null);
+  const chevronRef = useRef<SVGSVGElement>(null);
+  const hasMountedRef = useRef(false);
+
+  useLayoutEffect(() => {
+    const wrapper = submenuRef.current;
+    const content = contentRef.current;
+    if (!wrapper || !content) return;
+
+    const items = content.querySelectorAll("li");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    gsap.killTweensOf([wrapper, items, chevronRef.current]);
+
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      gsap.set(wrapper, { height: 0, opacity: 0, marginTop: 0 });
+      gsap.set(items, { opacity: 0, x: -10 });
+      gsap.set(chevronRef.current, { rotate: 0 });
+      return;
+    }
+
+    if (reducedMotion) {
+      gsap.set(wrapper, {
+        height: isExpanded ? "auto" : 0,
+        opacity: isExpanded ? 1 : 0,
+        marginTop: isExpanded ? 12 : 0,
+      });
+      gsap.set(items, { opacity: isExpanded ? 1 : 0, x: 0 });
+      gsap.set(chevronRef.current, { rotate: isExpanded ? 180 : 0 });
+      return;
+    }
+
+    if (isExpanded) {
+      gsap.set(wrapper, { height: 0, opacity: 0, marginTop: 0 });
+      gsap.set(items, { opacity: 0, x: -12 });
+
+      const targetHeight = content.scrollHeight;
+
+      gsap
+        .timeline()
+        .to(chevronRef.current, { rotate: 180, duration: 0.3, ease: "power2.out" }, 0)
+        .to(
+          wrapper,
+          {
+            height: targetHeight,
+            opacity: 1,
+            marginTop: 12,
+            duration: 0.38,
+            ease: "power3.out",
+            onComplete: () => {
+              gsap.set(wrapper, { height: "auto" });
+            },
+          },
+          0
+        )
+        .to(
+          items,
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.32,
+            stagger: 0.05,
+            ease: "power2.out",
+          },
+          0.1
+        );
+      return;
+    }
+
+    if (wrapper.offsetHeight === 0) {
+      gsap.set(wrapper, { height: 0, opacity: 0, marginTop: 0 });
+      gsap.set(items, { opacity: 0, x: -10 });
+      gsap.set(chevronRef.current, { rotate: 0 });
+      return;
+    }
+
+    gsap.set(wrapper, { height: wrapper.offsetHeight });
+
+    gsap
+      .timeline()
+      .to(chevronRef.current, { rotate: 0, duration: 0.28, ease: "power2.in" }, 0)
+      .to(
+        items,
+        {
+          opacity: 0,
+          x: -8,
+          duration: 0.2,
+          stagger: { each: 0.03, from: "end" },
+          ease: "power2.in",
+        },
+        0
+      )
+      .to(
+        wrapper,
+        {
+          height: 0,
+          opacity: 0,
+          marginTop: 0,
+          duration: 0.28,
+          ease: "power2.inOut",
+        },
+        0.08
+      );
+  }, [isExpanded]);
+
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isExpanded}
+        className={cn(
+          "group flex w-full items-center justify-between gap-4 text-left text-zinc-100 text-2xl md:text-3xl font-bold py-1 transition-colors hover:text-primary/90",
+          isActive && "text-primary"
+        )}
+      >
+        <span>Услуги</span>
+        <ChevronDown
+          ref={chevronRef}
+          className="h-6 w-6 shrink-0 text-zinc-400 group-hover:text-primary/80"
+          aria-hidden
+        />
+      </button>
+      <div ref={submenuRef} className="overflow-hidden" aria-hidden={!isExpanded}>
+        <ul
+          ref={contentRef}
+          className="flex flex-col gap-y-3 border-l-2 border-zinc-700 pl-4"
+        >
+          {serviceNavLinks.map((link) => (
+            <li key={link.href}>
+              <AnimatedNavLink
+                href={link.href}
+                isActive={isPathActive(pathname, link.paths)}
+                onNavigate={onNavigate}
+                variant="sub"
+              >
+                {link.label}
+              </AnimatedNavLink>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </li>
+  );
+}
+
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
@@ -111,6 +281,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [hasSurveyPreferences, setHasSurveyPreferences] = useState(false);
+  const [servicesExpanded, setServicesExpanded] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -155,12 +326,13 @@ export function Header() {
       const tl = gsap.timeline({
         onComplete: () => {
           setIsOpen(false);
+          setServicesExpanded(false);
           if (backdropRef.current) gsap.set(backdropRef.current, { display: "none" });
           resolve();
         },
       });
       if (linksRef.current) {
-        const listItems = linksRef.current.querySelectorAll("li");
+        const listItems = linksRef.current.querySelectorAll(":scope > li");
         tl.to(listItems, {
           opacity: 0,
           y: -24,
@@ -208,7 +380,7 @@ export function Header() {
       );
     }
     if (linksRef.current) {
-      const listItems = linksRef.current.querySelectorAll("li");
+      const listItems = linksRef.current.querySelectorAll(":scope > li");
       gsap.set(listItems, { opacity: 0, y: 28 });
       tl.to(
         listItems,
@@ -417,7 +589,22 @@ export function Header() {
 
           <nav aria-label="Основна навигация" className="pt-8">
             <ul ref={linksRef} className="flex flex-col gap-y-5 md:gap-y-7">
-              {navLinks.map((link) => {
+              <li>
+                <AnimatedNavLink
+                  href={navLinks[0].href}
+                  isActive={isPathActive(pathname, navLinks[0].paths)}
+                  onNavigate={() => void closeMenu()}
+                >
+                  {navLinks[0].label}
+                </AnimatedNavLink>
+              </li>
+              <ServicesNavGroup
+                pathname={pathname}
+                isExpanded={servicesExpanded}
+                onToggle={() => setServicesExpanded((current) => !current)}
+                onNavigate={() => void closeMenu()}
+              />
+              {navLinks.slice(1).map((link) => {
                 const active = isPathActive(pathname, link.paths);
                 return (
                   <li key={link.href}>
