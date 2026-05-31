@@ -51,6 +51,7 @@ const navLinks = [
     label: "Шаблони",
     paths: ["/templates"],
   },
+  { href: "/videos", label: "Видеа", paths: ["/videos"] },
   { href: "/about", label: "За нас", paths: ["/about"] },
   { href: "/blog", label: "Блог", paths: ["/blog"] },
 ] as const;
