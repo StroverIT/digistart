@@ -2,7 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
+
+function isHomePage(pathname: string | null): boolean {
+  return pathname === "/";
+}
 
 type CookieConsentState = {
   functional: true;
@@ -34,6 +39,8 @@ function saveConsent(consent: CookieConsentState) {
 }
 
 export function CookieConsent() {
+  const pathname = usePathname();
+  const onHomePage = isHomePage(pathname);
   const [isReady, setIsReady] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
@@ -48,17 +55,24 @@ export function CookieConsent() {
       setAdsEnabled(Boolean(consent.ads));
       setIsOpen(false);
       setIsReady(true);
-    } else {
-      const timerId = window.setTimeout(() => {
-        setIsOpen(true);
-        setIsReady(true);
-      }, 4000);
-
-      return () => {
-        window.clearTimeout(timerId);
-      };
+      return;
     }
-  }, []);
+
+    if (onHomePage) {
+      setIsOpen(false);
+      setIsReady(true);
+      return;
+    }
+
+    const timerId = window.setTimeout(() => {
+      setIsOpen(true);
+      setIsReady(true);
+    }, 4000);
+
+    return () => {
+      window.clearTimeout(timerId);
+    };
+  }, [onHomePage]);
 
   const consentPayload = useMemo(
     () => ({
@@ -102,7 +116,7 @@ export function CookieConsent() {
     );
   }, [showPreferences]);
 
-  if (!isReady || !isOpen) {
+  if (!isReady || !isOpen || onHomePage) {
     return null;
   }
 
