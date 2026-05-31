@@ -189,11 +189,11 @@ function CartItemCard({
                 <Button
                   type="button"
                   variant="ghost"
-                  className="h-auto w-full justify-between px-0 py-1 text-sm font-medium hover:bg-transparent"
+                  className="h-auto w-full justify-between px-0 py-1 text-sm font-medium hover:bg-transparent hover:text-primary cursor-pointer"
                   onClick={() => setShowUpsells((current) => !current)}
                   aria-expanded={showUpsells}
                 >
-                  <span>Допълнителни услуги</span>
+                  <span>Допълнителни функционалности</span>
                   <span className="flex items-center gap-2 text-muted-foreground">
                     {showUpsells ? "Скрий" : "Покажи"}
                     <ChevronDown

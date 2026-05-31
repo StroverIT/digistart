@@ -438,7 +438,7 @@ export function ServiceBuySection({
               <div className="mb-6 space-y-6">
                 {hasUpsells ? (
                   <div>
-                    <h3 className="font-semibold mb-3">Допълнителни услуги</h3>
+                    <h3 className="font-semibold mb-3">Допълнителни функционалности</h3>
                     <UpsellConfigurator
                       service={service}
                       value={upsells}
