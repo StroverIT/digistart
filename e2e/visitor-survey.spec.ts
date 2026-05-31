@@ -1,6 +1,7 @@
 import { test, expect } from "./fixtures";
 import {
   completeVisitorSurvey,
+  INVESTMENT_HEADING,
   openVisitorSurveyFromHome,
   seedCompletedSurveyPreferences,
   waitForSurveyAnalytics,
@@ -10,9 +11,13 @@ import { openMainMenu } from "./helpers/navigation";
 
 test.describe("Visitor survey", () => {
   test("first visit completes survey, saves preferences, and redirects", async ({ page }) => {
-    const answerPromise = waitForSurveyAnalytics(page, "answer");
-
     await openVisitorSurveyFromHome(page);
+    await page.getByRole("button", { name: "Да", exact: true }).click();
+    await expect(
+      page.getByRole("heading", { name: "Къде продаваш в момента?" }),
+    ).toBeVisible();
+
+    const answerPromise = waitForSurveyAnalytics(page, "answer");
     await page.getByRole("button", { name: "Instagram", exact: true }).click();
     const answerBody = await answerPromise;
     expect(answerBody).toMatchObject({
@@ -39,6 +44,22 @@ test.describe("Visitor survey", () => {
     await page.waitForURL(`**${getServicePath("online-store")}**`, { timeout: 30_000 });
   });
 
+  test("selecting no on investment redirects to TikTok", async ({ page }) => {
+    const answerPromise = waitForSurveyAnalytics(page, "answer");
+
+    await openVisitorSurveyFromHome(page);
+    await page.getByRole("button", { name: "Не", exact: true }).click();
+
+    const answerBody = await answerPromise;
+    expect(answerBody).toMatchObject({
+      kind: "answer",
+      question: "business_investment",
+      answer: "no",
+    });
+
+    await page.waitForURL(/tiktok\.com/i, { timeout: 30_000 });
+  });
+
   test("return visit auto-redirects to primary service", async ({ page }) => {
     await seedCompletedSurveyPreferences(page, { primaryService: "ads" });
     await page.goto("/", { waitUntil: "domcontentloaded" });
@@ -62,8 +83,8 @@ test.describe("Visitor survey", () => {
     await page.getByRole("button", { name: "Промени мнението си" }).click();
 
     await page.waitForURL("**/", { timeout: 30_000 });
-    await expect(
-      page.getByRole("heading", { name: "Къде продаваш в момента?" }),
-    ).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole("heading", { name: INVESTMENT_HEADING })).toBeVisible({
+      timeout: 30_000,
+    });
   });
 });

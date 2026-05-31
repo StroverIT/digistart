@@ -11,7 +11,10 @@ export type VisitorServiceId =
 
 export type MonthlyOrderVolume = "0-10" | "10-50" | "50-100" | "100+";
 
+export type BusinessInvestmentAnswer = "yes" | "no";
+
 export type SurveyQuestionId =
+  | "business_investment"
   | "sales_channels"
   | "monthly_orders"
   | "service_interest";

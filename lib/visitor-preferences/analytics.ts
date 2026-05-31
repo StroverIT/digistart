@@ -1,6 +1,7 @@
 import { buildSurveyComboKey } from "@/lib/analytics/survey-combinations";
 import { getAnalyticsSessionId } from "@/lib/analytics/tracker";
 import type {
+  BusinessInvestmentAnswer,
   MonthlyOrderVolume,
   SalesChannel,
   SurveyQuestionId,
@@ -9,7 +10,7 @@ import type {
 
 export function trackSurveyAnswer(params: {
   question: SurveyQuestionId;
-  answer: SalesChannel | MonthlyOrderVolume | VisitorServiceId;
+  answer: BusinessInvestmentAnswer | SalesChannel | MonthlyOrderVolume | VisitorServiceId;
   page?: string;
   otherLabel?: string;
 }): void {

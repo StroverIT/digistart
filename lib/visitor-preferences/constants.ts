@@ -1,4 +1,5 @@
 import type {
+  BusinessInvestmentAnswer,
   MonthlyOrderVolume,
   SalesChannel,
   VisitorServiceId,
@@ -7,6 +8,14 @@ import type {
 export const VISITOR_PREFERENCES_STORAGE_KEY = "digistart_visitor_preferences";
 
 export const DEFAULT_SALES_CHANNELS: readonly SalesChannel[] = ["instagram", "facebook"];
+
+export const BUSINESS_INVESTMENT_OPTIONS: readonly {
+  id: BusinessInvestmentAnswer;
+  label: string;
+}[] = [
+  { id: "yes", label: "Да" },
+  { id: "no", label: "Не" },
+] as const;
 
 export const SALES_CHANNEL_OPTIONS: readonly {
   id: SalesChannel;

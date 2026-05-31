@@ -663,7 +663,31 @@ export default function AdminDashboard() {
             {analytics.surveyStats.length > 0 ? (
               <div className="pt-4 border-t border-border">
                 <h3 className="text-sm font-semibold mb-4">По отделни въпроси</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                  <div>
+                    <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+                      Инвестиция в бизнеса
+                    </h4>
+                    <div className="space-y-2">
+                      {analytics.surveyStats
+                        .filter((s) => s.question === "business_investment")
+                        .map((entry) => (
+                          <div
+                            key={entry.answer}
+                            className="flex items-center justify-between rounded-md border border-border p-3"
+                          >
+                            <p className="font-medium text-sm">
+                              {entry.answer === "yes"
+                                ? "Да"
+                                : entry.answer === "no"
+                                  ? "Не"
+                                  : entry.answer}
+                            </p>
+                            <p className="text-primary font-semibold">{entry.count}</p>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                   <div>
                     <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">
                       Къде продавате

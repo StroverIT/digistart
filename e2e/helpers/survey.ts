@@ -36,6 +36,8 @@ const DEFAULT_CHANNELS: SalesChannel[] = ["instagram", "facebook"];
 const DEFAULT_ORDER_LABEL = "10-50";
 const DEFAULT_SERVICE: VisitorServiceId = "online-store";
 
+export const INVESTMENT_HEADING = "Желаеш ли да инвестираш в бизнеса си?";
+
 function surveyPostBody(request: { postDataJSON: () => unknown }): { kind?: string } | null {
   try {
     return request.postDataJSON() as { kind?: string };
@@ -106,6 +108,15 @@ export async function waitForSurveyAnalytics(
   return surveyPostBody(response.request());
 }
 
+export async function answerInvestmentQuestion(page: Page, answer: "yes" | "no" = "yes") {
+  await expect(page.getByRole("heading", { name: INVESTMENT_HEADING })).toBeVisible({
+    timeout: 30_000,
+  });
+
+  const label = answer === "yes" ? "Да" : "Не";
+  await page.getByRole("button", { name: label, exact: true }).click();
+}
+
 /** Walk through the homepage visitor survey and finish on the primary service page. */
 export async function completeVisitorSurvey(
   page: Page,
@@ -124,6 +135,7 @@ export async function completeVisitorSurvey(
   )?.[0] ?? DEFAULT_SERVICE) as VisitorServiceId;
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
+  await answerInvestmentQuestion(page, "yes");
   await expect(
     page.getByRole("heading", { name: "Къде продаваш в момента?" }),
   ).toBeVisible({ timeout: 30_000 });
@@ -159,7 +171,7 @@ export async function completeVisitorSurvey(
 
 export async function openVisitorSurveyFromHome(page: Page) {
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(
-    page.getByRole("heading", { name: "Къде продаваш в момента?" }),
-  ).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByRole("heading", { name: INVESTMENT_HEADING })).toBeVisible({
+    timeout: 30_000,
+  });
 }

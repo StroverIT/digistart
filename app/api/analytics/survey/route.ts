@@ -11,7 +11,13 @@ import type {
   VisitorServiceId,
 } from "@/lib/visitor-preferences/types";
 
-const VALID_QUESTIONS = new Set(["sales_channels", "monthly_orders", "service_interest"]);
+const VALID_QUESTIONS = new Set([
+  "business_investment",
+  "sales_channels",
+  "monthly_orders",
+  "service_interest",
+]);
+const VALID_INVESTMENT_ANSWERS = new Set(["yes", "no"]);
 const VALID_SALES_ANSWERS = new Set(["instagram", "facebook", "olx", "other"]);
 const VALID_MONTHLY_ORDER_ANSWERS = new Set(["0-10", "10-50", "50-100", "100+"]);
 const VALID_SERVICE_ANSWERS = new Set([
@@ -52,7 +58,9 @@ function isValidAnswerPayload(payload: unknown): payload is SurveyAnswerPayload 
   }
   if (typeof parsed.answer !== "string" || parsed.answer.length === 0) return false;
 
-  if (parsed.question === "sales_channels") {
+  if (parsed.question === "business_investment") {
+    if (!VALID_INVESTMENT_ANSWERS.has(parsed.answer)) return false;
+  } else if (parsed.question === "sales_channels") {
     if (!VALID_SALES_ANSWERS.has(parsed.answer)) return false;
   } else if (parsed.question === "monthly_orders") {
     if (!VALID_MONTHLY_ORDER_ANSWERS.has(parsed.answer)) return false;

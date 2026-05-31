@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
+  BUSINESS_INVESTMENT_OPTIONS,
   MONTHLY_ORDER_VOLUME_OPTIONS,
   SALES_CHANNEL_OPTIONS,
   SERVICE_SURVEY_OPTIONS,
@@ -14,21 +15,24 @@ import { getServicePath } from "@/lib/visitor-preferences/paths";
 import { savePreferences, getPreferences } from "@/lib/visitor-preferences/storage";
 import { trackSurveyAnswer, trackSurveyCompletion } from "@/lib/visitor-preferences/analytics";
 import type {
+  BusinessInvestmentAnswer,
   MonthlyOrderVolume,
   SalesChannel,
   VisitorServiceId,
 } from "@/lib/visitor-preferences/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
-type SurveyStep = "channels" | "orders" | "services";
+type SurveyStep = "investment" | "channels" | "orders" | "services";
 
 const STEP_TITLES: Record<SurveyStep, string> = {
+  investment: "Желаеш ли да инвестираш в бизнеса си?",
   channels: "Къде продаваш в момента?",
   orders: "Грубо колко поръчки правиш на месец?",
   services: "От кои услуги се интересуваш?",
 };
 
 const STEP_HINTS: Record<SurveyStep, string> = {
+  investment: "Избери един отговор.",
   channels: "Можеш да избереш повече от един отговор.",
   orders: "Избери един отговор.",
   services: "Можеш да избереш повече от една услуга.",
@@ -41,7 +45,7 @@ type VisitorSurveyProps = {
 export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
   const { push } = useTransitionRouter();
   const stepPanelRef = useRef<HTMLDivElement>(null);
-  const [step, setStep] = useState<SurveyStep>("channels");
+  const [step, setStep] = useState<SurveyStep>(isEditMode ? "channels" : "investment");
   const [selectedChannels, setSelectedChannels] = useState<SalesChannel[]>([]);
   const [otherLabel, setOtherLabel] = useState("");
   const [monthlyOrders, setMonthlyOrders] = useState<MonthlyOrderVolume | null>(null);
@@ -109,6 +113,21 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
     },
     [selectedChannels, otherLabel, channelsAreValid, animateToStep],
   );
+
+  const handleInvestmentSelect = (answer: BusinessInvestmentAnswer) => {
+    trackSurveyAnswer({
+      question: "business_investment",
+      answer,
+      page: surveyPage,
+    });
+
+    if (answer === "no") {
+      window.location.assign("https://tiktok.com/");
+      return;
+    }
+
+    animateToStep("channels", "forward");
+  };
 
   const toggleChannel = (channel: SalesChannel) => {
     const hasBefore = selectedChannels.includes(channel);
@@ -202,7 +221,13 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
   const otherSelected = selectedChannels.includes("other");
 
   const backTarget: SurveyStep | null =
-    step === "orders" ? "channels" : step === "services" ? "orders" : null;
+    step === "channels" && !isEditMode
+      ? "investment"
+      : step === "orders"
+        ? "channels"
+        : step === "services"
+          ? "orders"
+          : null;
 
   return (
     <section className="relative min-h-screen flex items-center justify-center px-4 py-16 md:py-24">
@@ -220,8 +245,33 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
         </div>
 
         <div ref={stepPanelRef} className="will-change-transform">
-          {step === "channels" ? (
+          {step === "investment" ? (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                {BUSINESS_INVESTMENT_OPTIONS.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => handleInvestmentSelect(option.id)}
+                    className="rounded-xl border-2 border-border bg-card px-5 py-4 text-center text-lg font-semibold transition-colors hover:border-primary/50"
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : step === "channels" ? (
             <div className="space-y-4">
+              {backTarget ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mb-2 -ml-2"
+                  onClick={() => animateToStep(backTarget, "back")}
+                >
+                  ← Назад
+                </Button>
+              ) : null}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {SALES_CHANNEL_OPTIONS.map((option) => {
                   const active = selectedChannels.includes(option.id);
