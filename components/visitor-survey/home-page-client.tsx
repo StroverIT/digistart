@@ -4,12 +4,17 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { VisitorSurvey } from "@/components/visitor-survey/visitor-survey";
 import { getServicePath } from "@/lib/visitor-preferences/paths";
-import { getPreferences, hasCompletedSurvey } from "@/lib/visitor-preferences/storage";
+import {
+  getPreferences,
+  hasCompletedSurvey,
+  parseVisitorServiceId,
+} from "@/lib/visitor-preferences/storage";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
 function HomePageClientInner() {
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "1";
+  const chosenService = parseVisitorServiceId(searchParams.get("chosenService"));
   const { push } = useTransitionRouter();
   const [ready, setReady] = useState(false);
   const [showSurvey, setShowSurvey] = useState(false);
@@ -49,7 +54,12 @@ function HomePageClientInner() {
     );
   }
 
-  return <VisitorSurvey isEditMode={isEditMode} />;
+  return (
+    <VisitorSurvey
+      isEditMode={isEditMode}
+      chosenService={isEditMode ? undefined : chosenService ?? undefined}
+    />
+  );
 }
 
 export function HomePageClient() {

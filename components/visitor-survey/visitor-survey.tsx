@@ -40,16 +40,20 @@ const STEP_HINTS: Record<SurveyStep, string> = {
 
 type VisitorSurveyProps = {
   isEditMode?: boolean;
+  /** From ad links (?chosenService=online-store); skips the services step. */
+  chosenService?: VisitorServiceId;
 };
 
-export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
+export function VisitorSurvey({ isEditMode = false, chosenService }: VisitorSurveyProps) {
   const { push } = useTransitionRouter();
   const stepPanelRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState<SurveyStep>(isEditMode ? "channels" : "investment");
   const [selectedChannels, setSelectedChannels] = useState<SalesChannel[]>([]);
   const [otherLabel, setOtherLabel] = useState("");
   const [monthlyOrders, setMonthlyOrders] = useState<MonthlyOrderVolume | null>(null);
-  const [selectedServices, setSelectedServices] = useState<VisitorServiceId[]>([]);
+  const [selectedServices, setSelectedServices] = useState<VisitorServiceId[]>(() =>
+    chosenService ? [chosenService] : [],
+  );
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
@@ -156,6 +160,48 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
     });
   };
 
+  const finishSurvey = useCallback(
+    (overrides?: { monthlyOrders?: MonthlyOrderVolume; services?: VisitorServiceId[] }) => {
+      const orders = overrides?.monthlyOrders ?? monthlyOrders;
+      const services =
+        overrides?.services ?? (chosenService ? [chosenService] : selectedServices);
+
+      if (!channelsAreValid(selectedChannels, otherLabel)) return;
+      if (!orders || services.length === 0) return;
+
+      const primaryService = services[0];
+
+      trackSurveyCompletion({
+        salesChannels: selectedChannels,
+        otherChannelLabel: selectedChannels.includes("other") ? otherLabel.trim() : undefined,
+        monthlyOrders: orders,
+        selectedServices: services,
+        primaryService,
+        page: surveyPage,
+      });
+
+      savePreferences({
+        salesChannels: selectedChannels,
+        otherChannelLabel: selectedChannels.includes("other") ? otherLabel.trim() : undefined,
+        monthlyOrders: orders,
+        selectedServices: services,
+        primaryService,
+      });
+
+      push(getServicePath(primaryService));
+    },
+    [
+      monthlyOrders,
+      selectedServices,
+      chosenService,
+      selectedChannels,
+      otherLabel,
+      channelsAreValid,
+      surveyPage,
+      push,
+    ],
+  );
+
   const handleOrderVolumeSelect = (volume: MonthlyOrderVolume) => {
     if (!channelsAreValid(selectedChannels, otherLabel)) return;
 
@@ -165,6 +211,17 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
       answer: volume,
       page: surveyPage,
     });
+
+    if (chosenService) {
+      trackSurveyAnswer({
+        question: "service_interest",
+        answer: chosenService,
+        page: surveyPage,
+      });
+      finishSurvey({ monthlyOrders: volume, services: [chosenService] });
+      return;
+    }
+
     animateToStep("services", "forward");
   };
 
@@ -184,32 +241,6 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
     setSelectedServices((prev) =>
       hasBefore ? prev.filter((id) => id !== serviceId) : [...prev, serviceId],
     );
-  };
-
-  const finishSurvey = () => {
-    if (!channelsAreValid(selectedChannels, otherLabel)) return;
-    if (!monthlyOrders || selectedServices.length === 0) return;
-
-    const primaryService = selectedServices[0];
-
-    trackSurveyCompletion({
-      salesChannels: selectedChannels,
-      otherChannelLabel: selectedChannels.includes("other") ? otherLabel.trim() : undefined,
-      monthlyOrders,
-      selectedServices,
-      primaryService,
-      page: surveyPage,
-    });
-
-    savePreferences({
-      salesChannels: selectedChannels,
-      otherChannelLabel: selectedChannels.includes("other") ? otherLabel.trim() : undefined,
-      monthlyOrders,
-      selectedServices,
-      primaryService,
-    });
-
-    push(getServicePath(primaryService));
   };
 
   const showContinue =
@@ -384,7 +415,7 @@ export function VisitorSurvey({ isEditMode = false }: VisitorSurveyProps) {
               </div>
               {showServicesContinue ? (
                 <div className="pt-6 flex justify-center">
-                  <Button size="lg" onClick={finishSurvey} className="min-w-[200px]">
+                  <Button size="lg" onClick={() => finishSurvey()} className="min-w-[200px]">
                     Продължи
                   </Button>
                 </div>

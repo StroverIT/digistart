@@ -30,6 +30,13 @@ function isVisitorServiceId(value: unknown): value is VisitorServiceId {
   );
 }
 
+export function parseVisitorServiceId(
+  value: string | null | undefined,
+): VisitorServiceId | null {
+  if (!value || !isVisitorServiceId(value)) return null;
+  return value;
+}
+
 function parsePreferences(raw: string): VisitorPreferencesV1 | null {
   try {
     const parsed = JSON.parse(raw) as Partial<VisitorPreferencesV1>;
