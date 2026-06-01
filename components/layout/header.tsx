@@ -240,7 +240,7 @@ function ServicesNavGroup({
         onClick={onToggle}
         aria-expanded={isExpanded}
         className={cn(
-          "group flex w-full items-center justify-between gap-4 text-left text-zinc-100 text-2xl md:text-3xl font-bold py-1 transition-colors hover:text-primary/90",
+          "group flex w-full items-center justify-start gap-2 text-left text-zinc-100 text-2xl md:text-3xl font-bold py-1 transition-colors hover:text-primary/90",
           isActive && "text-primary"
         )}
       >
