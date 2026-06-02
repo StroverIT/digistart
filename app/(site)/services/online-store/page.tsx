@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default async function OnlineStorePage() {
   const availability = await getServiceSlotAvailability("ready-store");
   return (
-    <main className="pt-28 md:pt-32">
+    <section className="pt-28 md:pt-32">
       <HeroSection />
       <div className="bg-white pt-10 md:rounded-t-4xl md:-mt-10">
         <InnerNavigation />
@@ -38,6 +38,6 @@ export default async function OnlineStorePage() {
       <div className={`${landingContainerClass} py-14 md:py-20`}>
         <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
       </div>
-    </main>
+    </section>
   );
 }
