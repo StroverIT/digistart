@@ -1,12 +1,12 @@
 import {
   BarChart3,
   Mail,
-  Percent,
   Search,
   Star,
   Target,
 } from "lucide-react";
-import { LandingSection, LandingSectionTitle } from "./shared";
+import Image from "next/image";
+import { LandingSection } from "./shared";
 
 const tools = [
   {
@@ -32,7 +32,7 @@ const tools = [
       "При успешно направена поръчка клиентът получава имейл за ревю към google my business. Хората първо там проверяват дали е легитимен бизнеса",
   },
   {
-    icon: Percent,
+    image: "/discount.png",
     title: "Промоции и намаления",
     description: "На специфична дата сложи промоция или специфични секции да имат намаление",
   },
@@ -56,13 +56,33 @@ const MarketingTools = () => {
             key={tool.title}
             className="flex flex-col rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8"
           >
-            <span className="mb-5 flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <tool.icon className="size-6" aria-hidden />
-            </span>
-            <h2 className="font-heading text-xl font-bold text-black">{tool.title}</h2>
-            <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
-              {tool.description}
-            </p>
+            {"image" in tool ? (
+              <>
+                <h2 className="font-heading text-xl font-bold text-black">{tool.title}</h2>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  {tool.description}
+                </p>
+                <div className="relative mt-6 h-52 w-full overflow-hidden rounded-xl sm:h-60">
+                  <Image
+                    src={tool.image}
+                    alt={tool.title}
+                    fill
+                    className="object-cover object-center"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="mb-5 flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <tool.icon className="size-6" aria-hidden />
+                </span>
+                <h2 className="font-heading text-xl font-bold text-black">{tool.title}</h2>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  {tool.description}
+                </p>
+              </>
+            )}
           </li>
         ))}
       </ul>
