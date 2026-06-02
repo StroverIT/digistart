@@ -8,6 +8,8 @@ import BuiltInChat from "@/components/services/service-detail-ready-store-v2/Bui
 import MarketingTools from "@/components/services/service-detail-ready-store-v2/MarketingTools";
 import AdminPanel from "@/components/services/service-detail-ready-store-v2/AdminPanel";
 import RealShop from "@/components/services/service-detail-ready-store-v2/RealShop";
+import BuySection from "@/components/services/service-detail-ready-store-v2/BuySection";
+import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
@@ -16,9 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default async function OnlineStorePage() {
-  // const service = getServiceById("ready-store");
-  // if (!service) notFound();
-  // const availability = await getServiceSlotAvailability("ready-store");
+  const availability = await getServiceSlotAvailability("ready-store");
   return (
     <main className="container mx-auto space-y-10 px-4 pt-40">
       <HeroSection />
@@ -30,6 +30,8 @@ export default async function OnlineStorePage() {
       <MarketingTools />
       <AdminPanel />
       <RealShop />
+      {/* От тука може да си поръчат. Вземи както е при сайта - ВСИЧКИ ПЛАНОВЕ ВКЛЮЧВАТ */}
+      <BuySection availability={availability} />
 
       {/* FAQ */}
     </main>
