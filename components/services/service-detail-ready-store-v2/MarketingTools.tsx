@@ -95,8 +95,8 @@ function ImageLeftCard({
   image: string;
 }) {
   return (
-    <div className="flex h-full min-h-0 flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-10">
-      <div className="relative min-h-52 w-full min-w-0 flex-1 overflow-hidden rounded-xl sm:min-h-60 lg:min-h-48 xl:min-h-56">
+    <div className="flex h-full min-h-0 flex-col gap-6 sm:flex-row sm:items-stretch sm:gap-8 lg:gap-10">
+      <div className="relative min-h-52 w-full min-w-0 flex-1 overflow-hidden rounded-xl sm:min-h-48 lg:min-h-48 xl:min-h-56">
         <Image
           src={image}
           alt={title}
@@ -105,7 +105,7 @@ function ImageLeftCard({
           sizes="(max-width: 1024px) 100vw, 50vw"
         />
       </div>
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:justify-center">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col sm:justify-center">
         <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
           {description}
@@ -164,7 +164,7 @@ const MarketingTools = () => {
           />
         </li>
 
-        <li className={`${cardClassName} w-full lg:[grid-area:trackers] lg:min-h-56 xl:min-h-64`}>
+        <li className={`${cardClassName} w-full sm:col-span-2 lg:[grid-area:trackers] lg:min-h-56 xl:min-h-64`}>
           <ImageLeftCard
             title="Вградени тракери за проследяване"
             description="Готов за реклама и проследяване на клиентите ти от първи ден. Многокалано продаване като в google и meta"
