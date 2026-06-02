@@ -7,6 +7,7 @@ import Benefits from "@/components/services/service-detail-ready-store-v2/Benefi
 import BuiltInChat from "@/components/services/service-detail-ready-store-v2/BuiltInChat";
 import MarketingTools from "@/components/services/service-detail-ready-store-v2/MarketingTools";
 import AdminPanel from "@/components/services/service-detail-ready-store-v2/AdminPanel";
+import RealShop from "@/components/services/service-detail-ready-store-v2/RealShop";
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
@@ -28,7 +29,7 @@ export default async function OnlineStorePage() {
       <BuiltInChat />
       <MarketingTools />
       <AdminPanel />
-      {/* Как реално изглежда готов магазин. Ристайлд който прави по 3 поръчки на ДЕН / 90 поръчки на МЕСЕЦ */}
+      <RealShop />
       {/* От тука може да си поръчат. Вземи както е при сайта - ВСИЧКИ ПЛАНОВЕ ВКЛЮЧВАТ */}
       {/* FAQ */}
     </main>
