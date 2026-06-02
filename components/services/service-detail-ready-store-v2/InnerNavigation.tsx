@@ -9,7 +9,10 @@ const InnerNavigation = () => {
   const [activeId, setActiveId] = useState<string>(READY_STORE_SECTION_NAV[0].id);
 
   useEffect(() => {
-    const sectionIds = READY_STORE_SECTION_NAV.map((item) => item.id);
+    const sectionIds = [
+      ...READY_STORE_SECTION_NAV.map((item) => item.id),
+      "buy-now",
+    ];
     const elements = sectionIds
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => Boolean(el));
@@ -31,6 +34,8 @@ const InnerNavigation = () => {
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
+
+  if (activeId === "buy-now") return null;
 
   return (
     <nav
@@ -55,12 +60,9 @@ const InnerNavigation = () => {
         ))}
         <Button
           asChild
-          variant={activeId === "buy-now" ? "default" : "ghost"}
+          variant="default"
           size="sm"
-          className={cn(
-            "shrink-0 rounded-full uppercase",
-            activeId !== "buy-now" && "text-muted-foreground",
-          )}
+          className="shrink-0 rounded-full uppercase"
         >
           <a href="#buy-now" onClick={() => setActiveId("buy-now")}>
             Купи сега
