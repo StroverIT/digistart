@@ -19,7 +19,7 @@ const BuiltInChat = () => {
           >
             <div className="relative h-56 w-full sm:h-[20rem]">
               <Image
-                src="/ask-for-help-3.png"
+                src="/chat/ask-for-help.png"
                 alt="Вграден чат"
                 fill
                 className="object-contain"
@@ -42,7 +42,7 @@ const BuiltInChat = () => {
           >
             <div className="relative h-56 w-full sm:h-[20rem]">
               <Image
-                src="/test-2.png"
+                src="/chat/ask-for-help-chat.png"
                 alt="Различни чатове за различни нужди"
                 fill
                 className="object-contain"
