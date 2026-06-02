@@ -45,7 +45,7 @@ const tools = [
 
 const MarketingTools = () => {
   return (
-    <LandingSection id="marketing" className="bg-muted/30">
+    <LandingSection id="marketing" className="bg-[#111111] text-white">
       <h1 className="max-w-3xl mx-auto text-4xl text-center">
         Продавай лесно с нашите вградени маркетинг инструменти
       </h1>
@@ -59,7 +59,7 @@ const MarketingTools = () => {
             <span className="mb-5 flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <tool.icon className="size-6" aria-hidden />
             </span>
-            <h2 className="font-heading text-xl font-bold">{tool.title}</h2>
+            <h2 className="font-heading text-xl font-bold text-black">{tool.title}</h2>
             <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
               {tool.description}
             </p>
