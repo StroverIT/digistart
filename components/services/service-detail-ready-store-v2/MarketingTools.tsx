@@ -9,11 +9,7 @@ import Image from "next/image";
 import { LandingSection } from "./shared";
 
 const tools = [
-  {
-    icon: Target,
-    title: "Вградени тракери за проследяване",
-    description: "Готов за реклама и проследяване на клиентите ти от първи ден. Многокалано продаване като в google и meta",
-  },
+
   {
     icon: BarChart3,
     title: "Digi Analytics",
@@ -24,6 +20,7 @@ const tools = [
     title: "Имейл маркетинг",
     description:
       "Събирай автоматично имейлите на клиентите които искат да се запишат за бюлетина. И автоматично пращане на имейли за персонализирани имейли или създаване на кампания",
+    image: "/marketing/newsletter.png"
   },
   {
     icon: Star,
@@ -32,14 +29,21 @@ const tools = [
       "При успешно направена поръчка клиентът получава имейл за ревю към google my business. Хората първо там проверяват дали е легитимен бизнеса",
   },
   {
-    image: "/discount.png",
     title: "Промоции и намаления",
     description: "На специфична дата сложи промоция или специфични секции да имат намаление",
+    image: "/marketing/promotion.png"
   },
   {
     icon: Search,
     title: "SEO оптимизиран",
     description: "Всички секции и продукти са SEO оптимизирани",
+  },
+  {
+    icon: Target,
+    title: "Вградени тракери за проследяване",
+    description: "Готов за реклама и проследяване на клиентите ти от първи ден. Многокалано продаване като в google и meta",
+    image: "/marketing/social-media.png",
+    className: "col-span-3"
   },
 ] as const;
 
