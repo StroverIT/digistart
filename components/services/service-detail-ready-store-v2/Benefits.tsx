@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import gsap from "gsap";
+import { ChevronDown } from "lucide-react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { LandingSection, LandingSectionTitle } from "./shared";
+import { LandingSection } from "./shared";
 
 const benefits = [
   {
@@ -18,16 +20,6 @@ const benefits = [
     image: "/templates/clothing/11.png",
   },
   {
-    title: "Вграден пиксел",
-    description: "",
-    image: "/templates/clothing/11.png",
-  },
-  {
-    title: "Digi Analytics",
-    description: "Наши системи които проследяват клиентите ти за специализирано преживяване",
-    image: "/templates/clothing/11.png",
-  },
-  {
     title: "Включен Hosting и SSL сертификат",
     description:
       "Ние се грижим за цялата техническа част. Твоята грижа е само да изпращаш пратки",
@@ -35,61 +27,206 @@ const benefits = [
   },
 ] as const;
 
+type Benefit = (typeof benefits)[number];
+
+function BenefitRow({
+  benefit,
+  isActive,
+  onSelect,
+}: {
+  benefit: Benefit;
+  isActive: boolean;
+  onSelect: () => void;
+}) {
+  const descRef = useRef<HTMLDivElement>(null);
+  const descInnerRef = useRef<HTMLParagraphElement>(null);
+  const arrowRef = useRef<SVGSVGElement>(null);
+  const arrowBobRef = useRef<gsap.core.Tween | null>(null);
+  const hasMountedRef = useRef(false);
+
+  useLayoutEffect(() => {
+    const desc = descRef.current;
+    const inner = descInnerRef.current;
+    const arrow = arrowRef.current;
+    if (!desc || !inner || !arrow) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    arrowBobRef.current?.kill();
+    arrowBobRef.current = null;
+    gsap.killTweensOf([desc, arrow]);
+
+    const startArrowBob = () => {
+      if (reducedMotion) return;
+      arrowBobRef.current = gsap.to(arrow, {
+        y: 5,
+        duration: 0.55,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+    };
+
+    const stopArrowBob = () => {
+      arrowBobRef.current?.kill();
+      arrowBobRef.current = null;
+    };
+
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      if (isActive) {
+        gsap.set(desc, { height: "auto", opacity: 1 });
+        gsap.set(arrow, { rotate: 180, y: 0 });
+        startArrowBob();
+      } else {
+        gsap.set(desc, { height: 0, opacity: 0 });
+        gsap.set(arrow, { rotate: 0, y: 0 });
+      }
+      return;
+    }
+
+    if (reducedMotion) {
+      gsap.set(desc, { height: isActive ? "auto" : 0, opacity: isActive ? 1 : 0 });
+      gsap.set(arrow, { rotate: isActive ? 180 : 0, y: 0 });
+      return;
+    }
+
+    if (isActive) {
+      gsap.set(desc, { height: 0, opacity: 0 });
+      const targetHeight = inner.scrollHeight;
+
+      gsap
+        .timeline()
+        .to(arrow, { rotate: 180, y: 0, duration: 0.3, ease: "power2.out" }, 0)
+        .to(
+          desc,
+          {
+            height: targetHeight,
+            opacity: 1,
+            duration: 0.38,
+            ease: "power3.out",
+            onComplete: () => {
+              gsap.set(desc, { height: "auto" });
+            },
+          },
+          0,
+        )
+        .eventCallback("onComplete", startArrowBob);
+      return;
+    }
+
+    stopArrowBob();
+
+    if (desc.offsetHeight === 0) {
+      gsap.set(desc, { height: 0, opacity: 0 });
+      gsap.set(arrow, { rotate: 0, y: 0 });
+      return;
+    }
+
+    gsap.set(desc, { height: desc.offsetHeight });
+
+    gsap
+      .timeline()
+      .to(arrow, { rotate: 0, y: 0, duration: 0.28, ease: "power2.in" }, 0)
+      .to(desc, { height: 0, opacity: 0, duration: 0.3, ease: "power2.in" }, 0);
+  }, [isActive]);
+
+  return (
+    <li className="border-b border-border last:border-b-0">
+      <button
+        type="button"
+        onClick={onSelect}
+        className={cn(
+          "flex w-full items-start justify-between gap-4 px-0 py-5 text-left transition-colors sm:py-6",
+          isActive ? "text-primary" : "text-foreground hover:text-foreground/80",
+        )}
+      >
+        <span className="min-w-0 flex-1">
+          <span
+            className={cn(
+              "block text-lg font-semibold sm:text-xl",
+              isActive && "text-primary",
+            )}
+          >
+            {benefit.title}
+          </span>
+          <div ref={descRef} className="overflow-hidden" aria-hidden={!isActive}>
+            <p
+              ref={descInnerRef}
+              className="pt-2 text-sm leading-relaxed text-muted-foreground sm:text-base"
+            >
+              {benefit.description}
+            </p>
+          </div>
+        </span>
+        <ChevronDown
+          ref={arrowRef}
+          className={cn(
+            "mt-1 size-5 shrink-0",
+            isActive ? "text-primary" : "text-muted-foreground",
+          )}
+          aria-hidden
+        />
+      </button>
+    </li>
+  );
+}
+
 const Benefits = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const active = benefits[activeIndex];
+  const imageWrapRef = useRef<HTMLDivElement>(null);
+  const hasImageMountedRef = useRef(false);
+
+  useLayoutEffect(() => {
+    const wrap = imageWrapRef.current;
+    if (!wrap) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (!hasImageMountedRef.current) {
+      hasImageMountedRef.current = true;
+      gsap.set(wrap, { opacity: 1, scale: 1 });
+      return;
+    }
+
+    if (reducedMotion) return;
+
+    gsap.fromTo(
+      wrap,
+      { opacity: 0.5, scale: 0.98 },
+      { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" },
+    );
+  }, [activeIndex]);
 
   return (
     <LandingSection id="benefits">
-      <LandingSectionTitle as="h1" className="max-w-4xl mx-auto">
-        Създай онлайн магазин за рекордно време - започни от нула до това да продаваш в рамките на
+      <h2 className="max-w-4xl mx-auto text-3xl text-center font-medium">
+        Създай онлайн магазин за рекордно време - от нула до това да продаваш в рамките на
         часове, не седмици
-      </LandingSectionTitle>
+      </h2>
 
       <article className="mt-12 grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
-        <ul className="divide-y divide-border rounded-2xl border border-border/80 bg-card shadow-sm">
-          {benefits.map((benefit, index) => {
-            const isActive = index === activeIndex;
-            return (
-              <li key={benefit.title}>
-                <button
-                  type="button"
-                  onClick={() => setActiveIndex(index)}
-                  className={cn(
-                    "w-full px-5 py-5 text-left transition-colors sm:px-6",
-                    isActive ? "bg-primary/5" : "hover:bg-muted/50",
-                  )}
-                >
-                  <h2
-                    className={cn(
-                      "text-lg font-semibold sm:text-xl",
-                      isActive ? "text-primary" : "text-foreground",
-                    )}
-                  >
-                    {benefit.title}
-                  </h2>
-                  {benefit.description ? (
-                    <p
-                      className={cn(
-                        "mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base",
-                        !isActive && "line-clamp-2",
-                      )}
-                    >
-                      {benefit.description}
-                    </p>
-                  ) : null}
-                </button>
-              </li>
-            );
-          })}
+        <ul className="flex flex-col">
+          {benefits.map((benefit, index) => (
+            <BenefitRow
+              key={benefit.title}
+              benefit={benefit}
+              isActive={index === activeIndex}
+              onSelect={() => setActiveIndex(index)}
+            />
+          ))}
         </ul>
 
-        <div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-2xl border border-border/80 bg-muted/30 shadow-lg lg:max-w-none lg:sticky lg:top-36">
+        <div
+          ref={imageWrapRef}
+          className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-2xl border border-border/80 bg-muted/30 shadow-lg lg:max-w-none lg:sticky lg:top-36"
+        >
           <Image
             src={active.image}
             alt={active.title}
             fill
-            className="object-contain p-4 transition-opacity duration-300"
+            className="object-contain p-4"
             sizes="(max-width: 1024px) 100vw, 50vw"
             priority
           />
