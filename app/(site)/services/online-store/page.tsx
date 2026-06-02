@@ -4,6 +4,8 @@ import { ServiceDetailReadyStore } from "@/components/services/service-detail-re
 import { getServiceById } from "@/lib/data/services";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 import HeroSection from "@/components/services/service-detail-ready-store-v2/HeroSection";
+import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
+import Templates from "@/components/services/service-detail-ready-store-v2/Templates";
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
@@ -15,5 +17,11 @@ export default async function OnlineStorePage() {
   // const service = getServiceById("ready-store");
   // if (!service) notFound();
   // const availability = await getServiceSlotAvailability("ready-store");
-  return <main className="container mx-auto px-4 pt-40"><HeroSection /></main>
+  return (
+    <main className="container mx-auto space-y-10 px-4 pt-40">
+      <HeroSection />
+      <GoogleReviewsSection />
+      <Templates />
+    </main>
+  );
 }
