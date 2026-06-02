@@ -95,17 +95,17 @@ function ImageLeftCard({
   image: string;
 }) {
   return (
-    <div className="flex h-full min-h-0 flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-8">
-      <div className="relative min-h-52 flex-1 overflow-hidden rounded-xl sm:min-h-60 lg:min-h-0 lg:max-w-[45%]">
+    <div className="flex h-full min-h-0 flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-10">
+      <div className="relative min-h-52 w-full overflow-hidden rounded-xl sm:min-h-60 lg:min-h-48 lg:w-[58%] lg:shrink-0 xl:min-h-56">
         <Image
           src={image}
           alt={title}
           fill
-          className="object-contain"
-          sizes="(max-width: 1024px) 100vw, 45vw"
+          className="object-contain object-left"
+          sizes="(max-width: 1024px) 100vw, 58vw"
         />
       </div>
-      <div className="flex min-h-0 flex-1 flex-col lg:justify-center">
+      <div className="flex min-h-0 flex-1 flex-col lg:max-w-md lg:justify-center xl:max-w-lg">
         <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
           {description}
@@ -135,7 +135,7 @@ const MarketingTools = () => {
           <IconCard
             icon={BarChart3}
             title="Digi Analytics"
-            description="Наши системи които проследяват клиентите ти за специализирано преживяване"
+            description="Над 40% от данните се губят в meta pixel, google analytics, google tag manager и други системи. Затова изградихме вътрешна система за 100% точност"
           />
         </li>
 
@@ -164,7 +164,7 @@ const MarketingTools = () => {
           />
         </li>
 
-        <li className={`${cardClassName} lg:col-span-3 lg:row-start-3`}>
+        <li className={`${cardClassName} lg:col-span-3 lg:row-start-3 lg:min-h-56 xl:min-h-64`}>
           <ImageLeftCard
             title="Вградени тракери за проследяване"
             description="Готов за реклама и проследяване на клиентите ти от първи ден. Многокалано продаване като в google и meta"
