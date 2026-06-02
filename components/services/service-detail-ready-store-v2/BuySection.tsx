@@ -69,19 +69,21 @@ const BuySection = ({ availability }: BuySectionProps) => {
   };
 
   return (
-    <ServiceBuySection
-      service={service}
-      title="Готов ли си за продажби?"
-      price={planPrice}
-      upsells={upsells}
-      onUpsellsChange={setUpsells}
-      onAddToCart={handleCheckout}
-      isAdding={isAdding}
-      cartSelectedOptionId={ONLINE_STORE_OPTION_ID}
-      ctaId={`${ONLINE_STORE_LANDING.ctaIdPrefix}_buy_section_add_to_cart`}
-      ctaPage={ONLINE_STORE_LANDING.pagePath}
-      availability={availability}
-    />
+    <div>
+      <ServiceBuySection
+        service={service}
+        header="Готов ли си за продажби?"
+        price={planPrice}
+        upsells={upsells}
+        onUpsellsChange={setUpsells}
+        onAddToCart={handleCheckout}
+        isAdding={isAdding}
+        cartSelectedOptionId={ONLINE_STORE_OPTION_ID}
+        ctaId={`${ONLINE_STORE_LANDING.ctaIdPrefix}_buy_section_add_to_cart`}
+        ctaPage={ONLINE_STORE_LANDING.pagePath}
+        availability={availability}
+      />
+    </div>
   );
 };
 

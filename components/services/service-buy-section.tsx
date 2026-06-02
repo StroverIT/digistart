@@ -60,9 +60,10 @@ function formatSavedMonths(months: number) {
 
 interface ServiceBuySectionProps {
   service: Service;
-  title: string;
+  title?: string;
   price: number;
   monthlyLabel?: string;
+  header?: string;
   ctaLabel?: string;
   upsells: CartItemUpsell[];
   onUpsellsChange: (nextUpsells: CartItemUpsell[]) => void;
@@ -87,6 +88,7 @@ export function ServiceBuySection({
   title,
   price,
   monthlyLabel,
+  header,
   ctaLabel,
   upsells,
   onUpsellsChange,
@@ -304,6 +306,7 @@ export function ServiceBuySection({
 
   return (
     <section ref={sectionRef} id="buy-now" className="py-12 md:py-16">
+      <h2 className="text-3xl font-bold text-center mb-6">{header}</h2>
       <div className="container mx-auto px-4">
         {(availability && remainingSlots !== undefined && !isSoldOut) || canPrepayAnnually ? (
           <div
