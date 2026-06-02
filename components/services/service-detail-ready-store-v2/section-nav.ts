@@ -5,5 +5,4 @@ export const READY_STORE_SECTION_NAV = [
   { id: "marketing", label: "маркетинг" },
   { id: "admin", label: "табло" },
   { id: "real-shop", label: "магазин" },
-  { id: "buy-now", label: "продажби" },
 ] as const;
