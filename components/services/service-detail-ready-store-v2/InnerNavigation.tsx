@@ -5,14 +5,33 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { READY_STORE_SECTION_NAV } from "./section-nav";
 
+const BUY_SECTION_ID = "buy-section";
+const STICKY_OFFSET_PX = 112;
+
 const InnerNavigation = () => {
   const [activeId, setActiveId] = useState<string>(READY_STORE_SECTION_NAV[0].id);
+  const [hideNav, setHideNav] = useState(false);
 
   useEffect(() => {
-    const sectionIds = [
-      ...READY_STORE_SECTION_NAV.map((item) => item.id),
-      "buy-now",
-    ];
+    const buySection = document.getElementById(BUY_SECTION_ID);
+    if (!buySection) return;
+
+    const updateBuySectionVisibility = () => {
+      setHideNav(buySection.getBoundingClientRect().top <= STICKY_OFFSET_PX);
+    };
+
+    updateBuySectionVisibility();
+    window.addEventListener("scroll", updateBuySectionVisibility, { passive: true });
+    window.addEventListener("resize", updateBuySectionVisibility);
+
+    return () => {
+      window.removeEventListener("scroll", updateBuySectionVisibility);
+      window.removeEventListener("resize", updateBuySectionVisibility);
+    };
+  }, []);
+
+  useEffect(() => {
+    const sectionIds = READY_STORE_SECTION_NAV.map((item) => item.id);
     const elements = sectionIds
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => Boolean(el));
@@ -35,7 +54,7 @@ const InnerNavigation = () => {
     return () => observer.disconnect();
   }, []);
 
-  if (activeId === "buy-now") return null;
+  if (hideNav) return null;
 
   return (
     <nav
@@ -64,9 +83,7 @@ const InnerNavigation = () => {
           size="sm"
           className="shrink-0 rounded-full uppercase"
         >
-          <a href="#buy-now" onClick={() => setActiveId("buy-now")}>
-            Купи сега
-          </a>
+          <a href="#buy-now">Купи сега</a>
         </Button>
       </div>
     </nav>

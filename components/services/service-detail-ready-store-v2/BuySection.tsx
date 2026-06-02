@@ -70,7 +70,10 @@ const BuySection = ({ availability }: BuySectionProps) => {
   };
 
   return (
-    <section className="scroll-mt-28 border-b border-border/60 bg-muted/20">
+    <section
+      id="buy-section"
+      className="scroll-mt-28 border-b border-border/60 bg-muted/20"
+    >
       <div className={landingContainerClass}>
         <ServiceBuySection
           service={service}
