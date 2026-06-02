@@ -7,7 +7,7 @@ const Templates = () => {
   if (!templates.length) return null;
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6" id="templates">
       <div className="text-center">
         <h2 className="text-2xl font-semibold sm:text-3xl">Избери темплейт за твоя магазин</h2>
         <p className="mt-2 text-sm text-muted-foreground sm:text-base">
