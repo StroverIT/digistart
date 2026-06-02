@@ -71,7 +71,7 @@ const BuySection = ({ availability }: BuySectionProps) => {
   return (
     <ServiceBuySection
       service={service}
-      title="Готов ли си да излезеш от чата?"
+      title="Готов ли си за продажби?"
       price={planPrice}
       upsells={upsells}
       onUpsellsChange={setUpsells}

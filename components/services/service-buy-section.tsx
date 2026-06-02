@@ -312,61 +312,43 @@ export function ServiceBuySection({
               isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
             )}
           >
-            <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-              <div className="space-y-1.5">
-                <div className="flex flex-wrap items-center gap-2">
-                  {availability && remainingSlots !== undefined && !isSoldOut ? (
-                    <span className="rounded-full bg-background/80 px-3 py-1 text-sm font-medium text-foreground">
-                      Свободни места:{" "}
-                      <span className="font-bold text-primary tabular-nums">{remainingSlots}</span>
-                    </span>
-                  ) : null}
-                </div>
-                {canPrepayAnnually ? (
-                  <p className="text-sm text-muted-foreground">
-                    Отстъпката важи за всички включени суми, включително фиксираните
-                    еднократни цени.
-                  </p>
-                ) : null}
+            {canPrepayAnnually ? (
+              <div className="grid gap-2 sm:grid-cols-2 ">
+                <button
+                  type="button"
+                  onClick={() => setBillingCycle("monthly")}
+                  className={cn(
+                    "w-full rounded-xl border bg-background/70 p-3 text-left transition-colors",
+                    effectiveBillingCycle === "monthly"
+                      ? "border-primary ring-1 ring-primary"
+                      : "border-border hover:border-primary/40",
+                  )}
+                >
+                  <span className="block text-sm font-semibold">Месечно</span>
+                  <span className="mt-1 block text-xs text-muted-foreground">
+                    Може по всяко време да се откажеш
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBillingCycle("annual-prepaid")}
+                  className={cn(
+                    "relative w-full overflow-hidden rounded-xl border bg-background/70 p-3 pr-14 pt-3 text-left transition-colors",
+                    effectiveBillingCycle === "annual-prepaid"
+                      ? "border-primary ring-1 ring-primary"
+                      : "border-border hover:border-primary/40",
+                  )}
+                >
+                  <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground shadow-sm">
+                    -{annualDiscountPercent}%
+                  </span>
+                  <span className="block text-sm font-semibold">За година</span>
+                  <span className="mt-1 block text-xs text-muted-foreground">
+                    {annualSavingsDescription}
+                  </span>
+                </button>
               </div>
-              {canPrepayAnnually ? (
-                <div className="grid gap-2 sm:grid-cols-2 md:min-w-[420px]">
-                  <button
-                    type="button"
-                    onClick={() => setBillingCycle("monthly")}
-                    className={cn(
-                      "w-full rounded-xl border bg-background/70 p-3 text-left transition-colors",
-                      effectiveBillingCycle === "monthly"
-                        ? "border-primary ring-1 ring-primary"
-                        : "border-border hover:border-primary/40",
-                    )}
-                  >
-                    <span className="block text-sm font-semibold">Месечно</span>
-                    <span className="mt-1 block text-xs text-muted-foreground">
-                      Плащаш всеки месец.
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBillingCycle("annual-prepaid")}
-                    className={cn(
-                      "relative w-full overflow-hidden rounded-xl border bg-background/70 p-3 pr-14 pt-3 text-left transition-colors",
-                      effectiveBillingCycle === "annual-prepaid"
-                        ? "border-primary ring-1 ring-primary"
-                        : "border-border hover:border-primary/40",
-                    )}
-                  >
-                    <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground shadow-sm">
-                      -{annualDiscountPercent}%
-                    </span>
-                    <span className="block text-sm font-semibold">За година</span>
-                    <span className="mt-1 block text-xs text-muted-foreground">
-                      {annualSavingsDescription}
-                    </span>
-                  </button>
-                </div>
-              ) : null}
-            </div>
+            ) : null}
           </div>
         ) : null}
         <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
@@ -380,8 +362,8 @@ export function ServiceBuySection({
               isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
             )}
           >
-            <h2 className="text-2xl font-bold mb-2">{title}</h2>
-            <p className="mb-5 text-sm text-pretty text-muted-foreground">
+            {service.slug !== "online-store" && <h2 className="text-2xl font-bold mb-2">{title}</h2>}
+            {service.slug !== "online-store" && <p className="mb-5 text-sm text-pretty text-muted-foreground">
               Избери сам <span className="font-semibold text-foreground">ИЛИ</span>{" "}
               <Link
                 href={`#${plansSectionId}`}
@@ -389,7 +371,7 @@ export function ServiceBuySection({
               >
                 избери нашите готови планове с до 15% отстъпка
               </Link>
-            </p>
+            </p>}
             <div className="mb-6 rounded-2xl border border-primary/15 bg-primary/5 p-4">
               <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
@@ -405,15 +387,7 @@ export function ServiceBuySection({
                     </p>
                   ) : null}
                 </div>
-                <div className="shrink-0 rounded-xl bg-background/80 px-3 py-2 text-left sm:text-right">
-                  <p className="text-xs text-muted-foreground">Включено от</p>
-                  <div className="flex items-end gap-1 sm:justify-end">
-                    <Price value={price} layout="vertical" className="text-xl text-primary" />
-                    <span className="pb-0.5 text-xs text-muted-foreground">
-                      {basePackageFrequency}
-                    </span>
-                  </div>
-                </div>
+
               </div>
               {service.features.length ? (
                 <ul className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
@@ -529,6 +503,6 @@ export function ServiceBuySection({
           </Button>
         </div>
       </div>
-    </section>
+    </section >
   );
 }
