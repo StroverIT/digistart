@@ -9,6 +9,8 @@ import MarketingTools from "@/components/services/service-detail-ready-store-v2/
 import AdminPanel from "@/components/services/service-detail-ready-store-v2/AdminPanel";
 import RealShop from "@/components/services/service-detail-ready-store-v2/RealShop";
 import BuySection from "@/components/services/service-detail-ready-store-v2/BuySection";
+import { PasFaqSection } from "@/components/services/service-pas-landing/faq-section";
+import { ONLINE_STORE_LANDING } from "@/config/service-landing/online-store";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
 export const metadata: Metadata = {
@@ -32,8 +34,7 @@ export default async function OnlineStorePage() {
       <RealShop />
       {/* От тука може да си поръчат. Вземи както е при сайта - ВСИЧКИ ПЛАНОВЕ ВКЛЮЧВАТ */}
       <BuySection availability={availability} />
-
-      {/* FAQ */}
+      <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
     </main>
   );
 }
