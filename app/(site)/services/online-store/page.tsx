@@ -5,6 +5,8 @@ import Templates from "@/components/services/service-detail-ready-store-v2/Templ
 import InnerNavigation from "@/components/services/service-detail-ready-store-v2/InnerNavigation";
 import Benefits from "@/components/services/service-detail-ready-store-v2/Benefits";
 import BuiltInChat from "@/components/services/service-detail-ready-store-v2/BuiltInChat";
+import MarketingTools from "@/components/services/service-detail-ready-store-v2/MarketingTools";
+import AdminPanel from "@/components/services/service-detail-ready-store-v2/AdminPanel";
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
@@ -24,8 +26,8 @@ export default async function OnlineStorePage() {
       <Templates />
       <Benefits />
       <BuiltInChat />
-      {/* Маркетинг инструменти */}
-      {/* Админ панел */}
+      <MarketingTools />
+      <AdminPanel />
       {/* Как реално изглежда готов магазин. Ристайлд който прави по 3 поръчки на ДЕН / 90 поръчки на МЕСЕЦ */}
       {/* От тука може да си поръчат. Вземи както е при сайта - ВСИЧКИ ПЛАНОВЕ ВКЛЮЧВАТ */}
       {/* FAQ */}
