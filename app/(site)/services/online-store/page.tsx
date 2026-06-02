@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { ServiceDetailReadyStore } from "@/components/services/service-detail-ready-store";
-import { getServiceById } from "@/lib/data/services";
-import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 import HeroSection from "@/components/services/service-detail-ready-store-v2/HeroSection";
 import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
 import Templates from "@/components/services/service-detail-ready-store-v2/Templates";
 import InnerNavigation from "@/components/services/service-detail-ready-store-v2/InnerNavigation";
+import Benefits from "@/components/services/service-detail-ready-store-v2/Benefits";
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
@@ -24,6 +21,13 @@ export default async function OnlineStorePage() {
       <GoogleReviewsSection />
       <InnerNavigation />
       <Templates />
+      <Benefits />
+      {/* Вграден чат за да сме винаги до тях */}
+      {/* Маркетинг инструменти */}
+      {/* Админ панел */}
+      {/* Как реално изглежда готов магазин. Ристайлд който прави по 3 поръчки на ДЕН / 90 поръчки на МЕСЕЦ */}
+      {/* От тука може да си поръчат. Вземи както е при сайта - ВСИЧКИ ПЛАНОВЕ ВКЛЮЧВАТ */}
+      {/* FAQ */}
     </main>
   );
 }
