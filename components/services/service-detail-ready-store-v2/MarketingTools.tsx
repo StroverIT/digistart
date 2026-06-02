@@ -11,8 +11,8 @@ import { LandingSection } from "./shared";
 const tools = [
   {
     icon: Target,
-    title: "Вграден пиксел",
-    description: "Готов за реклама от първата минута",
+    title: "Вградени тракери за проследяване",
+    description: "Готов за реклама и проследяване на клиентите ти от първи ден. Многокалано продаване като в google и meta",
   },
   {
     icon: BarChart3,
