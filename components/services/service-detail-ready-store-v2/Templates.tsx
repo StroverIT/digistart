@@ -25,9 +25,7 @@ const Templates = () => {
         </p>
 
       </div>
-      <p className="text-sm text-muted-foreground sm:text-base text-center mt-4 max-w-lg mx-auto">
-        NOTE: Темплейта ни помага на нас да разберем повече за твоя бизнес, така стратираме по-бързо. Ако нищо не ти допада, просто избери някой и ние ще направим останалото за теб.
-      </p>
+
 
       <div className=" mt-10 md:mt-14 grid grid-cols-1 sm:grid-cols-2">
         {templates.slice(0, 4).map((template) => (
@@ -38,6 +36,9 @@ const Templates = () => {
         ))}
       </div>
       <div className="text-center">
+        <p className="text-sm text-muted-foreground sm:text-base text-center mt-4 max-w-lg mx-auto mb-4">
+          NOTE: Темплейта ни помага на нас да разберем повече за твоя бизнес, така стратираме по-бързо. Ако нищо не ти допада, просто избери някой и ние ще направим останалото за теб.
+        </p>
         <Button variant="outline" size="xl" type="button" className="gap-2">
           Виж всички шаблони
           <ArrowUpRight className="h-4 w-4" />

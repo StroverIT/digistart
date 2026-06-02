@@ -29,10 +29,10 @@ const BuiltInChat = () => {
         {chatFeatures.map((feature) => (
           <article
             key={feature.title}
-            className="flex flex-col overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm"
+            className="flex flex-col overflow-hidden rounded-2xl "
           >
             <div
-              className={`relative flex min-h-[280px] items-center justify-center bg-gradient-to-br p-6 sm:min-h-[320px] ${feature.gradient}`}
+              className={`relative flex min-h-[280px] items-center justify-center  p-6 sm:min-h-[320px] ${feature.gradient}`}
             >
               <div className="relative h-56 w-full max-w-sm sm:h-64">
                 <Image
@@ -40,7 +40,6 @@ const BuiltInChat = () => {
                   alt={feature.title}
                   fill
                   className="object-contain"
-                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
             </div>
