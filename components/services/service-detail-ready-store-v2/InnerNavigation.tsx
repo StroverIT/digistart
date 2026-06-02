@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { READY_STORE_SECTION_NAV } from "./section-nav";
 
@@ -52,18 +53,19 @@ const InnerNavigation = () => {
             {item.label}
           </a>
         ))}
-        <a
-          href="#buy-now"
-          onClick={() => setActiveId("buy-now")}
+        <Button
+          asChild
+          variant={activeId === "buy-now" ? "default" : "ghost"}
+          size="sm"
           className={cn(
-            "shrink-0 rounded-full px-4 py-2 text-sm font-medium uppercase transition-colors",
-            activeId === "buy-now"
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            "shrink-0 rounded-full uppercase",
+            activeId !== "buy-now" && "text-muted-foreground",
           )}
         >
-          Купи сега
-        </a>
+          <a href="#buy-now" onClick={() => setActiveId("buy-now")}>
+            Купи сега
+          </a>
+        </Button>
       </div>
     </nav>
   );

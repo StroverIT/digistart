@@ -22,7 +22,7 @@ const benefits = [
     title: "Включен Hosting и SSL сертификат",
     description:
       "Ние се грижим за цялата техническа част. Твоята грижа е само да изпращаш пратки",
-    image: "/templates/clothing/11.png",
+    image: "/benefits/hosting-and-ssl-2.png",
   },
 ] as const;
 
