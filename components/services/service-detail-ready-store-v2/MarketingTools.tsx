@@ -96,16 +96,16 @@ function ImageLeftCard({
 }) {
   return (
     <div className="flex h-full min-h-0 flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-10">
-      <div className="relative min-h-52 w-full overflow-hidden rounded-xl sm:min-h-60 lg:min-h-48 lg:w-[58%] lg:shrink-0 xl:min-h-56">
+      <div className="relative min-h-52 w-full min-w-0 flex-1 overflow-hidden rounded-xl sm:min-h-60 lg:min-h-48 xl:min-h-56">
         <Image
           src={image}
           alt={title}
           fill
           className="object-contain object-left"
-          sizes="(max-width: 1024px) 100vw, 58vw"
+          sizes="(max-width: 1024px) 100vw, 50vw"
         />
       </div>
-      <div className="flex min-h-0 flex-1 flex-col lg:max-w-md lg:justify-center xl:max-w-lg">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:justify-center">
         <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
           {description}
@@ -122,8 +122,8 @@ const MarketingTools = () => {
         Продавай лесно с нашите вградени маркетинг инструменти
       </h1>
 
-      <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:auto-rows-fr">
-        <li className={cardClassName}>
+      <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:[grid-template-areas:'seo_analytics_promo'_'email_email_promo'_'trackers_trackers_trackers']">
+        <li className={`${cardClassName} lg:[grid-area:seo]`}>
           <IconCard
             icon={Search}
             title="SEO оптимизиран"
@@ -131,7 +131,7 @@ const MarketingTools = () => {
           />
         </li>
 
-        <li className={cardClassName}>
+        <li className={`${cardClassName} lg:[grid-area:analytics]`}>
           <IconCard
             icon={BarChart3}
             title="Digi Analytics"
@@ -139,7 +139,7 @@ const MarketingTools = () => {
           />
         </li>
 
-        <li className="flex flex-col gap-5 sm:col-span-2 lg:col-start-3 lg:row-span-2 lg:row-start-1">
+        <li className="flex flex-col gap-5 sm:col-span-2 lg:[grid-area:promo]">
           <article className={`${cardClassName} flex-1`}>
             <ImageBottomCard
               title="Промоции и намаления"
@@ -156,7 +156,7 @@ const MarketingTools = () => {
           </article>
         </li>
 
-        <li className={`${cardClassName} sm:col-span-2 lg:col-span-2 lg:row-start-2`}>
+        <li className={`${cardClassName} sm:col-span-2 lg:[grid-area:email]`}>
           <ImageRightCard
             title="Имейл маркетинг"
             description="Събирай автоматично имейлите на клиентите които искат да се запишат за бюлетина. И автоматично пращане на имейли за персонализирани имейли или създаване на кампания"
@@ -164,7 +164,7 @@ const MarketingTools = () => {
           />
         </li>
 
-        <li className={`${cardClassName} lg:col-span-3 lg:row-start-3 lg:min-h-56 xl:min-h-64`}>
+        <li className={`${cardClassName} w-full lg:[grid-area:trackers] lg:min-h-56 xl:min-h-64`}>
           <ImageLeftCard
             title="Вградени тракери за проследяване"
             description="Готов за реклама и проследяване на клиентите ти от първи ден. Многокалано продаване като в google и meta"
