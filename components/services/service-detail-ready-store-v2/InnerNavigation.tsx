@@ -88,7 +88,7 @@ const InnerNavigation = () => {
     <nav
       ref={navRef}
       aria-label="Навигация по секции"
-      className="sticky top-24 sm:top-28 z-30 mx-auto w-fit max-w-[calc(100%-2rem)] rounded-full border border-border/80 bg-background/90 backdrop-blur-md will-change-transform -mt-14"
+      className="sticky top-24 sm:top-28 z-30 w-full rounded-none border border-x-0 border-border/80 bg-background/90 backdrop-blur-md will-change-transform -mt-14 sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)] sm:rounded-full sm:border-x"
     >
       <div
         ref={scrollContainerRef}
