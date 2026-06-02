@@ -1,10 +1,11 @@
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LandingSection } from "./shared";
+import GoogleReviewsSection from "./GoogleReviewsSection";
 
 const HeroSection = () => {
   return (
-    <LandingSection className="border-b-0 md:pt-10 pb-0!">
+    <LandingSection className="border-b-0 bg-linear-to-b from-white to-primary md:pt-10">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 lg:items-center lg:gap-16">
         <article className="flex w-full flex-col items-center  text-center">
           <p className="text-sm font-semibold uppercase tracking-widest text-primary">
@@ -51,6 +52,7 @@ const HeroSection = () => {
           </div>
         </article>
       </div>
+      <GoogleReviewsSection />
     </LandingSection>
   );
 };

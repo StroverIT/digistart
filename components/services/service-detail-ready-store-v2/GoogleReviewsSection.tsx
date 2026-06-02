@@ -1,5 +1,4 @@
 import { Star } from "lucide-react";
-import { LandingSection } from "./shared";
 
 const GOOGLE_MAPS_REVIEWS_URL =
   "https://www.google.com/maps/place/Digistart/@42.6463351,23.4062764,17z/data=!3m1!4b1!4m6!3m5!1s0x6de45c7a12e65d4d:0x34419d40aa2064bc!8m2!3d42.6463351!4d23.4088513!16s%2Fg%2F11j_1z1tcr?entry=ttu&g_ep=EgoyMDI2MDUyNy4wIKXMDSoASAFQAw%3D%3D";

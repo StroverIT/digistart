@@ -90,9 +90,9 @@ const InnerNavigation = () => {
       ref={navRef}
       aria-label="Навигация по секции"
       aria-hidden={hideNav}
-      className="sticky top-24 sm:top-28 z-30 border-y border-border/80 bg-background/90 backdrop-blur-md will-change-transform"
+      className="sticky top-24 sm:top-28 z-30 mx-auto w-fit max-w-[calc(100%-2rem)] rounded-full border border-border/80 bg-background/90 backdrop-blur-md will-change-transform -mt-14"
     >
-      <div className="scrollbar-none mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-3 sm:px-6 sm:justify-center">
+      <div className="scrollbar-none flex gap-1 overflow-x-auto px-3 py-2 sm:px-4 sm:py-2.5">
         {READY_STORE_SECTION_NAV.map((item) => (
           <a
             key={item.id}

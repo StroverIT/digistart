@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import HeroSection from "@/components/services/service-detail-ready-store-v2/HeroSection";
-import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
 import Templates from "@/components/services/service-detail-ready-store-v2/Templates";
 import InnerNavigation from "@/components/services/service-detail-ready-store-v2/InnerNavigation";
 import Benefits from "@/components/services/service-detail-ready-store-v2/Benefits";
@@ -25,14 +24,16 @@ export default async function OnlineStorePage() {
   return (
     <main className="pt-28 md:pt-32">
       <HeroSection />
-      <GoogleReviewsSection />
-      <InnerNavigation />
-      <Templates />
-      <Benefits />
-      <BuiltInChat />
-      <MarketingTools />
-      <AdminPanel />
-      <RealShop />
+      <div className="bg-white pt-10 md:rounded-t-4xl md:-mt-10">
+        <InnerNavigation />
+        <Templates />
+        <Benefits />
+        <BuiltInChat />
+        <MarketingTools />
+        <AdminPanel />
+        <RealShop />
+      </div>
+
       <BuySection availability={availability} />
       <div className={`${landingContainerClass} py-14 md:py-20`}>
         <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
