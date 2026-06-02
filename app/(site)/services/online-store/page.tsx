@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ServiceDetailReadyStore } from "@/components/services/service-detail-ready-store";
 import { getServiceById } from "@/lib/data/services";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
+import HeroSection from "@/components/services/service-detail-ready-store-v2/HeroSection";
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
@@ -11,8 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default async function OnlineStorePage() {
-  const service = getServiceById("ready-store");
-  if (!service) notFound();
-  const availability = await getServiceSlotAvailability("ready-store");
-  return <ServiceDetailReadyStore serviceData={service} availability={availability} />;
+  // const service = getServiceById("ready-store");
+  // if (!service) notFound();
+  // const availability = await getServiceSlotAvailability("ready-store");
+  return <main className="container mx-auto px-4 pt-40"><HeroSection /></main>
 }
