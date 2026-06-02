@@ -6,6 +6,7 @@ import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 import HeroSection from "@/components/services/service-detail-ready-store-v2/HeroSection";
 import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
 import Templates from "@/components/services/service-detail-ready-store-v2/Templates";
+import InnerNavigation from "@/components/services/service-detail-ready-store-v2/InnerNavigation";
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
@@ -21,6 +22,7 @@ export default async function OnlineStorePage() {
     <main className="container mx-auto space-y-10 px-4 pt-40">
       <HeroSection />
       <GoogleReviewsSection />
+      <InnerNavigation />
       <Templates />
     </main>
   );
