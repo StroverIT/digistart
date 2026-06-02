@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import gsap from "gsap";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { READY_STORE_SECTION_NAV } from "./section-nav";
@@ -9,6 +10,7 @@ const BUY_SECTION_ID = "buy-section";
 const STICKY_OFFSET_PX = 112;
 
 const InnerNavigation = () => {
+  const navRef = useRef<HTMLElement>(null);
   const [activeId, setActiveId] = useState<string>(READY_STORE_SECTION_NAV[0].id);
   const [hideNav, setHideNav] = useState(false);
 
@@ -54,12 +56,41 @@ const InnerNavigation = () => {
     return () => observer.disconnect();
   }, []);
 
-  if (hideNav) return null;
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    gsap.killTweensOf(nav);
+
+    if (reducedMotion) {
+      gsap.set(nav, {
+        y: hideNav ? -12 : 0,
+        autoAlpha: hideNav ? 0 : 1,
+        pointerEvents: hideNav ? "none" : "auto",
+      });
+      return;
+    }
+
+    gsap.to(nav, {
+      y: hideNav ? -12 : 0,
+      autoAlpha: hideNav ? 0 : 1,
+      duration: 0.3,
+      ease: hideNav ? "power2.in" : "power2.out",
+      pointerEvents: hideNav ? "none" : "auto",
+    });
+
+    return () => {
+      gsap.killTweensOf(nav);
+    };
+  }, [hideNav]);
 
   return (
     <nav
+      ref={navRef}
       aria-label="Навигация по секции"
-      className="sticky top-24 sm:top-28 z-30 border-y border-border/80 bg-background/90 backdrop-blur-md"
+      aria-hidden={hideNav}
+      className="sticky top-24 sm:top-28 z-30 border-y border-border/80 bg-background/90 backdrop-blur-md will-change-transform"
     >
       <div className="scrollbar-none mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-3 sm:px-6 sm:justify-center">
         {READY_STORE_SECTION_NAV.map((item) => (
