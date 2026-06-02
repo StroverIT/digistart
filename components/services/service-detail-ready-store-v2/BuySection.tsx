@@ -16,6 +16,7 @@ import type {
 } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
+import { landingContainerClass } from "./shared";
 
 interface BuySectionProps {
   availability?: ServiceSlotAvailability | null;
@@ -69,21 +70,23 @@ const BuySection = ({ availability }: BuySectionProps) => {
   };
 
   return (
-    <div>
-      <ServiceBuySection
-        service={service}
-        header="Готов ли си за продажби?"
-        price={planPrice}
-        upsells={upsells}
-        onUpsellsChange={setUpsells}
-        onAddToCart={handleCheckout}
-        isAdding={isAdding}
-        cartSelectedOptionId={ONLINE_STORE_OPTION_ID}
-        ctaId={`${ONLINE_STORE_LANDING.ctaIdPrefix}_buy_section_add_to_cart`}
-        ctaPage={ONLINE_STORE_LANDING.pagePath}
-        availability={availability}
-      />
-    </div>
+    <section className="scroll-mt-28 border-b border-border/60 bg-muted/20">
+      <div className={landingContainerClass}>
+        <ServiceBuySection
+          service={service}
+          header="Готов ли си за продажби?"
+          price={planPrice}
+          upsells={upsells}
+          onUpsellsChange={setUpsells}
+          onAddToCart={handleCheckout}
+          isAdding={isAdding}
+          cartSelectedOptionId={ONLINE_STORE_OPTION_ID}
+          ctaId={`${ONLINE_STORE_LANDING.ctaIdPrefix}_buy_section_add_to_cart`}
+          ctaPage={ONLINE_STORE_LANDING.pagePath}
+          availability={availability}
+        />
+      </div>
+    </section>
   );
 };
 

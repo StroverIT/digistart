@@ -12,6 +12,7 @@ import BuySection from "@/components/services/service-detail-ready-store-v2/BuyS
 import { PasFaqSection } from "@/components/services/service-pas-landing/faq-section";
 import { ONLINE_STORE_LANDING } from "@/config/service-landing/online-store";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
+import { landingContainerClass } from "@/components/services/service-detail-ready-store-v2/shared";
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 export default async function OnlineStorePage() {
   const availability = await getServiceSlotAvailability("ready-store");
   return (
-    <main className="container mx-auto space-y-10 px-4 pt-40">
+    <main className="pt-28 md:pt-32">
       <HeroSection />
       <GoogleReviewsSection />
       <InnerNavigation />
@@ -32,9 +33,10 @@ export default async function OnlineStorePage() {
       <MarketingTools />
       <AdminPanel />
       <RealShop />
-      {/* От тука може да си поръчат. Вземи както е при сайта - ВСИЧКИ ПЛАНОВЕ ВКЛЮЧВАТ */}
       <BuySection availability={availability} />
-      <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
+      <div className={`${landingContainerClass} py-14 md:py-20`}>
+        <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
+      </div>
     </main>
   );
 }
