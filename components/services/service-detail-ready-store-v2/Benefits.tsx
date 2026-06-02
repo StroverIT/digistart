@@ -8,7 +8,7 @@ import { LandingSection } from "./shared";
 
 const benefits = [
   {
-    title: "Автоматично създаване на товарителници",
+    title: "Tоварителници",
     description:
       "Автоматично при създаване и връщане на поръчка се създава товарителница от избрания доставчик",
     image: "/benefits/автоматично-създаване-на-товарителници-3.png",
@@ -19,7 +19,7 @@ const benefits = [
     image: "/benefits/онлайн-плащания.png",
   },
   {
-    title: "Включен Hosting и SSL сертификат",
+    title: "Hosting и SSL сертификат",
     description:
       "Ние се грижим за цялата техническа част. Твоята грижа е само да изпращаш пратки",
     image: "/benefits/hosting-and-ssl-2.png",
@@ -138,11 +138,11 @@ function BenefitRow({
         className="flex w-full items-start justify-between gap-4 px-0 py-5 text-left text-white sm:py-6"
       >
         <span className="min-w-0 flex-1">
-          <span className="block text-lg font-semibold sm:text-xl">{benefit.title}</span>
+          <span className="block text-lg font-semibold sm:text-3xl">{benefit.title}</span>
           <div ref={descRef} className="overflow-hidden" aria-hidden={!isActive}>
             <p
               ref={descInnerRef}
-              className="pt-2 text-sm leading-relaxed text-white sm:text-base font-light"
+              className="pt-2 text-sm leading-relaxed text-white sm:text-xl font-light"
             >
               {benefit.description}
             </p>
