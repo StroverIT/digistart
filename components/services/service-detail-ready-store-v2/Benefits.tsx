@@ -4,7 +4,6 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ChevronDown } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
 import { LandingSection } from "./shared";
 
 const benefits = [
@@ -12,12 +11,12 @@ const benefits = [
     title: "Автоматично създаване на товарителници",
     description:
       "Автоматично при създаване и връщане на поръчка се създава товарителница от избрания доставчик",
-    image: "/templates/clothing/11.png",
+    image: "/benefits/автоматично-създаване-на-товарителници-3.png",
   },
   {
     title: "Онлайн плащания",
     description: "Клиентите ти имат възможност да плащат с абсолютно всичко което пожелаеш",
-    image: "/templates/clothing/11.png",
+    image: "/benefits/онлайн-плащания.png",
   },
   {
     title: "Включен Hosting и SSL сертификат",
@@ -132,28 +131,18 @@ function BenefitRow({
   }, [isActive]);
 
   return (
-    <li className="border-b border-border last:border-b-0">
+    <li className="border-b border-white/20 last:border-b-0">
       <button
         type="button"
         onClick={onSelect}
-        className={cn(
-          "flex w-full items-start justify-between gap-4 px-0 py-5 text-left transition-colors sm:py-6",
-          isActive ? "text-primary" : "text-foreground hover:text-foreground/80",
-        )}
+        className="flex w-full items-start justify-between gap-4 px-0 py-5 text-left text-white sm:py-6"
       >
         <span className="min-w-0 flex-1">
-          <span
-            className={cn(
-              "block text-lg font-semibold sm:text-xl",
-              isActive && "text-primary",
-            )}
-          >
-            {benefit.title}
-          </span>
+          <span className="block text-lg font-semibold sm:text-xl">{benefit.title}</span>
           <div ref={descRef} className="overflow-hidden" aria-hidden={!isActive}>
             <p
               ref={descInnerRef}
-              className="pt-2 text-sm leading-relaxed text-muted-foreground sm:text-base"
+              className="pt-2 text-sm leading-relaxed text-white sm:text-base font-light"
             >
               {benefit.description}
             </p>
@@ -161,10 +150,7 @@ function BenefitRow({
         </span>
         <ChevronDown
           ref={arrowRef}
-          className={cn(
-            "mt-1 size-5 shrink-0",
-            isActive ? "text-primary" : "text-muted-foreground",
-          )}
+          className="mt-1 size-5 shrink-0 text-white"
           aria-hidden
         />
       </button>
@@ -200,8 +186,8 @@ const Benefits = () => {
   }, [activeIndex]);
 
   return (
-    <LandingSection id="benefits">
-      <h2 className="max-w-4xl mx-auto text-3xl text-center font-medium">
+    <LandingSection id="benefits" className="border-white/20 bg-[#111111] text-white">
+      <h2 className="max-w-4xl mx-auto text-3xl text-center font-medium text-white">
         Създай онлайн магазин за рекордно време - от нула до това да продаваш в рамките на
         часове, не седмици
       </h2>
@@ -220,7 +206,7 @@ const Benefits = () => {
 
         <div
           ref={imageWrapRef}
-          className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-2xl border border-border/80 bg-muted/30 shadow-lg lg:max-w-none lg:sticky lg:top-36"
+          className="relative mx-auto aspect-[6/5] w-full"
         >
           <Image
             src={active.image}
