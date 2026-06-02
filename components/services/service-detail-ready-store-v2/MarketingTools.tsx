@@ -127,7 +127,7 @@ const MarketingTools = () => {
           <IconCard
             icon={Search}
             title="SEO оптимизиран"
-            description="Всички секции и продукти са SEO оптимизирани"
+            description="Изкачвай се в органичното търсене. Всичко е SEO оптимизирано още при пускането на онлайн магазина"
           />
         </li>
 
