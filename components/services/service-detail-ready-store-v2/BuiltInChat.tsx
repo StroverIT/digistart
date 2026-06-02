@@ -4,9 +4,9 @@ import { LandingSection, LandingSectionTitle } from "./shared";
 const BuiltInChat = () => {
   return (
     <LandingSection id="support">
-      <LandingSectionTitle as="h1" className="max-w-3xl mx-auto">
-        На всяка стъпка сме винаги до теб
-      </LandingSectionTitle>
+      <h1 className="max-w-3xl mx-auto text-4xl text-center">
+        На всяка стъпка сме до теб
+      </h1>
 
       <div className="mt-12 grid gap-8 md:grid-cols-2">
 

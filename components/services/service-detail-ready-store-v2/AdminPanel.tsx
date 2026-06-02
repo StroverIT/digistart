@@ -30,9 +30,9 @@ const adminFeatures = [
 const AdminPanel = () => {
   return (
     <LandingSection id="admin">
-      <LandingSectionTitle as="h1" className="max-w-4xl mx-auto">
+      <h1 className="max-w-4xl mx-auto text-4xl text-center">
         Едно табло за управление, пълен контрол и лесно управление на онлайн магазина ти
-      </LandingSectionTitle>
+      </h1>
 
       <ul className="mt-12 grid gap-5 sm:grid-cols-2">
         {adminFeatures.map((feature) => (

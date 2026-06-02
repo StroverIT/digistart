@@ -4,9 +4,9 @@ import { LandingSection, LandingSectionTitle } from "./shared";
 const RealShop = () => {
   return (
     <LandingSection id="real-shop" className="bg-muted/30">
-      <LandingSectionTitle as="h1" className="max-w-3xl mx-auto">
+      <h1 className="max-w-3xl mx-auto text-5xl text-center">
         Как реално изглежда готов онлайн магазин
-      </LandingSectionTitle>
+      </h1>
 
       <div className="mt-12 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <div className="relative order-2 aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border/80 bg-card shadow-lg lg:order-1">

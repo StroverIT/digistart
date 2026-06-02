@@ -46,9 +46,9 @@ const tools = [
 const MarketingTools = () => {
   return (
     <LandingSection id="marketing" className="bg-muted/30">
-      <LandingSectionTitle as="h1" className="max-w-3xl mx-auto">
+      <h1 className="max-w-3xl mx-auto text-4xl text-center">
         Продавай лесно с нашите вградени маркетинг инструменти
-      </LandingSectionTitle>
+      </h1>
 
       <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {tools.map((tool) => (
