@@ -262,7 +262,7 @@ export function SupportChat({ initialChat, variant = "user" }: SupportChatProps)
         <div className="flex flex-col gap-3">
           {chat.messages.length === 0 && !isClosed && (
             <p className="text-center text-sm text-muted-foreground py-8">
-              Опишете проблема си и ние ще се свържем с вас възможно най-скоро.
+              Опиши проблема си и ние ще се свържем с теб възможно най-скоро.
             </p>
           )}
           {chat.messages.map((message) => (
