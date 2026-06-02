@@ -1,23 +1,6 @@
 import Image from "next/image";
 import { LandingSection, LandingSectionTitle } from "./shared";
 
-const chatFeatures = [
-  {
-    title: "Вграден чат",
-    description:
-      "Имаме вътрешен чат за да може да отговорим на въпросите ти бързо и ефективно (всеки ден от 9:00 до 22:00)",
-    image: "/ask-for-help-3.png",
-    gradient: "from-primary/15 via-primary/5 to-background",
-  },
-  {
-    title: "Различни чатове за различни нужди",
-    description:
-      "Може да отваряш колкото си искаш чатове за различни въпроси. Организираността е на първо място",
-    image: "/test-1.png",
-    gradient: "from-muted via-background to-primary/10",
-  },
-] as const;
-
 const BuiltInChat = () => {
   return (
     <LandingSection id="support">
@@ -59,7 +42,7 @@ const BuiltInChat = () => {
           >
             <div className="relative h-56 w-full sm:h-[20rem]">
               <Image
-                src="/test-1.png"
+                src="/test-2.png"
                 alt="Различни чатове за различни нужди"
                 fill
                 className="object-contain"
