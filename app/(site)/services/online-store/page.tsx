@@ -30,7 +30,7 @@ export default async function OnlineStorePage() {
       <MarketingTools />
       <AdminPanel />
       <RealShop />
-      {/* От тука може да си поръчат. Вземи както е при сайта - ВСИЧКИ ПЛАНОВЕ ВКЛЮЧВАТ */}
+
       {/* FAQ */}
     </main>
   );
