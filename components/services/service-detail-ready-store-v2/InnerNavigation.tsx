@@ -34,9 +34,9 @@ const InnerNavigation = () => {
   return (
     <nav
       aria-label="Навигация по секции"
-      className="sticky top-20 z-30 border-y border-border/80 bg-background/90 backdrop-blur-md"
+      className="sticky top-24 sm:top-28 z-30 border-y border-border/80 bg-background/90 backdrop-blur-md"
     >
-      <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-3 scrollbar-none sm:px-6 sm:justify-center">
+      <div className="scrollbar-none mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-3 sm:px-6 sm:justify-center">
         {READY_STORE_SECTION_NAV.map((item) => (
           <a
             key={item.id}
