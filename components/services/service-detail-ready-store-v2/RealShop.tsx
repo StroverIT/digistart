@@ -1,16 +1,20 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SitePreviewViewer } from "@/components/preview/site-preview-viewer";
 import { LandingSection } from "./shared";
 import { LANDING_REVEAL_CLASS, LANDING_CARD_CLASS } from "./landing-animation-classes";
 import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
 
 const stars = Array.from({ length: 5 });
+const RESTYLED_SITE_URL = "https://restyled.bg";
 
 const RealShop = () => {
   const sectionRef = useRef<HTMLElement>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
   useLandingScrollAnimations(sectionRef, { staggerReveal: 0.12, staggerCard: 0.16 });
 
   return (
@@ -44,6 +48,14 @@ const RealShop = () => {
                 <Star key={index} className="size-5 text-amber-400" fill="currentColor" />
               ))}
             </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-4"
+              onClick={() => setPreviewOpen(true)}
+            >
+              Виж сайта
+            </Button>
           </div>
           <p
             data-animate-reveal
@@ -62,6 +74,13 @@ const RealShop = () => {
           </p>
         </div>
       </div>
+
+      <SitePreviewViewer
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        src={RESTYLED_SITE_URL}
+        title="Restyled"
+      />
     </LandingSection>
   );
 };
