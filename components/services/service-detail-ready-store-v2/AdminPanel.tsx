@@ -7,61 +7,59 @@ const adminFeatures = [
   {
     icon: ClipboardList,
     title: "Обработка на поръчки",
-    description: "Приемай и връщай плащания, отказвай поръчки и управлявай поръчките си",
+    description: "Управлявай всяка стъпка от поръчките си - от преглед и приемане на плащания до откази и възстановяване на суми.",
   },
   {
     icon: Users,
     title: "Управление на клиенти",
-    description: "Виж информацията на клиентите, следи поведението при покупка и още много други.",
+    description: "Разглеждай детайлно клиентските профили, проследявай индивидуалната история на покупките и организирай базата си с контакти на едно място.",
   },
   {
     icon: Package,
-    title: "Наблюдавай наличноста на продуктите ",
-    description:
-      "Виж колко продукти имаш в наличност, кои продукти са най-печеливши и кои секции имат най-висок трафик",
+    title: "Управление на наличности",
+    description: "Следи количествата на склад в реално време, управлявай продуктовия си каталог и откривай кои артикули са най-печеливши.",
   },
   {
     icon: LineChart,
-    title: "Достъп до анализи",
-    description:
-      "Имаш достъп до анализите които правим за да адаптираме онлайн магазина ти спрямо нуждите на клиентите ти",
-  },
+    title: "Анализ на данните",
+    description: "Следи в реално време как адаптираме магазина ти и използвай данните за потребителското поведение за по-успешни маркетинг кампании.",
+  }
 ] as const;
 
 const AdminPanel = () => {
   return (
     <LandingSection id="admin">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8 lg:gap-12">
-        <h1 className="max-w-3xl font-heading text-4xl font-bold tracking-tight text-foreground lg:max-w-4xl lg:text-[2.75rem] lg:leading-tight">
-          Едно табло за управление, пълен контрол и лесно управление на онлайн магазина ти
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-8 lg:gap-12">
+        <h1 className="max-w-3xl font-heading text-2xl font-bold tracking-tight text-foreground md:max-w-lg lg:leading-tight">
+          Едно табло, пълен контрол и лесно управление на онлайн магазина ти
         </h1>
         <Button
           asChild
-          size="lg"
-          className="h-12 shrink-0 self-start rounded-full px-8 text-base font-semibold shadow-lg shadow-primary/20"
+          size="sm"
+          className="shrink-0 self-center rounded-full px-8 text-sm font-semibold shadow-lg shadow-primary/20"
         >
           <a href="#buy-now">Започни сега</a>
         </Button>
       </div>
 
-      <ul className="mt-12 grid list-none gap-10 p-0 sm:grid-cols-2 lg:mt-14 lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-border/80">
+      <ul className="mt-12 grid list-none gap-10 p-0 sm:grid-cols-2 lg:mt-14 lg:grid-cols-4 lg:gap-0">
         {adminFeatures.map((feature, index) => (
           <li
             key={feature.title}
-            className={`flex flex-col lg:px-8 ${index === 0 ? "lg:pl-0" : ""} ${index === adminFeatures.length - 1 ? "lg:pr-0" : ""}`}
+            className={`flex flex-col lg:border-l lg:px-10`}
           >
             <span className="mb-4 flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <feature.icon className="size-5" aria-hidden />
             </span>
-            <h2 className="font-heading text-xl font-bold">{feature.title}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
+            <h2 className="font-heading text-sm font-bold">{feature.title}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-xs">
               {feature.description}
             </p>
           </li>
         ))}
       </ul>
 
-      <div className="relative mx-auto mt-14 aspect-16/10 w-full overflow-hidden rounded-2xl border border-border/80 bg-muted/20 shadow-xl lg:mt-16">
+      <div className="relative mx-auto mt-14 aspect-16/10 w-full overflow-hidden rounded-2xl bg-muted/20 shadow-xl lg:mt-16">
         <Image
           src="/admin-panel.png"
           alt="Admin Panel"
