@@ -111,7 +111,12 @@ export function ServiceBuySection({
   const [isActiveMobileSticky, setIsActiveMobileSticky] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const mainPanelRef = useRef<HTMLDivElement>(null);
+  const basicPackageRef = useRef<HTMLDivElement>(null);
+  const mobileStickyRef = useRef<HTMLDivElement>(null);
   const asideRef = useRef<HTMLElement>(null);
+  const mainPanelRevealedRef = useRef(false);
+  const basicPackageInViewRef = useRef(false);
+  const [isMobileStickyRevealReady, setIsMobileStickyRevealReady] = useState(false);
 
   const hasUpsells = useMemo(() => service.upsells.length > 0, [service.upsells.length]);
   const selectedOption = useMemo(
@@ -239,10 +244,18 @@ export function ServiceBuySection({
     }
   };
 
+  const syncMobileStickyRevealReady = () => {
+    setIsMobileStickyRevealReady(
+      mainPanelRevealedRef.current && basicPackageInViewRef.current,
+    );
+  };
+
   useEffect(() => {
     const section = sectionRef.current;
     const main = mainPanelRef.current;
     const aside = asideRef.current;
+    const basicPackage = basicPackageRef.current;
+    const mobileSticky = mobileStickyRef.current;
     if (!section || !main) return;
 
     const ctx = gsap.context(() => {
@@ -256,6 +269,10 @@ export function ServiceBuySection({
           trigger: section,
           start: "top 80%",
           toggleActions: "play none none none",
+        },
+        onComplete: () => {
+          mainPanelRevealedRef.current = true;
+          syncMobileStickyRevealReady();
         },
       });
 
@@ -273,9 +290,35 @@ export function ServiceBuySection({
           },
         });
       }
+
+      if (mobileSticky) {
+        gsap.set(mobileSticky, { autoAlpha: 0, y: 20, pointerEvents: "none" });
+      }
+
+      if (basicPackage) {
+        ScrollTrigger.matchMedia({
+          "(max-width: 1023px)": () => {
+            ScrollTrigger.create({
+              trigger: basicPackage,
+              start: "bottom 85%",
+              endTrigger: section,
+              end: "bottom top",
+              onToggle: (self) => {
+                basicPackageInViewRef.current = self.isActive;
+                syncMobileStickyRevealReady();
+              },
+            });
+          },
+        });
+      }
     }, section);
 
-    return () => ctx.revert();
+    return () => {
+      mainPanelRevealedRef.current = false;
+      basicPackageInViewRef.current = false;
+      setIsMobileStickyRevealReady(false);
+      ctx.revert();
+    };
   }, []);
 
   useEffect(() => {
@@ -302,6 +345,51 @@ export function ServiceBuySection({
       }
     };
   }, [mobileStickyId]);
+
+  useEffect(() => {
+    const el = mobileStickyRef.current;
+    if (!el) return;
+
+    const shouldShow = isActiveMobileSticky && !isSoldOut && isMobileStickyRevealReady;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reducedMotion) {
+      gsap.set(el, {
+        autoAlpha: shouldShow ? 1 : 0,
+        y: 0,
+        pointerEvents: shouldShow ? "auto" : "none",
+      });
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      if (shouldShow) {
+        gsap.to(el, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.35,
+          ease: "power2.out",
+          overwrite: true,
+          onStart: () => {
+            gsap.set(el, { pointerEvents: "auto" });
+          },
+        });
+      } else {
+        gsap.to(el, {
+          autoAlpha: 0,
+          y: 20,
+          duration: 0.25,
+          ease: "power2.in",
+          overwrite: true,
+          onComplete: () => {
+            gsap.set(el, { pointerEvents: "none" });
+          },
+        });
+      }
+    }, el);
+
+    return () => ctx.revert();
+  }, [isActiveMobileSticky, isSoldOut, isMobileStickyRevealReady]);
 
   return (
     <section ref={sectionRef} id="buy-now" className="py-12 md:py-16">
@@ -374,7 +462,10 @@ export function ServiceBuySection({
                 избери нашите готови планове с до 15% отстъпка
               </Link>
             </p>}
-            <div className="mb-6 rounded-2xl border border-primary/15 bg-primary/5 p-4">
+            <div
+              ref={basicPackageRef}
+              className="mb-6 rounded-2xl border border-primary/15 bg-primary/5 p-4"
+            >
               <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-primary">
@@ -474,10 +565,9 @@ export function ServiceBuySection({
       </div>
 
       <div
-        className={cn(
-          "fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80 lg:hidden",
-          (!isActiveMobileSticky || isSoldOut) && "hidden"
-        )}
+        ref={mobileStickyRef}
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80 invisible opacity-0 pointer-events-none lg:hidden"
+        aria-hidden={!isActiveMobileSticky || isSoldOut || !isMobileStickyRevealReady}
       >
         <div className="container mx-auto flex items-center justify-between gap-3 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <div className="min-w-0">
