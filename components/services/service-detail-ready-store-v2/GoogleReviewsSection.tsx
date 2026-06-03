@@ -7,7 +7,7 @@ const stars = Array.from({ length: 5 });
 
 const GoogleReviewsSection = () => {
   return (
-    <article className="mx-auto w-full max-w-3xl rounded-2xl border border-border/80 bg-gradient-to-b from-muted/50 to-background px-6 py-10 mt-4 mb-10 text-center shadow-sm sm:px-10">
+    <article className="mx-auto w-full max-w-3xl rounded-2xl border border-border/80 bg-white from-muted/50 to-background px-6 py-10 mt-4 mb-10 text-center shadow-sm sm:px-10">
       <p className="text-sm font-semibold uppercase tracking-widest text-primary">Google Reviews</p>
 
       <div className="mt-4 flex items-center justify-center gap-1" aria-label="5 от 5 звезди">
@@ -18,7 +18,7 @@ const GoogleReviewsSection = () => {
 
       <p className="mt-3 font-heading text-4xl font-bold sm:text-5xl">5.0 / 5.0</p>
       <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
-        Рейтингът е базиран на публичните отзиви в Google Maps за DigiStart.
+        Рейтингът е базиран на публичните отзиви в Google My Business.
       </p>
 
       <a
