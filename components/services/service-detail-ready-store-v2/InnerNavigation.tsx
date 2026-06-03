@@ -42,8 +42,7 @@ function centerActiveLink(
 }
 
 const InnerNavigation = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const navRef = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const linkRefs = useRef(new Map<string, HTMLAnchorElement>());
   const [activeId, setActiveId] = useState<(typeof READY_STORE_SECTION_NAV)[number]["id"]>(
@@ -90,12 +89,11 @@ const InnerNavigation = () => {
   }, []);
 
   return (
-    <div ref={sectionRef}>
-      <nav
-        ref={navRef}
-        aria-label="Навигация по секции"
-        className="sticky top-24 sm:top-28 z-30 -mt-14 w-full rounded-none border border-x-0 border-border/80 bg-background/90 backdrop-blur-md will-change-transform sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)] sm:rounded-full sm:border-x"
-      >
+    <nav
+      ref={sectionRef}
+      aria-label="Навигация по секции"
+      className="sticky top-24 sm:top-28 z-30 -mt-14 w-full rounded-none border border-x-0 border-border/80 bg-background/90 backdrop-blur-md sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)] sm:rounded-full sm:border-x"
+    >
         <div
           ref={scrollContainerRef}
           className="scrollbar-none flex gap-1 overflow-x-auto px-3 py-2 sm:px-4 sm:py-2.5"
@@ -135,8 +133,7 @@ const InnerNavigation = () => {
             </a>
           </Button>
         </div>
-      </nav>
-    </div>
+    </nav>
   );
 };
 
