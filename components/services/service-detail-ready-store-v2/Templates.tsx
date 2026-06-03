@@ -23,7 +23,7 @@ const Templates = () => {
 
   return (
     <LandingSection ref={sectionRef} id="templates">
-      <div className="flex justify-between text-center">
+      <div className="flex flex-col md:flex-row justify-between text-center">
         <div className="flex justify-start">
           <h2
             data-animate-reveal
