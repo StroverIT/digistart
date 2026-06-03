@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { BarChart3, Search, Star } from "lucide-react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { LandingSection } from "./shared";
 import { LANDING_REVEAL_CLASS, LANDING_CARD_CLASS } from "./landing-animation-classes";
 import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
@@ -36,10 +37,12 @@ function ImageBottomCard({
   title,
   description,
   image,
+  imageContainerClassName,
 }: {
   title: string;
   description: string;
   image: string;
+  imageContainerClassName?: string;
 }) {
   return (
     <>
@@ -47,13 +50,18 @@ function ImageBottomCard({
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
         {description}
       </p>
-      <div className="relative mt-6 min-h-40 flex-1 w-full overflow-hidden rounded-xl sm:min-h-48">
+      <div
+        className={cn(
+          "relative mt-6 aspect-4/3 w-full overflow-hidden rounded-xl lg:aspect-auto lg:min-h-48 lg:flex-1",
+          imageContainerClassName
+        )}
+      >
         <Image
           src={image}
           alt={title}
           fill
           className="object-contain object-bottom"
-          sizes="(max-width: 1024px) 100vw, 33vw"
+          sizes="(max-width: 1024px) 50vw, 33vw"
         />
       </div>
     </>
@@ -77,13 +85,13 @@ function ImageRightCard({
           {description}
         </p>
       </div>
-      <div className="relative min-h-52 flex-1 overflow-hidden rounded-xl sm:min-h-60 lg:min-h-0">
+      <div className="relative aspect-5/4 w-full shrink-0 overflow-hidden rounded-xl lg:aspect-auto lg:min-h-0 lg:flex-1">
         <Image
           src={image}
           alt={title}
           fill
-          className="object-contain"
-          sizes="(max-width: 1024px) 100vw, 50vw"
+          className="object-contain object-center"
+          sizes="(max-width: 1024px) 50vw, 50vw"
         />
       </div>
     </div>
@@ -141,7 +149,7 @@ const MarketingTools = () => {
       <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:[grid-template-areas:'seo_analytics_promo'_'email_email_promo'_'trackers_trackers_trackers']">
         <li
           data-animate-card
-          className={`${cardClassName} ${LANDING_CARD_CLASS} lg:[grid-area:seo]`}
+          className={`${cardClassName} order-1 ${LANDING_CARD_CLASS} lg:[grid-area:seo]`}
         >
           <IconCard
             icon={Search}
@@ -152,7 +160,7 @@ const MarketingTools = () => {
 
         <li
           data-animate-card
-          className={`${cardClassName} ${LANDING_CARD_CLASS} lg:[grid-area:analytics]`}
+          className={`${cardClassName} order-2 ${LANDING_CARD_CLASS} lg:[grid-area:analytics]`}
         >
           <IconCard
             icon={BarChart3}
@@ -161,18 +169,22 @@ const MarketingTools = () => {
           />
         </li>
 
-        <li
-          data-animate-card
-          className={`flex flex-col gap-5 sm:col-span-2 ${LANDING_CARD_CLASS} lg:[grid-area:promo]`}
-        >
-          <article className={`${cardClassName} flex-1`}>
+        <li className="contents lg:flex lg:flex-col lg:gap-5 lg:[grid-area:promo]">
+          <article
+            data-animate-card
+            className={`${cardClassName} order-3 flex-1 lg:order-0 ${LANDING_CARD_CLASS}`}
+          >
             <ImageBottomCard
               title="Промоции и намаления"
               description="На специфична дата сложи промоция или специфични секции да имат намаление"
               image="/marketing/promotion.png"
+              imageContainerClassName="max-sm:mt-4 max-sm:aspect-auto max-sm:h-40"
             />
           </article>
-          <article className={cardClassName}>
+          <article
+            data-animate-card
+            className={`${cardClassName} order-5 sm:col-span-2 lg:order-0 lg:col-span-auto ${LANDING_CARD_CLASS}`}
+          >
             <IconCard
               icon={Star}
               title="Ревюта"
@@ -183,7 +195,7 @@ const MarketingTools = () => {
 
         <li
           data-animate-card
-          className={`${cardClassName} ${LANDING_CARD_CLASS} sm:col-span-2 lg:[grid-area:email]`}
+          className={`${cardClassName} order-4 ${LANDING_CARD_CLASS} lg:[grid-area:email]`}
         >
           <ImageRightCard
             title="Имейл маркетинг"
@@ -194,7 +206,7 @@ const MarketingTools = () => {
 
         <li
           data-animate-card
-          className={`${cardClassName} w-full ${LANDING_CARD_CLASS} sm:col-span-2 lg:[grid-area:trackers] lg:min-h-56 xl:min-h-64`}
+          className={`${cardClassName} order-6 w-full ${LANDING_CARD_CLASS} sm:col-span-2 lg:[grid-area:trackers] lg:min-h-56 xl:min-h-64`}
         >
           <ImageLeftCard
             title="Вградени тракери за проследяване"
