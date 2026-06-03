@@ -10,6 +10,11 @@ export type LandingScrollAnimationOptions = {
   staggerReveal?: number;
   staggerCard?: number;
   start?: string;
+  /** When set, cards animate when this element enters view (e.g. a grid below the heading). */
+  cardTriggerRef?: RefObject<HTMLElement | null>;
+  cardStart?: string;
+  /** Each `[data-animate-card]` animates when that element scrolls into view. */
+  cardsOnViewIndividually?: boolean;
 };
 
 export function useLandingScrollAnimations(
@@ -24,8 +29,10 @@ export function useLandingScrollAnimations(
     const start = options?.start ?? "top 80%";
     const staggerReveal = options?.staggerReveal ?? 0.12;
     const staggerCard = options?.staggerCard ?? 0.15;
+    const cardStart = options?.cardStart ?? start;
 
     const ctx = gsap.context(() => {
+      const cardTrigger = options?.cardTriggerRef?.current ?? section;
       const reveals = section.querySelectorAll<HTMLElement>("[data-animate-reveal]");
       const cards = section.querySelectorAll<HTMLElement>("[data-animate-card]");
 
@@ -52,19 +59,37 @@ export function useLandingScrollAnimations(
 
       if (cards.length) {
         gsap.set(cards, { opacity: 0, y: 50, scale: 0.95 });
-        gsap.to(cards, {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.6,
-          stagger: staggerCard,
-          ease: "back.out(1.2)",
-          scrollTrigger: {
-            trigger: section,
-            start,
-            toggleActions: "play none none none",
-          },
-        });
+
+        if (options?.cardsOnViewIndividually) {
+          cards.forEach((card) => {
+            gsap.to(card, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.6,
+              ease: "back.out(1.2)",
+              scrollTrigger: {
+                trigger: card,
+                start: cardStart,
+                toggleActions: "play none none none",
+              },
+            });
+          });
+        } else if (cardTrigger) {
+          gsap.to(cards, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            stagger: staggerCard,
+            ease: "back.out(1.2)",
+            scrollTrigger: {
+              trigger: cardTrigger,
+              start: cardStart,
+              toggleActions: "play none none none",
+            },
+          });
+        }
       }
     }, section);
 

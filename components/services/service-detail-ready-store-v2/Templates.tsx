@@ -13,7 +13,11 @@ const Templates = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const templates = getOnboardingTemplates();
 
-  useLandingScrollAnimations(sectionRef, { staggerReveal: 0.12, staggerCard: 0.14 });
+  useLandingScrollAnimations(sectionRef, {
+    staggerReveal: 0.12,
+    cardsOnViewIndividually: true,
+    cardStart: "top 88%",
+  });
 
   if (!templates.length) return null;
 
@@ -47,12 +51,6 @@ const Templates = () => {
           </div>
         ))}
       </div>
-      <p
-        data-animate-reveal
-        className={`mx-auto mb-4 mt-4 max-w-lg text-center text-sm text-muted-foreground sm:text-base ${LANDING_REVEAL_CLASS}`}
-      >
-        NOTE: Темплейта ни помага на нас да разберем повече за твоя бизнес, така стратираме по-бързо. Ако нищо не ти допада, просто избери някой и ние ще направим останалото за теб.
-      </p>
       <div data-animate-reveal className={`text-center ${LANDING_REVEAL_CLASS}`}>
         <Button variant="outline" size="xl" type="button" className="gap-2">
           Виж всички шаблони

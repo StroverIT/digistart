@@ -21,7 +21,7 @@ export function TemplateCard({ template, className }: TemplateCardProps) {
         trackCtaClick("/templates", `templates_select_${template.category}_${template.id}`)
       }
       className={cn(
-        "group block w-full rounded-xl  p-4 text-left transition-all",
+        "group block w-full rounded-xl p-4 text-left transition-all",
         "hover:scale-110",
         className,
       )}
