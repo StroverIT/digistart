@@ -1,16 +1,30 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import HeroSection from "@/components/services/service-detail-ready-store-v2/HeroSection";
 import Templates from "@/components/services/service-detail-ready-store-v2/Templates";
 import InnerNavigation from "@/components/services/service-detail-ready-store-v2/InnerNavigation";
-import Benefits from "@/components/services/service-detail-ready-store-v2/Benefits";
-import BuiltInChat from "@/components/services/service-detail-ready-store-v2/BuiltInChat";
-import MarketingTools from "@/components/services/service-detail-ready-store-v2/MarketingTools";
-import AdminPanel from "@/components/services/service-detail-ready-store-v2/AdminPanel";
-import RealShop from "@/components/services/service-detail-ready-store-v2/RealShop";
-import BuySection from "@/components/services/service-detail-ready-store-v2/BuySection";
 import { PasFaqSection } from "@/components/services/service-pas-landing/faq-section";
 import { ONLINE_STORE_LANDING } from "@/config/service-landing/online-store";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
+
+const Benefits = dynamic(
+  () => import("@/components/services/service-detail-ready-store-v2/Benefits"),
+);
+const BuiltInChat = dynamic(
+  () => import("@/components/services/service-detail-ready-store-v2/BuiltInChat"),
+);
+const MarketingTools = dynamic(
+  () => import("@/components/services/service-detail-ready-store-v2/MarketingTools"),
+);
+const AdminPanel = dynamic(
+  () => import("@/components/services/service-detail-ready-store-v2/AdminPanel"),
+);
+const RealShop = dynamic(
+  () => import("@/components/services/service-detail-ready-store-v2/RealShop"),
+);
+const BuySection = dynamic(
+  () => import("@/components/services/service-detail-ready-store-v2/BuySection"),
+);
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",

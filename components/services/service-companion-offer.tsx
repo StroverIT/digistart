@@ -77,6 +77,7 @@ export function ServiceCompanionOffer({
             className="h-8 w-8"
             onClick={() => onIncludedChange(false)}
             disabled={quantity <= 0 || alreadyInCart}
+            aria-label={`Премахни ${companionOption.name}`}
           >
             <Minus className="h-4 w-4" />
           </Button>
@@ -88,6 +89,7 @@ export function ServiceCompanionOffer({
             className="h-8 w-8"
             onClick={() => onIncludedChange(true)}
             disabled={quantity >= 1 || alreadyInCart}
+            aria-label={`Добави ${companionOption.name}`}
           >
             <Plus className="h-4 w-4" />
           </Button>

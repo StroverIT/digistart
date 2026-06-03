@@ -14,7 +14,7 @@ const GoogleReviewsSection = () => {
     >
       <p className="text-sm font-semibold uppercase tracking-widest text-primary">Google Reviews</p>
 
-      <div className="mt-4 flex items-center justify-center gap-1" aria-label="5 от 5 звезди">
+      <div className="mt-4 flex items-center justify-center gap-1" role="img" aria-label="5 от 5 звезди">
         {stars.map((_, index) => (
           <Star key={index} className="size-7 text-amber-400" fill="currentColor" />
         ))}

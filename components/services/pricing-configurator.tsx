@@ -220,6 +220,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
                         className="h-8 w-8"
                         onClick={() => updateUpsell(upsell.id, -1)}
                         disabled={quantity === 0}
+                        aria-label={`Намали ${upsell.name}`}
                       >
                         <Minus className="h-4 w-4" />
                       </Button>
@@ -232,6 +233,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
                         className="h-8 w-8"
                         onClick={() => updateUpsell(upsell.id, 1)}
                         disabled={quantity >= (upsell.max || 99)}
+                        aria-label={`Увеличи ${upsell.name}`}
                       >
                         <Plus className="h-4 w-4" />
                       </Button>

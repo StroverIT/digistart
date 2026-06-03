@@ -37,13 +37,14 @@ const RealShop = () => {
             fill
             className="object-contain p-4"
             sizes="(max-width: 1024px) 100vw, 50vw"
+            loading="lazy"
           />
         </div>
 
         <div className="order-1 space-y-6 lg:order-2">
           <div data-animate-reveal className={`space-y-2 ${LANDING_REVEAL_CLASS}`}>
             <h2 className="font-heading text-2xl font-bold sm:text-3xl">Restyled</h2>
-            <div className="flex items-center gap-1" aria-label="5 от 5 звезди">
+            <div className="flex items-center gap-1" role="img" aria-label="5 от 5 звезди">
               {stars.map((_, index) => (
                 <Star key={index} className="size-5 text-amber-400" fill="currentColor" />
               ))}

@@ -41,13 +41,13 @@ const Templates = () => {
       </div>
 
       <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:mt-14">
-        {templates.slice(0, 4).map((template) => (
+        {templates.slice(0, 4).map((template, index) => (
           <div
             key={`${template.category}-${template.id}`}
             data-animate-card
             className={LANDING_CARD_CLASS}
           >
-            <TemplateCard template={template} />
+            <TemplateCard template={template} priority={index === 0} />
           </div>
         ))}
       </div>

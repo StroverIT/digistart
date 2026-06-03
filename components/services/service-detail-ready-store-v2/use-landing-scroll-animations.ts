@@ -1,10 +1,6 @@
 "use client";
 
 import { type RefObject, useEffect } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export type LandingScrollAnimationOptions = {
   staggerReveal?: number;
@@ -25,75 +21,96 @@ export function useLandingScrollAnimations(
     const section = sectionRef.current;
     if (!section) return;
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const start = options?.start ?? "top 80%";
-    const staggerReveal = options?.staggerReveal ?? 0.12;
-    const staggerCard = options?.staggerCard ?? 0.15;
-    const cardStart = options?.cardStart ?? start;
+    let cancelled = false;
+    let revert: (() => void) | undefined;
 
-    const ctx = gsap.context(() => {
-      const cardTrigger = options?.cardTriggerRef?.current ?? section;
-      const reveals = section.querySelectorAll<HTMLElement>("[data-animate-reveal]");
-      const cards = section.querySelectorAll<HTMLElement>("[data-animate-card]");
+    void (async () => {
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
 
-      if (reducedMotion) {
-        gsap.set([...reveals, ...cards], { opacity: 1, y: 0, scale: 1 });
-        return;
-      }
+      if (cancelled || !sectionRef.current) return;
 
-      if (reveals.length) {
-        gsap.set(reveals, { opacity: 0, y: 40 });
-        gsap.to(reveals, {
-          opacity: 1,
-          y: 0,
-          duration: 0.55,
-          stagger: staggerReveal,
-          ease: "back.out(1.6)",
-          scrollTrigger: {
-            trigger: section,
-            start,
-            toggleActions: "play none none none",
-          },
-        });
-      }
+      gsap.registerPlugin(ScrollTrigger);
 
-      if (cards.length) {
-        gsap.set(cards, { opacity: 0, y: 50, scale: 0.95 });
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const start = options?.start ?? "top 80%";
+      const staggerReveal = options?.staggerReveal ?? 0.12;
+      const staggerCard = options?.staggerCard ?? 0.15;
+      const cardStart = options?.cardStart ?? start;
 
-        if (options?.cardsOnViewIndividually) {
-          cards.forEach((card) => {
-            gsap.to(card, {
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              duration: 0.6,
-              ease: "back.out(1.2)",
-              scrollTrigger: {
-                trigger: card,
-                start: cardStart,
-                toggleActions: "play none none none",
-              },
-            });
-          });
-        } else if (cardTrigger) {
-          gsap.to(cards, {
+      const ctx = gsap.context(() => {
+        const cardTrigger = options?.cardTriggerRef?.current ?? sectionRef.current;
+        if (!sectionRef.current) return;
+
+        const reveals = sectionRef.current.querySelectorAll<HTMLElement>("[data-animate-reveal]");
+        const cards = sectionRef.current.querySelectorAll<HTMLElement>("[data-animate-card]");
+
+        if (reducedMotion) {
+          gsap.set([...reveals, ...cards], { opacity: 1, y: 0, scale: 1 });
+          return;
+        }
+
+        if (reveals.length) {
+          gsap.set(reveals, { opacity: 0, y: 40 });
+          gsap.to(reveals, {
             opacity: 1,
             y: 0,
-            scale: 1,
-            duration: 0.6,
-            stagger: staggerCard,
-            ease: "back.out(1.2)",
+            duration: 0.55,
+            stagger: staggerReveal,
+            ease: "back.out(1.6)",
             scrollTrigger: {
-              trigger: cardTrigger,
-              start: cardStart,
+              trigger: sectionRef.current,
+              start,
               toggleActions: "play none none none",
             },
           });
         }
-      }
-    }, section);
 
-    return () => ctx.revert();
+        if (cards.length) {
+          gsap.set(cards, { opacity: 0, y: 50, scale: 0.95 });
+
+          if (options?.cardsOnViewIndividually) {
+            cards.forEach((card) => {
+              gsap.to(card, {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.6,
+                ease: "back.out(1.2)",
+                scrollTrigger: {
+                  trigger: card,
+                  start: cardStart,
+                  toggleActions: "play none none none",
+                },
+              });
+            });
+          } else if (cardTrigger) {
+            gsap.to(cards, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.6,
+              stagger: staggerCard,
+              ease: "back.out(1.2)",
+              scrollTrigger: {
+                trigger: cardTrigger,
+                start: cardStart,
+                toggleActions: "play none none none",
+              },
+            });
+          }
+        }
+      }, sectionRef.current);
+
+      revert = () => ctx.revert();
+    })();
+
+    return () => {
+      cancelled = true;
+      revert?.();
+    };
     // Mount-only: animations attach to DOM inside sectionRef.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- sectionRef is stable
   }, []);

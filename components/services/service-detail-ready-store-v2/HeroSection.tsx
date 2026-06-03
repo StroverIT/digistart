@@ -11,6 +11,7 @@ import {
   LANDING_GLASS_ACCENT_CLASS,
 } from "./landing-animation-classes";
 import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
+import { LazyYouTubeEmbed } from "./lazy-youtube-embed";
 import GoogleReviewsSection from "./GoogleReviewsSection";
 
 const HeroSection = () => {
@@ -57,7 +58,7 @@ const HeroSection = () => {
                   className={`flex items-center gap-2.5 rounded-full px-4 py-2 text-sm font-medium text-foreground ${LANDING_GLASS_CLASS} ${LANDING_REVEAL_CLASS}`}
                 >
                   <span
-                    className={`flex size-6 shrink-0 items-center justify-center rounded-full text-primary ${LANDING_GLASS_ACCENT_CLASS}`}
+                    className={`flex size-6 shrink-0 items-center justify-center rounded-full text-foreground ${LANDING_GLASS_ACCENT_CLASS}`}
                   >
                     <Check className="size-3.5" strokeWidth={3} />
                   </span>
@@ -71,13 +72,10 @@ const HeroSection = () => {
         <article data-animate-card className={`w-full flex-1 ${LANDING_CARD_CLASS}`}>
           <div className="overflow-hidden rounded-2xl border border-border/80 bg-muted/40 p-2 shadow-xl shadow-primary/5 sm:p-3">
             <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-background">
-              <iframe
-                className="absolute inset-0 h-full w-full"
-                src="https://www.youtube.com/embed/mMNGqvyngLE"
+              <LazyYouTubeEmbed
+                videoId="mMNGqvyngLE"
                 title="YouTube video player"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
+                className="absolute inset-0 h-full w-full"
               />
             </div>
           </div>

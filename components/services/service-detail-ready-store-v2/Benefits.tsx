@@ -35,10 +35,12 @@ function BenefitRow({
   benefit,
   isActive,
   onSelect,
+  panelId,
 }: {
   benefit: Benefit;
   isActive: boolean;
   onSelect: () => void;
+  panelId: string;
 }) {
   const descRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -138,11 +140,18 @@ function BenefitRow({
       <button
         type="button"
         onClick={onSelect}
+        aria-expanded={isActive}
+        aria-controls={panelId}
         className="flex w-full items-start justify-between gap-4 px-0 py-5 text-left text-white sm:py-6"
       >
         <span className="min-w-0 flex-1">
           <span className="block text-lg font-semibold sm:text-3xl">{benefit.title}</span>
-          <div ref={descRef} className="overflow-hidden" aria-hidden={!isActive}>
+          <div
+            ref={descRef}
+            id={panelId}
+            className="overflow-hidden"
+            aria-hidden={!isActive}
+          >
             <div ref={contentRef}>
               <p className="pt-2 text-sm leading-relaxed text-white sm:text-xl font-light">
                 {benefit.description}
@@ -222,6 +231,7 @@ const Benefits = () => {
               benefit={benefit}
               isActive={index === activeIndex}
               onSelect={() => setActiveIndex(index)}
+              panelId={`benefit-panel-${index}`}
             />
           ))}
         </ul>
@@ -237,7 +247,7 @@ const Benefits = () => {
             fill
             className="object-contain p-4"
             sizes="(max-width: 1024px) 100vw, 50vw"
-            priority
+            loading="lazy"
           />
         </div>
       </article>

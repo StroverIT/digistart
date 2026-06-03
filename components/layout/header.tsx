@@ -16,6 +16,9 @@ import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
 import { clearPreferences, hasCompletedSurvey } from "@/lib/visitor-preferences/storage";
 
+const LOGO_WIDTH = 1166;
+const LOGO_HEIGHT = 1280;
+
 const serviceNavLinks = [
   {
     href: "/services/ai-automation",
@@ -433,9 +436,9 @@ export function Header() {
                 <Image
                   src="/logo.png"
                   alt="DigiStart logo"
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 transition-transform group-hover:scale-110"
+                  width={LOGO_WIDTH}
+                  height={LOGO_HEIGHT}
+                  className="h-8 w-auto transition-transform group-hover:scale-110"
                   priority
                 />
                 <span className="flex flex-col leading-tight">
@@ -537,9 +540,9 @@ export function Header() {
                 <Image
                   src="/logo.png"
                   alt="DigiStart logo"
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 transition-transform group-hover:scale-110"
+                  width={LOGO_WIDTH}
+                  height={LOGO_HEIGHT}
+                  className="h-8 w-auto transition-transform group-hover:scale-110"
                 />
                 <span className="flex flex-col leading-tight">
                   <span className="text-xl font-bold tracking-tight">

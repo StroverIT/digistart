@@ -9,9 +9,10 @@ import { cn } from "@/lib/utils";
 type TemplateCardProps = {
   template: StoreTemplate;
   className?: string;
+  priority?: boolean;
 };
 
-export function TemplateCard({ template, className }: TemplateCardProps) {
+export function TemplateCard({ template, className, priority = false }: TemplateCardProps) {
   const href = getTemplateDetailPath(template.category, template.id);
 
   return (
@@ -26,7 +27,7 @@ export function TemplateCard({ template, className }: TemplateCardProps) {
         className,
       )}
     >
-      <TemplatePreviewFrame template={template} size="thumb" className="mb-4" />
+      <TemplatePreviewFrame template={template} size="thumb" className="mb-4" priority={priority} />
     </TransitionLink>
   );
 }

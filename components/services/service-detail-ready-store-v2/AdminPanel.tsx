@@ -87,6 +87,7 @@ const AdminPanel = () => {
             fill
             className="object-contain object-bottom"
             sizes="(max-width: 1280px) 100vw, 1152px"
+            loading="lazy"
           />
         </div>
       </div>

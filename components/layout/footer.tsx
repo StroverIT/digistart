@@ -64,9 +64,9 @@ export function Footer() {
               <Image
                 src="/logo.png"
                 alt="DigiStart logo"
-                width={32}
-                height={32}
-                className="h-8 w-8"
+                width={1166}
+                height={1280}
+                className="h-8 w-auto"
               />
               <span className="text-xl font-bold">
                 Digi<span className="text-primary">Start</span>

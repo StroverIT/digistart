@@ -16,8 +16,8 @@
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
 
-  /* Electric blue primary */
-  --primary: oklch(0.65 0.22 250);
+  /* Electric blue primary — slightly darker for WCAG AA contrast on buttons */
+  --primary: oklch(0.55 0.22 250);
   --primary-foreground: oklch(1 0 0);
 
   --secondary: oklch(0.95 0.012 260);
@@ -26,7 +26,7 @@
   --muted: oklch(0.95 0.01 260);
   --muted-foreground: oklch(0.45 0.02 260);
 
-  --accent: oklch(0.65 0.22 250);
+  --accent: oklch(0.55 0.22 250);
   --accent-foreground: oklch(1 0 0);
 
   --destructive: oklch(0.55 0.22 25);
@@ -34,7 +34,7 @@
 
   --border: oklch(0.9 0.01 260);
   --input: oklch(0.96 0.01 260);
-  --ring: oklch(0.65 0.22 250);
+  --ring: oklch(0.55 0.22 250);
 
   /* Charts */
   --chart-1: oklch(0.65 0.22 250);
@@ -49,12 +49,12 @@
   /* Sidebar */
   --sidebar: oklch(0.98 0.006 260);
   --sidebar-foreground: var(--foreground);
-  --sidebar-primary: oklch(0.65 0.22 250);
+  --sidebar-primary: oklch(0.55 0.22 250);
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.94 0.012 260);
   --sidebar-accent-foreground: var(--foreground);
   --sidebar-border: oklch(0.9 0.01 260);
-  --sidebar-ring: oklch(0.65 0.22 250);
+  --sidebar-ring: oklch(0.55 0.22 250);
 
   --success: oklch(0.65 0.2 145);
   --success-foreground: oklch(1 0 0);

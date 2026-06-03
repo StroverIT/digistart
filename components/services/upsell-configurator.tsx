@@ -224,6 +224,7 @@ export function UpsellConfigurator({
                   className="h-8 w-8"
                   onClick={() => updateQuantity(upsell.id, quantity - 1)}
                   disabled={quantity <= min}
+                  aria-label={`Намали ${upsell.name}`}
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -235,6 +236,7 @@ export function UpsellConfigurator({
                   className="h-8 w-8"
                   onClick={() => updateQuantity(upsell.id, quantity + 1)}
                   disabled={quantity >= max}
+                  aria-label={`Увеличи ${upsell.name}`}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>

@@ -31,6 +31,8 @@ const BuiltInChat = () => {
                 alt="Вграден чат"
                 fill
                 className="object-contain"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                loading="lazy"
               />
             </div>
           </div>
@@ -52,6 +54,8 @@ const BuiltInChat = () => {
                 alt="Различни чатове за различни нужди"
                 fill
                 className="object-contain"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                loading="lazy"
               />
             </div>
           </div>
