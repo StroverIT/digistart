@@ -41,14 +41,14 @@ function BenefitRow({
   onSelect: () => void;
 }) {
   const descRef = useRef<HTMLDivElement>(null);
-  const descInnerRef = useRef<HTMLParagraphElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const arrowRef = useRef<SVGSVGElement>(null);
   const arrowBobRef = useRef<gsap.core.Tween | null>(null);
   const hasMountedRef = useRef(false);
 
   useLayoutEffect(() => {
     const desc = descRef.current;
-    const inner = descInnerRef.current;
+    const inner = contentRef.current;
     const arrow = arrowRef.current;
     if (!desc || !inner || !arrow) return;
 
@@ -143,12 +143,20 @@ function BenefitRow({
         <span className="min-w-0 flex-1">
           <span className="block text-lg font-semibold sm:text-3xl">{benefit.title}</span>
           <div ref={descRef} className="overflow-hidden" aria-hidden={!isActive}>
-            <p
-              ref={descInnerRef}
-              className="pt-2 text-sm leading-relaxed text-white sm:text-xl font-light"
-            >
-              {benefit.description}
-            </p>
+            <div ref={contentRef}>
+              <p className="pt-2 text-sm leading-relaxed text-white sm:text-xl font-light">
+                {benefit.description}
+              </p>
+              <div className="relative mt-4 aspect-[6/5] w-full lg:hidden">
+                <Image
+                  src={benefit.image}
+                  alt={benefit.title}
+                  fill
+                  className="object-contain p-2"
+                  sizes="100vw"
+                />
+              </div>
+            </div>
           </div>
         </span>
         <ChevronDown
@@ -221,7 +229,7 @@ const Benefits = () => {
         <div
           ref={imageWrapRef}
           data-animate-card
-          className={`relative mx-auto aspect-[6/5] w-full ${LANDING_CARD_CLASS}`}
+          className={`relative mx-auto hidden aspect-[6/5] w-full lg:block ${LANDING_CARD_CLASS}`}
         >
           <Image
             src={active.image}
