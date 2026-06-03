@@ -12,10 +12,11 @@ export const LandingSection = forwardRef<
     id?: string;
     className?: string;
     children: ReactNode;
+    "data-nav-theme"?: "dark" | "light";
   }
->(function LandingSection({ id, className, children }, ref) {
+>(function LandingSection({ id, className, children, "data-nav-theme": navTheme }, ref) {
   return (
-    <section ref={ref} id={id} className={cn(landingSectionClass, className)}>
+    <section ref={ref} id={id} data-nav-theme={navTheme} className={cn(landingSectionClass, className)}>
       <div className={landingContainerClass}>{children}</div>
     </section>
   );

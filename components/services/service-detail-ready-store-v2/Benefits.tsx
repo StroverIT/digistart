@@ -192,7 +192,12 @@ const Benefits = () => {
   }, [activeIndex]);
 
   return (
-    <LandingSection ref={sectionRef} id="benefits" className="border-white/20 bg-[#111111] text-white">
+    <LandingSection
+      ref={sectionRef}
+      id="benefits"
+      data-nav-theme="dark"
+      className="border-white/20 bg-[#111111] text-white"
+    >
       <h2
         data-animate-reveal
         className={`mx-auto max-w-4xl text-center text-3xl font-medium text-white ${LANDING_REVEAL_CLASS}`}

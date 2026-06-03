@@ -92,47 +92,47 @@ const InnerNavigation = () => {
     <nav
       ref={sectionRef}
       aria-label="Навигация по секции"
-      className="sticky top-24 sm:top-28 z-30 -mt-14 w-full rounded-none border border-x-0 border-border/80 bg-background/90 backdrop-blur-md sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)] sm:rounded-full sm:border-x"
+      className="sticky top-24 sm:top-28 z-30 -mt-14 w-full rounded-none border border-x-0 border-white/10 bg-black text-white sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)] sm:rounded-full sm:border-x"
     >
-        <div
-          ref={scrollContainerRef}
-          className="scrollbar-none flex gap-1 overflow-x-auto px-3 py-2 sm:px-4 sm:py-2.5"
-        >
-          {READY_STORE_SECTION_NAV.map((item) => (
-            <a
-              key={item.id}
-              ref={(element) => {
-                if (element) {
-                  linkRefs.current.set(item.id, element);
-                } else {
-                  linkRefs.current.delete(item.id);
-                }
-              }}
-              href={`#${item.id}`}
-              onClick={() => setActiveId(item.id)}
-              aria-current={activeId === item.id ? "true" : undefined}
-              data-animate-reveal
-              className={cn(
-                "shrink-0 rounded-full px-4 py-2 text-sm font-medium capitalize transition-colors",
-                LANDING_REVEAL_CLASS,
-                activeId === item.id
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
-              )}
-            >
-              {item.label}
-            </a>
-          ))}
-          <Button asChild variant="default" size="sm" className="shrink-0 rounded-full uppercase">
-            <a
-              href="#buy-now"
-              data-animate-reveal
-              className={cn("font-semibold", LANDING_REVEAL_CLASS)}
-            >
-              Купи сега
-            </a>
-          </Button>
-        </div>
+      <div
+        ref={scrollContainerRef}
+        className="scrollbar-none flex gap-1 overflow-x-auto px-3 py-2 sm:px-4 sm:py-2.5"
+      >
+        {READY_STORE_SECTION_NAV.map((item) => (
+          <a
+            key={item.id}
+            ref={(element) => {
+              if (element) {
+                linkRefs.current.set(item.id, element);
+              } else {
+                linkRefs.current.delete(item.id);
+              }
+            }}
+            href={`#${item.id}`}
+            onClick={() => setActiveId(item.id)}
+            aria-current={activeId === item.id ? "true" : undefined}
+            data-animate-reveal
+            className={cn(
+              "shrink-0 rounded-full px-4 py-2 text-sm font-medium capitalize text-white transition-colors",
+              LANDING_REVEAL_CLASS,
+              activeId === item.id
+                ? "bg-zinc-600 text-white"
+                : "text-white/90 hover:bg-white/10 hover:text-white",
+            )}
+          >
+            {item.label}
+          </a>
+        ))}
+        <Button asChild variant="default" size="sm" className="shrink-0 rounded-full uppercase">
+          <a
+            href="#buy-now"
+            data-animate-reveal
+            className={cn("font-semibold", LANDING_REVEAL_CLASS)}
+          >
+            Купи сега
+          </a>
+        </Button>
+      </div>
     </nav>
   );
 };

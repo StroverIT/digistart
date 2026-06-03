@@ -125,7 +125,12 @@ const MarketingTools = () => {
   useLandingScrollAnimations(sectionRef, { staggerReveal: 0.12, staggerCard: 0.13 });
 
   return (
-    <LandingSection ref={sectionRef} id="marketing" className="bg-[#111111] text-white">
+    <LandingSection
+      ref={sectionRef}
+      id="marketing"
+      data-nav-theme="dark"
+      className="bg-[#111111] text-white"
+    >
       <h1
         data-animate-reveal
         className={`mx-auto max-w-3xl text-center text-4xl ${LANDING_REVEAL_CLASS}`}

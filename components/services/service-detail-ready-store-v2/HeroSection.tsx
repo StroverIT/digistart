@@ -4,7 +4,12 @@ import { useRef } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LandingSection } from "./shared";
-import { LANDING_REVEAL_CLASS, LANDING_CARD_CLASS } from "./landing-animation-classes";
+import {
+  LANDING_REVEAL_CLASS,
+  LANDING_CARD_CLASS,
+  LANDING_GLASS_CLASS,
+  LANDING_GLASS_ACCENT_CLASS,
+} from "./landing-animation-classes";
 import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
 import GoogleReviewsSection from "./GoogleReviewsSection";
 
@@ -49,9 +54,11 @@ const HeroSection = () => {
                 <li
                   key={item}
                   data-animate-reveal
-                  className={`flex items-center gap-2 text-sm font-medium text-foreground ${LANDING_REVEAL_CLASS}`}
+                  className={`flex items-center gap-2.5 rounded-full px-4 py-2 text-sm font-medium text-foreground ${LANDING_GLASS_CLASS} ${LANDING_REVEAL_CLASS}`}
                 >
-                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <span
+                    className={`flex size-6 shrink-0 items-center justify-center rounded-full text-primary ${LANDING_GLASS_ACCENT_CLASS}`}
+                  >
                     <Check className="size-3.5" strokeWidth={3} />
                   </span>
                   {item}
