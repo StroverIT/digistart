@@ -118,8 +118,7 @@ export function ServiceBuySection({
     () => service.options.find((option) => option.id === cartSelectedOptionId) ?? service.options[0],
     [cartSelectedOptionId, service.options],
   );
-  const basePackageFrequency =
-    monthlyLabel ?? (selectedOption?.isMonthly || service.isMonthly ? "/месец" : "еднократно");
+
   const ctaText =
     ctaLabel ?? (serviceInCart ? "Промени в кошницата" : "Добави в кошницата");
   const isSoldOut = availability?.isSoldOut ?? false;
@@ -442,7 +441,7 @@ export function ServiceBuySection({
           <aside
             ref={asideRef}
             className={cn(
-              "hidden self-start lg:sticky lg:top-24 lg:block opacity-0 translate-y-10",
+              "hidden self-start lg:sticky lg:top-30 lg:block opacity-0 translate-y-10",
               isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
             )}
           >
