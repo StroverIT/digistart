@@ -1,6 +1,5 @@
 "use client";
 
-import { TemplateExampleNotice } from "@/components/templates/template-example-notice";
 import { TemplateCard } from "@/components/templates/template-card";
 import type { StoreTemplate } from "@/lib/data/templates";
 
@@ -20,7 +19,6 @@ export function TemplatesGallery({ templates }: TemplatesGalleryProps) {
             Разгледай готовите стилове, виж как изглеждат на живо и избери визия, която ти пасва.
             След това я адаптираме към твоите продукти и бизнес.
           </p>
-          <TemplateExampleNotice className="mt-6" />
         </header>
 
         <div className="grid gap-6 sm:grid-cols-2">
