@@ -226,3 +226,81 @@
   transform: rotate(8deg);
   opacity: 0.3;
 }
+
+/* =========================================
+   Mesh Gradient Background Blobs
+   ========================================= */
+
+.glow-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px); /* Determines how soft the glow is */
+  z-index: 0;
+  opacity: 0.7;
+  /* Optional: Adds a very slow, subtle breathing effect */
+  animation: pulse-glow 8s infinite alternate ease-in-out;
+}
+
+/* Positions the mint green glow on the bottom left */
+.blob-left {
+  width: 500px;
+  height: 200px;
+  background-color: #d1fae5; /* Soft mint/emerald */
+  bottom: -5%;
+  left: -10%;
+}
+
+/* Positions the teal glow on the top right */
+.blob-right {
+  width: 450px;
+  height: 450px;
+  background-color: #ccfbf1; /* Soft teal */
+  top: 15%;
+  right: -5%;
+  animation-delay: 2s; /* Offsets the animation so they don't pulse perfectly together */
+}
+
+/* Optional Animation Keyframes */
+@keyframes pulse-glow {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Responsive adjustment for mobile screens */
+@media (max-width: 768px) {
+  .glow-blob {
+    filter: blur(72px);
+    animation: pulse-glow-mobile 8s infinite alternate ease-in-out;
+  }
+  .blob-left {
+    width: 210px;
+    height: 280px;
+  }
+  .blob-right {
+    width: 230px;
+    height: 230px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .blob-right {
+    top: 40%;
+  }
+}
+
+@keyframes pulse-glow-mobile {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1.05);
+    opacity: 0.55;
+  }
+}
