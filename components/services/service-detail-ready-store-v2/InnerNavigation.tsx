@@ -123,7 +123,7 @@ const InnerNavigation = () => {
           size="sm"
           className="shrink-0 rounded-full uppercase"
         >
-          <a href="#buy-now">Купи сега</a>
+          <a href="#buy-now" className="font-semibold">Купи сега</a>
         </Button>
       </div>
     </nav>
