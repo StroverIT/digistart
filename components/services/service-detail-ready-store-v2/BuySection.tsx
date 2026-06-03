@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServiceById, getServicePlanPrice } from "@/lib/data/services";
@@ -17,12 +17,16 @@ import type {
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
 import { landingContainerClass } from "./shared";
+import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
 
 interface BuySectionProps {
   availability?: ServiceSlotAvailability | null;
 }
 
 const BuySection = ({ availability }: BuySectionProps) => {
+  const sectionRef = useRef<HTMLElement>(null);
+  useLandingScrollAnimations(sectionRef, { staggerReveal: 0.1 });
+
   const service = getServiceById(ONLINE_STORE_SERVICE_ID);
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
@@ -71,6 +75,7 @@ const BuySection = ({ availability }: BuySectionProps) => {
 
   return (
     <section
+      ref={sectionRef}
       id="buy-section"
       className="scroll-mt-28 border-b border-border/60 bg-muted/20"
     >

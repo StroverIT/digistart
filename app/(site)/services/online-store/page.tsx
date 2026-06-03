@@ -11,7 +11,6 @@ import BuySection from "@/components/services/service-detail-ready-store-v2/BuyS
 import { PasFaqSection } from "@/components/services/service-pas-landing/faq-section";
 import { ONLINE_STORE_LANDING } from "@/config/service-landing/online-store";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
-import { landingContainerClass } from "@/components/services/service-detail-ready-store-v2/shared";
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
@@ -35,9 +34,7 @@ export default async function OnlineStorePage() {
       </div>
 
       <BuySection availability={availability} />
-      <div className={`${landingContainerClass} py-14 md:py-20`}>
-        <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
-      </div>
+      <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
     </section>
   );
 }

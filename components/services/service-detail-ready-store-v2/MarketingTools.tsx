@@ -1,6 +1,11 @@
+"use client";
+
+import { useRef } from "react";
 import { BarChart3, Search, Star } from "lucide-react";
 import Image from "next/image";
 import { LandingSection } from "./shared";
+import { LANDING_REVEAL_CLASS, LANDING_CARD_CLASS } from "./landing-animation-classes";
+import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
 
 const cardClassName =
   "flex flex-col rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 h-full";
@@ -116,14 +121,23 @@ function ImageLeftCard({
 }
 
 const MarketingTools = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  useLandingScrollAnimations(sectionRef, { staggerReveal: 0.12, staggerCard: 0.13 });
+
   return (
-    <LandingSection id="marketing" className="bg-[#111111] text-white">
-      <h1 className="max-w-3xl mx-auto text-4xl text-center">
+    <LandingSection ref={sectionRef} id="marketing" className="bg-[#111111] text-white">
+      <h1
+        data-animate-reveal
+        className={`mx-auto max-w-3xl text-center text-4xl ${LANDING_REVEAL_CLASS}`}
+      >
         Продавай лесно с нашите вградени маркетинг инструменти
       </h1>
 
       <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:[grid-template-areas:'seo_analytics_promo'_'email_email_promo'_'trackers_trackers_trackers']">
-        <li className={`${cardClassName} lg:[grid-area:seo]`}>
+        <li
+          data-animate-card
+          className={`${cardClassName} ${LANDING_CARD_CLASS} lg:[grid-area:seo]`}
+        >
           <IconCard
             icon={Search}
             title="SEO оптимизиран"
@@ -131,7 +145,10 @@ const MarketingTools = () => {
           />
         </li>
 
-        <li className={`${cardClassName} lg:[grid-area:analytics]`}>
+        <li
+          data-animate-card
+          className={`${cardClassName} ${LANDING_CARD_CLASS} lg:[grid-area:analytics]`}
+        >
           <IconCard
             icon={BarChart3}
             title="Digi Analytics"
@@ -139,7 +156,10 @@ const MarketingTools = () => {
           />
         </li>
 
-        <li className="flex flex-col gap-5 sm:col-span-2 lg:[grid-area:promo]">
+        <li
+          data-animate-card
+          className={`flex flex-col gap-5 sm:col-span-2 ${LANDING_CARD_CLASS} lg:[grid-area:promo]`}
+        >
           <article className={`${cardClassName} flex-1`}>
             <ImageBottomCard
               title="Промоции и намаления"
@@ -156,7 +176,10 @@ const MarketingTools = () => {
           </article>
         </li>
 
-        <li className={`${cardClassName} sm:col-span-2 lg:[grid-area:email]`}>
+        <li
+          data-animate-card
+          className={`${cardClassName} ${LANDING_CARD_CLASS} sm:col-span-2 lg:[grid-area:email]`}
+        >
           <ImageRightCard
             title="Имейл маркетинг"
             description="Събирай автоматично имейлите на клиентите които искат да се запишат за бюлетина. И автоматично пращане на имейли за персонализирани имейли или създаване на кампания"
@@ -164,7 +187,10 @@ const MarketingTools = () => {
           />
         </li>
 
-        <li className={`${cardClassName} w-full sm:col-span-2 lg:[grid-area:trackers] lg:min-h-56 xl:min-h-64`}>
+        <li
+          data-animate-card
+          className={`${cardClassName} w-full ${LANDING_CARD_CLASS} sm:col-span-2 lg:[grid-area:trackers] lg:min-h-56 xl:min-h-64`}
+        >
           <ImageLeftCard
             title="Вградени тракери за проследяване"
             description="Готов за реклама и проследяване на клиентите ти от първи ден. Многокалано продаване като в google и meta"

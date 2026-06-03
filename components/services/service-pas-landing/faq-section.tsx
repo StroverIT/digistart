@@ -1,11 +1,15 @@
+"use client";
+
+import { useRef } from "react";
 import { Faq, type FaqItem } from "@/components/ui/faq";
 import {
   ServiceSectionBuyCta,
   type ServiceSectionBuyCtaConfig,
 } from "@/components/services/service-section-buy-cta";
 import { PasSectionIntro } from "./section-intro";
+import { useSectionScrollAnimations } from "./use-section-scroll-animations";
 
-interface PasFaqSectionProps {
+export interface PasFaqSectionProps {
   eyebrow: string;
   title: string;
   description: string;
@@ -22,8 +26,11 @@ export function PasFaqSection({
   headingFontClass,
   buyCta,
 }: PasFaqSectionProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  useSectionScrollAnimations(sectionRef, { staggerReveal: 0.08 });
+
   return (
-    <section id="faq" data-animate-section className="py-8 md:py-20 bg-card/40">
+    <section ref={sectionRef} id="faq" className="bg-card/40 py-8 md:py-20">
       <div className="container mx-auto px-4">
         <PasSectionIntro
           eyebrow={eyebrow}
@@ -32,14 +39,11 @@ export function PasFaqSection({
           headingFontClass={headingFontClass}
           titleClassName="mb-3"
         />
-        <div
-          data-animate-card
-          className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 sm:px-8 sm:py-4 opacity-0 translate-y-10 shadow-sm"
-        >
-          <Faq items={[...items]} />
+        <div className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 shadow-sm sm:px-8 sm:py-4">
+          <Faq items={[...items]} staggerItems />
         </div>
         {buyCta ? (
-          <div data-animate-reveal className="mt-8 md:mt-10 opacity-0 translate-y-10">
+          <div data-animate-reveal className="mt-8 opacity-0 translate-y-10 md:mt-10">
             <ServiceSectionBuyCta {...buyCta} />
           </div>
         ) : null}

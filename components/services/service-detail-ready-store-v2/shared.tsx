@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { forwardRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export const landingSectionClass =
@@ -6,21 +6,20 @@ export const landingSectionClass =
 
 export const landingContainerClass = "mx-auto w-full max-w-6xl px-4 sm:px-6";
 
-export function LandingSection({
-  id,
-  className,
-  children,
-}: {
-  id?: string;
-  className?: string;
-  children: ReactNode;
-}) {
+export const LandingSection = forwardRef<
+  HTMLElement,
+  {
+    id?: string;
+    className?: string;
+    children: ReactNode;
+  }
+>(function LandingSection({ id, className, children }, ref) {
   return (
-    <section id={id} className={cn(landingSectionClass, className)}>
+    <section ref={ref} id={id} className={cn(landingSectionClass, className)}>
       <div className={landingContainerClass}>{children}</div>
     </section>
   );
-}
+});
 
 export function LandingSectionTitle({
   as: Tag = "h2",

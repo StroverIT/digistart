@@ -5,6 +5,8 @@ import gsap from "gsap";
 import { ChevronDown } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
 import { LandingSection } from "./shared";
+import { LANDING_CARD_CLASS, LANDING_REVEAL_CLASS } from "./landing-animation-classes";
+import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
 
 const benefits = [
   {
@@ -132,7 +134,7 @@ function BenefitRow({
   }, [isActive]);
 
   return (
-    <li className="border-b border-white/20 last:border-b-0">
+    <li data-animate-card className={`border-b border-white/20 last:border-b-0 ${LANDING_CARD_CLASS}`}>
       <button
         type="button"
         onClick={onSelect}
@@ -160,10 +162,13 @@ function BenefitRow({
 }
 
 const Benefits = () => {
+  const sectionRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const active = benefits[activeIndex];
   const imageWrapRef = useRef<HTMLDivElement>(null);
   const hasImageMountedRef = useRef(false);
+
+  useLandingScrollAnimations(sectionRef, { staggerReveal: 0.1, staggerCard: 0.12 });
 
   useLayoutEffect(() => {
     const wrap = imageWrapRef.current;
@@ -187,8 +192,11 @@ const Benefits = () => {
   }, [activeIndex]);
 
   return (
-    <LandingSection id="benefits" className="border-white/20 bg-[#111111] text-white">
-      <h2 className="max-w-4xl mx-auto text-3xl text-center font-medium text-white">
+    <LandingSection ref={sectionRef} id="benefits" className="border-white/20 bg-[#111111] text-white">
+      <h2
+        data-animate-reveal
+        className={`mx-auto max-w-4xl text-center text-3xl font-medium text-white ${LANDING_REVEAL_CLASS}`}
+      >
         Създай онлайн магазин за рекордно време - от нула до това да продаваш в рамките на
         часове, не седмици
       </h2>
@@ -207,7 +215,8 @@ const Benefits = () => {
 
         <div
           ref={imageWrapRef}
-          className="relative mx-auto aspect-[6/5] w-full"
+          data-animate-card
+          className={`relative mx-auto aspect-[6/5] w-full ${LANDING_CARD_CLASS}`}
         >
           <Image
             src={active.image}
