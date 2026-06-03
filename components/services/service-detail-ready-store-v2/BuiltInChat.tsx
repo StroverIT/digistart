@@ -57,10 +57,10 @@ const BuiltInChat = () => {
           </div>
           <div className="flex flex-1 flex-col px-6 py-8 sm:px-10">
             <h2 className="font-heading text-xl font-bold text-black sm:text-2xl">
-              Различни чатове за различни нужди
+              Няма глупави въпроси
             </h2>
             <p className="mt-3 text-base leading-relaxed text-black">
-              Може да отваряш колкото си искаш чатове за различни въпроси. Организираността е на първо място
+              Може да ни питаш каквото искаш. Ние ще помогнем. За да сме още по-организирани, сме направили възможност за различни теми.
             </p>
           </div>
         </article>
