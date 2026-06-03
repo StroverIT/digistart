@@ -1,5 +1,8 @@
 import Image from "next/image";
-import { LandingSection, LandingSectionTitle } from "./shared";
+import { Star } from "lucide-react";
+import { LandingSection } from "./shared";
+
+const stars = Array.from({ length: 5 });
 
 const RealShop = () => {
   return (
@@ -9,7 +12,7 @@ const RealShop = () => {
       </h1>
 
       <div className="mt-12 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-        <div className="relative order-2 aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border/80 bg-card shadow-lg lg:order-1">
+        <div className="relative order-2 aspect-[4/3] w-full lg:order-1">
           <Image
             src="/restyled-mockup.png"
             alt="Real Shop"
@@ -20,14 +23,21 @@ const RealShop = () => {
         </div>
 
         <div className="order-1 space-y-6 lg:order-2">
-          <h2 className="font-heading text-2xl font-bold sm:text-3xl">Restyled</h2>
-          <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Преди: продаваше основно през директни разговори (чат и разговори). Всеки продукт
+          <div className="space-y-2">
+            <h2 className="font-heading text-2xl font-bold sm:text-3xl">Restyled</h2>
+            <div className="flex items-center gap-1" aria-label="5 от 5 звезди">
+              {stars.map((_, index) => (
+                <Star key={index} className="size-5 text-amber-400" fill="currentColor" />
+              ))}
+            </div>
+          </div>
+          <p className="text-base leading-relaxed sm:text-lg">
+            <span className="font-bold">Преди:</span> продаваше основно през директни разговори (чат и разговори). Всеки продукт
             изискваше неговото внимание - от това дали е наличен, има ли други размери. Опита се да
             скалира с 500 продукти и беше трудно
           </p>
-          <p className="rounded-2xl border border-primary/20 bg-primary/5 p-5 text-base leading-relaxed text-foreground sm:p-6 sm:text-lg">
-            След: Успява да прави по 3 поръчки на ден (90 поръчки на месец). Имат над 10000
+          <p className="text-base leading-relaxed text-foreground sm:text-lg border-t border-gray-200 pt-4">
+            <span className="font-bold">След:</span> Успява да прави по 3 поръчки на ден (90 поръчки на месец). Имат над 10000
             продукта и единствената му работа е да създава продукти и пакетира стоките за доставка
           </p>
         </div>
