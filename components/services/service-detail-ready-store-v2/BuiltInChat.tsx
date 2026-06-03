@@ -27,7 +27,7 @@ const BuiltInChat = () => {
           <div className="relative flex items-center justify-center p-6">
             <div className="relative h-56 w-full sm:h-[20rem]">
               <Image
-                src="/chat/ask-for-help.png"
+                src="/chat/ask-for-help.webp"
                 alt="Вграден чат"
                 fill
                 className="object-contain"
@@ -48,7 +48,7 @@ const BuiltInChat = () => {
           <div className="relative flex items-center justify-center p-6">
             <div className="relative h-56 w-full sm:h-[20rem]">
               <Image
-                src="/chat/ask-for-help-chat.png"
+                src="/chat/ask-for-help-chat.webp"
                 alt="Различни чатове за различни нужди"
                 fill
                 className="object-contain"

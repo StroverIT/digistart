@@ -12,7 +12,7 @@ export interface StoreTemplate {
   category: ProductCategory;
   name: string;
   description: string;
-  /** Static screenshot under public/templates/{category}/{id}.png */
+  /** Static screenshot under public/templates/{category}/{id}.webp */
   previewImagePath: string;
   /** Proxied or live URL for opening the running template (onboarding, tenant preview). */
   previewPath: string;
@@ -70,7 +70,7 @@ function storeTemplate(
   return {
     id,
     category: "clothing",
-    previewImagePath: `/templates/clothing/${id}.png`,
+    previewImagePath: `/templates/clothing/${id}.webp`,
     previewPath: `/preview/clothing/${id}`,
     demoPath: `/templates/clothing/${id}`,
     builtWith: defaultBuiltWith,

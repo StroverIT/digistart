@@ -32,7 +32,7 @@ const RealShop = () => {
           className={`relative order-2 aspect-[4/3] w-full lg:order-1 ${LANDING_CARD_CLASS}`}
         >
           <Image
-            src="/restyled-mockup.png"
+            src="/restyled-mockup.webp"
             alt="Real Shop"
             fill
             className="object-contain p-4"

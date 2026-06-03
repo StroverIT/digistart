@@ -12,19 +12,19 @@ const benefits = [
   {
     title: "Онлайн плащания",
     description: "Клиентите ти имат възможност да плащат с абсолютно всичко което пожелаеш",
-    image: "/benefits/онлайн-плащания.png",
+    image: "/benefits/онлайн-плащания.webp",
   },
   {
     title: "Hosting и SSL сертификат",
     description:
       "Ние се грижим за цялата техническа част. Твоята грижа е само да изпращаш пратки",
-    image: "/benefits/hosting-and-ssl-2.png",
+    image: "/benefits/hosting-and-ssl-2.webp",
   },
   {
     title: "Tоварителници",
     description:
       "Автоматично при създаване и връщане на поръчка се създава товарителница от избрания доставчик",
-    image: "/benefits/автоматично-създаване-на-товарителници-3.png",
+    image: "/benefits/автоматично-създаване-на-товарителници-3.webp",
   },
 
 ] as const;

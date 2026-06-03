@@ -177,7 +177,7 @@ const MarketingTools = () => {
             <ImageBottomCard
               title="Промоции и намаления"
               description="На специфична дата сложи промоция или специфични секции да имат намаление"
-              image="/marketing/promotion.png"
+              image="/marketing/promotion.webp"
               imageContainerClassName="max-sm:mt-4 max-sm:aspect-auto max-sm:h-40"
             />
           </article>
@@ -200,7 +200,7 @@ const MarketingTools = () => {
           <ImageRightCard
             title="Имейл маркетинг"
             description="Събирай автоматично имейлите на клиентите които искат да се запишат за бюлетина. И автоматично пращане на имейли за персонализирани имейли или създаване на кампания"
-            image="/marketing/newsletter.png"
+            image="/marketing/newsletter.webp"
           />
         </li>
 
@@ -211,7 +211,7 @@ const MarketingTools = () => {
           <ImageLeftCard
             title="Вградени тракери за проследяване"
             description="Готов за реклама и проследяване на клиентите ти от първи ден. Многокалано продаване като в google и meta"
-            image="/marketing/social-media.png"
+            image="/marketing/social-media.webp"
           />
         </li>
       </ul>
