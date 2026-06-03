@@ -28,7 +28,7 @@ const adminFeatures = [
 
 const AdminPanel = () => {
   return (
-    <LandingSection id="admin">
+    <LandingSection id="admin" className="pb-0!">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-8 lg:gap-12">
         <h1 className="max-w-3xl font-heading text-2xl font-bold tracking-tight text-foreground md:max-w-lg lg:leading-tight">
           Едно табло, пълен контрол и лесно управление на онлайн магазина ти
@@ -59,14 +59,24 @@ const AdminPanel = () => {
         ))}
       </ul>
 
-      <div className="relative mx-auto mt-14 aspect-16/10 w-full overflow-hidden rounded-2xl bg-muted/20 shadow-xl lg:mt-16">
-        <Image
-          src="/admin-panel.png"
-          alt="Admin Panel"
-          fill
-          className="object-cover object-top"
-          sizes="(max-width: 1280px) 100vw, 1152px"
+      <div className="admin-panel-showcase relative mx-auto mt-14 aspect-16/10 w-full rounded-3xl">
+        <div
+          className="admin-panel-showcase__glow admin-panel-showcase__glow--1"
+          aria-hidden
         />
+        <div
+          className="admin-panel-showcase__glow admin-panel-showcase__glow--2"
+          aria-hidden
+        />
+        <div className="relative z-10 h-full w-full">
+          <Image
+            src="/dashboard.png"
+            alt="Admin Panel"
+            fill
+            className="object-contain object-bottom"
+            sizes="(max-width: 1280px) 100vw, 1152px"
+          />
+        </div>
       </div>
     </LandingSection>
   );
