@@ -10,6 +10,8 @@ import {
   CreditCard,
   Eye,
   EyeOff,
+  KeyRound,
+  RefreshCw,
   Shield,
   XCircle,
 } from "lucide-react";
@@ -25,7 +27,19 @@ import {
   getCheckoutTemplateSelection,
   type CheckoutTemplateSelection,
 } from "@/lib/store/checkout-template";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
+import {
+  downloadPasswordBackup,
+  generateStrongPassword,
+} from "@/lib/password/generate-strong-password";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { getServiceById } from "@/lib/data/services";
@@ -79,6 +93,9 @@ export default function CheckoutPage() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [passwordFieldTouched, setPasswordFieldTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [generatePasswordOpen, setGeneratePasswordOpen] = useState(false);
+  const [downloadPasswordOpen, setDownloadPasswordOpen] = useState(false);
+  const [pendingGeneratedPassword, setPendingGeneratedPassword] = useState("");
   const [acceptedCheckoutTerms, setAcceptedCheckoutTerms] = useState(false);
   const [purchaseAsBusiness, setPurchaseAsBusiness] = useState(false);
   const [legalConsentError, setLegalConsentError] = useState("");
@@ -126,6 +143,37 @@ export default function CheckoutPage() {
   );
   const isPasswordStrong = passwordChecks.every((check) => check.checked);
   const isConfirmMatching = passwordConfirm.length > 0 && password === passwordConfirm;
+
+  const openGeneratePasswordDialog = useCallback(() => {
+    setPendingGeneratedPassword(generateStrongPassword());
+    setGeneratePasswordOpen(true);
+  }, []);
+
+  const regeneratePendingPassword = useCallback(() => {
+    setPendingGeneratedPassword(generateStrongPassword());
+  }, []);
+
+  const acceptGeneratedPassword = useCallback(() => {
+    setPassword(pendingGeneratedPassword);
+    setPasswordConfirm(pendingGeneratedPassword);
+    setPasswordFieldTouched(true);
+    setShowPassword(true);
+    setGeneratePasswordOpen(false);
+    setDownloadPasswordOpen(true);
+  }, [pendingGeneratedPassword]);
+
+  const skipPasswordDownload = useCallback(() => {
+    setDownloadPasswordOpen(false);
+    setPendingGeneratedPassword("");
+    toast.success("Паролата е попълнена в полетата.");
+  }, []);
+
+  const downloadPasswordAndClose = useCallback(() => {
+    downloadPasswordBackup(pendingGeneratedPassword);
+    setDownloadPasswordOpen(false);
+    setPendingGeneratedPassword("");
+    toast.success("Паролата е изтеглена и попълнена в полетата.");
+  }, [pendingGeneratedPassword]);
 
   useEffect(() => {
     if (isLoggedInCustomer && session?.user) {
@@ -608,7 +656,21 @@ export default function CheckoutPage() {
                           </Field>
                         </div>
                         <Field>
-                          <FieldLabel htmlFor="password">Парола *</FieldLabel>
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <FieldLabel htmlFor="password" className="mb-0">
+                              Парола *
+                            </FieldLabel>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-8 gap-1.5 text-xs"
+                              onClick={openGeneratePasswordDialog}
+                            >
+                              <KeyRound className="h-3.5 w-3.5" />
+                              Генерирай сигурна парола
+                            </Button>
+                          </div>
                           <div className="relative">
                             <Input
                               id="password"
@@ -656,6 +718,69 @@ export default function CheckoutPage() {
                             </div>
                           ) : null}
                         </Field>
+                        <Dialog
+                          open={generatePasswordOpen}
+                          onOpenChange={(open) => {
+                            setGeneratePasswordOpen(open);
+                            if (!open) setPendingGeneratedPassword("");
+                          }}
+                        >
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Сигурна парола</DialogTitle>
+                              <DialogDescription>
+                                Генерирахме парола, която отговаря на изискванията за сигурност.
+                                Прегледайте я и изберете дали да я използвате.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="relative">
+                              <div className="rounded-md border border-border bg-muted/40 px-3 py-2.5 pr-11">
+                                <p className="break-all font-mono text-sm">{pendingGeneratedPassword}</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={regeneratePendingPassword}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                aria-label="Генерирай нова парола"
+                              >
+                                <RefreshCw className="h-4 w-4" />
+                              </button>
+                            </div>
+                            <DialogFooter className="gap-4">
+                              <Button type="button" variant="outline" onClick={() => setGeneratePasswordOpen(false)}>
+                                Отказ
+                              </Button>
+                              <Button type="button" onClick={acceptGeneratedPassword}>
+                                Използвай паролата
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                        <Dialog
+                          open={downloadPasswordOpen}
+                          onOpenChange={(open) => {
+                            setDownloadPasswordOpen(open);
+                            if (!open) setPendingGeneratedPassword("");
+                          }}
+                        >
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Запазване на паролата</DialogTitle>
+                              <DialogDescription>
+                                Паролата е попълнена в двете полета. Искате ли да я изтеглите като
+                                текстов файл, за да я запазите на сигурно място?
+                              </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter className="gap-4">
+                              <Button type="button" variant="outline" onClick={skipPasswordDownload}>
+                                Не, благодаря
+                              </Button>
+                              <Button type="button" onClick={downloadPasswordAndClose}>
+                                Да, изтегли файла
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
                         <Field>
                           <FieldLabel htmlFor="passwordConfirm">Потвърди парола *</FieldLabel>
                           <div className="relative">
