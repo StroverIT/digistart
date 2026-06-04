@@ -39,6 +39,7 @@ export function LazyYouTubeEmbed({ videoId, title, className }: LazyYouTubeEmbed
         className="absolute inset-0 h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
         loading="lazy"
         decoding="async"
+        fetchPriority="low"
       />
       <span className="relative flex size-16 items-center justify-center rounded-full bg-primary/95 text-primary-foreground shadow-lg transition-transform group-hover:scale-105 sm:size-20">
         <Play className="ml-1 size-7 fill-current sm:size-8" aria-hidden />

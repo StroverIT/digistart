@@ -9,34 +9,11 @@ function isHomePage(pathname: string | null): boolean {
   return pathname === "/";
 }
 
-type CookieConsentState = {
-  functional: true;
-  ads: boolean;
-  updatedAt: string;
-};
-
-const COOKIE_CONSENT_KEY = "digistart_cookie_consent_v1";
-
-function readConsent(): CookieConsentState | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  const rawValue = window.localStorage.getItem(COOKIE_CONSENT_KEY);
-  if (!rawValue) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(rawValue) as CookieConsentState;
-  } catch {
-    return null;
-  }
-}
-
-function saveConsent(consent: CookieConsentState) {
-  window.localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consent));
-}
+import {
+  readCookieConsent,
+  saveCookieConsent,
+  type CookieConsentState,
+} from "@/lib/cookies/consent";
 
 export function CookieConsent() {
   const pathname = usePathname();
@@ -50,7 +27,7 @@ export function CookieConsent() {
   const preferencesPanelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const consent = readConsent();
+    const consent = readCookieConsent();
     if (consent) {
       setAdsEnabled(Boolean(consent.ads));
       setIsOpen(false);
@@ -149,7 +126,7 @@ export function CookieConsent() {
   const closeBanner = (nextAds: boolean) => {
     const next = { ...consentPayload, ads: nextAds };
     const finish = () => {
-      saveConsent(next);
+      saveCookieConsent(next);
       setAdsEnabled(nextAds);
       setIsOpen(false);
     };

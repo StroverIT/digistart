@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { READY_STORE_SECTION_NAV } from "./section-nav";
-import { LANDING_REVEAL_CLASS } from "./landing-animation-classes";
-import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
 
 /** Sticky nav top offset (top-28) plus approximate nav height. */
 const SCROLL_SPY_OFFSET = 160;
@@ -48,8 +46,6 @@ const InnerNavigation = () => {
   const [activeId, setActiveId] = useState<(typeof READY_STORE_SECTION_NAV)[number]["id"]>(
     READY_STORE_SECTION_NAV[0].id,
   );
-
-  useLandingScrollAnimations(sectionRef, { staggerReveal: 0.08 });
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -111,10 +107,8 @@ const InnerNavigation = () => {
             href={`#${item.id}`}
             onClick={() => setActiveId(item.id)}
             aria-current={activeId === item.id ? "true" : undefined}
-            data-animate-reveal
             className={cn(
               "shrink-0 rounded-full px-4 py-2 text-sm font-medium capitalize text-white transition-colors",
-              LANDING_REVEAL_CLASS,
               activeId === item.id
                 ? "bg-zinc-600 text-white"
                 : "text-white/90 hover:bg-white/10 hover:text-white",
@@ -124,11 +118,7 @@ const InnerNavigation = () => {
           </a>
         ))}
         <Button asChild variant="default" size="sm" className="shrink-0 rounded-full uppercase">
-          <a
-            href="#buy-now"
-            data-animate-reveal
-            className={cn("font-semibold", LANDING_REVEAL_CLASS)}
-          >
+          <a href="#buy-now" className="font-semibold">
             Купи сега
           </a>
         </Button>

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import { headers } from "next/headers";
 import { DigiStartAnalytics } from "@/components/analytics/digistart-analytics";
-import { MetaPixelScript } from "@/components/analytics/meta-pixel-script";
+import { MetaPixelConsentLoader } from "@/components/analytics/meta-pixel-consent-loader";
 import { ComingSoonPage } from "@/components/coming-soon-page";
 import { MetaPixelEvents } from "@/components/analytics/meta-pixel-events";
 import { UtmTracker } from "@/components/analytics/utm-tracker";
@@ -11,16 +11,18 @@ import { shouldRenderComingSoonInLayout } from "@/lib/coming-soon";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "";
-
 const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
   variable: "--font-montserrat",
+  display: "swap",
+  preload: false,
 });
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
   variable: "--font-inter",
+  display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -60,9 +62,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/favicon-32.png",
+    shortcut: "/favicon-32.png",
+    apple: "/apple-touch-icon.png",
   },
 };
 
@@ -86,7 +88,6 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} ${montserrat.variable} font-sans antialiased overflow-x-hidden`}
       >
-        <MetaPixelScript pixelId={META_PIXEL_ID} />
         {showComingSoon ? (
           <>
             <UtmTracker />
@@ -98,6 +99,7 @@ export default async function RootLayout({
           <>
             <UtmTracker />
             <DigiStartAnalytics />
+            <MetaPixelConsentLoader />
             <MetaPixelEvents />
             <Providers>{children}</Providers>
           </>

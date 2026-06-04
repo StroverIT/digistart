@@ -1,14 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import Image from "next/image";
 import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
 import { siteContact } from "@/lib/site-contact";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const services = [
   { href: "/services/ai-automation", label: "AI Automation" },
@@ -33,25 +29,44 @@ export function Footer() {
     const root = footerRef.current;
     if (!root) return;
 
-    const ctx = gsap.context(() => {
-      const cols = root.querySelectorAll<HTMLElement>("[data-footer-column]");
-      if (!cols.length) return;
-      gsap.set(cols, { opacity: 0, y: 40 });
-      gsap.to(cols, {
-        opacity: 1,
-        y: 0,
-        duration: 0.55,
-        stagger: 0.12,
-        ease: "back.out(1.4)",
-        scrollTrigger: {
-          trigger: root,
-          start: "top 90%",
-          toggleActions: "play none none none",
-        },
-      });
-    }, root);
+    let cancelled = false;
+    let revert: (() => void) | undefined;
 
-    return () => ctx.revert();
+    void (async () => {
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
+
+      if (cancelled || !footerRef.current) return;
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      const ctx = gsap.context(() => {
+        const cols = root.querySelectorAll<HTMLElement>("[data-footer-column]");
+        if (!cols.length) return;
+        gsap.set(cols, { opacity: 0, y: 40 });
+        gsap.to(cols, {
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          stagger: 0.12,
+          ease: "back.out(1.4)",
+          scrollTrigger: {
+            trigger: root,
+            start: "top 90%",
+            toggleActions: "play none none none",
+          },
+        });
+      }, root);
+
+      revert = () => ctx.revert();
+    })();
+
+    return () => {
+      cancelled = true;
+      revert?.();
+    };
   }, []);
 
   return (
@@ -62,10 +77,11 @@ export function Footer() {
           <div data-footer-column className="lg:col-span-1 opacity-0 translate-y-10">
             <TrackedCtaLink href="/" ctaId="footer_logo_home" className="flex items-center gap-2 mb-4">
               <Image
-                src="/logo.png"
+                src="/logo.webp"
                 alt="DigiStart logo"
-                width={1166}
-                height={1280}
+                width={58}
+                height={64}
+                sizes="29px"
                 className="h-8 w-auto"
               />
               <span className="text-xl font-bold">

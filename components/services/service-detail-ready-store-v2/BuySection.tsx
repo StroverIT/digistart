@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServiceById, getServicePlanPrice } from "@/lib/data/services";
@@ -23,9 +23,31 @@ interface BuySectionProps {
   availability?: ServiceSlotAvailability | null;
 }
 
-const BuySection = ({ availability }: BuySectionProps) => {
+const BuySection = ({ availability: initialAvailability }: BuySectionProps) => {
   const sectionRef = useRef<HTMLElement>(null);
+  const [availability, setAvailability] = useState<ServiceSlotAvailability | null>(
+    initialAvailability ?? null,
+  );
   useLandingScrollAnimations(sectionRef, { staggerReveal: 0.1 });
+
+  useEffect(() => {
+    if (initialAvailability) return;
+
+    const controller = new AbortController();
+    fetch(
+      `/api/service-slots?serviceId=${encodeURIComponent(ONLINE_STORE_SERVICE_ID)}`,
+      { signal: controller.signal },
+    )
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error("slots"))))
+      .then((data: { availability?: ServiceSlotAvailability }) => {
+        setAvailability(data.availability ?? null);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setAvailability(null);
+      });
+
+    return () => controller.abort();
+  }, [initialAvailability]);
 
   const service = getServiceById(ONLINE_STORE_SERVICE_ID);
   const { push } = useTransitionRouter();

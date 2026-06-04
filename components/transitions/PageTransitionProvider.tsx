@@ -7,13 +7,18 @@ import React, {
   ReactNode,
 } from "react";
 import { usePathname } from "next/navigation";
-import { gsap } from "gsap";
 import { PageTransitionContext } from "./transition-context";
 import { PageTransitionContextType } from "./types";
 
 type PageTransitionProviderProps = {
   children: ReactNode;
 };
+
+let gsapModule: Promise<typeof import("gsap")> | null = null;
+function loadGsap() {
+  gsapModule ??= import("gsap");
+  return gsapModule;
+}
 
 const PageTransitionProvider = ({
   children,
@@ -26,51 +31,59 @@ const PageTransitionProvider = ({
 
   const playExit = useCallback(
     (onComplete: () => void) => {
-      // Skip animation if reduced motion or no overlay
       if (!overlayRef.current || prefersReducedMotion.current) {
         onComplete();
         return;
       }
 
-      // Prevent double navigation
       if (isTransitioning) {
         return;
       }
 
       setIsTransitioning(true);
 
-      // Curtain wipe: slide overlay from left (-100%) to center (0%)
-      gsap.to(overlayRef.current, {
-        xPercent: 0,
-        duration: 0.6,
-        ease: "power2.inOut",
-        onComplete: () => {
+      void loadGsap().then(({ gsap }) => {
+        if (!overlayRef.current) {
           onComplete();
-        },
+          return;
+        }
+
+        gsap.to(overlayRef.current, {
+          xPercent: 0,
+          duration: 0.6,
+          ease: "power2.inOut",
+          onComplete: () => {
+            onComplete();
+          },
+        });
       });
     },
-    [isTransitioning]
+    [isTransitioning],
   );
 
   const playEnter = useCallback(() => {
-    // Skip animation if reduced motion or no overlay
     if (!overlayRef.current || prefersReducedMotion.current) {
       setIsTransitioning(false);
       return;
     }
 
-    // Curtain wipe: slide overlay from center (0%) to right (100%)
-    gsap.to(overlayRef.current, {
-      xPercent: 100,
-      duration: 0.6,
-      ease: "power2.inOut",
-      onComplete: () => {
-        // Reset to -100% without flashing (happens instantly after animation)
-        if (overlayRef.current) {
-          gsap.set(overlayRef.current, { xPercent: -100 });
-        }
+    void loadGsap().then(({ gsap }) => {
+      if (!overlayRef.current) {
         setIsTransitioning(false);
-      },
+        return;
+      }
+
+      gsap.to(overlayRef.current, {
+        xPercent: 100,
+        duration: 0.6,
+        ease: "power2.inOut",
+        onComplete: () => {
+          if (overlayRef.current) {
+            gsap.set(overlayRef.current, { xPercent: -100 });
+          }
+          setIsTransitioning(false);
+        },
+      });
     });
   }, []);
 
@@ -86,17 +99,11 @@ const PageTransitionProvider = ({
 
     mediaQuery.addEventListener("change", handleChange);
 
-    // Initialize overlay position (off-screen left)
-    if (overlayRef.current) {
-      gsap.set(overlayRef.current, { xPercent: -100 });
-    }
-
     return () => {
       mediaQuery.removeEventListener("change", handleChange);
     };
   }, []);
 
-  // Listen to pathname changes to trigger enter animation
   useEffect(() => {
     if (pendingNavigationRef.current && pathname) {
       pendingNavigationRef.current = false;
@@ -126,6 +133,7 @@ const PageTransitionProvider = ({
       <div
         ref={overlayRef}
         className="fixed inset-0 z-[9999] pointer-events-none bg-gray-900"
+        style={{ transform: "translateX(-100%)" }}
         aria-hidden="true"
       />
     </PageTransitionContext.Provider>

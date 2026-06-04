@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { hasAdsConsent } from "@/lib/cookies/consent";
 import { trackMetaPageView } from "@/lib/analytics/meta-pixel";
 
 /**
@@ -13,7 +14,7 @@ export function MetaPixelEvents() {
   const lastTrackedRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!pathname || pathname.startsWith("/admin")) return;
+    if (!pathname || pathname.startsWith("/admin") || !hasAdsConsent()) return;
     if (lastTrackedRef.current === pathname) return;
     lastTrackedRef.current = pathname;
     trackMetaPageView(pathname);

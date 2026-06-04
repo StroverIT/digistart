@@ -8,7 +8,6 @@ import { ChevronDown, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCartItemCount } from "@/lib/store/cart";
 import { cn } from "@/lib/utils";
-import gsap from "gsap";
 import Hamburger from "hamburger-react";
 import { useSession, signOut } from "next-auth/react";
 import { AnalyticsToolbar } from "@/components/analytics/analytics-toolbar";
@@ -16,8 +15,16 @@ import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
 import { clearPreferences, hasCompletedSurvey } from "@/lib/visitor-preferences/storage";
 
-const LOGO_WIDTH = 1166;
-const LOGO_HEIGHT = 1280;
+const LOGO_WIDTH = 58;
+const LOGO_HEIGHT = 64;
+/** Display height is h-8 (32px); width follows aspect ratio (~29px). */
+const LOGO_SIZES = "29px";
+
+let gsapModule: Promise<typeof import("gsap")> | null = null;
+function loadGsap() {
+  gsapModule ??= import("gsap");
+  return gsapModule;
+}
 
 const serviceNavLinks = [
   {
@@ -139,101 +146,111 @@ function ServicesNavGroup({
     const content = contentRef.current;
     if (!wrapper || !content) return;
 
-    const items = content.querySelectorAll("li");
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let cancelled = false;
 
-    gsap.killTweensOf([wrapper, items, chevronRef.current]);
+    void loadGsap().then(({ default: gsap }) => {
+      if (cancelled) return;
 
-    if (!hasMountedRef.current) {
-      hasMountedRef.current = true;
-      gsap.set(wrapper, { height: 0, opacity: 0, marginTop: 0 });
-      gsap.set(items, { opacity: 0, x: -10 });
-      gsap.set(chevronRef.current, { rotate: 0 });
-      return;
-    }
+      const items = content.querySelectorAll("li");
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (reducedMotion) {
-      gsap.set(wrapper, {
-        height: isExpanded ? "auto" : 0,
-        opacity: isExpanded ? 1 : 0,
-        marginTop: isExpanded ? 12 : 0,
-      });
-      gsap.set(items, { opacity: isExpanded ? 1 : 0, x: 0 });
-      gsap.set(chevronRef.current, { rotate: isExpanded ? 180 : 0 });
-      return;
-    }
+      gsap.killTweensOf([wrapper, items, chevronRef.current]);
 
-    if (isExpanded) {
-      gsap.set(wrapper, { height: 0, opacity: 0, marginTop: 0 });
-      gsap.set(items, { opacity: 0, x: -12 });
+      if (!hasMountedRef.current) {
+        hasMountedRef.current = true;
+        gsap.set(wrapper, { height: 0, opacity: 0, marginTop: 0 });
+        gsap.set(items, { opacity: 0, x: -10 });
+        gsap.set(chevronRef.current, { rotate: 0 });
+        return;
+      }
 
-      const targetHeight = content.scrollHeight;
+      if (reducedMotion) {
+        gsap.set(wrapper, {
+          height: isExpanded ? "auto" : 0,
+          opacity: isExpanded ? 1 : 0,
+          marginTop: isExpanded ? 12 : 0,
+        });
+        gsap.set(items, { opacity: isExpanded ? 1 : 0, x: 0 });
+        gsap.set(chevronRef.current, { rotate: isExpanded ? 180 : 0 });
+        return;
+      }
+
+      if (isExpanded) {
+        gsap.set(wrapper, { height: 0, opacity: 0, marginTop: 0 });
+        gsap.set(items, { opacity: 0, x: -12 });
+
+        const targetHeight = content.scrollHeight;
+
+        gsap
+          .timeline()
+          .to(chevronRef.current, { rotate: 180, duration: 0.3, ease: "power2.out" }, 0)
+          .to(
+            wrapper,
+            {
+              height: targetHeight,
+              opacity: 1,
+              marginTop: 12,
+              duration: 0.38,
+              ease: "power3.out",
+              onComplete: () => {
+                gsap.set(wrapper, { height: "auto" });
+              },
+            },
+            0,
+          )
+          .to(
+            items,
+            {
+              opacity: 1,
+              x: 0,
+              duration: 0.32,
+              stagger: 0.05,
+              ease: "power2.out",
+            },
+            0.1,
+          );
+        return;
+      }
+
+      if (wrapper.offsetHeight === 0) {
+        gsap.set(wrapper, { height: 0, opacity: 0, marginTop: 0 });
+        gsap.set(items, { opacity: 0, x: -10 });
+        gsap.set(chevronRef.current, { rotate: 0 });
+        return;
+      }
+
+      gsap.set(wrapper, { height: wrapper.offsetHeight });
 
       gsap
         .timeline()
-        .to(chevronRef.current, { rotate: 180, duration: 0.3, ease: "power2.out" }, 0)
-        .to(
-          wrapper,
-          {
-            height: targetHeight,
-            opacity: 1,
-            marginTop: 12,
-            duration: 0.38,
-            ease: "power3.out",
-            onComplete: () => {
-              gsap.set(wrapper, { height: "auto" });
-            },
-          },
-          0
-        )
+        .to(chevronRef.current, { rotate: 0, duration: 0.28, ease: "power2.in" }, 0)
         .to(
           items,
           {
-            opacity: 1,
-            x: 0,
-            duration: 0.32,
-            stagger: 0.05,
-            ease: "power2.out",
+            opacity: 0,
+            x: -8,
+            duration: 0.2,
+            stagger: { each: 0.03, from: "end" },
+            ease: "power2.in",
           },
-          0.1
+          0,
+        )
+        .to(
+          wrapper,
+          {
+            height: 0,
+            opacity: 0,
+            marginTop: 0,
+            duration: 0.28,
+            ease: "power2.inOut",
+          },
+          0.08,
         );
-      return;
-    }
+    });
 
-    if (wrapper.offsetHeight === 0) {
-      gsap.set(wrapper, { height: 0, opacity: 0, marginTop: 0 });
-      gsap.set(items, { opacity: 0, x: -10 });
-      gsap.set(chevronRef.current, { rotate: 0 });
-      return;
-    }
-
-    gsap.set(wrapper, { height: wrapper.offsetHeight });
-
-    gsap
-      .timeline()
-      .to(chevronRef.current, { rotate: 0, duration: 0.28, ease: "power2.in" }, 0)
-      .to(
-        items,
-        {
-          opacity: 0,
-          x: -8,
-          duration: 0.2,
-          stagger: { each: 0.03, from: "end" },
-          ease: "power2.in",
-        },
-        0
-      )
-      .to(
-        wrapper,
-        {
-          height: 0,
-          opacity: 0,
-          marginTop: 0,
-          duration: 0.28,
-          ease: "power2.inOut",
-        },
-        0.08
-      );
+    return () => {
+      cancelled = true;
+    };
   }, [isExpanded]);
 
   return (
@@ -302,12 +319,6 @@ export function Header() {
   const isCartPage = pathname === "/cart" || pathnameDecoded === "/cart";
 
   useEffect(() => {
-    if (menuRef.current) {
-      gsap.set(menuRef.current, { x: "100%" });
-    }
-  }, []);
-
-  useEffect(() => {
     setCartCount(getCartItemCount());
     const handleCartUpdate = () => setCartCount(getCartItemCount());
     const syncSurveyPreferences = () => setHasSurveyPreferences(hasCompletedSurvey());
@@ -327,34 +338,36 @@ export function Header() {
 
   const closeMenu = useCallback(() => {
     return new Promise<void>((resolve) => {
-      const tl = gsap.timeline({
-        onComplete: () => {
-          setIsOpen(false);
-          setServicesExpanded(false);
-          if (backdropRef.current) gsap.set(backdropRef.current, { display: "none" });
-          resolve();
-        },
-      });
-      if (linksRef.current) {
-        const listItems = linksRef.current.querySelectorAll(":scope > li");
-        tl.to(listItems, {
-          opacity: 0,
-          y: -24,
-          duration: 0.22,
-          stagger: 0.04,
-          ease: "power2.in",
+      void loadGsap().then(({ default: gsap }) => {
+        const tl = gsap.timeline({
+          onComplete: () => {
+            setIsOpen(false);
+            setServicesExpanded(false);
+            if (backdropRef.current) gsap.set(backdropRef.current, { display: "none" });
+            resolve();
+          },
         });
-      }
-      if (menuRef.current) {
-        tl.to(
-          menuRef.current,
-          { x: "100%", skewX: 0, duration: 0.28, ease: "power3.in" },
-          "-=0.08"
-        );
-      }
-      if (backdropRef.current) {
-        tl.to(backdropRef.current, { opacity: 0, duration: 0.22, ease: "power2.in" }, "-=0.2");
-      }
+        if (linksRef.current) {
+          const listItems = linksRef.current.querySelectorAll(":scope > li");
+          tl.to(listItems, {
+            opacity: 0,
+            y: -24,
+            duration: 0.22,
+            stagger: 0.04,
+            ease: "power2.in",
+          });
+        }
+        if (menuRef.current) {
+          tl.to(
+            menuRef.current,
+            { x: "100%", skewX: 0, duration: 0.28, ease: "power3.in" },
+            "-=0.08",
+          );
+        }
+        if (backdropRef.current) {
+          tl.to(backdropRef.current, { opacity: 0, duration: 0.22, ease: "power2.in" }, "-=0.2");
+        }
+      });
     });
   }, []);
 
@@ -366,32 +379,34 @@ export function Header() {
 
   const openMenu = useCallback(() => {
     setIsOpen(true);
-    const tl = gsap.timeline();
-    if (backdropRef.current) {
-      gsap.set(backdropRef.current, { display: "block", opacity: 0 });
-    }
-    if (menuRef.current) {
-      gsap.set(menuRef.current, { x: "100%", skewX: -5 });
-    }
-    if (backdropRef.current) {
-      tl.to(backdropRef.current, { opacity: 1, duration: 0.25, ease: "power2.out" });
-    }
-    if (menuRef.current) {
-      tl.to(
-        menuRef.current,
-        { x: 0, skewX: 0, duration: 0.3, ease: "power3.out" },
-        "-=0.15"
-      );
-    }
-    if (linksRef.current) {
-      const listItems = linksRef.current.querySelectorAll(":scope > li");
-      gsap.set(listItems, { opacity: 0, y: 28 });
-      tl.to(
-        listItems,
-        { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: "power3.out" },
-        "-=0.12"
-      );
-    }
+    void loadGsap().then(({ default: gsap }) => {
+      const tl = gsap.timeline();
+      if (backdropRef.current) {
+        gsap.set(backdropRef.current, { display: "block", opacity: 0 });
+      }
+      if (menuRef.current) {
+        gsap.set(menuRef.current, { x: "100%", skewX: -5 });
+      }
+      if (backdropRef.current) {
+        tl.to(backdropRef.current, { opacity: 1, duration: 0.25, ease: "power2.out" });
+      }
+      if (menuRef.current) {
+        tl.to(
+          menuRef.current,
+          { x: 0, skewX: 0, duration: 0.3, ease: "power3.out" },
+          "-=0.15",
+        );
+      }
+      if (linksRef.current) {
+        const listItems = linksRef.current.querySelectorAll(":scope > li");
+        gsap.set(listItems, { opacity: 0, y: 28 });
+        tl.to(
+          listItems,
+          { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: "power3.out" },
+          "-=0.12",
+        );
+      }
+    });
   }, []);
 
   const toggleMenu = () => {
@@ -434,12 +449,12 @@ export function Header() {
             <div className="flex items-center justify-between h-16 md:h-20">
               <TransitionLink href="/" className="flex items-center gap-2 group rounded-lg z-60 relative">
                 <Image
-                  src="/logo.png"
+                  src="/logo.webp"
                   alt="DigiStart logo"
                   width={LOGO_WIDTH}
                   height={LOGO_HEIGHT}
+                  sizes={LOGO_SIZES}
                   className="h-8 w-auto transition-transform group-hover:scale-110"
-                  priority
                 />
                 <span className="flex flex-col leading-tight">
                   <span className="text-xl font-bold tracking-tight">
@@ -523,7 +538,7 @@ export function Header() {
 
       <div
         ref={menuRef}
-        className="fixed top-0 right-0 h-dvh bg-zinc-900 text-zinc-50 shadow-xl z-55 w-screen sm:w-[min(100%,28rem)] md:w-[40%] overflow-y-auto will-change-transform"
+        className="fixed top-0 right-0 h-dvh translate-x-full bg-zinc-900 text-zinc-50 shadow-xl z-55 w-screen sm:w-[min(100%,28rem)] md:w-[40%] overflow-y-auto will-change-transform"
         role="dialog"
         aria-modal="true"
         aria-label="Главно меню"
@@ -538,10 +553,11 @@ export function Header() {
                 onClick={() => void closeMenu()}
               >
                 <Image
-                  src="/logo.png"
+                  src="/logo.webp"
                   alt="DigiStart logo"
                   width={LOGO_WIDTH}
                   height={LOGO_HEIGHT}
+                  sizes={LOGO_SIZES}
                   className="h-8 w-auto transition-transform group-hover:scale-110"
                 />
                 <span className="flex flex-col leading-tight">

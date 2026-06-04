@@ -1,11 +1,21 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import HeroSection from "@/components/services/service-detail-ready-store-v2/HeroSection";
-import Templates from "@/components/services/service-detail-ready-store-v2/Templates";
-import InnerNavigation from "@/components/services/service-detail-ready-store-v2/InnerNavigation";
-import { PasFaqSection } from "@/components/services/service-pas-landing/faq-section";
 import { ONLINE_STORE_LANDING } from "@/config/service-landing/online-store";
-import { getServiceSlotAvailability } from "@/lib/server/service-slots";
+
+const InnerNavigation = dynamic(
+  () => import("@/components/services/service-detail-ready-store-v2/InnerNavigation"),
+);
+
+const PasFaqSection = dynamic(() =>
+  import("@/components/services/service-pas-landing/faq-section").then((mod) => ({
+    default: mod.PasFaqSection,
+  })),
+);
+
+const Templates = dynamic(
+  () => import("@/components/services/service-detail-ready-store-v2/Templates"),
+);
 
 const Benefits = dynamic(
   () => import("@/components/services/service-detail-ready-store-v2/Benefits"),
@@ -32,8 +42,7 @@ export const metadata: Metadata = {
     "Мобилен онлайн магазин за продавачи в Instagram, Facebook и OLX - абонамент от €20/мес., опционално карти и куриер в количката, старт до 48 часа, 14-дневна гаранция.",
 };
 
-export default async function OnlineStorePage() {
-  const availability = await getServiceSlotAvailability("ready-store");
+export default function OnlineStorePage() {
   return (
     <section className="pt-28 md:pt-32">
       <HeroSection />
@@ -47,7 +56,7 @@ export default async function OnlineStorePage() {
         <RealShop />
       </div>
 
-      <BuySection availability={availability} />
+      <BuySection />
       <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
     </section>
   );
