@@ -5,6 +5,7 @@ import type {
   AnalyticsEventType,
   QueuedAnalyticsEvent,
 } from "@/lib/analytics/types";
+import { generateClientUuid } from "@/lib/utils";
 
 const FLUSH_INTERVAL_MS = 10_000;
 const MAX_BATCH_SIZE = 50;
@@ -21,7 +22,7 @@ export function getAnalyticsSessionId(): string {
 
   let id = sessionStorage.getItem(ANALYTICS_SESSION_STORAGE_KEY);
   if (!id) {
-    id = crypto.randomUUID();
+    id = generateClientUuid();
     sessionStorage.setItem(ANALYTICS_SESSION_STORAGE_KEY, id);
   }
   return id;

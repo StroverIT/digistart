@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { extractAllUtmParams } from "@/lib/analytics/source";
+import { generateClientUuid } from "@/lib/utils";
 
 const TRACKED_DEDUPE_KEY_STORAGE = "digistart_tracked_utm_dedupe_keys";
 const UTM_VISITOR_ID_STORAGE_KEY = "digistart_utm_visitor_id";
@@ -43,7 +44,7 @@ function getOrCreateVisitorId() {
   const existing = localStorage.getItem(UTM_VISITOR_ID_STORAGE_KEY);
   if (existing) return existing;
 
-  const created = crypto.randomUUID();
+  const created = generateClientUuid();
   localStorage.setItem(UTM_VISITOR_ID_STORAGE_KEY, created);
   return created;
 }
