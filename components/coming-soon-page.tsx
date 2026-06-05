@@ -41,7 +41,7 @@ export async function ComingSoonPage() {
           <div className="text-center">
             <div className="mb-8 flex justify-center">
               <Image
-                src="/logo.png"
+                src="/logo.webp"
                 alt="DigiStart logo"
                 width={40}
                 height={40}
