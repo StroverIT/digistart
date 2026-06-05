@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { ArrowLeft, ExternalLink } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { PreviewLink } from "@/components/preview/preview-link";
+import { SitePreviewViewer } from "@/components/preview/site-preview-viewer";
 import {
   resolveTemplatePreviewImageUrl,
   resolveTemplatePreviewUrl,
@@ -39,27 +40,13 @@ function DetailSection({ section }: { section: TemplateDetailSection }) {
   );
 }
 
-function GoodForSection({ labels }: { labels: string[] }) {
-  return (
-    <section>
-      <h3 className="text-lg font-semibold mb-3">Подходящ за</h3>
-      <ul className="space-y-2">
-        {labels.map((label) => (
-          <li key={label} className="flex gap-3 text-muted-foreground text-sm leading-relaxed">
-            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
-            {label}
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
 export function TemplateDetailView({ template }: TemplateDetailViewProps) {
+  const [previewOpen, setPreviewOpen] = useState(false);
   const livePreviewUrl = resolveTemplatePreviewUrl(template);
   const previewImageUrl = resolveTemplatePreviewImageUrl(template);
   const detailPath = template.demoPath;
   const goodForLabels = getNicheLabels(template.goodFor);
+  const nicheTitle = goodForLabels[0] ?? template.name;
 
   return (
     <div className="space-y-8">
@@ -79,7 +66,7 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
         <div className="space-y-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">{template.name}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">{nicheTitle}</h1>
             {template.tagline && (
               <p className="mt-2 text-primary font-medium">{template.tagline}</p>
             )}
@@ -106,15 +93,21 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
                 Започни с този шаблон
               </Button>
             </TrackedCtaLink>
-            <PreviewLink
-              href={livePreviewUrl}
-              ctaId={`templates_detail_preview_${template.category}_${template.id}`}
-              ctaPage={detailPath}
-              className={buttonVariants({ variant: "outline", size: "default" })}
+            <Button
+              type="button"
+              variant="outline"
+              size="default"
+              onClick={() => {
+                trackCtaClick(
+                  detailPath,
+                  `templates_detail_preview_${template.category}_${template.id}`,
+                );
+                setPreviewOpen(true);
+              }}
             >
               <ExternalLink />
               Жив преглед
-            </PreviewLink>
+            </Button>
           </div>
         </div>
 
@@ -122,7 +115,7 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
           <div className="relative w-full aspect-16/10 rounded-xl">
             <Image
               src={previewImageUrl}
-              alt={`Преглед на ${template.name}`}
+              alt={`Преглед на ${nicheTitle}`}
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
@@ -132,11 +125,17 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
         </div>
       </div>
 
-      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 pt-4 border-t border-border">
-        <GoodForSection labels={goodForLabels} />
+      <div className="grid gap-8 sm:grid-cols-2 pt-4 border-t border-border">
         <DetailSection section={template.highlights} />
         <DetailSection section={template.navigation} />
       </div>
+
+      <SitePreviewViewer
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        src={livePreviewUrl}
+        title={nicheTitle}
+      />
     </div>
   );
 }
