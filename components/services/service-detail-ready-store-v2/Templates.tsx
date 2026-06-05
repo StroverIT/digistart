@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { TemplateCard } from "@/components/templates/template-card";
 import { getOnboardingTemplates } from "@/lib/data/templates";
 import { LandingSection } from "./shared";
+import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight } from "lucide-react";
 import { LANDING_REVEAL_CLASS, LANDING_CARD_CLASS } from "./landing-animation-classes";
@@ -56,10 +57,12 @@ const Templates = () => {
         ))}
       </div>
       <div data-animate-reveal className={`text-center ${LANDING_REVEAL_CLASS}`}>
-        <Button variant="outline" size="xl" type="button" className="gap-2">
-          Виж всички шаблони
-          <ArrowUpRight className="h-4 w-4" />
-        </Button>
+        <TrackedCtaLink href="/templates" ctaId="service_ready_store_browse_templates">
+          <Button variant="outline" size="xl" type="button" className="gap-2">
+            Виж всички шаблони
+            <ArrowUpRight className="h-4 w-4" />
+          </Button>
+        </TrackedCtaLink>
       </div>
     </LandingSection>
   );
