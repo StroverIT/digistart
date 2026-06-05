@@ -9,9 +9,13 @@ import { ArrowUpRight } from "lucide-react";
 import { LANDING_REVEAL_CLASS, LANDING_CARD_CLASS } from "./landing-animation-classes";
 import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
 
+const FEATURED_TEMPLATE_IDS = ["1", "2", "5", "9"];
+
 const Templates = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const templates = getOnboardingTemplates();
+  const templates = FEATURED_TEMPLATE_IDS.map((id) =>
+    getOnboardingTemplates().find((template) => template.id === id),
+  ).filter((template) => template != null);
 
   useLandingScrollAnimations(sectionRef, {
     staggerReveal: 0.12,
@@ -41,7 +45,7 @@ const Templates = () => {
       </div>
 
       <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:mt-14">
-        {templates.slice(0, 4).map((template, index) => (
+        {templates.map((template, index) => (
           <div
             key={`${template.category}-${template.id}`}
             data-animate-card
