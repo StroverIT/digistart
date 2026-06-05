@@ -12,7 +12,7 @@ export interface StoreTemplate {
   category: ProductCategory;
   name: string;
   description: string;
-  /** Static screenshot under public/templates/{category}/{id}.webp */
+  /** Static screenshot under public/templates/{id}.png */
   previewImagePath: string;
   /** Proxied or live URL for opening the running template (onboarding, tenant preview). */
   previewPath: string;
@@ -70,7 +70,7 @@ function storeTemplate(
   return {
     id,
     category: "clothing",
-    previewImagePath: `/templates/clothing/${id}.webp`,
+    previewImagePath: `/templates/${id}.png`,
     previewPath: `/preview/clothing/${id}`,
     demoPath: `/templates/clothing/${id}`,
     builtWith: defaultBuiltWith,
@@ -287,6 +287,32 @@ export const storeTemplates: StoreTemplate[] = [
         "По-малки каталози със силна продуктова история",
         "Фокус върху качество, удобство и повторни покупки",
         "Елегантна витрина за essentials и базови линии",
+      ],
+    },
+  }),
+  storeTemplate("12", {
+    name: "PowerUp",
+    tagline: "Технологична витрина · ясни категории",
+    description:
+      "Съвременен магазин за електроника с категории, промо зони, марки и бърз път от разглеждане към поръчка.",
+    audience: {
+      title: "За какъв стил е подходящ",
+      items: [
+        "Магазини за електроника, аксесоари и гаджети",
+        "Каталози с много SKU, марки и ясни категории",
+        "Промоции, отстъпки и социално доказателство на началната",
+        "Продавачи, които искат модерен tech вид без custom код",
+      ],
+    },
+    highlights: {
+      title: "Какво включва",
+      items: [
+        "Hero зона с категории и водещи продукти",
+        "Секции за най-продавани и последни продукти",
+        "Продуктова страница с цени, отстъпки и ясен CTA",
+        "Количка и checkout с наложен платеж и карта",
+        "Интеграции с Еконт и Спиди",
+        "Meta Pixel за проследяване на рекламни кампании",
       ],
     },
   }),
