@@ -135,6 +135,27 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
         onOpenChange={setPreviewOpen}
         src={livePreviewUrl}
         title={nicheTitle}
+        cta={
+          <TrackedCtaLink
+            href="/services/online-store#buy-now"
+            ctaId={`templates_preview_choose_${template.category}_${template.id}`}
+            onClick={() => {
+              setCheckoutTemplateSelection({
+                category: template.category,
+                id: template.id,
+              });
+              setPreviewOpen(false);
+            }}
+          >
+            <Button
+              type="button"
+              size="sm"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Избери този шаблон
+            </Button>
+          </TrackedCtaLink>
+        }
       />
     </div>
   );
