@@ -24,6 +24,10 @@ import {
   resolveOrCreateCatalogPrice,
   resolveOrCreateStripeCustomer,
 } from "@/lib/server/stripe-catalog";
+import {
+  applyAdminPricingToCart,
+  isAdminCheckoutRole,
+} from "@/lib/pricing/admin-checkout-pricing";
 
 const upsellSchema: z.ZodType<CartItemUpsell> = z.object({
   upsellId: z.string(),
@@ -204,7 +208,12 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const lineItems = await buildLineItems(parsed.data.cart.items);
+    const isAdminCheckout = isAdminCheckoutRole(session?.user?.role);
+    const checkoutCart = isAdminCheckout
+      ? applyAdminPricingToCart(parsed.data.cart)
+      : parsed.data.cart;
+
+    const lineItems = await buildLineItems(checkoutCart.items);
     if (lineItems.length === 0) {
       return NextResponse.json({ error: "No payable line items found." }, { status: 400 });
     }
@@ -222,7 +231,7 @@ export async function POST(req: NextRequest) {
     let pendingUser: PendingCheckoutUser | null = null;
     let postCheckoutToken: string | null = null;
 
-    if (!sessionUserId) {
+    if (!sessionUserId && !isAdminCheckout) {
       const pu = parsed.data.pendingUser;
       if (!pu) {
         if (isSessionCustomerForEmail) {
@@ -264,7 +273,7 @@ export async function POST(req: NextRequest) {
       : null;
 
     const order = await createOrderInDb({
-      cart: parsed.data.cart,
+      cart: checkoutCart,
       customer: parsed.data.customer,
       consultationId: parsed.data.consultationId,
       userId: sessionUserId,
@@ -275,7 +284,8 @@ export async function POST(req: NextRequest) {
 
     const stripe = getStripeServerClient();
     const siteUrl = getSiteUrl(req);
-    const mode = parsed.data.cart.totalMonthly > 0 ? "subscription" : "payment";
+    const mode =
+      isAdminCheckout || checkoutCart.totalMonthly <= 0 ? "payment" : "subscription";
     const stripeCustomer = await resolveOrCreateStripeCustomer({
       email: parsed.data.customer.email,
       name: parsed.data.customer.name,
@@ -294,6 +304,7 @@ export async function POST(req: NextRequest) {
         : {}),
       ...(planItem?.planId ? { planId: planItem.planId } : {}),
       ...(purchaseAsBusiness ? { purchaseAsBusiness: "true" } : {}),
+      ...(isAdminCheckout ? { adminCheckout: "true" } : {}),
     };
 
     const uiMode = parsed.data.uiMode ?? "redirect";

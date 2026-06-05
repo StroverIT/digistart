@@ -24,6 +24,10 @@ import { Price } from "@/components/ui/price";
 import type { Cart, CustomerInfo, Service } from "@/lib/types";
 import { getCart, clearCart, updateCartItemUpsells } from "@/lib/store/cart";
 import {
+  applyAdminPricingToCart,
+  isAdminCheckoutRole,
+} from "@/lib/pricing/admin-checkout-pricing";
+import {
   getCheckoutTemplateSelection,
   type CheckoutTemplateSelection,
 } from "@/lib/store/checkout-template";
@@ -75,11 +79,13 @@ function contactFieldsMissingMessage(
 export default function CheckoutPage() {
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
+  const isAdminCheckout = isAdminCheckoutRole(session?.user?.role);
   const isLoggedInCustomer =
     session?.user?.email &&
     session.user.role !== "admin";
+  const isLoggedInForCheckout = isLoggedInCustomer || isAdminCheckout;
 
-  const totalSteps = isLoggedInCustomer ? 2 : 3;
+  const totalSteps = isLoggedInForCheckout ? 2 : 3;
   const [cart, setCart] = useState<Cart>({ items: [], totalOneTime: 0, totalMonthly: 0 });
   const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -119,6 +125,11 @@ export default function CheckoutPage() {
     company: "",
     notes: "",
   });
+
+  const displayCart = useMemo(
+    () => (isAdminCheckout ? applyAdminPricingToCart(cart) : cart),
+    [cart, isAdminCheckout],
+  );
 
   const passwordChecks = useMemo(
     () => [
@@ -176,14 +187,14 @@ export default function CheckoutPage() {
   }, [pendingGeneratedPassword]);
 
   useEffect(() => {
-    if (isLoggedInCustomer && session?.user) {
+    if (isLoggedInForCheckout && session?.user) {
       setFormData((prev) => ({
         ...prev,
         name: session.user.name ?? prev.name,
         email: session.user.email ?? prev.email,
       }));
     }
-  }, [isLoggedInCustomer, session?.user?.name, session?.user?.email]);
+  }, [isLoggedInForCheckout, session?.user?.name, session?.user?.email]);
 
   const firstCartItem = cart.items[0];
   const hasLogoUpsell = Boolean(
@@ -223,11 +234,13 @@ export default function CheckoutPage() {
       ? { logoUrl: brandSource.logoUrl ?? null, paletteUrl: null }
       : undefined;
 
+    const checkoutCart = isAdminCheckout ? applyAdminPricingToCart(cart) : cart;
+
     const response = await fetch("/api/checkout/stripe-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        cart,
+        cart: checkoutCart,
         customer: {
           name: formData.name.trim() || "Клиент",
           email: formData.email.trim(),
@@ -521,7 +534,7 @@ export default function CheckoutPage() {
     });
     paymentInitRef.current = false;
     setStripeClientSecret(null);
-    setLogicalStep(isLoggedInCustomer ? 2 : 3);
+    setLogicalStep(isLoggedInForCheckout ? 2 : 3);
   };
 
   const handleBack = () => {
@@ -535,7 +548,7 @@ export default function CheckoutPage() {
   };
 
   const displayStepLabel = useMemo(() => {
-    if (isLoggedInCustomer) {
+    if (isLoggedInForCheckout) {
       return logicalStep === 1 ? "Лого" : "Плащане";
     }
     return logicalStep === 1
@@ -543,7 +556,7 @@ export default function CheckoutPage() {
       : logicalStep === 2
         ? "Лого"
         : "Плащане";
-  }, [isLoggedInCustomer, logicalStep]);
+  }, [isLoggedInForCheckout, logicalStep]);
 
   if (!mounted || cart.items.length === 0) {
     return (
@@ -582,7 +595,7 @@ export default function CheckoutPage() {
                 </CardHeader>
               </Card>
 
-              {!isLoggedInCustomer && logicalStep === 1 ? (
+              {!isLoggedInForCheckout && logicalStep === 1 ? (
                 <>
                   <Card className="bg-card border-border">
                     <CardHeader>
@@ -897,14 +910,15 @@ export default function CheckoutPage() {
                 </>
               ) : null}
 
-              {((isLoggedInCustomer && logicalStep === 1) || (!isLoggedInCustomer && logicalStep === 2)) ? (
+              {((isLoggedInForCheckout && logicalStep === 1) ||
+                (!isLoggedInForCheckout && logicalStep === 2)) ? (
                 <>
                   <Card className="bg-card border-border">
                     <CardHeader>
                       <CardTitle className="text-lg">Лого</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                      {isLoggedInCustomer ? (
+                      {isLoggedInForCheckout ? (
                         <div className="space-y-4">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <Field>
@@ -1003,7 +1017,7 @@ export default function CheckoutPage() {
                           </Field>
                         ) : null}
                       </div>
-                      {isLoggedInCustomer ? (
+                      {isLoggedInForCheckout ? (
                         <div className="rounded-lg border border-border p-4">
                           <label className="flex items-start gap-3 cursor-pointer">
                             <Checkbox
@@ -1055,7 +1069,7 @@ export default function CheckoutPage() {
                   </Card>
                   {checkoutError ? <p className="text-sm text-red-500">{checkoutError}</p> : null}
                   <div className="flex gap-3">
-                    {!isLoggedInCustomer ? (
+                    {!isLoggedInForCheckout ? (
                       <Button type="button" variant="outline" className="flex-1" onClick={handleBack}>
                         Назад
                       </Button>
@@ -1158,7 +1172,7 @@ export default function CheckoutPage() {
                 <CardTitle>Вашата поръчка</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {cart.items.map((item) => (
+                {displayCart.items.map((item) => (
                   <div
                     key={item.id}
                     className="flex items-start justify-between gap-4 pb-4 border-b border-border"
@@ -1166,7 +1180,7 @@ export default function CheckoutPage() {
                     <div>
                       <p className="font-medium">{item.serviceName}</p>
                       <p className="text-sm text-muted-foreground">{item.selectedOptionName}</p>
-                      {item.billingCycle === "annual-prepaid" ? (
+                      {!isAdminCheckout && item.billingCycle === "annual-prepaid" ? (
                         <p className="mt-1 text-xs font-medium text-primary">
                           Предплатено за 1 година
                           {item.annualDiscountAmount
@@ -1174,9 +1188,10 @@ export default function CheckoutPage() {
                             : ""}
                         </p>
                       ) : null}
-                      {item.upsells.length > 0 && (
+                      {cart.items.find((cartItem) => cartItem.id === item.id)?.upsells.length ? (
                         <ul className="mt-2 space-y-1">
-                          {item.upsells.map((upsell) => {
+                          {(cart.items.find((cartItem) => cartItem.id === item.id)?.upsells ?? []).map(
+                            (upsell) => {
                             const service = servicesById[item.serviceId] ?? getServiceById(item.serviceId);
                             const serviceUpsell = service?.upsells.find((config) => config.id === upsell.upsellId);
                             if (!serviceUpsell) return null;
@@ -1196,13 +1211,17 @@ export default function CheckoutPage() {
                             );
                           })}
                         </ul>
-                      )}
+                      ) : null}
                     </div>
                     <div className="text-right shrink-0">
-                      <Price value={item.totalPrice} className="font-semibold" />
-                      {item.billingCycle === "annual-prepaid" ? (
+                      {isAdminCheckout ? (
+                        <p className="text-sm font-medium text-primary">Включено</p>
+                      ) : (
+                        <Price value={item.totalPrice} className="font-semibold" />
+                      )}
+                      {!isAdminCheckout && item.billingCycle === "annual-prepaid" ? (
                         <div className="text-xs text-muted-foreground">за 1 година</div>
-                      ) : item.isMonthly ? (
+                      ) : !isAdminCheckout && item.isMonthly ? (
                         <span className="text-sm text-muted-foreground">/мес</span>
                       ) : null}
                     </div>
@@ -1210,21 +1229,23 @@ export default function CheckoutPage() {
                 ))}
 
                 <div className="space-y-2 pt-2">
-                  {cart.totalOneTime > 0 && (
+                  {displayCart.totalOneTime > 0 && (
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
-                        {cart.items.some((item) => item.billingCycle === "annual-prepaid")
+                        {isAdminCheckout
+                          ? "Еднократно (админ)"
+                          : displayCart.items.some((item) => item.billingCycle === "annual-prepaid")
                           ? "Еднократни плащания и предплащания"
                           : "Еднократни услуги"}
                       </span>
-                      <Price value={cart.totalOneTime} />
+                      <Price value={displayCart.totalOneTime} />
                     </div>
                   )}
-                  {cart.totalMonthly > 0 && (
+                  {!isAdminCheckout && displayCart.totalMonthly > 0 && (
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Месечни абонаменти</span>
                       <span>
-                        <Price value={cart.totalMonthly} />/мес
+                        <Price value={displayCart.totalMonthly} />/мес
                       </span>
                     </div>
                   )}
@@ -1235,19 +1256,23 @@ export default function CheckoutPage() {
                     <span className="text-lg font-semibold">Обща сума</span>
                     <div className="text-right">
                       <Price
-                        value={cart.totalOneTime + cart.totalMonthly}
+                        value={displayCart.totalOneTime + displayCart.totalMonthly}
                         className="text-2xl gradient-text"
                       />
-                      {cart.totalMonthly > 0 && cart.totalOneTime === 0 && (
+                      {!isAdminCheckout &&
+                      displayCart.totalMonthly > 0 &&
+                      displayCart.totalOneTime === 0 ? (
                         <span className="text-muted-foreground">/мес</span>
-                      )}
+                      ) : null}
                     </div>
                   </div>
-                  {cart.totalMonthly > 0 && cart.totalOneTime > 0 && (
+                  {!isAdminCheckout &&
+                  displayCart.totalMonthly > 0 &&
+                  displayCart.totalOneTime > 0 ? (
                     <p className="text-sm text-muted-foreground text-right mt-1">
-                      + <Price value={cart.totalMonthly} />/мес след това
+                      + <Price value={displayCart.totalMonthly} />/мес след това
                     </p>
-                  )}
+                  ) : null}
                 </div>
               </CardContent>
             </Card>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +9,10 @@ import { Price } from "@/components/ui/price";
 import { cn } from "@/lib/utils";
 import type { SubscriptionPlan } from "@/lib/data/plans";
 import { BUNDLE_PAGE_PATH } from "@/lib/data/plans";
+import {
+  ADMIN_CHECKOUT_TOTAL_EUR,
+  isAdminCheckoutRole,
+} from "@/lib/pricing/admin-checkout-pricing";
 
 interface PlanCardProps {
   plan: SubscriptionPlan;
@@ -16,6 +21,12 @@ interface PlanCardProps {
 }
 
 export function PlanCard({ plan, onSelect, isAdding }: PlanCardProps) {
+  const { data: session } = useSession();
+  const isAdminCheckout = isAdminCheckoutRole(session?.user?.role);
+  const monthlyTotal = isAdminCheckout ? ADMIN_CHECKOUT_TOTAL_EUR : plan.monthlyTotal;
+  const oneTimeTotal = isAdminCheckout ? 0 : plan.oneTimeTotal;
+  const listMonthly = isAdminCheckout ? ADMIN_CHECKOUT_TOTAL_EUR : plan.listMonthly;
+
   return (
     <Card
       className={cn(
@@ -30,7 +41,7 @@ export function PlanCard({ plan, onSelect, isAdding }: PlanCardProps) {
             <CardTitle className="text-xl font-bold tracking-tight">{plan.name}</CardTitle>
             <p className="text-sm leading-snug text-muted-foreground">{plan.tagline}</p>
           </div>
-          {plan.discountPercent > 0 ? (
+          {plan.discountPercent > 0 && !isAdminCheckout ? (
             <span
               className="shrink-0 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground"
               aria-label={`Отстъпка ${plan.discountPercent} процента`}
@@ -50,11 +61,11 @@ export function PlanCard({ plan, onSelect, isAdding }: PlanCardProps) {
           )}
         >
           <div className="flex min-h-11 flex-col justify-center">
-            {plan.discountPercent > 0 ? (
+            {plan.discountPercent > 0 && !isAdminCheckout ? (
               <p className="text-xs text-destructive">
                 <span className=" leading-tight text-destructive/80 line-through decoration-destructive decoration-2">
                   <Price
-                    value={plan.listMonthly}
+                    value={listMonthly}
                     layout="horizontal"
                     className="inline-flex gap-1.5 [&>span]:text-destructive line-through"
                   />
@@ -68,15 +79,17 @@ export function PlanCard({ plan, onSelect, isAdding }: PlanCardProps) {
 
           <div className="mt-2">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Месечно
+              {isAdminCheckout ? "Админ цена" : "Месечно"}
             </p>
             <div className="mt-1 flex flex-wrap items-end gap-x-2 gap-y-0">
               <Price
-                value={plan.monthlyTotal}
+                value={monthlyTotal}
                 layout="vertical"
                 className="flex-col items-start gap-0.5 text-2xl font-bold tabular-nums leading-none sm:text-3xl [&>span:first-child]:font-bold [&>span:last-child]:text-sm [&>span:last-child]:font-normal [&>span:last-child]:text-muted-foreground sm:[&>span:last-child]:text-base"
               />
-              <span className="shrink-0 pb-0.5 text-sm font-medium text-muted-foreground">/мес</span>
+              {!isAdminCheckout ? (
+                <span className="shrink-0 pb-0.5 text-sm font-medium text-muted-foreground">/мес</span>
+              ) : null}
             </div>
           </div>
 
@@ -89,16 +102,18 @@ export function PlanCard({ plan, onSelect, isAdding }: PlanCardProps) {
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Еднократно при старт
             </p>
-            {plan.oneTimeTotal > 0 ? (
+            {oneTimeTotal > 0 ? (
               <div className="mt-1">
                 <Price
-                  value={plan.oneTimeTotal}
+                  value={oneTimeTotal}
                   layout="vertical"
                   className="flex-col items-start gap-0.5 text-lg font-semibold tabular-nums leading-tight [&>span:last-child]:text-sm [&>span:last-child]:font-normal [&>span:last-child]:text-muted-foreground"
                 />
               </div>
             ) : (
-              <p className="mt-1.5 text-sm text-muted-foreground">Без еднократна такса</p>
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                {isAdminCheckout ? "Включено в админ цената" : "Без еднократна такса"}
+              </p>
             )}
           </div>
         </div>

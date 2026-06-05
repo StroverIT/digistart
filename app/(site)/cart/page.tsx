@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { ArrowLeft, ArrowRight, ChevronDown, Package, ShoppingCart, Trash2 } from "lucide-react";
 import gsap from "gsap";
@@ -12,6 +13,10 @@ import type { Cart, CartItem, Service } from "@/lib/types";
 import { getPlanComponentsForRecalc, serviceIdToPlanId } from "@/lib/data/plans";
 import type { PlanId } from "@/lib/data/plans";
 import { getCart, hasBundlePlanInCart, removeFromCart, updateCartItemUpsells } from "@/lib/store/cart";
+import {
+  applyAdminPricingToCart,
+  isAdminCheckoutRole,
+} from "@/lib/pricing/admin-checkout-pricing";
 import { getServiceById, services } from "@/lib/data/services";
 import { UpsellConfigurator } from "@/components/services/upsell-configurator";
 
@@ -91,15 +96,20 @@ function AdditionalServicesGrid({
 
 function CartItemCard({
   item,
+  priceItem,
+  isAdminCheckout,
   serviceFromDb,
   onRemove,
   onUpsellsChange,
 }: {
   item: CartItem;
+  priceItem?: CartItem;
+  isAdminCheckout?: boolean;
   serviceFromDb?: Service;
   onRemove: () => void;
   onUpsellsChange: (itemId: string, upsells: CartItem["upsells"]) => void;
 }) {
+  const prices = priceItem ?? item;
   const service = useMemo((): Service | undefined => {
     const fromApi = serviceFromDb;
     const fromStatic = getServiceById(item.serviceId);
@@ -216,29 +226,41 @@ function CartItemCard({
 
           {/* Price */}
           <div className="text-right shrink-0">
-            <Price value={item.totalPrice} className="text-2xl text-primary" />
-            {item.billingCycle === "annual-prepaid" ? (
+            {isAdminCheckout ? (
+              <p className="text-sm font-medium text-primary">Включено</p>
+            ) : (
+              <Price value={prices.totalPrice} className="text-2xl text-primary" />
+            )}
+            {isAdminCheckout ? (
+              <div className="text-xs font-medium text-muted-foreground mt-1">Админ поръчка</div>
+            ) : prices.billingCycle === "annual-prepaid" ? (
               <div className="text-xs font-medium text-primary mt-1">
                 Предплатено за 1 година
               </div>
             ) : null}
             <div className="text-xs text-muted-foreground mt-1">
-              {item.totalOneTime > 0 ? (
+              {prices.totalOneTime > 0 ? (
                 <span>
-                  {item.billingCycle === "annual-prepaid" ? "Дължимо сега" : "Еднократно"}:{" "}
-                  <Price value={item.totalOneTime} />
+                  {!isAdminCheckout && prices.billingCycle === "annual-prepaid"
+                    ? "Дължимо сега"
+                    : "Еднократно"}
+                  : <Price value={prices.totalOneTime} />
                 </span>
               ) : null}
-              {item.totalOneTime > 0 && item.totalMonthly > 0 ? <span> • </span> : null}
-              {item.totalMonthly > 0 ? (
+              {!isAdminCheckout && prices.totalOneTime > 0 && prices.totalMonthly > 0 ? (
+                <span> • </span>
+              ) : null}
+              {!isAdminCheckout && prices.totalMonthly > 0 ? (
                 <span>
-                  Месечно: <Price value={item.totalMonthly} />/мес
+                  Месечно: <Price value={prices.totalMonthly} />/мес
                 </span>
               ) : null}
             </div>
-            {item.billingCycle === "annual-prepaid" && item.annualDiscountAmount ? (
+            {!isAdminCheckout &&
+            prices.billingCycle === "annual-prepaid" &&
+            prices.annualDiscountAmount ? (
               <div className="text-xs text-muted-foreground mt-1">
-                Отстъпка: <Price value={item.annualDiscountAmount} />
+                Отстъпка: <Price value={prices.annualDiscountAmount} />
               </div>
             ) : null}
           </div>
@@ -249,6 +271,8 @@ function CartItemCard({
 }
 
 export default function CartPage() {
+  const { data: session } = useSession();
+  const isAdminCheckout = isAdminCheckoutRole(session?.user?.role);
   const [cart, setCart] = useState<Cart>({ items: [], totalOneTime: 0, totalMonthly: 0 });
   const [servicesById, setServicesById] = useState<Record<string, Service>>({});
   const [mounted, setMounted] = useState(false);
@@ -283,6 +307,11 @@ export default function CartPage() {
     const updatedCart = updateCartItemUpsells(itemId, upsells);
     setCart(updatedCart);
   };
+
+  const displayCart = useMemo(
+    () => (isAdminCheckout ? applyAdminPricingToCart(cart) : cart),
+    [cart, isAdminCheckout],
+  );
 
   const isEmpty = cart.items.length === 0;
   const bundleInCart = hasBundlePlanInCart();
@@ -416,15 +445,20 @@ export default function CartPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
-              {cart.items.map((item) => (
-                <CartItemCard
-                  key={item.id}
-                  item={item}
-                  serviceFromDb={servicesById[item.serviceId]}
-                  onRemove={() => handleRemove(item.id)}
-                  onUpsellsChange={handleUpsellsChange}
-                />
-              ))}
+              {cart.items.map((item) => {
+                const priceItem = displayCart.items.find((displayItem) => displayItem.id === item.id);
+                return (
+                  <CartItemCard
+                    key={item.id}
+                    item={item}
+                    priceItem={priceItem}
+                    isAdminCheckout={isAdminCheckout}
+                    serviceFromDb={servicesById[item.serviceId]}
+                    onRemove={() => handleRemove(item.id)}
+                    onUpsellsChange={handleUpsellsChange}
+                  />
+                );
+              })}
 
               {additionalServices.length > 0 ? (
                 <Card
@@ -463,23 +497,25 @@ export default function CartPage() {
                   <CardTitle>Обобщение</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {cart.totalOneTime > 0 && (
+                  {displayCart.totalOneTime > 0 && (
                     <div className="flex items-center justify-between">
                       <span className="text-muted-foreground">
-                        {cart.items.some((item) => item.billingCycle === "annual-prepaid")
+                        {isAdminCheckout
+                          ? "Еднократно (админ)"
+                          : displayCart.items.some((item) => item.billingCycle === "annual-prepaid")
                           ? "Еднократни плащания и предплащания"
                           : "Еднократни услуги"}
                       </span>
-                      <Price value={cart.totalOneTime} className="font-semibold" />
+                      <Price value={displayCart.totalOneTime} className="font-semibold" />
                     </div>
                   )}
-                  {cart.totalMonthly > 0 && (
+                  {!isAdminCheckout && displayCart.totalMonthly > 0 && (
                     <div className="flex items-center justify-between">
                       <span className="text-muted-foreground">
                         Месечни абонаменти
                       </span>
                       <span className="font-semibold">
-                        <Price value={cart.totalMonthly} />/мес
+                        <Price value={displayCart.totalMonthly} />/мес
                       </span>
                     </div>
                   )}
@@ -488,15 +524,17 @@ export default function CartPage() {
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-semibold">Обща сума</span>
                       <Price
-                        value={cart.totalOneTime + cart.totalMonthly}
+                        value={displayCart.totalOneTime + displayCart.totalMonthly}
                         className="text-2xl gradient-text"
                       />
                     </div>
-                    {cart.totalMonthly > 0 && cart.totalOneTime > 0 && (
+                    {!isAdminCheckout &&
+                    displayCart.totalMonthly > 0 &&
+                    displayCart.totalOneTime > 0 ? (
                       <p className="text-sm text-muted-foreground text-right">
-                        + <Price value={cart.totalMonthly} />/мес след това
+                        + <Price value={displayCart.totalMonthly} />/мес след това
                       </p>
-                    )}
+                    ) : null}
                   </div>
 
                   <TrackedCtaLink href="/checkout" ctaId="cart_to_checkout" className="block">

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { toast } from "sonner";
@@ -21,6 +22,10 @@ import {
   ANNUAL_PREPAY_DISCOUNT_RATE,
   calculateItemTotal,
 } from "@/lib/pricing/calculate-item-total";
+import {
+  adminPreviewTotalPrice,
+  isAdminCheckoutRole,
+} from "@/lib/pricing/admin-checkout-pricing";
 import { findCartItemByService } from "@/lib/store/cart";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
@@ -101,6 +106,8 @@ export function ServiceBuySection({
   companion,
   availability,
 }: ServiceBuySectionProps) {
+  const { data: session } = useSession();
+  const isAdminCheckout = isAdminCheckoutRole(session?.user?.role);
   const { push } = useTransitionRouter();
   const [includeCompanion, setIncludeCompanion] = useState(false);
   const [billingCycle, setBillingCycle] = useState<CartBillingCycle>("monthly");
@@ -182,6 +189,9 @@ export function ServiceBuySection({
     canPrepayAnnually ? billingCycle : "monthly";
 
   const totalPrice = useMemo(() => {
+    if (isAdminCheckout) {
+      return adminPreviewTotalPrice();
+    }
     const subtotal =
       serviceMonthlyTotals.oneTimeTotal +
       companionMonthlyTotals.oneTimeTotal +
@@ -191,7 +201,12 @@ export function ServiceBuySection({
       return Math.round(subtotal * (1 - ANNUAL_PREPAY_DISCOUNT_RATE) * 100) / 100;
     }
     return serviceMonthlyTotals.total + companionMonthlyTotals.total;
-  }, [companionMonthlyTotals, effectiveBillingCycle, serviceMonthlyTotals]);
+  }, [
+    companionMonthlyTotals,
+    effectiveBillingCycle,
+    isAdminCheckout,
+    serviceMonthlyTotals,
+  ]);
 
   const annualPrepaySubtotal =
     serviceMonthlyTotals.oneTimeTotal +

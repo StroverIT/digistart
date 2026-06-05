@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useSession } from "next-auth/react";
 import gsap from "gsap";
 import { Check, Plus, Minus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,10 @@ import { cn } from "@/lib/utils";
 import type { Service, CartItemUpsell } from "@/lib/types";
 import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
+import {
+  ADMIN_CHECKOUT_TOTAL_EUR,
+  isAdminCheckoutRole,
+} from "@/lib/pricing/admin-checkout-pricing";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
 interface PricingConfiguratorProps {
@@ -18,6 +23,8 @@ interface PricingConfiguratorProps {
 }
 
 export function PricingConfigurator({ service }: PricingConfiguratorProps) {
+  const { data: session } = useSession();
+  const isAdminCheckout = isAdminCheckoutRole(session?.user?.role);
   const { push } = useTransitionRouter();
   const [selectedOptionId, setSelectedOptionId] = useState(service.options[0].id);
   const [upsells, setUpsells] = useState<Record<string, number>>({});
@@ -48,6 +55,9 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
   }, [service.id]);
 
   const totalPrice = useMemo(() => {
+    if (isAdminCheckout) {
+      return ADMIN_CHECKOUT_TOTAL_EUR;
+    }
     let total = selectedOption.price;
     for (const [upsellId, quantity] of Object.entries(upsells)) {
       if (quantity > 0) {
@@ -58,7 +68,7 @@ export function PricingConfigurator({ service }: PricingConfiguratorProps) {
       }
     }
     return total;
-  }, [selectedOption, upsells, service.upsells]);
+  }, [isAdminCheckout, selectedOption, upsells, service.upsells]);
 
   useEffect(() => {
     const el = rootRef.current?.querySelector<HTMLElement>("[data-total-pulse]");
