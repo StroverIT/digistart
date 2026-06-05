@@ -26,8 +26,9 @@ import {
   buildServiceSetupProgress,
   getRequirementsForOrderItem,
 } from "@/lib/onboarding/service-setup-status";
+import { applyProjectToRequirements } from "@/lib/onboarding/requirements";
 import { getStoreDomainByOrderItemId } from "@/lib/server/store-domains";
-import { getTenantProjectForUser } from "@/lib/server/tenant-projects";
+import { ensureTenantProjectForOrder } from "@/lib/server/checkout-template";
 import { getStoreVpsIp, ONLINE_STORE_SERVICE_ID } from "@/lib/store-dns";
 
 /** Last-resort label when no catalog/DB name exists (kebab-case → words). */
@@ -125,8 +126,13 @@ export default async function UserServiceDetailPage({
   const logoPreviewUrl = logoUrl ? `/api/uploads/brand/view?url=${encodeURIComponent(logoUrl)}` : null;
   const palettePreviewUrl = paletteUrl ? `/api/uploads/brand/view?url=${encodeURIComponent(paletteUrl)}` : null;
   const isOnlineStore = item.serviceId === ONLINE_STORE_SERVICE_ID;
+  const isOnboardingService = (ONBOARDING_SERVICE_IDS as readonly string[]).includes(
+    item.serviceId,
+  );
   const vpsIp = getStoreVpsIp();
-  const tenantProject = await getTenantProjectForUser(session.user.id);
+  const tenantProject = isOnboardingService
+    ? await ensureTenantProjectForOrder(item.order.id, session.user.id)
+    : null;
 
   let storeDomain = null;
   if (isOnlineStore) {
@@ -137,21 +143,20 @@ export default async function UserServiceDetailPage({
     }
   }
 
-  const isOnboardingService = (ONBOARDING_SERVICE_IDS as readonly string[]).includes(
-    item.serviceId,
-  );
-
   const setupProgress = isOnboardingService
     ? buildServiceSetupProgress({
       serviceId: item.serviceId,
       orderItemId: item.id,
       project: tenantProject,
-      requirements: getRequirementsForOrderItem(
-        item.order.items.map((row) => ({
-          serviceId: row.serviceId,
-          upsells: row.upsells,
-        })),
-        item.serviceId,
+      requirements: applyProjectToRequirements(
+        getRequirementsForOrderItem(
+          item.order.items.map((row) => ({
+            serviceId: row.serviceId,
+            upsells: row.upsells,
+          })),
+          item.serviceId,
+        ),
+        tenantProject,
       ),
       hasLogo: Boolean(logoUrl),
       hasPalette: Boolean(paletteUrl),
@@ -188,9 +193,9 @@ export default async function UserServiceDetailPage({
                   layout="vertical"
                   className="mt-1 text-2xl font-bold text-primary lg:items-end"
                 />
-                <p className="mt-2 flex flex-wrap items-center gap-1 text-xs text-muted-foreground lg:justify-end">
+                <p className="mt-2 flex flex-wrap items-baseline gap-x-1 text-xs text-muted-foreground lg:justify-end">
                   <span>+</span>
-                  <Price value={displayMonthly} layout="vertical" className="text-sm font-medium text-foreground" />
+                  <Price value={displayMonthly} className="text-sm font-medium text-foreground" />
                   <span>/мес</span>
                 </p>
               </>
@@ -208,18 +213,18 @@ export default async function UserServiceDetailPage({
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 fill-mode-both">
-        <Card className="h-full border-border bg-card/80 shadow-sm">
+      <div className="grid gap-4 @2xl:grid-cols-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 fill-mode-both">
+        <Card className="h-full min-w-0 border-border bg-card/80 shadow-sm">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <ReceiptText className="h-4 w-4 text-primary" />
+              <ReceiptText className="h-4 w-4 shrink-0 text-primary" />
               Разбивка на цената
             </CardTitle>
             <CardDescription>Какво плащате за тази услуга</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-start justify-between gap-3 rounded-xl border border-border/60 bg-secondary/40 px-4 py-3">
-              <div className="flex min-w-0 items-start gap-3">
+            <div className="rounded-xl border border-border/60 bg-secondary/40 px-4 py-3">
+              <div className="flex items-start gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background shadow-sm">
                   <Wallet className="h-4 w-4 text-primary" />
                 </div>
@@ -228,16 +233,14 @@ export default async function UserServiceDetailPage({
                   <p className="text-xs text-muted-foreground">Стартова такса при активиране</p>
                 </div>
               </div>
-              <Price
-                value={item.totalOneTime}
-                layout="responsive"
-                className="shrink-0 text-right text-sm"
-              />
+              <div className="mt-3 border-t border-border/50 pt-3">
+                <Price value={item.totalOneTime} layout="vertical" className="text-sm" />
+              </div>
             </div>
 
             {displayMonthly > 0 ? (
-              <div className="flex items-start justify-between gap-3 rounded-xl border border-border/60 bg-secondary/40 px-4 py-3">
-                <div className="flex min-w-0 items-start gap-3">
+              <div className="rounded-xl border border-border/60 bg-secondary/40 px-4 py-3">
+                <div className="flex items-start gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background shadow-sm">
                     <RefreshCw className="h-4 w-4 text-primary" />
                   </div>
@@ -246,24 +249,22 @@ export default async function UserServiceDetailPage({
                     <p className="text-xs text-muted-foreground">Автоматично подновяване всеки месец</p>
                   </div>
                 </div>
-                <span className="shrink-0 text-right text-sm">
-                  <Price value={displayMonthly} layout="responsive" className="justify-end" />
-                  <span className="mt-0.5 block text-xs text-muted-foreground">/мес</span>
-                </span>
+                <div className="mt-3 flex flex-wrap items-baseline gap-x-1 border-t border-border/50 pt-3 text-sm">
+                  <Price value={displayMonthly} />
+                  <span className="text-xs text-muted-foreground">/мес</span>
+                </div>
               </div>
             ) : null}
-
-
           </CardContent>
         </Card>
 
         {hasRecurringSubscription ? (
-          <Card className="h-full border-border bg-card/80 shadow-sm">
+          <Card className="h-full min-w-0 border-border bg-card/80 shadow-sm">
             <CardHeader className="pb-3">
-              <div className="flex items-start justify-between gap-3">
-                <div>
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <CalendarClock className="h-4 w-4 text-primary" />
+                    <CalendarClock className="h-4 w-4 shrink-0 text-primary" />
                     Абонамент
                   </CardTitle>
                   <CardDescription className="mt-1.5">Месечно автоматично подновяване</CardDescription>
@@ -277,8 +278,8 @@ export default async function UserServiceDetailPage({
             <CardContent className="space-y-4">
               {renew ? (
                 <>
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-18 w-18 shrink-0 flex-col items-center justify-center rounded-2xl border border-primary/20 bg-primary/5">
+                  <div className="flex flex-col gap-4 @sm:flex-row @sm:items-start">
+                    <div className="flex h-18 w-18 shrink-0 flex-col items-center justify-center self-start rounded-2xl border border-primary/20 bg-primary/5">
                       <span className="text-2xl font-bold leading-none tabular-nums text-primary">
                         {renew.getDate()}
                       </span>
@@ -308,12 +309,12 @@ export default async function UserServiceDetailPage({
                   </div>
 
                   {displayMonthly > 0 ? (
-                    <div className="flex items-center justify-between rounded-xl border border-border/60 bg-secondary/40 px-4 py-3 text-sm">
-                      <span className="text-muted-foreground">Сума при подновяване</span>
-                      <span className="font-medium">
-                        <Price value={displayMonthly} layout="responsive" className="justify-end" />
-                        <span className="text-xs font-normal text-muted-foreground"> /мес</span>
-                      </span>
+                    <div className="rounded-xl border border-border/60 bg-secondary/40 px-4 py-3">
+                      <p className="text-sm text-muted-foreground">Сума при подновяване</p>
+                      <div className="mt-2 flex flex-wrap items-baseline gap-x-1 text-sm">
+                        <Price value={displayMonthly} className="font-medium" />
+                        <span className="text-xs text-muted-foreground">/мес</span>
+                      </div>
                     </div>
                   ) : null}
                 </>
@@ -329,10 +330,10 @@ export default async function UserServiceDetailPage({
             </CardContent>
           </Card>
         ) : (
-          <Card className="h-full border-border bg-card/80 shadow-sm">
+          <Card className="h-full min-w-0 border-border bg-card/80 shadow-sm">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
-                <CalendarClock className="h-4 w-4 text-primary" />
+                <CalendarClock className="h-4 w-4 shrink-0 text-primary" />
                 Тип плащане
               </CardTitle>
               <CardDescription>Без месечен абонамент</CardDescription>

@@ -1,5 +1,12 @@
 import { getTemplate } from "@/lib/data/templates";
-import { getOrCreateTenantProjectForUser, updateTenantProject } from "@/lib/server/tenant-projects";
+import type { Prisma } from "@prisma/client";
+import { markSetupStepComplete, parseOnboardingStepsCompleted } from "@/lib/onboarding/setup-steps";
+import {
+  getOrCreateTenantProjectForOrder,
+  getTenantProjectForOrder,
+  updateTenantProject,
+  type TenantProjectDto,
+} from "@/lib/server/tenant-projects";
 import { prisma } from "@/lib/prisma";
 
 export async function applyCheckoutTemplateFromOrderMetadata(
@@ -24,10 +31,38 @@ export async function applyCheckoutTemplateFromOrderMetadata(
   const template = getTemplate(templateCategory, templateId);
   if (!template) return;
 
-  const project = await getOrCreateTenantProjectForUser(userId, orderId);
+  const project = await getOrCreateTenantProjectForOrder(userId, orderId);
+  const stepsCompleted = markSetupStepComplete(
+    parseOnboardingStepsCompleted(project.onboardingStepsCompleted),
+    "template",
+  );
   await updateTenantProject(project.id, {
+    orderId,
     productCategory: template.category,
     templateId: template.id,
-    previewSlug: `${template.category}/${template.id}`,
+    onboardingStepsCompleted: stepsCompleted as Prisma.InputJsonValue,
   });
+}
+
+/** Returns the order-scoped project, creating it from checkout template metadata when needed. */
+export async function ensureTenantProjectForOrder(
+  orderId: string,
+  userId: string,
+): Promise<TenantProjectDto | null> {
+  let existing = await getTenantProjectForOrder(orderId, userId, { fallbackToLatest: false });
+  if (existing) {
+    if (existing.templateId && !existing.onboardingStepsCompleted?.template) {
+      existing = await updateTenantProject(existing.id, {
+        onboardingStepsCompleted: markSetupStepComplete(
+          parseOnboardingStepsCompleted(existing.onboardingStepsCompleted),
+          "template",
+        ) as Prisma.InputJsonValue,
+      });
+    }
+    return existing;
+  }
+
+  await applyCheckoutTemplateFromOrderMetadata(orderId, userId);
+
+  return getTenantProjectForOrder(orderId, userId, { fallbackToLatest: false });
 }

@@ -1,5 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { getTemplateForOnboarding } from "@/lib/data/templates";
+import type { OnboardingStepsCompleted } from "@/lib/onboarding/setup-steps";
+import { parseOnboardingStepsCompleted } from "@/lib/onboarding/setup-steps";
 import {
   resolvePreviewPathBySlug,
   resolveTemplatePreviewUrl,
@@ -16,6 +18,7 @@ export type TenantProjectDto = {
   previewPath: string | null;
   setupStatus: string;
   onboardingStep: number;
+  onboardingStepsCompleted: OnboardingStepsCompleted | null;
   businessSettings: Record<string, unknown> | null;
   socialSettings: Record<string, unknown> | null;
   gmailConnectedAt: string | null;
@@ -33,6 +36,7 @@ function mapProject(row: {
   previewSlug: string | null;
   setupStatus: string;
   onboardingStep: number;
+  onboardingStepsCompleted: unknown;
   businessSettings: unknown;
   socialSettings: unknown;
   gmailConnectedAt: Date | null;
@@ -59,6 +63,7 @@ function mapProject(row: {
         : null,
     setupStatus: row.setupStatus,
     onboardingStep: row.onboardingStep,
+    onboardingStepsCompleted: parseOnboardingStepsCompleted(row.onboardingStepsCompleted),
     businessSettings:
       row.businessSettings && typeof row.businessSettings === "object"
         ? (row.businessSettings as Record<string, unknown>)
@@ -85,24 +90,55 @@ export async function getTenantProjectForUser(userId: string): Promise<TenantPro
 export async function getTenantProjectForOrder(
   orderId: string,
   userId?: string | null,
+  options?: { fallbackToLatest?: boolean },
 ): Promise<TenantProjectDto | null> {
   const byOrder = await prisma.tenantProject.findFirst({
-    where: { orderId },
+    where: {
+      orderId,
+      ...(userId ? { userId } : {}),
+    },
     orderBy: { updatedAt: "desc" },
   });
   if (byOrder) return mapProject(byOrder);
 
-  if (userId) {
+  if (options?.fallbackToLatest !== false && userId) {
     return getTenantProjectForUser(userId);
   }
 
   return null;
 }
 
+/** Creates or returns the tenant project scoped to a specific paid order. */
+export async function getOrCreateTenantProjectForOrder(
+  userId: string,
+  orderId: string,
+): Promise<TenantProjectDto> {
+  const existing = await prisma.tenantProject.findFirst({
+    where: { userId, orderId },
+    orderBy: { updatedAt: "desc" },
+  });
+  if (existing) return mapProject(existing);
+
+  const created = await prisma.tenantProject.create({
+    data: {
+      userId,
+      orderId,
+      productCategory: "clothing",
+      setupStatus: "draft",
+      onboardingStep: 1,
+    },
+  });
+  return mapProject(created);
+}
+
 export async function getOrCreateTenantProjectForUser(
   userId: string,
   orderId?: string | null,
 ): Promise<TenantProjectDto> {
+  if (orderId) {
+    return getOrCreateTenantProjectForOrder(userId, orderId);
+  }
+
   const existing = await prisma.tenantProject.findFirst({
     where: { userId },
     orderBy: { updatedAt: "desc" },
@@ -112,7 +148,6 @@ export async function getOrCreateTenantProjectForUser(
   const created = await prisma.tenantProject.create({
     data: {
       userId,
-      orderId: orderId ?? undefined,
       productCategory: "clothing",
       setupStatus: "draft",
       onboardingStep: 1,

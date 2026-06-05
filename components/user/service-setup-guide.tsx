@@ -208,6 +208,17 @@ export function ServiceSetupGuide({ orderItemId, serviceName, items }: ServiceSe
           ))}
         </Accordion>
 
+        {requiredItems.some((t) => !t.ok && t.action === "onboarding") ? (
+          <div className="mx-4 mt-2 border-t border-border/70 pt-3">
+            <Link
+              href={`/onboarding?orderItemId=${encodeURIComponent(orderItemId)}`}
+              className="inline-flex text-xs font-semibold text-primary underline-offset-4 hover:underline"
+            >
+              Отвори онбординга
+            </Link>
+          </div>
+        ) : null}
+
         <p className="mx-4 mt-2 border-t border-border/70 pt-3 text-xs leading-relaxed text-muted-foreground">
           Имате нужда от помощ,{" "}
           <Link href="/user/support" className="font-medium text-primary underline underline-offset-4">

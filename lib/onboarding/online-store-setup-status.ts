@@ -1,7 +1,11 @@
-import { isIntegrationsStepComplete } from "@/lib/onboarding/completion";
+import { isStoreSocialSetupComplete } from "@/lib/onboarding/completion";
 import type { OnboardingRequirements } from "@/lib/onboarding/requirements";
-import { isProductSalesType } from "@/lib/onboarding/requirements";
-import { hasSelectedTemplates } from "@/lib/onboarding/selected-templates";
+import { applyProjectToRequirements } from "@/lib/onboarding/requirements";
+import {
+  deriveSetupStepsFromProject,
+  resolveSetupStepOk,
+  type OnboardingSetupStepId,
+} from "@/lib/onboarding/setup-steps";
 import type { TenantProjectDto } from "@/lib/server/tenant-projects";
 import type { StoreDomainRow } from "@/lib/server/store-domains";
 
@@ -11,8 +15,18 @@ export type OnlineStoreSetupItem = {
   ok: boolean;
   /** Shown when `ok` is false */
   missingHint: string;
+  /** Shown when `ok` is true (defaults to "Конфигурирано") */
+  completeHint?: string;
   /** "onboarding" | "domain" | "brand" */
   action: "onboarding" | "domain" | "brand";
+};
+
+const ONBOARDING_ROW_TO_STEP: Record<string, OnboardingSetupStepId> = {
+  "product-type": "product-type",
+  template: "template",
+  business: "business",
+  products: "products",
+  onboarding: "social",
 };
 
 export function getOnlineStoreSetupItems(params: {
@@ -23,28 +37,29 @@ export function getOnlineStoreSetupItems(params: {
   requirements?: OnboardingRequirements;
 }): OnlineStoreSetupItem[] {
   const p = params.project;
-  const bs = p?.businessSettings ?? {};
-  const name = String(bs.businessName ?? "").trim();
-  const phone = String(bs.phone ?? "").trim();
-  const email = String(bs.email ?? "").trim();
-  const productNotes = String(bs.productNotes ?? "").trim();
-  const productSalesType = bs.productSalesType;
-
-  const templateOk = hasSelectedTemplates(bs, p?.templateId);
-  const productTypeOk = isProductSalesType(productSalesType);
-  const businessOk = Boolean(name && phone && email);
-  const productsOk = productNotes.length > 0;
-  const requirements =
+  const requirements = applyProjectToRequirements(
     params.requirements ??
-    ({
-      showCategoryTemplate: true,
-      showBusiness: true,
-      showIntegrations: true,
-      socialChannelCount: 0,
-      showGoogleBusinessLink: false,
-      showStoreSocialFields: true,
-    } satisfies OnboardingRequirements);
-  const onboardingOk = Boolean(p && isIntegrationsStepComplete(p, requirements));
+      ({
+        showCategoryTemplate: true,
+        showTemplatePicker: true,
+        showBusiness: true,
+        showIntegrations: true,
+        socialChannelCount: 0,
+        showGoogleBusinessLink: false,
+        showStoreSocialFields: true,
+      } satisfies OnboardingRequirements),
+    p,
+  );
+
+  const stored = p?.onboardingStepsCompleted ?? {};
+  const derived = deriveSetupStepsFromProject(p, requirements);
+
+  const stepOk = (rowId: string): boolean => {
+    const stepId = ONBOARDING_ROW_TO_STEP[rowId];
+    if (!stepId) return false;
+    return resolveSetupStepOk(stepId, stored, derived);
+  };
+
   const brandOk = params.hasLogo && params.hasPalette;
   const domainOk = params.domain?.status === "configured";
   const domainHint = (() => {
@@ -59,36 +74,39 @@ export function getOnlineStoreSetupItems(params: {
     {
       id: "product-type",
       label: "Тип продукти",
-      ok: productTypeOk,
+      ok: stepOk("product-type"),
       missingHint: "Избери дали продуктите са уникални или с количество в онбординга.",
       action: "onboarding",
     },
     {
       id: "template",
-      label: "Категории продукти",
-      ok: templateOk,
-      missingHint: "Избери поне една категория в онбординга.",
+      label: "Темплейт",
+      ok: stepOk("template"),
+      missingHint: requirements.showTemplatePicker
+        ? "Избери шаблон в онбординга."
+        : "Шаблонът е избран при покупка.",
+      completeHint: requirements.showTemplatePicker ? "Конфигурирано" : "Избран при покупка",
       action: "onboarding",
     },
     {
       id: "business",
       label: "Данни за бизнеса",
-      ok: businessOk,
+      ok: stepOk("business"),
       missingHint: "Попълни име, телефон и имейл за контакт.",
       action: "onboarding",
     },
     {
       id: "products",
       label: "Продукти и бележки",
-      ok: productsOk,
+      ok: stepOk("products"),
       missingHint: "Опиши продуктите или дай линк към каталог.",
       action: "onboarding",
     },
     {
       id: "onboarding",
       label: "Социални мрежи (онбординг)",
-      ok: onboardingOk,
-      missingHint: "Завърши последната стъпка от онбординга.",
+      ok: stepOk("onboarding"),
+      missingHint: "Добави линкове към социалните профили в онбординга.",
       action: "onboarding",
     },
     {

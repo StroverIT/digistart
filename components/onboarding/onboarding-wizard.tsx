@@ -27,12 +27,14 @@ import {
   type SocialChannelInput,
 } from "@/lib/onboarding/requirements";
 import { parseSelectedTemplateIds } from "@/lib/onboarding/selected-templates";
+import { isWizardStepComplete } from "@/lib/onboarding/setup-steps";
 import { PreviewLink } from "@/components/preview/preview-link";
 import type { TenantProjectDto } from "@/lib/server/tenant-projects";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_REQUIREMENTS: OnboardingRequirements = {
   showCategoryTemplate: true,
+  showTemplatePicker: true,
   showBusiness: true,
   showIntegrations: true,
   socialChannelCount: 0,
@@ -123,7 +125,7 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
   });
 
   const buildTemplatePayload = (): Pick<SavePayload, "templateId" | "businessSettings"> => ({
-    templateId: selectedTemplateIds[0] ?? null,
+    ...(selectedTemplateIds[0] ? { templateId: selectedTemplateIds[0] } : {}),
     businessSettings: buildBusinessSettings(),
   });
 
@@ -156,7 +158,8 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
   ) => {
     setSaving(true);
     const payload = buildPayload(payloadOverrides);
-    const res = await fetch("/api/onboarding", {
+    const query = orderItemId ? `?orderItemId=${encodeURIComponent(orderItemId)}` : "";
+    const res = await fetch(`/api/onboarding${query}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -267,8 +270,8 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
 
   const handleNext = async () => {
     if (step === 1 && !validateProductSalesTypeStep()) return;
-    if (step === 2 && selectedTemplateIds.length === 0) {
-      toast.error("Моля, изберете поне една категория.");
+    if (step === 2 && requirements.showTemplatePicker && selectedTemplateIds.length === 0) {
+      toast.error("Моля, изберете поне един шаблон.");
       return;
     }
     if (step === 3 && !validateBusinessStep()) return;
@@ -309,25 +312,30 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
 
   const templates = getOnboardingTemplates();
   const currentStepTitle = activeSteps.find((s) => s.id === step)?.title ?? "";
+  const stepsCompleted = project?.onboardingStepsCompleted ?? {};
 
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-        {activeSteps.map((s) => (
+        {activeSteps.map((s) => {
+          const done =
+            isWizardStepComplete(s.id, stepsCompleted, requirements) || step > s.id;
+          return (
           <div
             key={s.id}
             className={cn(
               "flex-1 min-w-[100px] text-center text-xs sm:text-sm py-2 px-2 rounded-lg border",
               step === s.id
                 ? "border-primary bg-primary/10 text-primary font-medium"
-                : step > s.id
-                  ? "border-primary/30 text-muted-foreground"
+                : done
+                  ? "border-primary/30 bg-primary/5 text-primary/80"
                   : "border-border text-muted-foreground",
             )}
           >
             {s.title}
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <Card>
@@ -360,7 +368,7 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
             </div>
           ) : null}
 
-          {step === 2 && requirements.showCategoryTemplate ? (
+          {step === 2 && requirements.showTemplatePicker ? (
             <>
               <OnboardingTemplatePicker
                 templates={templates}

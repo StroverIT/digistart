@@ -71,7 +71,7 @@ function mapStoreItem(
   return {
     id: row.id,
     title: row.label,
-    description: row.ok ? "Конфигурирано" : row.missingHint,
+    description: row.ok ? (row.completeHint ?? "Конфигурирано") : row.missingHint,
     ok: row.ok,
     href,
     cta,

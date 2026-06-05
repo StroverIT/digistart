@@ -23,6 +23,30 @@ function filledSocialChannels(project: TenantProjectDto | null | undefined): { l
   );
 }
 
+/** Stricter check for the store setup checklist (requires social links when applicable). */
+export function isStoreSocialSetupComplete(
+  project: TenantProjectDto | null | undefined,
+  requirements: OnboardingRequirements,
+): boolean {
+  if (!project) return false;
+  if (!requirements.showIntegrations) return true;
+
+  if (requirements.socialChannelCount > 0) {
+    if (filledSocialChannels(project).length < requirements.socialChannelCount) return false;
+  }
+
+  if (requirements.showGoogleBusinessLink) {
+    const url = String(project.socialSettings?.googleBusinessUrl ?? "").trim();
+    if (!url || !isValidUrl(url)) return false;
+  }
+
+  if (requirements.showStoreSocialFields) {
+    return filledSocialChannels(project).length > 0;
+  }
+
+  return isIntegrationsStepComplete(project, requirements);
+}
+
 /** Integrations step (wizard step 4) satisfied for the given requirements. */
 export function isIntegrationsStepComplete(
   project: TenantProjectDto | null | undefined,

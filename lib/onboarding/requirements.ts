@@ -40,6 +40,8 @@ export function productSalesTypeLabel(type: string | null | undefined): string |
 
 export type OnboardingRequirements = {
   showCategoryTemplate: boolean;
+  /** Wizard step 2 – hidden when a template was already chosen at checkout. */
+  showTemplatePicker: boolean;
   showBusiness: boolean;
   showIntegrations: boolean;
   socialChannelCount: number;
@@ -83,6 +85,7 @@ export function getOnboardingRequirements(
 
   return {
     showCategoryTemplate: hasStore,
+    showTemplatePicker: hasStore,
     showBusiness: hasStore || hasSocial || hasGmb,
     showIntegrations: hasStore || hasSocial || hasGmb,
     socialChannelCount,
@@ -91,9 +94,23 @@ export function getOnboardingRequirements(
   };
 }
 
+/** Narrow template-picker visibility once the tenant project is known. */
+export function applyProjectToRequirements(
+  requirements: OnboardingRequirements,
+  project: { templateId: string | null } | null | undefined,
+): OnboardingRequirements {
+  if (!requirements.showCategoryTemplate) {
+    return { ...requirements, showTemplatePicker: false };
+  }
+  return {
+    ...requirements,
+    showTemplatePicker: !project?.templateId,
+  };
+}
+
 export const WIZARD_STEP_DEFS = [
   { id: 1 as const, title: "Тип продукти" },
-  { id: 2 as const, title: "Категории" },
+  { id: 2 as const, title: "Темплейт" },
   { id: 3 as const, title: "Бизнес и продукти" },
   { id: 4 as const, title: "Социални мрежи" },
 ];
@@ -117,7 +134,8 @@ export function normalizeSocialChannels(
 
 export function getActiveWizardSteps(requirements: OnboardingRequirements) {
   return WIZARD_STEP_DEFS.filter((s) => {
-    if (s.id === 1 || s.id === 2) return requirements.showCategoryTemplate;
+    if (s.id === 1) return requirements.showCategoryTemplate;
+    if (s.id === 2) return requirements.showTemplatePicker;
     if (s.id === 3) return requirements.showBusiness;
     if (s.id === 4) return requirements.showIntegrations;
     return false;

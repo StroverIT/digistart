@@ -3,23 +3,31 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
-import { getTemplateForOnboarding } from "@/lib/data/templates";
 import {
   getOnboardingRequirements,
+  applyProjectToRequirements,
   type OnboardingRequirements,
 } from "@/lib/onboarding/requirements";
 import {
+  getOrCreateTenantProjectForOrder,
   getOrCreateTenantProjectForUser,
+  getTenantProjectForOrder,
   getTenantProjectForUser,
   updateTenantProject,
 } from "@/lib/server/tenant-projects";
 import { parseSelectedTemplateIds } from "@/lib/onboarding/selected-templates";
+import {
+  deriveSetupStepsFromProject,
+  mergeStepsCompletedForSave,
+  parseOnboardingStepsCompleted,
+} from "@/lib/onboarding/setup-steps";
 import { prisma } from "@/lib/prisma";
+import type { TenantProjectDto } from "@/lib/server/tenant-projects";
 
 const patchSchema = z.object({
   step: z.number().int().min(1).max(4).optional(),
   productCategory: z.enum(["clothing", "cosmetics", "food", "other"]).optional(),
-  templateId: z.string().optional(),
+  templateId: z.string().nullish(),
   businessSettings: z.record(z.unknown()).optional(),
   socialSettings: z.record(z.unknown()).optional(),
   setupStatus: z.enum(["draft", "in_progress", "live"]).optional(),
@@ -78,6 +86,35 @@ async function loadRequirementsForUser(
   return getOnboardingRequirements([{ serviceId: "ready-store", upsells: [] }]);
 }
 
+async function resolveOrderIdFromOrderItem(
+  userId: string,
+  orderItemId: string | null,
+): Promise<string | null> {
+  if (!orderItemId) return null;
+  const item = await prisma.orderItem.findFirst({
+    where: { id: orderItemId, order: { userId } },
+    select: { orderId: true },
+  });
+  return item?.orderId ?? null;
+}
+
+async function resolveProjectForOnboarding(
+  userId: string,
+  orderItemId: string | null,
+): Promise<TenantProjectDto> {
+  const orderId = await resolveOrderIdFromOrderItem(userId, orderItemId);
+  if (orderId) {
+    const existing = await getTenantProjectForOrder(orderId, userId, { fallbackToLatest: false });
+    if (existing) return existing;
+    return getOrCreateTenantProjectForOrder(userId, orderId);
+  }
+
+  return (
+    (await getTenantProjectForUser(userId)) ??
+    (await getOrCreateTenantProjectForUser(userId))
+  );
+}
+
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -86,20 +123,23 @@ export async function GET(req: NextRequest) {
 
   const orderItemId = req.nextUrl.searchParams.get("orderItemId");
 
-  const project =
-    (await getTenantProjectForUser(session.user.id)) ??
-    (await getOrCreateTenantProjectForUser(session.user.id));
+  const project = await resolveProjectForOnboarding(session.user.id, orderItemId);
 
-  const requirements = await loadRequirementsForUser(session.user.id, orderItemId);
+  const requirements = applyProjectToRequirements(
+    await loadRequirementsForUser(session.user.id, orderItemId),
+    project,
+  );
 
   return NextResponse.json({ project, requirements });
 }
 
-export async function PATCH(req: Request) {
+export async function PATCH(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const orderItemId = req.nextUrl.searchParams.get("orderItemId");
 
   const body = await req.json();
   const parsed = patchSchema.safeParse(body);
@@ -107,7 +147,7 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
-  let project = await getOrCreateTenantProjectForUser(session.user.id);
+  let project = await resolveProjectForOnboarding(session.user.id, orderItemId);
 
   const category = project.productCategory || "clothing";
   const incomingBusinessSettings = parsed.data.businessSettings as
@@ -119,20 +159,37 @@ export async function PATCH(req: Request) {
   );
   const primaryTemplateId = selectedTemplateIds[0] ?? parsed.data.templateId;
 
-  let previewSlug: string | undefined;
-  if (primaryTemplateId) {
-    const template = getTemplateForOnboarding(category, primaryTemplateId);
-    if (template) {
-      previewSlug = `${category}/${template.id}`;
-    }
-  }
+  const mergedForSteps: TenantProjectDto = {
+    ...project,
+    onboardingStep: parsed.data.step ?? project.onboardingStep,
+    templateId: primaryTemplateId ?? project.templateId,
+    productCategory: primaryTemplateId ? category : project.productCategory,
+    businessSettings:
+      parsed.data.businessSettings != null
+        ? (parsed.data.businessSettings as Record<string, unknown>)
+        : project.businessSettings,
+    socialSettings:
+      parsed.data.socialSettings != null
+        ? (parsed.data.socialSettings as Record<string, unknown>)
+        : project.socialSettings,
+    setupStatus: parsed.data.setupStatus ?? project.setupStatus,
+  };
+
+  const requirements = applyProjectToRequirements(
+    await loadRequirementsForUser(session.user.id, orderItemId),
+    mergedForSteps,
+  );
+  const derivedSteps = deriveSetupStepsFromProject(mergedForSteps, requirements);
+  const onboardingStepsCompleted = mergeStepsCompletedForSave(
+    parseOnboardingStepsCompleted(project.onboardingStepsCompleted),
+    derivedSteps,
+  );
 
   project = await updateTenantProject(project.id, {
     ...(parsed.data.step != null ? { onboardingStep: parsed.data.step } : {}),
     ...(primaryTemplateId
       ? { templateId: primaryTemplateId, productCategory: category }
       : {}),
-    ...(previewSlug ? { previewSlug } : {}),
     ...(parsed.data.businessSettings != null
       ? { businessSettings: parsed.data.businessSettings as Prisma.InputJsonValue }
       : {}),
@@ -140,6 +197,7 @@ export async function PATCH(req: Request) {
       ? { socialSettings: parsed.data.socialSettings as Prisma.InputJsonValue }
       : {}),
     ...(parsed.data.setupStatus ? { setupStatus: parsed.data.setupStatus } : {}),
+    onboardingStepsCompleted: onboardingStepsCompleted as Prisma.InputJsonValue,
   });
 
   return NextResponse.json({ project });

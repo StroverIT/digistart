@@ -56,9 +56,10 @@ model TenantProject {
   orderId          String?
   productCategory  String    @default("clothing")
   templateId       String?
-  previewSlug      String?   @unique
+  previewSlug      String?
   setupStatus      String    @default("draft")
   onboardingStep   Int       @default(1)
+  onboardingStepsCompleted Json?
   businessSettings Json?
   socialSettings   Json?
   gmailConnectedAt DateTime?
