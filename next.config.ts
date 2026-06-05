@@ -8,6 +8,15 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ["image/avif", "image/webp"],
+    localPatterns: [
+      {
+        pathname: "/**",
+        search: "",
+      },
+      {
+        pathname: "/api/uploads/brand/view",
+      },
+    ],
     remotePatterns: [
       {
         protocol: "https",
