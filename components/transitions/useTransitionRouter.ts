@@ -9,12 +9,12 @@ export const useTransitionRouter = () => {
 
   const push = useCallback(
     (href: string) => {
-      setPendingNavigation(true);
       playExit(() => {
+        setPendingNavigation(true);
         router.push(href);
       });
     },
-    [router, playExit, setPendingNavigation]
+    [router, playExit, setPendingNavigation],
   );
 
   return { push, router };

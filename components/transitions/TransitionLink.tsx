@@ -29,7 +29,12 @@ function pathnameFromHref(href: string): string | null {
   }
   const beforeHash = href.split("#")[0] ?? href;
   const beforeQuery = beforeHash.split("?")[0] ?? beforeHash;
-  const raw = beforeQuery === "" ? "/" : beforeQuery.startsWith("/") ? beforeQuery : `/${beforeQuery}`;
+  const raw =
+    beforeQuery === ""
+      ? "/"
+      : beforeQuery.startsWith("/")
+        ? beforeQuery
+        : `/${beforeQuery}`;
   try {
     return new URL(raw, "https://transition-link.local").pathname;
   } catch {
@@ -53,7 +58,11 @@ function scrollToHashFromHref(href: string, pathname: string) {
   if (!id) return;
   requestAnimationFrame(() => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    window.history.replaceState(null, "", `${normalizePathname(pathname)}${hash}`);
+    window.history.replaceState(
+      null,
+      "",
+      `${normalizePathname(pathname)}${hash}`,
+    );
   });
 }
 
@@ -74,74 +83,59 @@ const TransitionLink = ({
 }: TransitionLinkProps) => {
   const router = useRouter();
   const pathname = usePathname();
+
   const {
     playExit,
     isTransitioning,
     setPendingNavigation,
     hasPendingNavigation,
   } = usePageTransition();
+
   const currentHrefRef = useRef(href);
 
-  // Keep href ref up to date
   useEffect(() => {
     currentHrefRef.current = href;
   }, [href]);
 
   const handleClick = useCallback(
     async (e: React.MouseEvent<HTMLAnchorElement>) => {
-      // Don't prevent default for hash links or external links
       if (
         href.startsWith("#") ||
         href.startsWith("http") ||
         href.startsWith("mailto:") ||
         href.startsWith("tel:")
       ) {
-        // Still call parent's onClick for hash links/external links if needed
-        if (parentOnClick) {
-          parentOnClick(e);
-        }
+        if (parentOnClick) await parentOnClick(e);
         return;
       }
 
-      // Prevent double navigation
       if (isTransitioning || hasPendingNavigation()) {
         e.preventDefault();
         return;
       }
 
-      // Same route: no exit transition and no client navigation (parent Link would still navigate)
       if (isSameDocumentNavigation(pathname, href)) {
         e.preventDefault();
-        if (parentOnClick) {
-          const result = parentOnClick(e);
-          if (result instanceof Promise) {
-            await result;
-          }
-        }
+        if (parentOnClick) await parentOnClick(e);
         scrollToHashFromHref(href, pathname);
         return;
       }
 
       e.preventDefault();
 
-      // Call parent's onClick first (e.g., to close menu) and wait for it to complete
-      if (parentOnClick) {
-        const result = parentOnClick(e);
-        // If parent's onClick returns a Promise, wait for it to complete
-        if (result instanceof Promise) {
-          await result;
-        }
-      }
-
-      // Mark navigation as pending
-      setPendingNavigation(true);
-
-      // Exit animation -> then navigate.
-      // Do not use encodeURI() here: it percent-encodes non-ASCII path segments, which
-      // can desync the App Router (legacy Cyrillic URLs are rewritten in middleware).
+      // Animate first; mark navigation pending only when the exit sequence finishes
       playExit(() => {
+        setPendingNavigation(true);
         router.push(currentHrefRef.current);
       });
+
+      if (parentOnClick) {
+        try {
+          void parentOnClick(e);
+        } catch (err) {
+          console.error("Parent onClick failed:", err);
+        }
+      }
     },
     [
       href,
@@ -152,16 +146,11 @@ const TransitionLink = ({
       hasPendingNavigation,
       setPendingNavigation,
       parentOnClick,
-    ]
+    ],
   );
 
   return (
-    <Link
-      href={href}
-      onClick={handleClick}
-      className={className}
-      {...props}
-    >
+    <Link href={href} onClick={handleClick} className={className} {...props}>
       {children}
     </Link>
   );
