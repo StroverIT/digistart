@@ -8,6 +8,7 @@ import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { CheckCircle2, ArrowRight, Mail, Phone, Home, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Price } from "@/components/ui/price";
 import { siteContact } from "@/lib/site-contact";
 import { cartItemToMetaLineItem, trackMetaPurchase } from "@/lib/analytics/meta-pixel";
@@ -225,10 +226,14 @@ function SuccessContent() {
     );
   }
 
+  const isOrderLoading = Boolean(orderId && !order);
   const onboardingItem = order ? findFirstOnboardingOrderItem(order.cart.items) : null;
   const setupCtaLabel = onboardingItem
     ? getCheckoutSuccessSetupCta(onboardingItem.serviceId).label
     : "Продължи настройката";
+  const showSetupCta = Boolean(session?.user?.role === "customer" && onboardingItem);
+  const showSetupCtaSkeleton =
+    Boolean(orderId) && (isOrderLoading || Boolean(onboardingItem && !showSetupCta));
 
   return (
     <div ref={successRootRef} className="max-w-2xl mx-auto text-center">
@@ -250,62 +255,84 @@ function SuccessContent() {
         Благодарим ви за доверието! Ще се свържем с вас в рамките на 24 часа за следващите стъпки.
       </p>
 
-      {order && (
-        <p
-          data-success-order-block
-          className="text-sm mb-6 text-muted-foreground opacity-0 translate-y-10"
-        >
-          Статус на плащането:{" "}
-          <span className="font-semibold text-foreground">
-            {order.status === "paid" ? "Потвърдено" : "Обработва се"}
-          </span>
-        </p>
-      )}
+      {order ? (
+        <>
+          <p
+            data-success-order-block
+            className="text-sm mb-6 text-muted-foreground opacity-0 translate-y-10"
+          >
+            Статус на плащането:{" "}
+            <span className="font-semibold text-foreground">
+              {order.status === "paid" ? "Потвърдено" : "Обработва се"}
+            </span>
+          </p>
 
-      {order && (
-        <Card
-          data-success-order-block
-          className="bg-card border-border mb-8 text-left opacity-0 translate-y-10"
-        >
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm text-muted-foreground">Номер на поръчка</span>
-              <span className="font-mono font-bold text-primary">{order.id}</span>
-            </div>
-
-            <div className="border-t border-border pt-4 space-y-3">
-              {order.cart.items.map((item) => (
-                <div key={item.id} className="flex items-center justify-between text-sm">
-                  <span>
-                    {item.serviceName} - {item.selectedOptionName}
-                  </span>
-                  <span className="font-medium">
-                    <Price value={item.totalPrice} />
-                    {item.isMonthly && "/мес"}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <div className="border-t border-border pt-4 mt-4 flex items-center justify-between">
-              <span className="font-semibold">Обща сума</span>
-              <Price
-                value={order.cart.totalOneTime + order.cart.totalMonthly}
-                className="text-xl gradient-text"
-              />
-            </div>
-
-            {order.consultation ? (
-              <div className="border-t border-border pt-4 mt-4">
-                <p className="text-sm text-muted-foreground mb-1">Запазена консултация</p>
-                <p className="font-medium">
-                  {order.consultation.date} в {order.consultation.time}
-                </p>
+          <Card
+            data-success-order-block
+            className="bg-card border-border mb-8 text-left opacity-0 translate-y-10"
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm text-muted-foreground">Номер на поръчка</span>
+                <span className="font-mono font-bold text-primary">{order.id}</span>
               </div>
-            ) : null}
-          </CardContent>
-        </Card>
-      )}
+
+              <div className="border-t border-border pt-4 space-y-3">
+                {order.cart.items.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between text-sm">
+                    <span>
+                      {item.serviceName} - {item.selectedOptionName}
+                    </span>
+                    <span className="font-medium">
+                      <Price value={item.totalPrice} />
+                      {item.isMonthly && "/мес"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t border-border pt-4 mt-4 flex items-center justify-between">
+                <span className="font-semibold">Обща сума</span>
+                <Price
+                  value={order.cart.totalOneTime + order.cart.totalMonthly}
+                  className="text-xl gradient-text"
+                />
+              </div>
+
+              {order.consultation ? (
+                <div className="border-t border-border pt-4 mt-4">
+                  <p className="text-sm text-muted-foreground mb-1">Запазена консултация</p>
+                  <p className="font-medium">
+                    {order.consultation.date} в {order.consultation.time}
+                  </p>
+                </div>
+              ) : null}
+            </CardContent>
+          </Card>
+        </>
+      ) : isOrderLoading ? (
+        <>
+          <Skeleton className="mx-auto mb-6 h-5 w-52" aria-hidden />
+          <Card className="mb-8 border-border bg-card text-left" aria-busy="true" aria-label="Зареждане на поръчка">
+            <CardContent className="space-y-4 p-6">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-4 w-40" />
+              </div>
+              <div className="space-y-3 border-t border-border pt-4">
+                <div className="flex items-center justify-between gap-4">
+                  <Skeleton className="h-4 w-[62%] max-w-sm" />
+                  <Skeleton className="h-4 w-24 shrink-0" />
+                </div>
+              </div>
+              <div className="flex items-center justify-between border-t border-border pt-4">
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-6 w-28" />
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      ) : null}
 
       <Card
         data-success-block
@@ -376,9 +403,9 @@ function SuccessContent() {
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </TrackedCtaLink>
-        {session?.user?.role === "customer" && onboardingItem ? (
+        {showSetupCta ? (
           <TrackedCtaLink
-            href={`/user/services/${onboardingItem.id}`}
+            href={`/user/services/${onboardingItem!.id}`}
             ctaId="checkout_success_service_setup"
           >
             <Button size="lg" className="glow-primary">
@@ -386,6 +413,12 @@ function SuccessContent() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </TrackedCtaLink>
+        ) : showSetupCtaSkeleton ? (
+          <Skeleton
+            className="h-10 w-64 max-w-full rounded-md sm:h-11"
+            aria-busy="true"
+            aria-label="Зареждане на бутон за настройка"
+          />
         ) : null}
         {session?.user?.role === "customer" && order?.cart?.items?.[0]?.id && !onboardingItem ? (
           <TrackedCtaLink

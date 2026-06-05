@@ -82,6 +82,23 @@ export async function getTenantProjectForUser(userId: string): Promise<TenantPro
   return row ? mapProject(row) : null;
 }
 
+export async function getTenantProjectForOrder(
+  orderId: string,
+  userId?: string | null,
+): Promise<TenantProjectDto | null> {
+  const byOrder = await prisma.tenantProject.findFirst({
+    where: { orderId },
+    orderBy: { updatedAt: "desc" },
+  });
+  if (byOrder) return mapProject(byOrder);
+
+  if (userId) {
+    return getTenantProjectForUser(userId);
+  }
+
+  return null;
+}
+
 export async function getOrCreateTenantProjectForUser(
   userId: string,
   orderId?: string | null,

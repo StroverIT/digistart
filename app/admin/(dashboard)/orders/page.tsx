@@ -29,6 +29,21 @@ import {
 import { Price } from "@/components/ui/price";
 import type { Order } from "@/lib/types";
 import { getServiceById } from "@/lib/data/services";
+import type { OrderAdminDetails } from "@/lib/server/order-admin-details";
+import { ExternalLink, CheckCircle2, Circle } from "lucide-react";
+import { PreviewLink } from "@/components/preview/preview-link";
+
+const setupStatusLabels: Record<string, string> = {
+  draft: "Чернова",
+  in_progress: "В процес",
+  live: "Активен",
+};
+
+const domainStatusLabels: Record<string, string> = {
+  pending: "Изчаква DNS",
+  configured: "Конфигуриран",
+  misconfigured: "Грешна конфигурация",
+};
 
 const statusOptions: { value: Order["status"]; label: string }[] = [
   { value: "pending", label: "Чакаща" },
@@ -64,6 +79,8 @@ export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orderDetails, setOrderDetails] = useState<OrderAdminDetails | null>(null);
+  const [isLoadingOrderDetails, setIsLoadingOrderDetails] = useState(false);
   const [resolvedPaymentIntentId, setResolvedPaymentIntentId] = useState<string | null>(null);
   const [isResolvingPaymentIntent, setIsResolvingPaymentIntent] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -122,6 +139,27 @@ export default function OrdersPage() {
       .catch(() => undefined);
   };
 
+
+  useEffect(() => {
+    if (!selectedOrder) {
+      setOrderDetails(null);
+      setIsLoadingOrderDetails(false);
+      return;
+    }
+
+    setIsLoadingOrderDetails(true);
+    fetch(`/api/admin/orders/${selectedOrder.id}`)
+      .then((response) => response.json())
+      .then((data: { details?: OrderAdminDetails }) => {
+        setOrderDetails(data.details ?? null);
+      })
+      .catch(() => {
+        setOrderDetails(null);
+      })
+      .finally(() => {
+        setIsLoadingOrderDetails(false);
+      });
+  }, [selectedOrder]);
 
   useEffect(() => {
     if (!selectedOrder) {
@@ -368,12 +406,19 @@ export default function OrdersPage() {
 
       {/* Order Detail Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-        <DialogContent className="max-w-2xl max-h-[min(90vh,800px)] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[min(90vh,800px)] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Детайли за поръчка {selectedOrder?.id}</DialogTitle>
           </DialogHeader>
           {selectedOrder && (
             <div className="space-y-6">
+              {isLoadingOrderDetails ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  Зареждане на онбординг данни...
+                </div>
+              ) : null}
+
               {/* Customer Info */}
               <div>
                 <h3 className="font-semibold mb-2">Клиент</h3>
@@ -386,6 +431,33 @@ export default function OrdersPage() {
                     <span className="text-muted-foreground">Имейл:</span>{" "}
                     {selectedOrder.customer.email}
                   </p>
+                  <p>
+                    <span className="text-muted-foreground">Телефон:</span>{" "}
+                    {selectedOrder.customer.phone}
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">Фирма (поръчка):</span>{" "}
+                    {selectedOrder.customer.company ?? "—"}
+                  </p>
+                  {orderDetails?.user?.company &&
+                  orderDetails.user.company !== selectedOrder.customer.company ? (
+                    <p>
+                      <span className="text-muted-foreground">Фирма (акаунт):</span>{" "}
+                      {orderDetails.user.company}
+                    </p>
+                  ) : null}
+                  {orderDetails?.companyVat ? (
+                    <p>
+                      <span className="text-muted-foreground">ДДС / ЕИК:</span>{" "}
+                      {orderDetails.companyVat}
+                    </p>
+                  ) : null}
+                  {selectedOrder.customer.notes ? (
+                    <p>
+                      <span className="text-muted-foreground">Бележки:</span>{" "}
+                      {selectedOrder.customer.notes}
+                    </p>
+                  ) : null}
                   <p>
                     <span className="text-muted-foreground">Stripe Payment ID:</span>{" "}
                     <span className="font-mono text-sm break-all">
@@ -402,24 +474,227 @@ export default function OrdersPage() {
                         "Няма"}
                     </span>
                   </p>
-                  <p>
-                    <span className="text-muted-foreground">Телефон:</span>{" "}
-                    {selectedOrder.customer.phone}
-                  </p>
-                  {selectedOrder.customer.company && (
-                    <p>
-                      <span className="text-muted-foreground">Фирма:</span>{" "}
-                      {selectedOrder.customer.company}
-                    </p>
-                  )}
-                  {selectedOrder.customer.notes && (
-                    <p>
-                      <span className="text-muted-foreground">Бележки:</span>{" "}
-                      {selectedOrder.customer.notes}
-                    </p>
-                  )}
                 </div>
               </div>
+
+              {/* Onboarding */}
+              {orderDetails?.onboarding.serviceSetup.length ? (
+                <div>
+                  <h3 className="font-semibold mb-2">Онбординг</h3>
+                  <div className="bg-secondary/50 rounded-lg p-4 space-y-4">
+                    <div className="grid gap-2 sm:grid-cols-2 text-sm">
+                      <p>
+                        <span className="text-muted-foreground">Статус:</span>{" "}
+                        <span className="font-medium">
+                          {orderDetails.onboarding.setupStatus
+                            ? (setupStatusLabels[orderDetails.onboarding.setupStatus] ??
+                              orderDetails.onboarding.setupStatus)
+                            : "Не е започнат"}
+                        </span>
+                      </p>
+                      <p>
+                        <span className="text-muted-foreground">Общ прогрес:</span>{" "}
+                        <span
+                          className={
+                            orderDetails.onboarding.isComplete
+                              ? "font-medium text-green-600"
+                              : "font-medium text-amber-600"
+                          }
+                        >
+                          {orderDetails.onboarding.isComplete ? "Завършен" : "Незавършен"}
+                        </span>
+                      </p>
+                      {orderDetails.onboarding.onboardingStep != null ? (
+                        <p>
+                          <span className="text-muted-foreground">Стъпка:</span>{" "}
+                          {orderDetails.onboarding.onboardingStep}
+                        </p>
+                      ) : null}
+                      {orderDetails.productCategoryLabel ? (
+                        <p>
+                          <span className="text-muted-foreground">Категория:</span>{" "}
+                          {orderDetails.productCategoryLabel}
+                          {orderDetails.project?.businessSettings?.customCategoryLabel
+                            ? ` (${String(orderDetails.project.businessSettings.customCategoryLabel)})`
+                            : null}
+                        </p>
+                      ) : null}
+                    </div>
+
+                    {orderDetails.template ? (
+                      <div className="rounded-md border border-border bg-background/60 p-3 text-sm">
+                        <p className="text-muted-foreground mb-1">Избран шаблон</p>
+                        <p className="font-medium">{orderDetails.template.name}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          ID: {orderDetails.template.id}
+                        </p>
+                        {orderDetails.template.previewPath ? (
+                          <PreviewLink
+                            href={orderDetails.template.previewPath}
+                            ctaId="admin_order_template_preview"
+                            ctaPage="/admin/orders"
+                            className="mt-2 inline-flex items-center gap-1 text-primary underline text-sm"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            Преглед на шаблона
+                          </PreviewLink>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        Шаблон: не е избран
+                      </p>
+                    )}
+
+                    {orderDetails.project?.businessSettings &&
+                    Object.keys(orderDetails.project.businessSettings).length > 0 ? (
+                      <div>
+                        <p className="text-sm font-medium mb-2">Данни за бизнеса</p>
+                        <div className="space-y-1 text-sm">
+                          {orderDetails.project.businessSettings.businessName ? (
+                            <p>
+                              <span className="text-muted-foreground">Име:</span>{" "}
+                              {String(orderDetails.project.businessSettings.businessName)}
+                            </p>
+                          ) : null}
+                          {orderDetails.project.businessSettings.phone ? (
+                            <p>
+                              <span className="text-muted-foreground">Телефон:</span>{" "}
+                              {String(orderDetails.project.businessSettings.phone)}
+                            </p>
+                          ) : null}
+                          {orderDetails.project.businessSettings.email ? (
+                            <p>
+                              <span className="text-muted-foreground">Имейл:</span>{" "}
+                              {String(orderDetails.project.businessSettings.email)}
+                            </p>
+                          ) : null}
+                          {orderDetails.project.businessSettings.productNotes ? (
+                            <p>
+                              <span className="text-muted-foreground">Продукти / бележки:</span>{" "}
+                              {String(orderDetails.project.businessSettings.productNotes)}
+                            </p>
+                          ) : null}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {orderDetails.project?.socialSettings &&
+                    (Array.isArray(orderDetails.project.socialSettings.channels) ||
+                      orderDetails.project.socialSettings.googleBusinessUrl) ? (
+                      <div>
+                        <p className="text-sm font-medium mb-2">Социални мрежи</p>
+                        {typeof orderDetails.project.socialSettings.googleBusinessUrl ===
+                          "string" &&
+                        orderDetails.project.socialSettings.googleBusinessUrl ? (
+                          <p className="text-sm break-all mb-2">
+                            <span className="text-muted-foreground">Google Business: </span>
+                            {orderDetails.project.socialSettings.googleBusinessUrl}
+                          </p>
+                        ) : null}
+                        {Array.isArray(orderDetails.project.socialSettings.channels) &&
+                        orderDetails.project.socialSettings.channels.length > 0 ? (
+                          <ul className="space-y-1 text-sm">
+                            {(
+                              orderDetails.project.socialSettings.channels as Array<
+                                Record<string, unknown>
+                              >
+                            ).map((channel, index) => (
+                              <li key={index} className="break-all">
+                                {typeof channel.label === "string" && channel.label
+                                  ? `${channel.label}: `
+                                  : `Канал ${index + 1}: `}
+                                {String(channel.profileUrl ?? "")}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
+                      </div>
+                    ) : null}
+
+                    {orderDetails.domains.length > 0 ? (
+                      <div>
+                        <p className="text-sm font-medium mb-2">Домейн</p>
+                        <ul className="space-y-2 text-sm">
+                          {orderDetails.domains.map((domain) => (
+                            <li
+                              key={domain.orderItemId}
+                              className="rounded-md border border-border bg-background/60 p-2"
+                            >
+                              <p className="font-medium break-all">{domain.domain}</p>
+                              <p className="text-muted-foreground">
+                                Статус:{" "}
+                                {domainStatusLabels[domain.status] ?? domain.status}
+                              </p>
+                              {domain.adminNotes ? (
+                                <p className="text-muted-foreground mt-1">
+                                  Бележки: {domain.adminNotes}
+                                </p>
+                              ) : null}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+
+                    {orderDetails.project?.gmailConnectedAt ? (
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Gmail:</span> свързан (
+                        {new Date(orderDetails.project.gmailConnectedAt).toLocaleString("bg-BG")})
+                      </p>
+                    ) : null}
+
+                    {orderDetails.project?.dbMigrationNotes ? (
+                      <div>
+                        <p className="text-sm font-medium mb-1">Бележки за миграция</p>
+                        <p className="text-sm rounded-md bg-background/60 p-2">
+                          {orderDetails.project.dbMigrationNotes}
+                        </p>
+                      </div>
+                    ) : null}
+
+                    <div className="space-y-3 pt-2 border-t border-border">
+                      {orderDetails.onboarding.serviceSetup.map((service) => (
+                        <div key={service.orderItemId}>
+                          <p className="text-sm font-medium mb-2">
+                            {service.serviceName} ({service.doneCount}/{service.total})
+                          </p>
+                          <ul className="space-y-1.5">
+                            {service.items.map((item) => (
+                              <li
+                                key={item.id}
+                                className="flex items-start gap-2 text-sm"
+                              >
+                                {item.ok ? (
+                                  <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600 mt-0.5" />
+                                ) : (
+                                  <Circle className="h-4 w-4 shrink-0 text-muted-foreground mt-0.5" />
+                                )}
+                                <span>
+                                  <span className="font-medium">{item.title}</span>
+                                  {!item.ok ? (
+                                    <span className="text-muted-foreground">
+                                      {" "}
+                                      — {item.description}
+                                    </span>
+                                  ) : null}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : orderDetails && !isLoadingOrderDetails ? (
+                <div>
+                  <h3 className="font-semibold mb-2">Онбординг</h3>
+                  <p className="text-sm text-muted-foreground bg-secondary/50 rounded-lg p-4">
+                    Тази поръчка няма услуги, изискващи онбординг.
+                  </p>
+                </div>
+              ) : null}
 
               {/* Order Items */}
               <div>
@@ -495,7 +770,23 @@ export default function OrdersPage() {
                         />
                       </a>
                     ) : null}
-
+                    {selectedOrder.brandAssets?.paletteUrl ? (
+                      <a
+                        href={selectedOrder.brandAssets.paletteUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-lg border border-border bg-secondary/30 p-3"
+                      >
+                        <p className="mb-2 text-sm font-medium">Цветова палитра</p>
+                        <Image
+                          src={`/api/uploads/brand/view?url=${encodeURIComponent(selectedOrder.brandAssets.paletteUrl)}`}
+                          alt="Цветова палитра"
+                          width={640}
+                          height={320}
+                          className="h-40 w-full rounded-md border border-border bg-background object-contain p-2"
+                        />
+                      </a>
+                    ) : null}
                   </div>
                 </div>
               ) : null}
