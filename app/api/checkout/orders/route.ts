@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createOrderInDb, listOrdersFromDb, updateOrderStatusInDb } from "@/lib/server/orders";
 import type { CartItemUpsell, Order } from "@/lib/types";
-import { getServiceById } from "@/lib/data/services";
+import { isBundlePlanServiceId } from "@/lib/server/bundle-plans";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
+import { resolveCheckoutCart } from "@/lib/server/resolve-checkout-cart";
 
 const upsellSchema: z.ZodType<CartItemUpsell> = z.object({
   upsellId: z.string(),
@@ -28,6 +29,8 @@ const payloadSchema = z.object({
         totalOneTime: z.number(),
         totalMonthly: z.number(),
         isMonthly: z.boolean().optional(),
+        billingCycle: z.enum(["monthly", "annual-prepaid"]).optional(),
+        planId: z.string().optional(),
       })
     ),
     totalOneTime: z.number(),
@@ -60,21 +63,13 @@ export async function POST(req: Request) {
       );
     }
 
-    for (const item of parsed.data.cart.items) {
-      const service = getServiceById(item.serviceId);
-      if (!service) {
-        return NextResponse.json(
-          { error: `Service not found: ${item.serviceId}` },
-          { status: 400 }
-        );
-      }
-      const option = service.options.find((opt) => opt.id === item.selectedOptionId);
-      if (!option) {
-        return NextResponse.json(
-          { error: `Option not found for service ${item.serviceId}` },
-          { status: 400 }
-        );
-      }
+    const resolvedCart = resolveCheckoutCart(parsed.data.cart.items);
+    if (!resolvedCart.ok) {
+      return NextResponse.json({ error: resolvedCart.error }, { status: resolvedCart.status });
+    }
+
+    for (const item of resolvedCart.cart.items) {
+      if (isBundlePlanServiceId(item.serviceId)) continue;
 
       const availability = await getServiceSlotAvailability(item.serviceId);
       if (availability?.isSoldOut) {
@@ -87,7 +82,10 @@ export async function POST(req: Request) {
       }
     }
 
-    const order = await createOrderInDb(parsed.data);
+    const order = await createOrderInDb({
+      ...parsed.data,
+      cart: resolvedCart.cart,
+    });
     return NextResponse.json({ order });
   } catch {
     return NextResponse.json({ error: "Failed to create order." }, { status: 500 });

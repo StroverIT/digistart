@@ -13,7 +13,6 @@ import {
 } from "@/lib/server/orders";
 import type { CartItemUpsell } from "@/lib/types";
 import { isBundlePlanServiceId } from "@/lib/server/bundle-plans";
-import { getServiceById } from "@/lib/data/services";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 import { getStripeServerClient } from "@/lib/server/stripe";
 import {
@@ -24,10 +23,8 @@ import {
   resolveOrCreateCatalogPrice,
   resolveOrCreateStripeCustomer,
 } from "@/lib/server/stripe-catalog";
-import {
-  applyAdminPricingToCart,
-  isAdminCheckoutRole,
-} from "@/lib/pricing/admin-checkout-pricing";
+import { isAdminCheckoutRole } from "@/lib/pricing/admin-checkout-pricing";
+import { resolveCheckoutCart } from "@/lib/server/resolve-checkout-cart";
 
 const upsellSchema: z.ZodType<CartItemUpsell> = z.object({
   upsellId: z.string(),
@@ -179,23 +176,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Cart cannot be empty." }, { status: 400 });
     }
 
-    for (const item of parsed.data.cart.items) {
-      if (isBundlePlanServiceId(item.serviceId)) continue;
+    const isAdminCheckout = isAdminCheckoutRole(session?.user?.role);
+    const resolvedCart = resolveCheckoutCart(parsed.data.cart.items, { isAdminCheckout });
+    if (!resolvedCart.ok) {
+      return NextResponse.json({ error: resolvedCart.error }, { status: resolvedCart.status });
+    }
+    const checkoutCart = resolvedCart.cart;
 
-      const service = getServiceById(item.serviceId);
-      if (!service) {
-        return NextResponse.json(
-          { error: `Service not found: ${item.serviceId}` },
-          { status: 400 }
-        );
-      }
-      const option = service.options.find((opt) => opt.id === item.selectedOptionId);
-      if (!option) {
-        return NextResponse.json(
-          { error: `Option not found for service ${item.serviceId}` },
-          { status: 400 }
-        );
-      }
+    for (const item of checkoutCart.items) {
+      if (isBundlePlanServiceId(item.serviceId)) continue;
 
       const availability = await getServiceSlotAvailability(item.serviceId);
       if (availability?.isSoldOut) {
@@ -207,11 +196,6 @@ export async function POST(req: NextRequest) {
         );
       }
     }
-
-    const isAdminCheckout = isAdminCheckoutRole(session?.user?.role);
-    const checkoutCart = isAdminCheckout
-      ? applyAdminPricingToCart(parsed.data.cart)
-      : parsed.data.cart;
 
     const lineItems = await buildLineItems(checkoutCart.items);
     if (lineItems.length === 0) {

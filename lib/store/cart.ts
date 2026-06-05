@@ -3,17 +3,17 @@
 import type { Cart, CartBillingCycle, CartItem, CartItemUpsell } from "@/lib/types";
 import {
   getPlanById,
-  getPlanComponentsForRecalc,
   planToServiceId,
   serviceIdToPlanId,
   type PlanId,
 } from "@/lib/data/plans";
 import { calculatePlanTotal } from "@/lib/pricing/calculate-plan-total";
 import { getServiceById } from "@/lib/data/services";
+import { calculateItemTotal } from "@/lib/pricing/calculate-item-total";
 import {
-  calculateItemTotal,
-  type ItemTotalCalculation,
-} from "@/lib/pricing/calculate-item-total";
+  recalculateCartItemPricing,
+  recalculateCartTotals,
+} from "@/lib/pricing/recalculate-cart-pricing";
 import { recordCartAddition } from "@/lib/store/cart-analytics";
 
 const CART_STORAGE_KEY = "digistart-cart";
@@ -171,36 +171,6 @@ export function removeFromCart(itemId: string): Cart {
   return cart;
 }
 
-function planCartUpsellExtras(planId: PlanId, userUpsells: CartItemUpsell[]): {
-  oneTimeTotal: number;
-  monthlyTotal: number;
-} {
-  let oneTimeTotal = 0;
-  let monthlyTotal = 0;
-  const components = getPlanComponentsForRecalc(planId);
-  /** Each cart upsell id applies to one line item only (logo exists on several services in data). */
-  const consumedUpsellIds = new Set<string>();
-  for (const comp of components) {
-    const service = getServiceById(comp.serviceId);
-    if (!service) continue;
-    const builtIn = comp.upsells;
-    const builtInIds = new Set(builtIn.map((u) => u.upsellId));
-    const extras = userUpsells.filter(
-      (u) =>
-        !consumedUpsellIds.has(u.upsellId) &&
-        service.upsells.some((su) => su.id === u.upsellId) &&
-        !builtInIds.has(u.upsellId),
-    );
-    if (extras.length === 0) continue;
-    for (const u of extras) consumedUpsellIds.add(u.upsellId);
-    const base = calculateItemTotal(comp.serviceId, comp.optionId, builtIn);
-    const withExtras = calculateItemTotal(comp.serviceId, comp.optionId, [...builtIn, ...extras]);
-    oneTimeTotal += withExtras.oneTimeTotal - base.oneTimeTotal;
-    monthlyTotal += withExtras.monthlyTotal - base.monthlyTotal;
-  }
-  return { oneTimeTotal, monthlyTotal };
-}
-
 export function updateCartItemUpsells(
   itemId: string,
   upsells: CartItemUpsell[],
@@ -210,38 +180,17 @@ export function updateCartItemUpsells(
   const item = cart.items.find((cartItem) => cartItem.id === itemId);
   if (!item) return cart;
 
-  const planId = (item.planId ?? serviceIdToPlanId(item.serviceId)) as PlanId | undefined;
-  const totals: ItemTotalCalculation =
-    planId != null
-      ? (() => {
-          const planTotals = calculatePlanTotal(planId);
-          const extra = planCartUpsellExtras(planId, upsells);
-          const oneTimeTotal = planTotals.oneTimeTotal + extra.oneTimeTotal;
-          const monthlyTotal = planTotals.monthlyTotal + extra.monthlyTotal;
-          return {
-            total: oneTimeTotal + monthlyTotal,
-            isMonthly: true,
-            oneTimeTotal,
-            monthlyTotal,
-            billingCycle: "monthly" as const,
-          };
-        })()
-      : calculateItemTotal(
-          item.serviceId,
-          item.selectedOptionId,
-          upsells,
-          billingCycle ?? item.billingCycle ?? "monthly",
-        );
-  item.upsells = upsells;
-  item.totalPrice = totals.total;
-  item.totalOneTime = totals.oneTimeTotal;
-  item.totalMonthly = totals.monthlyTotal;
-  item.isMonthly = totals.isMonthly;
-  item.billingCycle = totals.billingCycle;
-  item.annualPrepaySubtotal = totals.annualPrepaySubtotal;
-  item.annualDiscountAmount = totals.annualDiscountAmount;
-  item.annualDiscountRate = totals.annualDiscountRate;
+  const priced = recalculateCartItemPricing({
+    id: item.id,
+    serviceId: item.serviceId,
+    selectedOptionId: item.selectedOptionId,
+    upsells,
+    billingCycle: billingCycle ?? item.billingCycle ?? "monthly",
+    planId: item.planId,
+  });
+  if (!priced) return cart;
 
+  Object.assign(item, priced);
   recalculateTotals(cart);
   saveCart(cart);
   return cart;
@@ -254,8 +203,9 @@ export function clearCart(): Cart {
 }
 
 function recalculateTotals(cart: Cart): void {
-  cart.totalOneTime = cart.items.reduce((sum, item) => sum + (item.totalOneTime ?? 0), 0);
-  cart.totalMonthly = cart.items.reduce((sum, item) => sum + (item.totalMonthly ?? 0), 0);
+  const totals = recalculateCartTotals(cart.items);
+  cart.totalOneTime = totals.totalOneTime;
+  cart.totalMonthly = totals.totalMonthly;
 }
 
 export function getCartItemCount(): number {

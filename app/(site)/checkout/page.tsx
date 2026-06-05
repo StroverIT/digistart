@@ -234,13 +234,11 @@ export default function CheckoutPage() {
       ? { logoUrl: brandSource.logoUrl ?? null, paletteUrl: null }
       : undefined;
 
-    const checkoutCart = isAdminCheckout ? applyAdminPricingToCart(cart) : cart;
-
     const response = await fetch("/api/checkout/stripe-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        cart: checkoutCart,
+        cart,
         customer: {
           name: formData.name.trim() || "Клиент",
           email: formData.email.trim(),
