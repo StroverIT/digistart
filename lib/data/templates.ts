@@ -43,6 +43,15 @@ export function getNicheLabels(ids: TemplateNicheId[]): string[] {
   return TEMPLATE_NICHES.filter((niche) => idSet.has(niche.id)).map((niche) => niche.label);
 }
 
+/** Template id maps 1:1 to niche order (clothing:1 → Дрехи, clothing:2 → Обувки, …). */
+export function nicheForTemplateId(id: string): TemplateNicheId {
+  const niche = TEMPLATE_NICHES[Number(id) - 1];
+  if (!niche) {
+    throw new Error(`No niche mapped for template id "${id}"`);
+  }
+  return niche.id;
+}
+
 export interface StoreTemplate {
   id: string;
   category: ProductCategory;
@@ -100,8 +109,8 @@ const defaultHighlights: TemplateDetailSection = {
 
 function storeTemplate(
   id: string,
-  fields: Pick<StoreTemplate, "name" | "tagline" | "description" | "goodFor"> &
-    Partial<Pick<StoreTemplate, "highlights" | "navigation" | "builtWith">>,
+  fields: Pick<StoreTemplate, "name" | "tagline" | "description"> &
+    Partial<Pick<StoreTemplate, "goodFor" | "highlights" | "navigation" | "builtWith">>,
 ): StoreTemplate {
   return {
     id,
@@ -112,6 +121,7 @@ function storeTemplate(
     builtWith: defaultBuiltWith,
     highlights: defaultHighlights,
     navigation: defaultNavigation,
+    goodFor: fields.goodFor ?? [nicheForTemplateId(id)],
     ...fields,
   };
 }
@@ -122,7 +132,6 @@ export const storeTemplates: StoreTemplate[] = [
     tagline: "Премиум витрина с чисти линии",
     description:
       "Елегантен, минималистичен стил с акцент върху визуалната история, колекциите и премиум усещане.",
-    goodFor: ["clothes", "shoes", "jewelry", "bags"],
     highlights: {
       title: "Какво включва",
       items: [
@@ -140,42 +149,36 @@ export const storeTemplates: StoreTemplate[] = [
     tagline: "Топъл, устойчив характер",
     description:
       "Уютен, автентичен стил с ясни категории, истории зад продуктите и лесен път към поръчка.",
-    goodFor: ["clothes", "shoes", "bags"],
   }),
   storeTemplate("3", {
     name: "ReBrew Vintage",
     tagline: "Куриран винтидж с характер",
     description:
       "Витрина с акцент върху уникалността, курираните находки и доверието в качеството.",
-    goodFor: ["clothes", "shoes", "jewelry", "bags"],
   }),
   storeTemplate("4", {
     name: "ReBrew Select",
     tagline: "Структуриран каталог с ясност",
     description:
       "Четим, организиран layout с ясни категории, състояния/варианти и бърз път към поръчка.",
-    goodFor: ["clothes", "shoes", "bags", "cosmetics"],
   }),
   storeTemplate("5", {
     name: "ReBrew Curated",
     tagline: "Editorial storytelling",
     description:
       "Елегантен layout с големи снимки, колекции по стил и сезон и editorial усещане.",
-    goodFor: ["clothes", "shoes", "jewelry", "bags"],
   }),
   storeTemplate("6", {
     name: "ReBrew Thrift",
     tagline: "Динамичен каталог · бърз оборот",
     description:
       "Енергичен, мобилен стил за често нови артикули, ясни етикети и лесна навигация.",
-    goodFor: ["clothes", "shoes"],
   }),
   storeTemplate("7", {
     name: "OutletMark",
     tagline: "Промоционална витрина · ясни оферти",
     description:
       "Стил с акцент върху намаленията, промо зоните и бързи покупки от рекламен трафик.",
-    goodFor: ["clothes", "shoes", "bags", "cosmetics"],
     highlights: {
       title: "Какво включва",
       items: [
@@ -193,7 +196,6 @@ export const storeTemplates: StoreTemplate[] = [
     tagline: "Директен outlet · ясни цени",
     description:
       "Директен, без излишни стъпки дизайн - сравнение на цени, промо блокове и бърз checkout.",
-    goodFor: ["clothes", "shoes", "bags"],
     highlights: {
       title: "Какво включва",
       items: [
@@ -211,7 +213,6 @@ export const storeTemplates: StoreTemplate[] = [
     tagline: "Минимализъм · спокойна елегантност",
     description:
       "Минималистичен стил с чисти линии, премиум усещане и спокойна визия без шум.",
-    goodFor: ["clothes", "shoes", "jewelry", "bags", "cosmetics", "beauty-health"],
     highlights: {
       title: "Какво включва",
       items: [
@@ -229,21 +230,18 @@ export const storeTemplates: StoreTemplate[] = [
     tagline: "Съвременен · енергичен",
     description:
       "Съвременен стил със силни визуали, ясни колекции и бърз път от разглеждане към поръчка.",
-    goodFor: ["clothes", "shoes", "bags", "snacks"],
   }),
   storeTemplate("11", {
     name: "Класик & комфорт",
     tagline: "Timeless · четим и спокоен",
     description:
       "Спокоен, четим шаблон с акцент върху доверието в марката, материалите и удобството при покупка.",
-    goodFor: ["clothes", "shoes"],
   }),
   storeTemplate("12", {
     name: "PowerUp",
     tagline: "Технологична витрина · ясни категории",
     description:
       "Съвременен магазин за електроника с категории, промо зони, марки и бърз път от разглеждане към поръчка.",
-    goodFor: ["electronics"],
     highlights: {
       title: "Какво включва",
       items: [
@@ -252,6 +250,33 @@ export const storeTemplates: StoreTemplate[] = [
         "Продуктова страница с цени, отстъпки и ясен CTA",
         "Количка и checkout с наложен платеж и карта",
         "Интеграции с Еконт и Спиди",
+        "Meta Pixel за проследяване на рекламни кампании",
+      ],
+    },
+  }),
+  storeTemplate("13", {
+    name: "Bokify",
+    tagline: "Премиум дигитална библиотека",
+    description:
+      "Модерен магазин за електронни книги с търсене по заглавие и жанр, ясни категории и мигновена доставка на EPUB, PDF и MOBI.",
+    navigation: {
+      title: "Как да се ориентираш в шаблона",
+      items: [
+        "Начало - hero зона, нови заглавия и търсене",
+        "Магазин / Жанрове - разглеждане по категории",
+        "Продукт - детайли за книга, формати и добавяне в количката",
+        "Количка - преглед преди плащане",
+        "Поръчка - данни и избор на начин на плащане",
+        "За нас / Блог - доверие и съдържание",
+      ],
+    },
+    highlights: {
+      title: "Какво включва",
+      items: [
+        "Hero зона с търсене по заглавие, автор или жанр",
+        "Жанрови категории - фантастика, трилър, роман и други",
+        "Продуктова страница с формати, мигновено изтегляне и без DRM",
+        "Количка и checkout с карта",
         "Meta Pixel за проследяване на рекламни кампании",
       ],
     },
