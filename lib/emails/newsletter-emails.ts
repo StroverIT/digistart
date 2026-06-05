@@ -385,3 +385,328 @@ export async function sendNewsletterSignupEmails(params: {
     throw new Error("One or more newsletter emails failed to send.");
   }
 }
+
+async function renderNicheRecommendationSubscriberEmailHtml(params: {
+  email: string;
+  niche: string;
+}) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
+  const templatesUrl = `${siteUrl}/templates`;
+
+  return render(
+    React.createElement(
+      Html,
+      null,
+      React.createElement(Head),
+      React.createElement(
+        Preview,
+        null,
+        `Записахме препоръката ви за ниша „${params.niche}"`,
+      ),
+      React.createElement(
+        Body,
+        {
+          style: {
+            backgroundColor: colors.pageBg,
+            fontFamily:
+              'Inter, system-ui, -apple-system, "Segoe UI", Arial, sans-serif',
+            margin: 0,
+            padding: "32px 16px",
+          },
+        },
+        React.createElement(
+          Container,
+          {
+            style: {
+              margin: "0 auto",
+              maxWidth: "560px",
+              backgroundColor: colors.cardBg,
+              borderRadius: "12px",
+              border: `1px solid ${colors.border}`,
+              overflow: "hidden",
+              boxShadow: "0 12px 40px rgba(15, 23, 42, 0.08)",
+            },
+          },
+          React.createElement(
+            Section,
+            {
+              style: {
+                background: `linear-gradient(135deg, ${colors.accentSoft} 0%, ${colors.cardBg} 55%)`,
+                padding: "28px 28px 20px",
+              },
+            },
+            React.createElement(
+              Text,
+              {
+                style: {
+                  margin: "0 0 8px",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: colors.primary,
+                },
+              },
+              "DigiStart",
+            ),
+            React.createElement(
+              Heading,
+              {
+                as: "h1",
+                style: {
+                  margin: "0",
+                  fontSize: "24px",
+                  lineHeight: "1.25",
+                  color: colors.foreground,
+                  fontWeight: 800,
+                },
+              },
+              "Записахме препоръката ви!",
+            ),
+            React.createElement(
+              Text,
+              {
+                style: {
+                  margin: "16px 0 0",
+                  fontSize: "15px",
+                  lineHeight: "1.6",
+                  color: colors.muted,
+                },
+              },
+              `Препоръчахте ниша: `,
+              React.createElement("strong", null, params.niche),
+              `. Ще ви уведомим на ${params.email}, когато пуснем шаблони за нея. При старта ще получите 10% ексклузивна отстъпка за първата си услуга при нас.`,
+            ),
+          ),
+          React.createElement(
+            Section,
+            { style: { padding: "0 28px 24px" } },
+            React.createElement(
+              Button,
+              {
+                href: templatesUrl,
+                style: {
+                  backgroundColor: colors.primary,
+                  color: colors.primaryFg,
+                  borderRadius: "8px",
+                  padding: "12px 22px",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  textDecoration: "none",
+                  display: "inline-block",
+                },
+              },
+              "Към шаблоните",
+            ),
+            React.createElement(
+              Text,
+              {
+                style: {
+                  margin: "20px 0 0",
+                  fontSize: "13px",
+                  lineHeight: "1.6",
+                  color: colors.muted,
+                },
+              },
+              "Ако не сте изпратили тази препоръка, можете спокойно да игнорирате този имейл.",
+            ),
+          ),
+          React.createElement(Hr, { style: { borderColor: colors.border, margin: "0" } }),
+          React.createElement(
+            Section,
+            { style: { padding: "16px 28px 24px" } },
+            React.createElement(
+              Text,
+              { style: { margin: "0", fontSize: "12px", color: colors.muted } },
+              React.createElement(Link, { href: siteUrl, style: { color: colors.primary } }, siteUrl),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+async function renderNicheRecommendationAdminEmailHtml(params: {
+  email: string;
+  niche: string;
+  submittedAt: Date;
+  isNewSubscriber: boolean;
+}) {
+  return render(
+    React.createElement(
+      Html,
+      null,
+      React.createElement(Head),
+      React.createElement(Preview, null, `Нова препоръка за ниша: ${params.niche}`),
+      React.createElement(
+        Body,
+        {
+          style: {
+            backgroundColor: colors.pageBg,
+            fontFamily:
+              'Inter, system-ui, -apple-system, "Segoe UI", Arial, sans-serif',
+            margin: 0,
+            padding: "32px 16px",
+          },
+        },
+        React.createElement(
+          Container,
+          {
+            style: {
+              margin: "0 auto",
+              maxWidth: "560px",
+              backgroundColor: colors.cardBg,
+              borderRadius: "12px",
+              border: `1px solid ${colors.border}`,
+              padding: "28px",
+              boxShadow: "0 12px 40px rgba(15, 23, 42, 0.08)",
+            },
+          },
+          React.createElement(
+            Heading,
+            {
+              as: "h1",
+              style: {
+                margin: "0 0 16px",
+                fontSize: "22px",
+                color: colors.foreground,
+              },
+            },
+            "Нова препоръка за ниша",
+          ),
+          React.createElement(
+            Section,
+            {
+              style: {
+                backgroundColor: colors.accentSoft,
+                borderRadius: "8px",
+                padding: "16px",
+                border: `1px solid ${colors.border}`,
+              },
+            },
+            React.createElement(
+              Text,
+              { style: { margin: "0 0 8px", fontSize: "14px", color: colors.foreground } },
+              React.createElement("strong", null, "Ниша: "),
+              params.niche,
+            ),
+            React.createElement(
+              Text,
+              { style: { margin: "0 0 8px", fontSize: "14px", color: colors.foreground } },
+              React.createElement("strong", null, "Имейл: "),
+              params.email,
+            ),
+            React.createElement(
+              Text,
+              { style: { margin: "0 0 8px", fontSize: "14px", color: colors.foreground } },
+              React.createElement("strong", null, "Дата: "),
+              formatBgDate(params.submittedAt),
+            ),
+            React.createElement(
+              Text,
+              { style: { margin: "0 0 8px", fontSize: "14px", color: colors.foreground } },
+              React.createElement("strong", null, "Отстъпка: "),
+              "10% при пускане на нишата",
+            ),
+            React.createElement(
+              Text,
+              { style: { margin: "0", fontSize: "14px", color: colors.foreground } },
+              React.createElement("strong", null, "Нов абонат: "),
+              params.isNewSubscriber ? "Да" : "Не (съществуващ имейл)",
+            ),
+          ),
+          React.createElement(Hr, { style: { borderColor: colors.border, margin: "24px 0" } }),
+          React.createElement(
+            Text,
+            { style: { margin: "0", fontSize: "12px", color: colors.muted } },
+            "DigiStart Admin",
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+function resolveNicheRecommendationAdminEmail(): string | undefined {
+  return (
+    process.env.NEXT_PUBLIC_GOOGLE_EMAIL_USER ||
+    process.env.GOOGLE_EMAIL_USER ||
+    process.env.ADMIN_EMAIL ||
+    process.env.admin_email
+  );
+}
+
+export async function sendNicheRecommendationEmails(params: {
+  email: string;
+  niche: string;
+  submittedAt: Date;
+  isNewSubscriber: boolean;
+}): Promise<void> {
+  const from = resolveFromAddress();
+  const adminEmail = resolveNicheRecommendationAdminEmail();
+  const mailer = await createOAuth2Transporter();
+
+  if (!from || !adminEmail || !mailer) {
+    throw new Error(
+      "Email is not configured (OAuth2 transporter, SMTP_FROM, or NEXT_PUBLIC_GOOGLE_EMAIL_USER).",
+    );
+  }
+
+  const delivery = resolveOutboundEmailDelivery({
+    customerEmail: params.email,
+    adminEmail,
+  });
+  const mailFrom = withTestFrom(from, delivery.testMode);
+
+  const subscriberHtml = await renderNicheRecommendationSubscriberEmailHtml({
+    email: params.email,
+    niche: params.niche,
+  });
+  const adminHtml = await renderNicheRecommendationAdminEmailHtml({
+    email: params.email,
+    niche: params.niche,
+    submittedAt: params.submittedAt,
+    isNewSubscriber: params.isNewSubscriber,
+  });
+
+  const subscriberSubject = withTestSubject(
+    "Записахме препоръката ви за ниша - DigiStart",
+    delivery.testMode,
+  );
+  const adminSubject = withTestSubject(
+    `Нова препоръка за ниша: ${params.niche}`,
+    delivery.testMode,
+  );
+
+  const results = await Promise.allSettled([
+    mailer.sendMail({
+      from: mailFrom,
+      to: delivery.customerTo,
+      subject: subscriberSubject,
+      text: withTestTextBody(
+        `Здравейте,\n\nЗаписахме препоръката ви за ниша „${params.niche}" (${params.email}). Ще ви уведомим, когато пуснем шаблони за нея, и ще получите 10% ексклузивна отстъпка за първата си услуга при нас.\n\nПоздрави,\nDigiStart`,
+        delivery.testMode,
+        { originalTo: params.email },
+      ),
+      html: withTestHtmlBody(subscriberHtml, delivery.testMode, {
+        originalTo: params.email,
+      }),
+    }),
+    mailer.sendMail({
+      from: mailFrom,
+      to: delivery.adminTo,
+      subject: adminSubject,
+      text: withTestTextBody(
+        `Нова препоръка за ниша.\nНиша: ${params.niche}\nИмейл: ${params.email}\nДата: ${formatBgDate(params.submittedAt)}\nОтстъпка: 10% при пускане\nНов абонат: ${params.isNewSubscriber ? "Да" : "Не"}`,
+        delivery.testMode,
+        { originalTo: adminEmail },
+      ),
+      html: withTestHtmlBody(adminHtml, delivery.testMode, { originalTo: adminEmail }),
+    }),
+  ]);
+
+  if (results.some((r) => r.status === "rejected")) {
+    throw new Error("One or more niche recommendation emails failed to send.");
+  }
+}

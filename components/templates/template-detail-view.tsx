@@ -8,7 +8,11 @@ import {
   resolveTemplatePreviewImageUrl,
   resolveTemplatePreviewUrl,
 } from "@/lib/preview-url";
-import type { StoreTemplate, TemplateDetailSection } from "@/lib/data/templates";
+import {
+  getNicheLabels,
+  type StoreTemplate,
+  type TemplateDetailSection,
+} from "@/lib/data/templates";
 import { trackCtaClick } from "@/lib/analytics/tracker";
 import { setCheckoutTemplateSelection } from "@/lib/store/checkout-template";
 import TransitionLink from "@/components/transitions/TransitionLink";
@@ -35,10 +39,27 @@ function DetailSection({ section }: { section: TemplateDetailSection }) {
   );
 }
 
+function GoodForSection({ labels }: { labels: string[] }) {
+  return (
+    <section>
+      <h3 className="text-lg font-semibold mb-3">Подходящ за</h3>
+      <ul className="space-y-2">
+        {labels.map((label) => (
+          <li key={label} className="flex gap-3 text-muted-foreground text-sm leading-relaxed">
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+            {label}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function TemplateDetailView({ template }: TemplateDetailViewProps) {
   const livePreviewUrl = resolveTemplatePreviewUrl(template);
   const previewImageUrl = resolveTemplatePreviewImageUrl(template);
   const detailPath = template.demoPath;
+  const goodForLabels = getNicheLabels(template.goodFor);
 
   return (
     <div className="space-y-8">
@@ -112,7 +133,7 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
       </div>
 
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 pt-4 border-t border-border">
-        <DetailSection section={template.audience} />
+        <GoodForSection labels={goodForLabels} />
         <DetailSection section={template.highlights} />
         <DetailSection section={template.navigation} />
       </div>

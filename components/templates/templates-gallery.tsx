@@ -1,5 +1,6 @@
 "use client";
 
+import { NicheRecommendationDialog } from "@/components/templates/niche-recommendation-dialog";
 import { TemplateCard } from "@/components/templates/template-card";
 import type { StoreTemplate } from "@/lib/data/templates";
 
@@ -19,6 +20,9 @@ export function TemplatesGallery({ templates }: TemplatesGalleryProps) {
             Разгледай готовите стилове, виж как изглеждат на живо и избери визия, която ти пасва.
             След това я адаптираме към твоите продукти и бизнес.
           </p>
+          <div className="mt-6">
+            <NicheRecommendationDialog />
+          </div>
         </header>
 
         <div className="grid gap-6 sm:grid-cols-2">

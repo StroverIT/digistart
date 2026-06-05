@@ -7,6 +7,42 @@ export type TemplateDetailSection = {
   items: string[];
 };
 
+export type TemplateNicheId =
+  | "clothes"
+  | "shoes"
+  | "snacks"
+  | "jewelry"
+  | "bags"
+  | "cosmetics"
+  | "beauty-health"
+  | "bikes-scooters"
+  | "home-fitness"
+  | "camping"
+  | "supplements"
+  | "electronics"
+  | "ebooks";
+
+export const TEMPLATE_NICHES: { id: TemplateNicheId; label: string }[] = [
+  { id: "clothes", label: "Дрехи" },
+  { id: "shoes", label: "Обувки" },
+  { id: "snacks", label: "Снаксове" },
+  { id: "jewelry", label: "Бижута" },
+  { id: "bags", label: "Чанти" },
+  { id: "cosmetics", label: "Козметика" },
+  { id: "beauty-health", label: "Продукти за красота и здраве" },
+  { id: "bikes-scooters", label: "Велосипеди, тротинетки, колела" },
+  { id: "home-fitness", label: "Фитнес уреди за дома" },
+  { id: "camping", label: "Къмпинг екипировка" },
+  { id: "supplements", label: "Лекарства, хранителни добавки, витамини" },
+  { id: "electronics", label: "Компютри, таблети, мобилни телефони и техните аксесоари" },
+  { id: "ebooks", label: "e-book електронни книги" },
+];
+
+export function getNicheLabels(ids: TemplateNicheId[]): string[] {
+  const idSet = new Set(ids);
+  return TEMPLATE_NICHES.filter((niche) => idSet.has(niche.id)).map((niche) => niche.label);
+}
+
 export interface StoreTemplate {
   id: string;
   category: ProductCategory;
@@ -18,7 +54,7 @@ export interface StoreTemplate {
   previewPath: string;
   demoPath: string;
   tagline?: string;
-  audience: TemplateDetailSection;
+  goodFor: TemplateNicheId[];
   highlights: TemplateDetailSection;
   navigation: TemplateDetailSection;
   builtWith?: string;
@@ -64,7 +100,7 @@ const defaultHighlights: TemplateDetailSection = {
 
 function storeTemplate(
   id: string,
-  fields: Pick<StoreTemplate, "name" | "tagline" | "description" | "audience"> &
+  fields: Pick<StoreTemplate, "name" | "tagline" | "description" | "goodFor"> &
     Partial<Pick<StoreTemplate, "highlights" | "navigation" | "builtWith">>,
 ): StoreTemplate {
   return {
@@ -86,15 +122,7 @@ export const storeTemplates: StoreTemplate[] = [
     tagline: "Премиум витрина с чисти линии",
     description:
       "Елегантен, минималистичен стил с акцент върху визуалната история, колекциите и премиум усещане.",
-    audience: {
-      title: "За какъв стил е подходящ",
-      items: [
-        "Премиум и луксозна визия с много въздух и големи снимки",
-        "Марки, които искат да изглеждат професионално и изискано",
-        "Колекции и сезонни кампании с силен визуален акцент",
-        "Бизнеси, които продават и в социалните мрежи, но искат автоматизирани поръчки 24/7",
-      ],
-    },
+    goodFor: ["clothes", "shoes", "jewelry", "bags"],
     highlights: {
       title: "Какво включва",
       items: [
@@ -112,90 +140,42 @@ export const storeTemplates: StoreTemplate[] = [
     tagline: "Топъл, устойчив характер",
     description:
       "Уютен, автентичен стил с ясни категории, истории зад продуктите и лесен път към поръчка.",
-    audience: {
-      title: "За какъв стил е подходящ",
-      items: [
-        "Топъл, човешки тон с акцент върху устойчивост и доверие",
-        "Магазини с по-лична комуникация и storytelling",
-        "Каталози с често нови артикули и ясна навигация",
-        "Стартиращи бизнеси, които искат професионален вид без тежък дизайн",
-      ],
-    },
+    goodFor: ["clothes", "shoes", "bags"],
   }),
   storeTemplate("3", {
     name: "ReBrew Vintage",
     tagline: "Куриран винтидж с характер",
     description:
       "Витрина с акцент върху уникалността, курираните находки и доверието в качеството.",
-    audience: {
-      title: "За какъв стил е подходящ",
-      items: [
-        "Курирани колекции с усещане за „единствени бройки“",
-        "Силна визуална идентичност в социалните мрежи",
-        "По-малки, често обновявани серии продукти",
-        "Марки, които искат да подчертаят уникалността на всеки артикул",
-      ],
-    },
+    goodFor: ["clothes", "shoes", "jewelry", "bags"],
   }),
   storeTemplate("4", {
     name: "ReBrew Select",
     tagline: "Структуриран каталог с ясност",
     description:
       "Четим, организиран layout с ясни категории, състояния/варианти и бърз път към поръчка.",
-    audience: {
-      title: "За какъв стил е подходящ",
-      items: [
-        "Професионален вид с фокус върху яснота и структура",
-        "Растящи каталози с нужда от филтри и категории",
-        "Магазини с много SKU и ежедневни обновления",
-        "Собственици, които искат бърза конверсия без визуален шум",
-      ],
-    },
+    goodFor: ["clothes", "shoes", "bags", "cosmetics"],
   }),
   storeTemplate("5", {
     name: "ReBrew Curated",
     tagline: "Editorial storytelling",
     description:
       "Елегантен layout с големи снимки, колекции по стил и сезон и editorial усещане.",
-    audience: {
-      title: "За какъв стил е подходящ",
-      items: [
-        "Editorial и lookbook усещане с по-висока ценова категория",
-        "Марки с силна визуална история и курирани drops",
-        "Лимитирани серии и бързо изчерпващи се колекции",
-        "Продавачи, които искат premium усещане без custom код",
-      ],
-    },
+    goodFor: ["clothes", "shoes", "jewelry", "bags"],
   }),
   storeTemplate("6", {
     name: "ReBrew Thrift",
     tagline: "Динамичен каталог · бърз оборот",
     description:
       "Енергичен, мобилен стил за често нови артикули, ясни етикети и лесна навигация.",
-    audience: {
-      title: "За какъв стил е подходящ",
-      items: [
-        "Динамичен каталог с висок оборот и много нови продукти",
-        "Екипи, които качват артикули всеки ден",
-        "Фокус върху мобилни поръчки и бързо разглеждане",
-        "Минимална поддръжка на сайта след старта",
-      ],
-    },
+    goodFor: ["clothes", "shoes"],
   }),
   storeTemplate("7", {
     name: "OutletMark",
     tagline: "Промоционална витрина · ясни оферти",
     description:
       "Стил с акцент върху намаленията, промо зоните и бързи покупки от рекламен трафик.",
-    audience: {
-      title: "За какъв стил е подходящ",
-      items: [
-        "Агресивни промоции, flash deals и процентни намаления",
-        "Магазини с остатъчни количества и сезонни разпродажби",
-        "Конверсия от платени реклами и ясни CTA",
-        "Витрина, която води директно към поръчка",
-      ],
-    },
+    goodFor: ["clothes", "shoes", "bags", "cosmetics"],
     highlights: {
       title: "Какво включва",
       items: [
@@ -213,15 +193,7 @@ export const storeTemplates: StoreTemplate[] = [
     tagline: "Директен outlet · ясни цени",
     description:
       "Директен, без излишни стъпки дизайн - сравнение на цени, промо блокове и бърз checkout.",
-    audience: {
-      title: "За какъв стил е подходящ",
-      items: [
-        "Фокус върху цената и видимата спестена сума",
-        "Голям обем SKU на промоция",
-        "Бърза конверсия от реклама без визуален шум",
-        "Ясни промо ленти и топ оферти на началната",
-      ],
-    },
+    goodFor: ["clothes", "shoes", "bags"],
     highlights: {
       title: "Какво включва",
       items: [
@@ -239,15 +211,7 @@ export const storeTemplates: StoreTemplate[] = [
     tagline: "Минимализъм · спокойна елегантност",
     description:
       "Минималистичен стил с чисти линии, премиум усещане и спокойна визия без шум.",
-    audience: {
-      title: "За какъв стил е подходящ",
-      items: [
-        "Минимализъм и „стил без шум“ с много бяло пространство",
-        "Курирани колекции с ясна продуктова история",
-        "Премиум визия за марки, които продават и в Instagram",
-        "Секции за доверие - как работи поръчката и доставката",
-      ],
-    },
+    goodFor: ["clothes", "shoes", "jewelry", "bags", "cosmetics", "beauty-health"],
     highlights: {
       title: "Какво включва",
       items: [
@@ -265,45 +229,21 @@ export const storeTemplates: StoreTemplate[] = [
     tagline: "Съвременен · енергичен",
     description:
       "Съвременен стил със силни визуали, ясни колекции и бърз път от разглеждане към поръчка.",
-    audience: {
-      title: "За какъв стил е подходящ",
-      items: [
-        "Модерен, градски вид с често обновявани колекции",
-        "Млада аудитория и силно присъствие в социалните мрежи",
-        "Големи каталози с нужда от чисти категории и филтри",
-        "Модерен сайт без тежка поддръжка след старта",
-      ],
-    },
+    goodFor: ["clothes", "shoes", "bags", "snacks"],
   }),
   storeTemplate("11", {
     name: "Класик & комфорт",
     tagline: "Timeless · четим и спокоен",
     description:
       "Спокоен, четим шаблон с акцент върху доверието в марката, материалите и удобството при покупка.",
-    audience: {
-      title: "За какъв стил е подходящ",
-      items: [
-        "Класически, timeless визия без визуален шум",
-        "По-малки каталози със силна продуктова история",
-        "Фокус върху качество, удобство и повторни покупки",
-        "Елегантна витрина за essentials и базови линии",
-      ],
-    },
+    goodFor: ["clothes", "shoes"],
   }),
   storeTemplate("12", {
     name: "PowerUp",
     tagline: "Технологична витрина · ясни категории",
     description:
       "Съвременен магазин за електроника с категории, промо зони, марки и бърз път от разглеждане към поръчка.",
-    audience: {
-      title: "За какъв стил е подходящ",
-      items: [
-        "Магазини за електроника, аксесоари и гаджети",
-        "Каталози с много SKU, марки и ясни категории",
-        "Промоции, отстъпки и социално доказателство на началната",
-        "Продавачи, които искат модерен tech вид без custom код",
-      ],
-    },
+    goodFor: ["electronics"],
     highlights: {
       title: "Какво включва",
       items: [

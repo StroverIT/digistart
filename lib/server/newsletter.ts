@@ -1,5 +1,8 @@
 import type { NewsletterSubscriber, Prisma } from "@prisma/client";
-import { sendNewsletterSignupEmails } from "@/lib/emails/newsletter-emails";
+import {
+  sendNewsletterSignupEmails,
+  sendNicheRecommendationEmails,
+} from "@/lib/emails/newsletter-emails";
 import { prisma } from "@/lib/prisma";
 
 export const COMING_SOON_SOURCE = "coming-soon" as const;
@@ -24,6 +27,7 @@ export type NicheRecommendationSubscribeResult =
       status: "ok";
       subscriber: NewsletterSubscriber;
       alreadySubscribed: boolean;
+      emailSent: boolean;
     }
   | { status: "invalid_niche" };
 
@@ -111,12 +115,12 @@ function buildNicheRecommendationEntry(niche: string): NicheRecommendationEntry 
 function mergeNicheRecommendationMetadata(
   existing: Prisma.JsonValue | null | undefined,
   niche: string,
-): NicheRecommendationMetadata {
+): { metadata: NicheRecommendationMetadata; isNewNiche: boolean } {
   const entry = buildNicheRecommendationEntry(niche);
   const normalizedNiche = entry.requestedNiche.toLowerCase();
 
   if (!existing || typeof existing !== "object" || Array.isArray(existing)) {
-    return { nicheRecommendations: [entry] };
+    return { metadata: { nicheRecommendations: [entry] }, isNewNiche: true };
   }
 
   const meta = existing as Record<string, unknown>;
@@ -131,7 +135,10 @@ function mergeNicheRecommendationMetadata(
   );
 
   return {
-    nicheRecommendations: hasNiche ? existingList : [...existingList, entry],
+    metadata: {
+      nicheRecommendations: hasNiche ? existingList : [...existingList, entry],
+    },
+    isNewNiche: !hasNiche,
   };
 }
 
@@ -150,33 +157,48 @@ export async function subscribeToNicheRecommendation(
     where: { email: normalizedEmail },
   });
 
-  const metadata = mergeNicheRecommendationMetadata(existing?.metadata, normalizedNiche);
+  const { metadata, isNewNiche } = mergeNicheRecommendationMetadata(
+    existing?.metadata,
+    normalizedNiche,
+  );
+
+  let subscriber: NewsletterSubscriber;
 
   if (existing) {
-    const subscriber = await prisma.newsletterSubscriber.update({
+    subscriber = await prisma.newsletterSubscriber.update({
       where: { email: normalizedEmail },
       data: { metadata },
     });
-
-    return {
-      status: "ok",
-      subscriber,
-      alreadySubscribed: true,
-    };
+  } else {
+    subscriber = await prisma.newsletterSubscriber.create({
+      data: {
+        email: normalizedEmail,
+        source: TEMPLATE_NICHE_SOURCE,
+        metadata,
+      },
+    });
   }
 
-  const subscriber = await prisma.newsletterSubscriber.create({
-    data: {
-      email: normalizedEmail,
-      source: TEMPLATE_NICHE_SOURCE,
-      metadata,
-    },
-  });
+  let emailSent = false;
+  if (isNewNiche) {
+    try {
+      await sendNicheRecommendationEmails({
+        email: normalizedEmail,
+        niche: normalizedNiche,
+        submittedAt: new Date(),
+        isNewSubscriber: !existing,
+      });
+      emailSent = true;
+    } catch {
+      emailSent = false;
+    }
+  }
 
   return {
     status: "ok",
     subscriber,
-    alreadySubscribed: false,
+    alreadySubscribed: Boolean(existing),
+    emailSent,
   };
 }
 
