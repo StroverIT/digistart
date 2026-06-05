@@ -3,6 +3,7 @@ import React, { useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { usePageTransition } from "./transition-context";
+import { cn } from "@/lib/utils";
 
 function normalizePathname(path: string): string {
   if (!path || path === "") return "/";
@@ -88,8 +89,10 @@ const TransitionLink = ({
     playExit,
     isTransitioning,
     setPendingNavigation,
-    hasPendingNavigation,
+    isNavigationLocked,
   } = usePageTransition();
+
+  const locked = isTransitioning || isNavigationLocked();
 
   const currentHrefRef = useRef(href);
 
@@ -109,8 +112,9 @@ const TransitionLink = ({
         return;
       }
 
-      if (isTransitioning || hasPendingNavigation()) {
+      if (isNavigationLocked() || isTransitioning) {
         e.preventDefault();
+        e.stopPropagation();
         return;
       }
 
@@ -122,10 +126,11 @@ const TransitionLink = ({
       }
 
       e.preventDefault();
+      e.stopPropagation();
 
-      // Animate first; mark navigation pending only when the exit sequence finishes
+      setPendingNavigation(true);
+
       playExit(() => {
-        setPendingNavigation(true);
         router.push(currentHrefRef.current);
       });
 
@@ -143,14 +148,21 @@ const TransitionLink = ({
       router,
       playExit,
       isTransitioning,
-      hasPendingNavigation,
+      isNavigationLocked,
       setPendingNavigation,
       parentOnClick,
     ],
   );
 
   return (
-    <Link href={href} onClick={handleClick} className={className} {...props}>
+    <Link
+      href={href}
+      {...props}
+      onClick={handleClick}
+      className={cn(className, locked && "pointer-events-none cursor-default")}
+      aria-disabled={locked || undefined}
+      tabIndex={locked ? -1 : undefined}
+    >
       {children}
     </Link>
   );

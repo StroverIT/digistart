@@ -281,12 +281,17 @@ function PageTransitionProviderContent({
     return pendingNavigationRef.current;
   };
 
+  const isNavigationLocked = useCallback(() => {
+    return isAnimatingRef.current || pendingNavigationRef.current;
+  }, []);
+
   const value: PageTransitionContextType = {
     playExit,
     playEnter: finishTransition,
     isTransitioning,
     setPendingNavigation,
     hasPendingNavigation,
+    isNavigationLocked,
   };
 
   return (

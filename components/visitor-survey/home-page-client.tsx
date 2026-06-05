@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { VisitorSurvey } from "@/components/visitor-survey/visitor-survey";
 import { getServicePath } from "@/lib/visitor-preferences/paths";
 import {
@@ -9,18 +9,38 @@ import {
   hasCompletedSurvey,
   parseVisitorServiceId,
 } from "@/lib/visitor-preferences/storage";
+import {
+  isHomeRedirectSuppressed,
+  releaseHomeRedirectSuppression,
+} from "@/lib/visitor-preferences/navigation";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 
 function HomePageClientInner() {
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "1";
   const chosenService = parseVisitorServiceId(searchParams.get("chosenService"));
   const { push } = useTransitionRouter();
   const [ready, setReady] = useState(false);
   const [showSurvey, setShowSurvey] = useState(false);
+  const [surveyEditMode, setSurveyEditMode] = useState(false);
+
+  useEffect(() => {
+    if (pathname !== "/") {
+      releaseHomeRedirectSuppression();
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (isEditMode) {
+      setSurveyEditMode(true);
+      setShowSurvey(true);
+      setReady(true);
+      return;
+    }
+
+    if (isHomeRedirectSuppressed()) {
+      setSurveyEditMode(hasCompletedSurvey());
       setShowSurvey(true);
       setReady(true);
       return;
@@ -56,7 +76,7 @@ function HomePageClientInner() {
 
   return (
     <VisitorSurvey
-      isEditMode={isEditMode}
+      isEditMode={isEditMode || surveyEditMode}
       chosenService={isEditMode ? undefined : chosenService ?? undefined}
     />
   );

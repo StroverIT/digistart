@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import Image from "next/image";
 import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
 import { siteContact } from "@/lib/site-contact";
+import { getHomeNavigationPath } from "@/lib/visitor-preferences/navigation";
 
 const services = [
   { href: "/services/ai-automation", label: "AI Automation" },
@@ -15,7 +16,7 @@ const services = [
 ];
 
 const quickLinks = [
-  { href: "/", label: "Начало" },
+  { href: "home", label: "Начало" },
   { href: "/consultation", label: "Безплатна консултация" },
   { href: "/#services", label: "Услуги" },
   { href: "/#process", label: "Как работим" },
@@ -24,6 +25,18 @@ const quickLinks = [
 
 export function Footer() {
   const footerRef = useRef<HTMLElement>(null);
+  const [homeHref, setHomeHref] = useState("/");
+
+  useEffect(() => {
+    const syncHomeHref = () => setHomeHref(getHomeNavigationPath());
+    syncHomeHref();
+    window.addEventListener("visitor-preferences-updated", syncHomeHref);
+    window.addEventListener("storage", syncHomeHref);
+    return () => {
+      window.removeEventListener("visitor-preferences-updated", syncHomeHref);
+      window.removeEventListener("storage", syncHomeHref);
+    };
+  }, []);
 
   useEffect(() => {
     const root = footerRef.current;
@@ -75,7 +88,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div data-footer-column className="lg:col-span-1 opacity-0 translate-y-10">
-            <TrackedCtaLink href="/" ctaId="footer_logo_home" className="flex items-center gap-2 mb-4">
+            <TrackedCtaLink href={homeHref} ctaId="footer_logo_home" className="flex items-center gap-2 mb-4">
               <Image
                 src="/logo.webp"
                 alt="DigiStart logo"
@@ -145,17 +158,20 @@ export function Footer() {
           <div data-footer-column className="opacity-0 translate-y-10">
             <h3 className="font-semibold text-foreground mb-4">Бързи връзки</h3>
             <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
+              {quickLinks.map((link) => {
+                const href = link.href === "home" ? homeHref : link.href;
+                return (
+                <li key={link.label}>
                   <TrackedCtaLink
-                    href={link.href}
-                    ctaId={`footer_quick_${link.href.replaceAll("/", "_").replaceAll("#", "")}`}
+                    href={href}
+                    ctaId={`footer_quick_${href.replaceAll("/", "_").replaceAll("#", "")}`}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.label}
                   </TrackedCtaLink>
                 </li>
-              ))}
+              );
+              })}
             </ul>
           </div>
 

@@ -4,4 +4,5 @@ export type PageTransitionContextType = {
   isTransitioning: boolean;
   setPendingNavigation: (pending: boolean) => void;
   hasPendingNavigation: () => boolean;
+  isNavigationLocked: () => boolean;
 };
