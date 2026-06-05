@@ -13,6 +13,7 @@ import {
   getTenantProjectForUser,
   updateTenantProject,
 } from "@/lib/server/tenant-projects";
+import { parseSelectedTemplateIds } from "@/lib/onboarding/selected-templates";
 import { prisma } from "@/lib/prisma";
 
 const patchSchema = z.object({
@@ -108,11 +109,19 @@ export async function PATCH(req: Request) {
 
   let project = await getOrCreateTenantProjectForUser(session.user.id);
 
-  const category = parsed.data.productCategory ?? project.productCategory;
+  const category = project.productCategory || "clothing";
+  const incomingBusinessSettings = parsed.data.businessSettings as
+    | Record<string, unknown>
+    | undefined;
+  const selectedTemplateIds = parseSelectedTemplateIds(
+    incomingBusinessSettings ?? project.businessSettings,
+    parsed.data.templateId ?? project.templateId,
+  );
+  const primaryTemplateId = selectedTemplateIds[0] ?? parsed.data.templateId;
 
   let previewSlug: string | undefined;
-  if (parsed.data.templateId && category) {
-    const template = getTemplateForOnboarding(category, parsed.data.templateId);
+  if (primaryTemplateId) {
+    const template = getTemplateForOnboarding(category, primaryTemplateId);
     if (template) {
       previewSlug = `${category}/${template.id}`;
     }
@@ -120,8 +129,9 @@ export async function PATCH(req: Request) {
 
   project = await updateTenantProject(project.id, {
     ...(parsed.data.step != null ? { onboardingStep: parsed.data.step } : {}),
-    ...(parsed.data.productCategory ? { productCategory: parsed.data.productCategory } : {}),
-    ...(parsed.data.templateId ? { templateId: parsed.data.templateId } : {}),
+    ...(primaryTemplateId
+      ? { templateId: primaryTemplateId, productCategory: category }
+      : {}),
     ...(previewSlug ? { previewSlug } : {}),
     ...(parsed.data.businessSettings != null
       ? { businessSettings: parsed.data.businessSettings as Prisma.InputJsonValue }

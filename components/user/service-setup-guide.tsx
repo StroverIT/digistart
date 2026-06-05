@@ -21,19 +21,40 @@ type ServiceSetupGuideProps = {
   items: ServiceSetupItem[];
 };
 
+function scrollToPageAnchor(href: string) {
+  const id = decodeURIComponent(href.slice(1));
+  if (!id) return;
+
+  window.setTimeout(() => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const path = `${window.location.pathname}${window.location.search}`;
+    window.history.replaceState(null, "", `${path}#${encodeURIComponent(id)}`);
+  }, 50);
+}
+
 export function ServiceSetupGuide({ orderItemId, serviceName, items }: ServiceSetupGuideProps) {
   const { prefs, setPrefs, hydrated } = useServiceSetupGuidePrefs(orderItemId);
 
-  const doneCount = items.filter((t) => t.ok).length;
-  const total = items.length;
+  function handleInPageAnchorClick(
+    event: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) {
+    event.preventDefault();
+    setPrefs({ mode: "minimized" });
+    scrollToPageAnchor(href);
+  }
+
+  const requiredItems = items.filter((t) => !t.optional);
+  const doneCount = requiredItems.filter((t) => t.ok).length;
+  const total = requiredItems.length;
   const progressPct = total > 0 ? (doneCount / total) * 100 : 100;
-  const incomplete = doneCount < total;
+  const incomplete = total > 0 && doneCount < total;
   const remainingCount = total - doneCount;
 
   const defaultAccordion = useMemo(() => {
-    const first = items.find((t) => !t.ok);
+    const first = requiredItems.find((t) => !t.ok) ?? items.find((t) => !t.ok);
     return first?.id ?? items[0]?.id ?? "";
-  }, [items]);
+  }, [items, requiredItems]);
 
   if (!incomplete || !hydrated || total === 0) {
     return null;
@@ -145,6 +166,9 @@ export function ServiceSetupGuide({ orderItemId, serviceName, items }: ServiceSe
                     )}
                   >
                     {task.title}
+                    {task.optional ? (
+                      <span className="ml-1.5 text-xs font-normal text-muted-foreground">(по избор)</span>
+                    ) : null}
                   </span>
                 </span>
               </AccordionTrigger>
@@ -164,6 +188,7 @@ export function ServiceSetupGuide({ orderItemId, serviceName, items }: ServiceSe
                     ) : task.href.startsWith("#") ? (
                       <a
                         href={task.href}
+                        onClick={(event) => handleInPageAnchorClick(event, task.href!)}
                         className="text-xs font-semibold text-primary underline-offset-4 hover:underline"
                       >
                         {task.cta}
@@ -182,6 +207,14 @@ export function ServiceSetupGuide({ orderItemId, serviceName, items }: ServiceSe
             </AccordionItem>
           ))}
         </Accordion>
+
+        <p className="mx-4 mt-2 border-t border-border/70 pt-3 text-xs leading-relaxed text-muted-foreground">
+          Имате нужда от помощ,{" "}
+          <Link href="/user/support" className="font-medium text-primary underline underline-offset-4">
+            пишете ни в чата
+          </Link>
+          .
+        </p>
       </div>
     </div>
   );

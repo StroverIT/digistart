@@ -1,6 +1,12 @@
 import type { OnboardingRequirements } from "@/lib/onboarding/requirements";
-import { isValidEmail, isValidUrl, parseSocialChannelsFromSettings } from "@/lib/onboarding/requirements";
+import {
+  isProductSalesType,
+  isValidEmail,
+  isValidUrl,
+  parseSocialChannelsFromSettings,
+} from "@/lib/onboarding/requirements";
 import type { TenantProjectDto } from "@/lib/server/tenant-projects";
+import { hasSelectedTemplates } from "@/lib/onboarding/selected-templates";
 
 function businessFieldsOk(project: TenantProjectDto | null | undefined): boolean {
   const bs = project?.businessSettings ?? {};
@@ -70,7 +76,11 @@ export function isCategoryTemplateStepComplete(
   requirements: OnboardingRequirements,
 ): boolean {
   if (!requirements.showCategoryTemplate) return true;
-  return Boolean(project?.templateId && project.productCategory);
+  const productSalesType = project?.businessSettings?.productSalesType;
+  return Boolean(
+    isProductSalesType(productSalesType) &&
+      hasSelectedTemplates(project?.businessSettings, project?.templateId),
+  );
 }
 
 /** Whether the tenant project satisfies all active wizard requirements. */

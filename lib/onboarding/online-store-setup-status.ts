@@ -1,5 +1,7 @@
 import { isIntegrationsStepComplete } from "@/lib/onboarding/completion";
 import type { OnboardingRequirements } from "@/lib/onboarding/requirements";
+import { isProductSalesType } from "@/lib/onboarding/requirements";
+import { hasSelectedTemplates } from "@/lib/onboarding/selected-templates";
 import type { TenantProjectDto } from "@/lib/server/tenant-projects";
 import type { StoreDomainRow } from "@/lib/server/store-domains";
 
@@ -26,8 +28,10 @@ export function getOnlineStoreSetupItems(params: {
   const phone = String(bs.phone ?? "").trim();
   const email = String(bs.email ?? "").trim();
   const productNotes = String(bs.productNotes ?? "").trim();
+  const productSalesType = bs.productSalesType;
 
-  const templateOk = Boolean(p?.templateId);
+  const templateOk = hasSelectedTemplates(bs, p?.templateId);
+  const productTypeOk = isProductSalesType(productSalesType);
   const businessOk = Boolean(name && phone && email);
   const productsOk = productNotes.length > 0;
   const requirements =
@@ -53,10 +57,17 @@ export function getOnlineStoreSetupItems(params: {
 
   return [
     {
+      id: "product-type",
+      label: "Тип продукти",
+      ok: productTypeOk,
+      missingHint: "Избери дали продуктите са уникални или с количество в онбординга.",
+      action: "onboarding",
+    },
+    {
       id: "template",
-      label: "Шаблон на магазина",
+      label: "Категории продукти",
       ok: templateOk,
-      missingHint: "Избери шаблон в онбординга.",
+      missingHint: "Избери поне една категория в онбординга.",
       action: "onboarding",
     },
     {

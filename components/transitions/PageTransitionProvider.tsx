@@ -59,6 +59,23 @@ function resetLogo(logo: HTMLImageElement | null) {
   gsap.set(logo, { scale: 0, rotation: 0, opacity: 0, filter: "none", y: 0 });
 }
 
+function PageTransitionSearchParamsSync({
+  searchParamsRef,
+  onSearchParamsChange,
+}: {
+  searchParamsRef: React.MutableRefObject<URLSearchParams>;
+  onSearchParamsChange: () => void;
+}) {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    searchParamsRef.current = searchParams;
+    onSearchParamsChange();
+  }, [searchParams, searchParamsRef, onSearchParamsChange]);
+
+  return null;
+}
+
 function PageTransitionProviderContent({
   children,
 }: PageTransitionProviderProps) {
@@ -71,12 +88,21 @@ function PageTransitionProviderContent({
   const isAnimatingRef = useRef(false);
 
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [searchParamsVersion, setSearchParamsVersion] = useState(0);
   const prefersReducedMotion = useRef(false);
   const pendingNavigationRef = useRef(false);
   const routeSnapshotRef = useRef<string | null>(null);
+  const searchParamsRef = useRef(new URLSearchParams());
 
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+
+  const notifySearchParamsChange = useCallback(() => {
+    setSearchParamsVersion((version) => version + 1);
+  }, []);
+
+  const getCurrentRoute = useCallback(() => {
+    return routeKey(pathname, searchParamsRef.current);
+  }, [pathname]);
 
   useLayoutEffect(() => {
     const overlay = overlayRef.current;
@@ -257,24 +283,24 @@ function PageTransitionProviderContent({
       return;
     }
 
-    const currentRoute = routeKey(pathname, searchParams);
+    const currentRoute = getCurrentRoute();
     if (currentRoute !== routeSnapshotRef.current) {
       pendingNavigationRef.current = false;
       routeSnapshotRef.current = null;
       finishTransition();
     }
-  }, [pathname, searchParams, finishTransition]);
+  }, [pathname, searchParamsVersion, getCurrentRoute, finishTransition]);
 
   const setPendingNavigation = useCallback(
     (pending: boolean) => {
       pendingNavigationRef.current = pending;
       if (pending) {
-        routeSnapshotRef.current = routeKey(pathname, searchParams);
+        routeSnapshotRef.current = getCurrentRoute();
       } else {
         routeSnapshotRef.current = null;
       }
     },
-    [pathname, searchParams],
+    [getCurrentRoute],
   );
 
   const hasPendingNavigation = () => {
@@ -296,6 +322,12 @@ function PageTransitionProviderContent({
 
   return (
     <PageTransitionContext.Provider value={value}>
+      <Suspense fallback={null}>
+        <PageTransitionSearchParamsSync
+          searchParamsRef={searchParamsRef}
+          onSearchParamsChange={notifySearchParamsChange}
+        />
+      </Suspense>
       {children}
       <div
         ref={overlayRef}
@@ -356,9 +388,7 @@ function PageTransitionProviderContent({
 }
 
 const PageTransitionProvider = ({ children }: PageTransitionProviderProps) => (
-  <Suspense fallback={children}>
-    <PageTransitionProviderContent>{children}</PageTransitionProviderContent>
-  </Suspense>
+  <PageTransitionProviderContent>{children}</PageTransitionProviderContent>
 );
 
 export default PageTransitionProvider;

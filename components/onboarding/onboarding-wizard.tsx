@@ -9,24 +9,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { OnboardingIntegrationsStep } from "@/components/onboarding/onboarding-integrations-step";
-import {
-  getOnboardingTemplates,
-  productCategories,
-  type ProductCategory,
-} from "@/lib/data/templates";
+import { OnboardingTemplatePicker } from "@/components/onboarding/onboarding-template-picker";
+import { getOnboardingTemplates } from "@/lib/data/templates";
 import {
   getActiveWizardSteps,
   getNextWizardStep,
   getPrevWizardStep,
+  isProductSalesType,
   isValidEmail,
   isValidUrl,
   normalizeSocialChannels,
   normalizeWizardStep,
   parseSocialChannelsFromSettings,
+  PRODUCT_SALES_TYPES,
   type OnboardingRequirements,
+  type ProductSalesType,
   type SocialChannelInput,
 } from "@/lib/onboarding/requirements";
-import { resolveTemplatePreviewUrl } from "@/lib/preview-url";
+import { parseSelectedTemplateIds } from "@/lib/onboarding/selected-templates";
 import { PreviewLink } from "@/components/preview/preview-link";
 import type { TenantProjectDto } from "@/lib/server/tenant-projects";
 import { cn } from "@/lib/utils";
@@ -45,9 +45,8 @@ type OnboardingWizardProps = {
 };
 
 type SavePayload = {
-  productCategory?: string;
   templateId?: string | null;
-  businessSettings?: Record<string, string>;
+  businessSettings?: Record<string, unknown>;
   socialSettings?: Record<string, unknown>;
 };
 
@@ -61,9 +60,8 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
   const [saving, setSaving] = useState(false);
   const [project, setProject] = useState<TenantProjectDto | null>(null);
   const [requirements, setRequirements] = useState<OnboardingRequirements>(DEFAULT_REQUIREMENTS);
-  const [category, setCategory] = useState<ProductCategory>("clothing");
-  const [otherCategoryLabel, setOtherCategoryLabel] = useState("");
-  const [templateId, setTemplateId] = useState<string | null>(null);
+  const [productSalesType, setProductSalesType] = useState<ProductSalesType | null>(null);
+  const [selectedTemplateIds, setSelectedTemplateIds] = useState<string[]>([]);
   const [businessName, setBusinessName] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
   const [businessEmail, setBusinessEmail] = useState("");
@@ -74,26 +72,20 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
   const activeSteps = useMemo(() => getActiveWizardSteps(requirements), [requirements]);
   const isLastStep = step === activeSteps[activeSteps.length - 1]?.id;
   const isFirstStep = step === activeSteps[0]?.id;
-  const isOtherCategory = category === "other";
   const minSocialChannels = Math.max(requirements.socialChannelCount, 1);
 
   const hydrateFromProject = useCallback(
     (p: TenantProjectDto, req: OnboardingRequirements) => {
       setProject(p);
       setStep(normalizeWizardStep(p.onboardingStep || 1, req));
-      const cat = p.productCategory as ProductCategory;
-      setCategory(
-        cat === "clothing" || cat === "cosmetics" || cat === "food" || cat === "other"
-          ? cat
-          : "clothing",
-      );
-      setTemplateId(p.templateId);
       const bs = p.businessSettings ?? {};
+      const salesType = bs.productSalesType;
+      setProductSalesType(isProductSalesType(salesType) ? salesType : null);
+      setSelectedTemplateIds(parseSelectedTemplateIds(bs, p.templateId));
       setBusinessName(String(bs.businessName ?? ""));
       setBusinessPhone(String(bs.phone ?? ""));
       setBusinessEmail(String(bs.email ?? ""));
       setProductNotes(String(bs.productNotes ?? ""));
-      setOtherCategoryLabel(String(bs.customCategoryLabel ?? ""));
       const ss = p.socialSettings ?? {};
       setGoogleBusinessUrl(String(ss.googleBusinessUrl ?? ""));
       const minChannels = Math.max(req.socialChannelCount, 1);
@@ -121,14 +113,18 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
       .finally(() => setLoading(false));
   }, [orderItemId, hydrateFromProject]);
 
-  const buildBusinessSettings = (): Record<string, string> => ({
+  const buildBusinessSettings = (): Record<string, unknown> => ({
     businessName: businessName.trim(),
     phone: businessPhone.trim(),
     email: businessEmail.trim(),
     productNotes: productNotes.trim(),
-    ...(category === "other" && otherCategoryLabel.trim()
-      ? { customCategoryLabel: otherCategoryLabel.trim() }
-      : {}),
+    ...(productSalesType ? { productSalesType } : {}),
+    ...(selectedTemplateIds.length > 0 ? { selectedTemplateIds } : {}),
+  });
+
+  const buildTemplatePayload = (): Pick<SavePayload, "templateId" | "businessSettings"> => ({
+    templateId: selectedTemplateIds[0] ?? null,
+    businessSettings: buildBusinessSettings(),
   });
 
   const buildSocialSettings = (): Record<string, unknown> => {
@@ -148,9 +144,7 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
   };
 
   const buildPayload = (overrides?: Partial<SavePayload>): SavePayload => ({
-    productCategory: category,
-    templateId: templateId ?? undefined,
-    businessSettings: buildBusinessSettings(),
+    ...buildTemplatePayload(),
     socialSettings: buildSocialSettings(),
     ...overrides,
   });
@@ -190,13 +184,9 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
     return ok;
   };
 
-  const validateCategoryStep = (): boolean => {
-    if (!category) {
-      toast.error("Моля, изберете категория.");
-      return false;
-    }
-    if (category === "other" && !otherCategoryLabel.trim()) {
-      toast.error("Моля, опишете вашата категория.");
+  const validateProductSalesTypeStep = (): boolean => {
+    if (!productSalesType) {
+      toast.error("Моля, изберете тип продукти.");
       return false;
     }
     return true;
@@ -257,26 +247,28 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
     return true;
   };
 
-  const handleCategorySelect = (catId: ProductCategory) => {
-    setCategory(catId);
-    if (catId === "other") return;
-
+  const handleProductSalesTypeSelect = (type: ProductSalesType) => {
+    setProductSalesType(type);
     const next = getNextWizardStep(1, requirements);
     if (next == null) return;
-    void advanceToStep(next, { productCategory: catId });
+    void advanceToStep(next, {
+      businessSettings: {
+        ...buildBusinessSettings(),
+        productSalesType: type,
+      },
+    });
   };
 
-  const handleTemplateSelect = (id: string) => {
-    setTemplateId(id);
-    const next = getNextWizardStep(2, requirements);
-    if (next == null) return;
-    void advanceToStep(next, { templateId: id });
+  const handleTemplateToggle = (id: string) => {
+    setSelectedTemplateIds((prev) =>
+      prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id],
+    );
   };
 
   const handleNext = async () => {
-    if (step === 1 && !validateCategoryStep()) return;
-    if (step === 2 && !templateId) {
-      toast.error("Моля, изберете шаблон.");
+    if (step === 1 && !validateProductSalesTypeStep()) return;
+    if (step === 2 && selectedTemplateIds.length === 0) {
+      toast.error("Моля, изберете поне една категория.");
       return;
     }
     if (step === 3 && !validateBusinessStep()) return;
@@ -285,7 +277,8 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
     const next = getNextWizardStep(step, requirements);
     if (next == null) return;
 
-    const ok = await save(next);
+    const payloadOverrides = step === 2 ? buildTemplatePayload() : undefined;
+    const ok = await save(next, undefined, payloadOverrides);
     if (ok) setStep(next);
   };
 
@@ -314,9 +307,8 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
     );
   }
 
-  const templates = getOnboardingTemplates(category);
+  const templates = getOnboardingTemplates();
   const currentStepTitle = activeSteps.find((s) => s.id === step)?.title ?? "";
-  const showStep1Continue = step === 1 && isOtherCategory && otherCategoryLabel.trim().length > 0;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -342,86 +334,53 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
         <CardHeader>
           <CardTitle>{currentStepTitle}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="relative space-y-6">
           {step === 1 && requirements.showCategoryTemplate ? (
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                Изберете категорията, която най-добре описва вашия бизнес.
+                Какви продукти предлагате? Това ни помага да настроим магазина правилно.
               </p>
-              {productCategories.map((cat) => (
+              {PRODUCT_SALES_TYPES.map((option) => (
                 <button
-                  key={cat.id}
+                  key={option.id}
                   type="button"
-                  disabled={!cat.enabled || saving}
-                  onClick={() => handleCategorySelect(cat.id)}
+                  disabled={saving}
+                  onClick={() => handleProductSalesTypeSelect(option.id)}
                   className={cn(
                     "w-full text-left rounded-lg border p-4 transition-colors",
-                    category === cat.id
+                    productSalesType === option.id
                       ? "border-primary bg-primary/5"
                       : "border-border hover:border-primary/40",
-                    !cat.enabled && "opacity-50 cursor-not-allowed",
                   )}
                 >
-                  <span className="font-medium">{cat.name}</span>
+                  <span className="font-medium">{option.name}</span>
+                  <p className="text-sm text-muted-foreground mt-1">{option.description}</p>
                 </button>
               ))}
-
-              {isOtherCategory ? (
-                <div className="space-y-2 pt-2">
-                  <Label htmlFor="otherCategory">Вашата категория</Label>
-                  <Input
-                    id="otherCategory"
-                    value={otherCategoryLabel}
-                    onChange={(e) => setOtherCategoryLabel(e.target.value)}
-                    placeholder="напр. Спортни стоки, подаръци..."
-                  />
-                </div>
-              ) : null}
             </div>
           ) : null}
 
           {step === 2 && requirements.showCategoryTemplate ? (
-            <div className="grid gap-4 sm:grid-cols-2">
-              {templates.map((t) => (
-                <div
-                  key={t.id}
-                  className={cn(
-                    "rounded-lg border p-4 space-y-3",
-                    templateId === t.id ? "border-primary ring-1 ring-primary/30" : "border-border",
-                  )}
-                >
-                  <h3 className="font-semibold">{t.name}</h3>
-                  <p className="text-sm text-muted-foreground">{t.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    <PreviewLink
-                      href={resolveTemplatePreviewUrl(t)}
-                      ctaId={`onboarding_preview_${t.category}_${t.id}`}
-                      ctaPage="/onboarding"
-                      className="text-sm text-primary underline"
-                    >
-                      Преглед
-                    </PreviewLink>
-                    <PreviewLink
-                      href={t.demoPath}
-                      ctaId={`onboarding_detail_${t.category}_${t.id}`}
-                      ctaPage="/onboarding"
-                      className="text-sm text-muted-foreground underline"
-                    >
-                      Детайли
-                    </PreviewLink>
-                  </div>
+            <>
+              <OnboardingTemplatePicker
+                templates={templates}
+                selectedIds={selectedTemplateIds}
+                saving={saving}
+                onToggle={handleTemplateToggle}
+              />
+              {selectedTemplateIds.length > 0 ? (
+                <div className="sticky bottom-4 z-10 -mt-2 flex justify-end">
                   <Button
                     type="button"
-                    size="sm"
-                    variant={templateId === t.id ? "default" : "outline"}
+                    onClick={handleNext}
                     disabled={saving}
-                    onClick={() => handleTemplateSelect(t.id)}
+                    className="shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-300"
                   >
-                    {templateId === t.id ? "Избран" : "Избери"}
+                    {saving ? "Запазване..." : "Напред"}
                   </Button>
                 </div>
-              ))}
-            </div>
+              ) : null}
+            </>
           ) : null}
 
           {step === 3 && requirements.showBusiness ? (
@@ -495,7 +454,7 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
               Назад
             </Button>
             {!isLastStep ? (
-              step === 2 || (step === 1 && !showStep1Continue) ? (
+              step === 1 || step === 2 ? (
                 <div />
               ) : (
                 <Button type="button" onClick={handleNext} disabled={saving}>

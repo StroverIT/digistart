@@ -1,13 +1,15 @@
-import { getTemplateForOnboarding, productCategories } from "@/lib/data/templates";
+import { getTemplateForOnboarding } from "@/lib/data/templates";
 import { isProjectOnboardingComplete } from "@/lib/onboarding/completion";
 import {
   getOnboardingRequirements,
   ONBOARDING_SERVICE_IDS,
+  productSalesTypeLabel,
 } from "@/lib/onboarding/requirements";
 import {
   buildServiceSetupProgress,
   getRequirementsForOrderItem,
 } from "@/lib/onboarding/service-setup-status";
+import { getSelectedNicheLabels } from "@/lib/onboarding/selected-templates";
 import { getOrderByIdFromDb } from "@/lib/server/orders";
 import { getStoreDomainByOrderItemId } from "@/lib/server/store-domains";
 import {
@@ -42,7 +44,8 @@ export type OrderAdminDetails = {
     name: string;
     previewPath: string | null;
   } | null;
-  productCategoryLabel: string | null;
+  productSalesTypeLabel: string | null;
+  selectedNicheLabels: string[];
   companyVat: string | null;
   onboarding: {
     isComplete: boolean;
@@ -57,11 +60,6 @@ export type OrderAdminDetails = {
     adminNotes: string | null;
   }[];
 };
-
-function productCategoryLabel(category: string | null | undefined): string | null {
-  if (!category) return null;
-  return productCategories.find((c) => c.id === category)?.name ?? category;
-}
 
 export async function getOrderAdminDetailsFromDb(
   orderId: string,
@@ -173,7 +171,15 @@ export async function getOrderAdminDetailsFromDb(
           previewPath: project?.previewPath ?? template.previewPath,
         }
       : null,
-    productCategoryLabel: productCategoryLabel(project?.productCategory),
+    productSalesTypeLabel: productSalesTypeLabel(
+      typeof project?.businessSettings?.productSalesType === "string"
+        ? project.businessSettings.productSalesType
+        : null,
+    ),
+    selectedNicheLabels: getSelectedNicheLabels(
+      project?.businessSettings ?? null,
+      project?.templateId,
+    ),
     companyVat,
     onboarding: {
       isComplete: isProjectOnboardingComplete(project, requirements),

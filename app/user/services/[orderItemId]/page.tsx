@@ -1,11 +1,20 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getServerSession } from "next-auth";
-import { CalendarClock, PackageCheck, ReceiptText, Sparkles } from "lucide-react";
+import {
+  CalendarClock,
+  CheckCircle2,
+  PackageCheck,
+  ReceiptText,
+  RefreshCw,
+  Sparkles,
+  Wallet,
+} from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getStripeServerClient } from "@/lib/server/stripe";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import { getServiceById } from "@/lib/data/services";
 import { calculateItemTotal } from "@/lib/pricing/calculate-item-total";
@@ -28,6 +37,20 @@ function humanizeUpsellId(id: string): string {
     .filter(Boolean)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     .join(" ");
+}
+
+function daysUntil(date: Date): number {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(date);
+  target.setHours(0, 0, 0, 0);
+  return Math.max(0, Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)));
+}
+
+function formatDaysUntilLabel(days: number): string {
+  if (days === 0) return "Днес";
+  if (days === 1) return "Утре";
+  return `След ${days} дни`;
 }
 
 function parseOrderItemUpsells(raw: unknown): CartItemUpsell[] {
@@ -137,7 +160,7 @@ export default async function UserServiceDetailPage({
     : null;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="@container mx-auto max-w-5xl space-y-6">
       {setupProgress?.incomplete ? (
         <ServiceSetupGuide
           orderItemId={item.id}
@@ -147,7 +170,7 @@ export default async function UserServiceDetailPage({
       ) : null}
 
       <div className="rounded-3xl border border-border bg-card/80 p-6 shadow-sm backdrop-blur md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
-        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               <PackageCheck className="h-3.5 w-3.5" />
@@ -156,88 +179,183 @@ export default async function UserServiceDetailPage({
             <h1 className="text-2xl font-bold md:text-3xl">{item.serviceName}</h1>
             <p className="mt-2 text-muted-foreground">{item.selectedOptionName}</p>
           </div>
-          <div className="rounded-2xl bg-secondary/70 p-4 text-left md:min-w-56 md:text-right">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Общо позиция</p>
-            <Price value={item.totalPrice} className="mt-1 text-2xl font-bold text-primary" />
+          <div className="rounded-2xl border border-border/60 bg-secondary/50 p-4 text-left lg:min-w-60 lg:text-right">
+            {displayMonthly > 0 ? (
+              <>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Стартова такса</p>
+                <Price
+                  value={item.totalOneTime}
+                  layout="vertical"
+                  className="mt-1 text-2xl font-bold text-primary lg:items-end"
+                />
+                <p className="mt-2 flex flex-wrap items-center gap-1 text-xs text-muted-foreground lg:justify-end">
+                  <span>+</span>
+                  <Price value={displayMonthly} layout="vertical" className="text-sm font-medium text-foreground" />
+                  <span>/мес</span>
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Еднократна цена</p>
+                <Price
+                  value={item.totalOneTime}
+                  layout="vertical"
+                  className="mt-1 text-2xl font-bold text-primary lg:items-end"
+                />
+              </>
+            )}
           </div>
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 fill-mode-both">
-        <Card className="border-border bg-card/80 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <ReceiptText className="h-5 w-5 text-primary" />
-              Цена
+        <Card className="h-full border-border bg-card/80 shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <ReceiptText className="h-4 w-4 text-primary" />
+              Разбивка на цената
             </CardTitle>
+            <CardDescription>Какво плащате за тази услуга</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Еднократно</span>
-              <Price value={item.totalOneTime} className="font-medium" />
+          <CardContent className="space-y-3">
+            <div className="flex items-start justify-between gap-3 rounded-xl border border-border/60 bg-secondary/40 px-4 py-3">
+              <div className="flex min-w-0 items-start gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background shadow-sm">
+                  <Wallet className="h-4 w-4 text-primary" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">Еднократно</p>
+                  <p className="text-xs text-muted-foreground">Стартова такса при активиране</p>
+                </div>
+              </div>
+              <Price
+                value={item.totalOneTime}
+                layout="responsive"
+                className="shrink-0 text-right text-sm"
+              />
             </div>
+
             {displayMonthly > 0 ? (
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Месечно</span>
-                <span>
-                  <Price value={displayMonthly} className="font-medium" /> /мес
+              <div className="flex items-start justify-between gap-3 rounded-xl border border-border/60 bg-secondary/40 px-4 py-3">
+                <div className="flex min-w-0 items-start gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background shadow-sm">
+                    <RefreshCw className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium">Месечно</p>
+                    <p className="text-xs text-muted-foreground">Автоматично подновяване всеки месец</p>
+                  </div>
+                </div>
+                <span className="shrink-0 text-right text-sm">
+                  <Price value={displayMonthly} layout="responsive" className="justify-end" />
+                  <span className="mt-0.5 block text-xs text-muted-foreground">/мес</span>
                 </span>
               </div>
             ) : null}
-            <div className="flex justify-between border-t pt-2 font-semibold">
-              <span>Общо позиция</span>
-              <Price value={item.totalPrice} />
-            </div>
+
+
           </CardContent>
         </Card>
 
         {hasRecurringSubscription ? (
-          <Card className="border-border bg-card/80 shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <CalendarClock className="h-5 w-5 text-primary" />
-                Абонамент
-              </CardTitle>
+          <Card className="h-full border-border bg-card/80 shadow-sm">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <CalendarClock className="h-4 w-4 text-primary" />
+                    Абонамент
+                  </CardTitle>
+                  <CardDescription className="mt-1.5">Месечно автоматично подновяване</CardDescription>
+                </div>
+                <Badge variant="secondary" className="shrink-0 gap-1 border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                  <CheckCircle2 className="h-3 w-3" />
+                  Активен
+                </Badge>
+              </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               {renew ? (
                 <>
-                  <p className="text-sm text-muted-foreground">Следващо подновяване</p>
-                  <p className="text-lg font-semibold">
-                    {renew.toLocaleDateString("bg-BG", {
-                      weekday: "long",
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-18 w-18 shrink-0 flex-col items-center justify-center rounded-2xl border border-primary/20 bg-primary/5">
+                      <span className="text-2xl font-bold leading-none tabular-nums text-primary">
+                        {renew.getDate()}
+                      </span>
+                      <span className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        {renew.toLocaleDateString("bg-BG", { month: "short" }).replace(".", "")}
+                      </span>
+                      <span className="text-[10px] tabular-nums text-muted-foreground">{renew.getFullYear()}</span>
+                    </div>
+                    <div className="min-w-0 space-y-2">
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                          Следващо подновяване
+                        </p>
+                        <p className="mt-0.5 font-semibold capitalize leading-snug">
+                          {renew.toLocaleDateString("bg-BG", {
+                            weekday: "long",
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="font-normal">
+                        {formatDaysUntilLabel(daysUntil(renew))}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {displayMonthly > 0 ? (
+                    <div className="flex items-center justify-between rounded-xl border border-border/60 bg-secondary/40 px-4 py-3 text-sm">
+                      <span className="text-muted-foreground">Сума при подновяване</span>
+                      <span className="font-medium">
+                        <Price value={displayMonthly} layout="responsive" className="justify-end" />
+                        <span className="text-xs font-normal text-muted-foreground"> /мес</span>
+                      </span>
+                    </div>
+                  ) : null}
                 </>
               ) : (
-                <>
-                  <p className="text-sm text-muted-foreground">Абонаментът е активен</p>
-                  <p className="text-base font-semibold">Очаква се синхронизация на датата за подновяване</p>
-                </>
+                <div className="rounded-xl border border-dashed border-border bg-secondary/30 px-4 py-5 text-center">
+                  <RefreshCw className="mx-auto h-5 w-5 text-muted-foreground" />
+                  <p className="mt-2 text-sm font-medium">Абонаментът е активен</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Датата за следващо подновяване ще се появи след синхронизация със Stripe.
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>
         ) : (
-          <Card className="border-border bg-card/80 shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <CalendarClock className="h-5 w-5 text-primary" />
+          <Card className="h-full border-border bg-card/80 shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <CalendarClock className="h-4 w-4 text-primary" />
                 Тип плащане
               </CardTitle>
+              <CardDescription>Без месечен абонамент</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Еднократно закупена услуга</p>
-              <p className="mt-1 font-semibold">Без автоматично подновяване</p>
+              <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-secondary/40 px-4 py-4">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background shadow-sm">
+                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Еднократно закупена услуга</p>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                    Няма автоматично подновяване или периодични такси след първоначалното плащане.
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}
       </div>
 
       {isOnlineStore ? (
-        <div id="store-domain-setup">
+        <div id="store-domain-setup" className="scroll-mt-20 md:scroll-mt-24">
           <DomainSetupCard orderItemId={item.id} vpsIp={vpsIp} />
         </div>
       ) : null}

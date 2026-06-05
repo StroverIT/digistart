@@ -510,13 +510,16 @@ export default function OrdersPage() {
                           {orderDetails.onboarding.onboardingStep}
                         </p>
                       ) : null}
-                      {orderDetails.productCategoryLabel ? (
+                      {orderDetails.productSalesTypeLabel ? (
                         <p>
-                          <span className="text-muted-foreground">Категория:</span>{" "}
-                          {orderDetails.productCategoryLabel}
-                          {orderDetails.project?.businessSettings?.customCategoryLabel
-                            ? ` (${String(orderDetails.project.businessSettings.customCategoryLabel)})`
-                            : null}
+                          <span className="text-muted-foreground">Тип продукти:</span>{" "}
+                          {orderDetails.productSalesTypeLabel}
+                        </p>
+                      ) : null}
+                      {orderDetails.selectedNicheLabels.length > 0 ? (
+                        <p>
+                          <span className="text-muted-foreground">Категории:</span>{" "}
+                          {orderDetails.selectedNicheLabels.join(", ")}
                         </p>
                       ) : null}
                     </div>

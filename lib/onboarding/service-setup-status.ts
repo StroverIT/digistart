@@ -29,6 +29,8 @@ export type ServiceSetupItem = {
   href: string | null;
   cta: string;
   action: ServiceSetupAction;
+  /** Does not count toward setup progress when true */
+  optional?: boolean;
 };
 
 export type ServiceSetupProgress = {
@@ -169,11 +171,13 @@ function getStoreSetupItems(params: {
     items.push({
       id: "brand",
       title: "Бранд материали",
-      description: "Качи лого и цветова палитра при поръчката или изпрати ни ги по имейл.",
+      description:
+        "Ако имаш цветова палитра, прати ни я по имейл.",
       ok: false,
       href: `mailto:${siteContact.email}?subject=${encodeURIComponent("Бранд материали - онлайн магазин")}`,
       cta: "Имейл",
       action: "brand",
+      optional: true,
     });
   }
 
@@ -213,11 +217,16 @@ export function getServiceSetupItems(params: {
   return [];
 }
 
+function requiredSetupItems(items: ServiceSetupItem[]): ServiceSetupItem[] {
+  return items.filter((i) => !i.optional);
+}
+
 export function getServiceSetupProgress(
   items: ServiceSetupItem[],
 ): Omit<ServiceSetupProgress, "items"> & { items: ServiceSetupItem[] } {
-  const doneCount = items.filter((i) => i.ok).length;
-  const total = items.length;
+  const required = requiredSetupItems(items);
+  const doneCount = required.filter((i) => i.ok).length;
+  const total = required.length;
   return {
     items,
     doneCount,
@@ -251,8 +260,9 @@ export function getRequirementsForOrderItem(
 }
 
 export function hasIncompleteServiceSetup(items: ServiceSetupItem[]): boolean {
-  if (items.length === 0) return false;
-  return items.some((i) => !i.ok);
+  const required = requiredSetupItems(items);
+  if (required.length === 0) return false;
+  return required.some((i) => !i.ok);
 }
 
 export function findFirstOnboardingOrderItem(

@@ -8,6 +8,36 @@ export type SocialChannelInput = {
   profileUrl: string;
 };
 
+export type ProductSalesType = "unique" | "quantity";
+
+export const PRODUCT_SALES_TYPES: {
+  id: ProductSalesType;
+  name: string;
+  description: string;
+}[] = [
+  {
+    id: "unique",
+    name: "Уникални / еднократни",
+    description:
+      "Всяка единичка е различна или се продава само веднъж (напр. изкуство, ръчно изработени артикули, услуги).",
+  },
+  {
+    id: "quantity",
+    name: "С количество",
+    description:
+      "Продавате еднакви артикули с наличност и количество (напр. дрехи, козметика, аксесоари).",
+  },
+];
+
+export function isProductSalesType(value: unknown): value is ProductSalesType {
+  return value === "unique" || value === "quantity";
+}
+
+export function productSalesTypeLabel(type: string | null | undefined): string | null {
+  if (!type) return null;
+  return PRODUCT_SALES_TYPES.find((t) => t.id === type)?.name ?? type;
+}
+
 export type OnboardingRequirements = {
   showCategoryTemplate: boolean;
   showBusiness: boolean;
@@ -62,8 +92,8 @@ export function getOnboardingRequirements(
 }
 
 export const WIZARD_STEP_DEFS = [
-  { id: 1 as const, title: "Категория" },
-  { id: 2 as const, title: "Шаблон" },
+  { id: 1 as const, title: "Тип продукти" },
+  { id: 2 as const, title: "Категории" },
   { id: 3 as const, title: "Бизнес и продукти" },
   { id: 4 as const, title: "Социални мрежи" },
 ];

@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PreviewLink } from "@/components/preview/preview-link";
+import { productSalesTypeLabel } from "@/lib/onboarding/requirements";
+import { getSelectedNicheLabels } from "@/lib/onboarding/selected-templates";
 import type { TenantProjectDto } from "@/lib/server/tenant-projects";
 
 type ProjectRow = TenantProjectDto & {
@@ -102,12 +104,22 @@ export function ProjectsPageClient() {
                 <p>{selected.user.email}</p>
               </div>
               <div>
-                <span className="text-muted-foreground">Категория</span>
-                <p className="font-medium capitalize">{selected.productCategory}</p>
+                <span className="text-muted-foreground">Тип продукти</span>
+                <p className="font-medium">
+                  {productSalesTypeLabel(
+                    typeof selected.businessSettings?.productSalesType === "string"
+                      ? selected.businessSettings.productSalesType
+                      : null,
+                  ) ?? "-"}
+                </p>
               </div>
               <div>
-                <span className="text-muted-foreground">Шаблон</span>
-                <p className="font-medium">{selected.templateId ?? "-"}</p>
+                <span className="text-muted-foreground">Категории</span>
+                <p className="font-medium">
+                  {getSelectedNicheLabels(selected.businessSettings, selected.templateId).join(
+                    ", ",
+                  ) || "-"}
+                </p>
               </div>
               <div>
                 <Label className="text-muted-foreground">Статус</Label>
