@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense, useRef } from "react";
+import { useEffect, useMemo, useState, Suspense, useRef } from "react";
 import gsap from "gsap";
 import { useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
@@ -12,7 +12,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Price } from "@/components/ui/price";
 import { siteContact } from "@/lib/site-contact";
 import { cartItemToMetaLineItem, trackMetaPurchase } from "@/lib/analytics/meta-pixel";
+import { getAdditionalServices } from "@/lib/cart/additional-services";
 import { clearCart } from "@/lib/store/cart";
+import { AdditionalServicesUpsellCard } from "@/components/services/additional-services-grid";
 import {
   findFirstOnboardingOrderItem,
   getCheckoutSuccessSetupCta,
@@ -98,9 +100,17 @@ function SuccessContent() {
     const orderBlocks = root.querySelectorAll<HTMLElement>("[data-success-order-block]");
     if (!orderBlocks.length) return;
 
+    const additionalServices = root.querySelector<HTMLElement>(
+      "[data-success-additional-services]",
+    );
+    const orderRevealTargets = [
+      ...Array.from(orderBlocks),
+      ...(additionalServices ? [additionalServices] : []),
+    ];
+
     const ctx = gsap.context(() => {
-      gsap.set(orderBlocks, { opacity: 0, y: 36 });
-      gsap.to(orderBlocks, {
+      gsap.set(orderRevealTargets, { opacity: 0, y: 36 });
+      gsap.to(orderRevealTargets, {
         opacity: 1,
         y: 0,
         duration: 0.5,
@@ -218,6 +228,11 @@ function SuccessContent() {
     });
   }, [order, orderId]);
 
+  const additionalServices = useMemo(
+    () => (order ? getAdditionalServices(order.cart.items) : []),
+    [order],
+  );
+
   if (!mounted) {
     return (
       <div className="h-96 flex items-center justify-center">
@@ -334,38 +349,7 @@ function SuccessContent() {
         </>
       ) : null}
 
-      <Card
-        data-success-block
-        className="bg-primary/5 border-primary/20 mb-8 opacity-0 translate-y-10"
-      >
-        <CardContent className="p-6">
-          <h2 className="font-semibold mb-4">Какво следва?</h2>
-          <ol className="text-left space-y-3">
-            <li className="flex items-start gap-3">
-              <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center shrink-0">
-                1
-              </span>
-              <span className="text-muted-foreground">Ще получите имейл с потвърждение на поръчката</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center shrink-0">
-                2
-              </span>
-              <span className="text-muted-foreground">
-                {order?.consultation
-                  ? `Консултацията ви е потвърдена за ${order.consultation.date} в ${order.consultation.time}`
-                  : "Наш екип ще прегледа материалите и ще се свърже с вас"}
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center shrink-0">
-                3
-              </span>
-              <span className="text-muted-foreground">Стартираме работа по вашия проект</span>
-            </li>
-          </ol>
-        </CardContent>
-      </Card>
+
 
       <div
         data-success-block
@@ -391,18 +375,8 @@ function SuccessContent() {
         data-success-actions
         className="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 translate-y-10"
       >
-        <TrackedCtaLink href="/" ctaId="checkout_success_home">
-          <Button variant="outline" size="lg">
-            <Home className="mr-2 h-5 w-5" />
-            Към началото
-          </Button>
-        </TrackedCtaLink>
-        <TrackedCtaLink href="/#services" ctaId="checkout_success_more_services">
-          <Button size="lg" variant="secondary">
-            Разгледайте още услуги
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </TrackedCtaLink>
+
+
         {showSetupCta ? (
           <TrackedCtaLink
             href={`/user/services/${onboardingItem!.id}`}
@@ -432,6 +406,16 @@ function SuccessContent() {
           </TrackedCtaLink>
         ) : null}
       </div>
+      {order && additionalServices.length > 0 ? (
+        <div className="lg:hidden mt-10">
+          <AdditionalServicesUpsellCard
+            services={additionalServices}
+            dataMarker="success"
+            className="text-left opacity-0 translate-y-10"
+            ctaIdPrefix="checkout_success_upsell"
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

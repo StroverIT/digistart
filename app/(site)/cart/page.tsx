@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { ArrowLeft, ArrowRight, ChevronDown, Package, ShoppingCart, Trash2 } from "lucide-react";
@@ -10,89 +9,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import type { Cart, CartItem, Service } from "@/lib/types";
-import { getPlanComponentsForRecalc, serviceIdToPlanId } from "@/lib/data/plans";
-import type { PlanId } from "@/lib/data/plans";
+import { serviceIdToPlanId } from "@/lib/data/plans";
+import { getAdditionalServices } from "@/lib/cart/additional-services";
 import { getCart, hasBundlePlanInCart, removeFromCart, updateCartItemUpsells } from "@/lib/store/cart";
 import {
   applyAdminPricingToCart,
   isAdminCheckoutRole,
 } from "@/lib/pricing/admin-checkout-pricing";
-import { getServiceById, services } from "@/lib/data/services";
+import { getServiceById } from "@/lib/data/services";
+import {
+  AdditionalServicesGrid,
+  AdditionalServicesUpsellCard,
+} from "@/components/services/additional-services-grid";
 import { UpsellConfigurator } from "@/components/services/upsell-configurator";
-
-const additionalServicePrompts: Record<string, string> = {
-  "ai-automation": "Искаш ли AI Automation за Instagram продажби на автопилот?",
-  "ready-store": "Искаш ли онлайн магазин за 20 евро на месец?",
-  "social-media": "Искаш ли редовно съдържание в профилите си?",
-  ads: "Искаш ли платени реклами с управление от нас?",
-  "google-business": "Искаш ли локално да достигнеш до повече клиенти?",
-};
-
-const serviceStickerMap: Record<string, string> = {
-  "ai-automation": "/stickers/social-media.png",
-  "ready-store": "/stickers/online-shop.png",
-  "google-business": "/stickers/my-business.png",
-  "social-media": "/stickers/social-media.png",
-  ads: "/stickers/social-media.png",
-};
-
-function AdditionalServiceSticker({ service }: { service: Service }) {
-  const src = serviceStickerMap[service.id];
-  if (!src) return null;
-
-  return (
-    <div className="relative h-56 w-56 shrink-0 -my-10">
-      <Image src={src} alt={`${service.name} sticker`} fill className="object-contain" sizes="5rem" />
-    </div>
-  );
-}
-
-function AdditionalServicesGrid({
-  services,
-  title,
-  description,
-}: {
-  services: Service[];
-  title?: string;
-  description?: string;
-}) {
-  if (services.length === 0) return null;
-
-  return (
-    <div>
-      {title ? (
-        <div className="mb-4 text-center sm:text-left">
-          <h2 className="text-lg font-semibold">{title}</h2>
-          {description ? (
-            <p className="text-sm text-muted-foreground mt-1">{description}</p>
-          ) : null}
-        </div>
-      ) : null}
-      <div className="grid gap-3 xl:grid-cols-2">
-        {services.map((service) => {
-          const prompt = additionalServicePrompts[service.id];
-          return (
-            <div key={service.id} className="[&>span]:flex [&>span]:w-full">
-              <TrackedCtaLink
-                href={`/services/${service.slug}#buy-now`}
-                ctaId={`cart_upsell_${service.slug}`}
-                className="flex flex-col  w-full items-center gap-2 xl:gap-4 rounded-xl border border-border bg-background/60 p-5 text-left transition-all duration-300 hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <AdditionalServiceSticker service={service} />
-                <div className="flex min-w-0 flex-1 flex-col gap-1 text-center xl:text-left">
-                  <h3 className="text-base font-semibold leading-snug">{service.name}</h3>
-                  {prompt ? (
-                    <p className="text-sm font-medium leading-snug pt-1">{prompt}</p>
-                  ) : null}
-                </div>
-              </TrackedCtaLink>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 function CartItemCard({
   item,
@@ -257,8 +186,8 @@ function CartItemCard({
               ) : null}
             </div>
             {!isAdminCheckout &&
-            prices.billingCycle === "annual-prepaid" &&
-            prices.annualDiscountAmount ? (
+              prices.billingCycle === "annual-prepaid" &&
+              prices.annualDiscountAmount ? (
               <div className="text-xs text-muted-foreground mt-1">
                 Отстъпка: <Price value={prices.annualDiscountAmount} />
               </div>
@@ -323,26 +252,9 @@ export default function CartPage() {
         ["ready-store", "social-media", "google-business"].includes(item.serviceId),
     )
     : [];
-  const includedServiceIds = useMemo(() => {
-    const ids = new Set<string>();
-    for (const item of cart.items) {
-      const planId = (item.planId as PlanId | undefined) ?? serviceIdToPlanId(item.serviceId);
-      if (planId) {
-        for (const component of getPlanComponentsForRecalc(planId)) {
-          ids.add(component.serviceId);
-        }
-        continue;
-      }
-      ids.add(item.serviceId);
-    }
-    return ids;
-  }, [cart.items]);
   const additionalServices = useMemo(
-    () =>
-      services.filter(
-        (service) => additionalServicePrompts[service.id] && !includedServiceIds.has(service.id),
-      ),
-    [includedServiceIds],
+    () => getAdditionalServices(cart.items),
+    [cart.items],
   );
 
   useEffect(() => {
@@ -461,20 +373,13 @@ export default function CartPage() {
               })}
 
               {additionalServices.length > 0 ? (
-                <Card
-                  data-cart-additional-services
-                  className="bg-card border-border opacity-0 translate-y-10"
-                >
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="mb-4">
-                      <h2 className="text-lg font-semibold">Може да ти бъде полезно още</h2>
-                      <p className="text-sm text-muted-foreground">
-                        Добави липсващите услуги, за да покриеш повече канали за продажби.
-                      </p>
-                    </div>
-                    <AdditionalServicesGrid services={additionalServices} />
-                  </CardContent>
-                </Card>
+                <div className="hidden lg:block">
+                  <AdditionalServicesUpsellCard
+                    services={additionalServices}
+                    dataMarker="cart"
+                    className="opacity-0 translate-y-10"
+                  />
+                </div>
               ) : null}
 
               <TrackedCtaLink
@@ -503,8 +408,8 @@ export default function CartPage() {
                         {isAdminCheckout
                           ? "Еднократно (админ)"
                           : displayCart.items.some((item) => item.billingCycle === "annual-prepaid")
-                          ? "Еднократни плащания и предплащания"
-                          : "Еднократни услуги"}
+                            ? "Еднократни плащания и предплащания"
+                            : "Еднократни услуги"}
                       </span>
                       <Price value={displayCart.totalOneTime} className="font-semibold" />
                     </div>
@@ -529,8 +434,8 @@ export default function CartPage() {
                       />
                     </div>
                     {!isAdminCheckout &&
-                    displayCart.totalMonthly > 0 &&
-                    displayCart.totalOneTime > 0 ? (
+                      displayCart.totalMonthly > 0 &&
+                      displayCart.totalOneTime > 0 ? (
                       <p className="text-sm text-muted-foreground text-right">
                         + <Price value={displayCart.totalMonthly} />/мес след това
                       </p>
