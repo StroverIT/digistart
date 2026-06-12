@@ -12,23 +12,23 @@ import { useLandingScrollAnimations } from "@/components/services/service-detail
 const FEATURED_CREATIVES = [
   {
     src: "/stickers/my-business.png",
-    alt: "Google Search",
-    label: "Google Search",
+    alt: "Клиентите намират продуктите ти",
+    label: "Клиентите намират продуктите",
   },
   {
     src: "/marketing/social-media.webp",
-    alt: "Google Shopping",
-    label: "Google Shopping",
+    alt: "Каталогът ти се вижда ясно",
+    label: "Каталогът ти се вижда",
   },
   {
     src: "/marketing/promotion.webp",
-    alt: "Meta Reels & Stories",
-    label: "Meta Reels & Stories",
+    alt: "Хората запомнят артикулите",
+    label: "Хората запомнят артикулите",
   },
   {
     src: "/stickers/social-media.png",
-    alt: "Meta Carousels",
-    label: "Meta Carousels",
+    alt: "Връщаме изоставените колички",
+    label: "Връщаме изоставените колички",
   },
 ] as const;
 
@@ -49,14 +49,14 @@ const Creatives = () => {
             data-animate-reveal
             className={`max-w-md text-5xl font-bold md:text-left ${LANDING_REVEAL_CLASS}`}
           >
-            Формат за всеки канал
+            Реклами за онлайн поръчки
           </h2>
         </div>
         <p
           data-animate-reveal
           className={`mt-4 max-w-lg text-base text-muted-foreground sm:text-2xl md:text-left ${LANDING_REVEAL_CLASS}`}
         >
-          Текст и Shopping за Google. Reels и Stories за Meta.
+          Водим хората към продукта, количката и завършена покупка.
         </p>
       </div>
 
@@ -67,7 +67,7 @@ const Creatives = () => {
             data-animate-card
             className={`overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm ${LANDING_CARD_CLASS}`}
           >
-            <div className="relative aspect-[4/3] w-full bg-muted/30">
+            <div className="relative aspect-4/3 w-full bg-muted/30">
               <Image
                 src={creative.src}
                 alt={creative.alt}

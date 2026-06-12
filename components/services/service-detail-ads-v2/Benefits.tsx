@@ -13,21 +13,19 @@ import { useLandingScrollAnimations } from "@/components/services/service-detail
 
 const benefits = [
   {
-    title: "Google — когато те търсят",
+    title: "Повече хора да стигнат до продуктите",
     description:
-      "Search, Shopping, YouTube. По-скъп клик, но бърза поръчка при готово търсене.",
+      "Показваме магазина на хора, които вече търсят или биха купили точно такъв артикул.",
     image: "/stickers/my-business.png",
   },
   {
-    title: "Meta — когато трябва да ги откриеш",
-    description:
-      "Reels, Stories, Carousels. По-евтин тест, но нужни са визуали и време за конверсия.",
+    title: "Повече колички да станат поръчки",
+    description: "Връщаме хората, които са гледали продукт, но още не са купили.",
     image: "/stickers/social-media.png",
   },
   {
-    title: "И двете — когато искаш система",
-    description:
-      "Google за поръчки. Meta за аудитория и ретаргет. Отчет по канал всеки месец.",
+    title: "Повече бюджет към печелившите артикули",
+    description: "Спираме слабите реклами и засилваме продуктите, които носят поръчки.",
     image: "/marketing/newsletter.webp",
   },
 ] as const;
@@ -154,7 +152,7 @@ function BenefitRow({
               <p className="pt-2 text-sm leading-relaxed text-white sm:text-xl font-light">
                 {benefit.description}
               </p>
-              <div className="relative mt-4 aspect-[6/5] w-full lg:hidden">
+              <div className="relative mt-4 aspect-6/5 w-full lg:hidden">
                 <Image
                   src={benefit.image}
                   alt={benefit.title}
@@ -213,7 +211,7 @@ const Benefits = () => {
         data-animate-reveal
         className={`mx-auto max-w-4xl text-center text-3xl font-medium text-white ${LANDING_REVEAL_CLASS}`}
       >
-        Google за търсене. Meta за откриване.
+        Как рекламите помагат на онлайн магазина?
       </h2>
 
       <article className="mt-12 grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
@@ -232,7 +230,7 @@ const Benefits = () => {
         <div
           ref={imageWrapRef}
           data-animate-card
-          className={`relative mx-auto hidden aspect-[6/5] w-full lg:block ${LANDING_CARD_CLASS}`}
+          className={`relative mx-auto hidden aspect-6/5 w-full lg:block ${LANDING_CARD_CLASS}`}
         >
           <Image
             src={active.image}

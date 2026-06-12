@@ -19,7 +19,7 @@ const BuiltInChat = () => {
         data-animate-reveal
         className={`mx-auto max-w-3xl text-center text-4xl ${LANDING_REVEAL_CLASS}`}
       >
-        На всяка стъпка сме до теб
+        Не оставаш сам с продажбите
       </h1>
 
       <div className="mt-12 grid gap-8 md:grid-cols-2">
@@ -28,7 +28,7 @@ const BuiltInChat = () => {
           className={`flex flex-col overflow-hidden rounded-2xl bg-[#111111] ${LANDING_CARD_CLASS}`}
         >
           <div className="relative flex items-center justify-center p-6">
-            <div className="relative h-56 w-full sm:h-[20rem]">
+            <div className="relative h-56 w-full sm:h-80">
               <Image
                 src="/people/emil.png"
                 alt="Екип за поддръжка на реклами"
@@ -40,9 +40,11 @@ const BuiltInChat = () => {
             </div>
           </div>
           <div className="flex flex-1 flex-col px-6 py-8 sm:px-10">
-            <h2 className="font-heading text-xl font-bold text-white sm:text-2xl">Вграден чат</h2>
+            <h2 className="font-heading text-xl font-bold text-white sm:text-2xl">
+              Питаш преди да пускаш бюджет
+            </h2>
             <p className="mt-3 text-base leading-relaxed text-white">
-              Питаш кой канал — Google, Meta или и двете. Отговаряме всеки ден 9:00–22:00.
+              Казваш кои продукти искаш да продаваш. Казваме откъде има смисъл да започнем.
             </p>
           </div>
         </article>
@@ -51,7 +53,7 @@ const BuiltInChat = () => {
           className={`flex flex-col overflow-hidden rounded-2xl border border-black bg-white ${LANDING_CARD_CLASS}`}
         >
           <div className="relative flex items-center justify-center p-6">
-            <div className="relative h-56 w-full sm:h-[20rem]">
+            <div className="relative h-56 w-full sm:h-80">
               <Image
                 src="/people/nia.png"
                 alt="Консултация за Google и Meta реклами"
@@ -64,10 +66,10 @@ const BuiltInChat = () => {
           </div>
           <div className="flex flex-1 flex-col px-6 py-8 sm:px-10">
             <h2 className="font-heading text-xl font-bold text-black sm:text-2xl">
-              Няма глупави въпроси
+              Знаеш какво му трябва на магазина
             </h2>
             <p className="mt-3 text-base leading-relaxed text-black">
-              Продукт, рекламен акаунт и място за клика. Ако липсва нещо — казваме какво да подготвиш.
+              Ясни стъпки: кои продукти рекламираме, къде водим клика и как мерим поръчките.
             </p>
           </div>
         </article>

@@ -33,9 +33,9 @@ const CaseStudy = dynamic(() => import("@/components/services/service-detail-ads
 const BuySection = dynamic(() => import("@/components/services/service-detail-ads-v2/BuySection"));
 
 export const metadata: Metadata = {
-  title: "Реклами · Google Ads и Meta",
+  title: "Реклами за онлайн магазини · Google Ads и Meta",
   description:
-    "Google за търсене. Meta за откриване. Управление от €150/мес на канал, мин. €50/мес бюджет към платформата.",
+    "Google и Meta реклами за e-commerce: повече хора към продуктите, повече колички и повече онлайн поръчки. Управление от €150/мес на канал.",
 };
 
 export default async function AdsPage() {

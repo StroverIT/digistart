@@ -14,23 +14,23 @@ import { useLandingScrollAnimations } from "@/components/services/service-detail
 const reportFeatures = [
   {
     icon: Target,
-    title: "Отчет по канал",
-    description: "Google и Meta отделно — разход, CPC и поръчки.",
+    title: "Къде отидоха парите",
+    description: "Виждаш разхода спрямо поръчките, не само кликове.",
   },
   {
     icon: ClipboardList,
-    title: "Ясни следващи стъпки",
-    description: "Какво работи, какво спираме, какво увеличаваме.",
+    title: "Кои продукти работят",
+    description: "Казваме кои артикули носят интерес и кои спираме.",
   },
   {
     icon: Users,
-    title: "Проследяване от ден 1",
-    description: "Google Tag, Meta Pixel и конверсии.",
+    title: "Колко поръчки идват",
+    description: "Следим покупки, колички и качествени посещения.",
   },
   {
     icon: LineChart,
-    title: "Прозрачен бюджет",
-    description: "€150/мес управление · мин. €50/мес към платформата.",
+    title: "Какво правим после",
+    description: "План: нов тест, ретаргет или повече бюджет към продаващото.",
   },
 ] as const;
 
@@ -45,7 +45,7 @@ const ReportsPanel = () => {
           data-animate-reveal
           className={`max-w-3xl font-heading text-2xl font-bold tracking-tight text-foreground md:max-w-lg lg:leading-tight ${LANDING_REVEAL_CLASS}`}
         >
-          Числа по канал. Решения всеки месец.
+          Виждаш кои реклами носят онлайн продажби
         </h1>
         <div data-animate-reveal className={LANDING_REVEAL_CLASS}>
           <Button
@@ -78,7 +78,7 @@ const ReportsPanel = () => {
 
       <div
         data-animate-card
-        className={`relative mx-auto aspect-[16/10] w-full max-w-6xl ${LANDING_CARD_CLASS}`}
+        className={`relative mx-auto aspect-16/10 w-full max-w-6xl ${LANDING_CARD_CLASS}`}
       >
         <div className="glow-blob blob-left"></div>
         <div className="glow-blob blob-right"></div>

@@ -146,7 +146,7 @@ const MarketingTools = () => {
         data-animate-reveal
         className={`mx-auto max-w-3xl text-center text-4xl ${LANDING_REVEAL_CLASS}`}
       >
-        Два канала. Една стратегия.
+        Защо да не рекламираш магазина сам?
       </h1>
 
       <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:[grid-template-areas:'google_meta_promo'_'analytics_analytics_promo'_'trackers_trackers_trackers']">
@@ -156,8 +156,8 @@ const MarketingTools = () => {
         >
           <IconCard
             icon={Search}
-            title="Google — улавя търсене"
-            description="Ключови думи и локация. Search, Shopping, YouTube — по-скъп клик, бърза поръчка."
+            title="Не губиш време в кампании"
+            description="Ние управляваме рекламите. Ти качваш продукти, обслужваш поръчки и пращаш доставки."
           />
         </li>
 
@@ -167,8 +167,8 @@ const MarketingTools = () => {
         >
           <IconCard
             icon={Sparkles}
-            title="Meta — създава интерес"
-            description="Интереси и поведение. Reels, Stories, Carousels — по-евтин тест, нужен е ретаргет."
+            title="Не харчиш на сляпо"
+            description="Целта не е трафик. Целта е хората да стигнат до продукт и да купят."
           />
         </li>
 
@@ -178,8 +178,8 @@ const MarketingTools = () => {
             className={`${cardClassName} order-3 flex-1 lg:order-0 ${LANDING_CARD_CLASS}`}
           >
             <ImageBottomCard
-              title="Правилният канал"
-              description="Услуга на момента → Google. Визуален продукт → Meta. Магазин → често и двете."
+              title="Избираме правилния канал"
+              description="Google за търсене на продукти. Meta за откриване, връщане и импулсни покупки."
               image="/marketing/promotion.png"
               imageContainerClassName="max-sm:mt-4 max-sm:aspect-auto max-sm:h-40"
             />
@@ -190,8 +190,8 @@ const MarketingTools = () => {
           >
             <IconCard
               icon={Star}
-              title="Доверие в Meta"
-              description="В Google — текст и оферта. В Meta — визия и история."
+              title="Подреждаме офертата"
+              description="Цена, снимка, причина за покупка и ясно къде клиентът да натисне."
             />
           </article>
         </li>
@@ -201,8 +201,8 @@ const MarketingTools = () => {
           className={`${cardClassName} order-4 ${LANDING_CARD_CLASS} lg:[grid-area:analytics] sm:col-span-2`}
         >
           <ImageRightCard
-            title="Ясни очаквания"
-            description="Без гарантирани продажби. С настройка, проследяване и месечен отчет."
+            title="Пази магазина в движение"
+            description="Не плащаш за едно пускане. Плащаш за тестове, промени и решения според продажбите."
             image="/marketing/newsletter.png"
           />
         </li>
@@ -212,8 +212,8 @@ const MarketingTools = () => {
           className={`${cardClassName} order-6 w-full ${LANDING_CARD_CLASS} sm:col-span-2 lg:[grid-area:trackers] lg:min-h-56 xl:min-h-64`}
         >
           <ImageLeftCard
-            title="Проследяване от ден 1"
-            description="Google Tag, Meta Pixel и конверсии — още при старта."
+            title="Засилваме продаващите продукти"
+            description="Следим кои артикули носят поръчки и местим бюджета натам."
             image="/marketing/social-media.png"
           />
         </li>
