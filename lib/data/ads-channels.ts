@@ -34,10 +34,7 @@ export function validateAdsChannelUpsells(
     return "Избери рекламен канал за базовия пакет — Google Ads или Meta Ads.";
   }
 
-  const extra = upsells.find(
-    (item) => item.upsellId === ADS_EXTRA_CHANNEL_UPSELL_ID && item.quantity > 0,
-  );
-  if (!extra) return null;
+  if (!isAdsExtraChannelEnabled(upsells)) return null;
 
   const extraChoiceId = getAdsExtraChannelChoiceId(upsells);
   if (!extraChoiceId || extraChoiceId === baseChoiceId) {
@@ -48,10 +45,12 @@ export function validateAdsChannelUpsells(
 }
 
 export function isAdsExtraChannelEnabled(
-  upsells: { upsellId: string; quantity: number }[],
+  upsells: { upsellId: string; quantity: number; choiceId?: string }[],
 ): boolean {
-  return upsells.some(
-    (item) => item.upsellId === ADS_EXTRA_CHANNEL_UPSELL_ID && item.quantity > 0,
+  const baseChoiceId = getAdsBaseChannelChoiceId(upsells);
+  const extraChoiceId = getAdsExtraChannelChoiceId(upsells);
+  return Boolean(
+    baseChoiceId && extraChoiceId && extraChoiceId !== baseChoiceId,
   );
 }
 
@@ -94,22 +93,37 @@ export function getAlternateAdsChannelChoiceId(
 export function normalizeAdsChannelUpsells<
   T extends { upsellId: string; quantity: number; choiceId?: string },
 >(upsells: T[]): T[] {
-  const baseChoiceId = getAdsBaseChannelChoiceId(upsells);
-  if (!baseChoiceId) return upsells;
+  const withoutExtra = upsells.filter(
+    (item) => item.upsellId !== ADS_EXTRA_CHANNEL_UPSELL_ID,
+  );
 
-  const extraIndex = upsells.findIndex(
+  const baseChoiceId = getAdsBaseChannelChoiceId(upsells);
+  if (!baseChoiceId) {
+    return withoutExtra;
+  }
+
+  const extra = upsells.find(
     (item) => item.upsellId === ADS_EXTRA_CHANNEL_UPSELL_ID && item.quantity > 0,
   );
-  if (extraIndex < 0) return upsells;
+  if (!extra) {
+    return withoutExtra;
+  }
 
-  const extra = upsells[extraIndex];
+  const extraChoiceId =
+    extra.choiceId && isAdsChannelChoiceId(extra.choiceId) ? extra.choiceId : undefined;
+
+  // Drop legacy quantity-only extras (no explicit channel choice).
+  if (!extraChoiceId) {
+    return withoutExtra;
+  }
+
   const alternateChoiceId = getAlternateAdsChannelChoiceId(baseChoiceId);
-  if (extra.choiceId === alternateChoiceId) return upsells;
-
-  const next = [...upsells];
-  next[extraIndex] = {
-    ...extra,
-    choiceId: alternateChoiceId,
-  };
-  return next;
+  return [
+    ...withoutExtra,
+    {
+      ...extra,
+      quantity: 1,
+      choiceId: alternateChoiceId,
+    },
+  ];
 }

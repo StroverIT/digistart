@@ -8,6 +8,7 @@ import {
   type PlanId,
 } from "@/lib/data/plans";
 import { calculatePlanTotal } from "@/lib/pricing/calculate-plan-total";
+import { normalizeAdsChannelUpsells } from "@/lib/data/ads-channels";
 import { getServiceById } from "@/lib/data/services";
 import { calculateItemTotal } from "@/lib/pricing/calculate-item-total";
 import {
@@ -37,7 +38,20 @@ export function getCart(): Cart {
     parsed.items = (parsed.items ?? []).map((item) => {
       const oneTime = item.totalOneTime ?? (item.isMonthly ? 0 : item.totalPrice);
       const monthly = item.totalMonthly ?? (item.isMonthly ? item.totalPrice : 0);
-      return { ...item, totalOneTime: oneTime, totalMonthly: monthly };
+      if (item.serviceId !== "ads") {
+        return { ...item, totalOneTime: oneTime, totalMonthly: monthly };
+      }
+
+      const upsells = normalizeAdsChannelUpsells(item.upsells ?? []);
+      const priced = recalculateCartItemPricing({
+        id: item.id,
+        serviceId: item.serviceId,
+        selectedOptionId: item.selectedOptionId,
+        upsells,
+        billingCycle: item.billingCycle,
+        planId: item.planId,
+      });
+      return priced ?? { ...item, upsells, totalOneTime: oneTime, totalMonthly: monthly };
     });
     parsed.totalOneTime = parsed.items.reduce((sum, item) => sum + item.totalOneTime, 0);
     parsed.totalMonthly = parsed.items.reduce((sum, item) => sum + item.totalMonthly, 0);

@@ -11,22 +11,22 @@ import { useLandingScrollAnimations } from "@/components/services/service-detail
 
 const FEATURED_CREATIVES = [
   {
-    src: "/stickers/my-business.png",
+    src: "/ads/searching.png",
     alt: "Клиентите намират продуктите ти",
     label: "Клиентите намират продуктите",
   },
   {
-    src: "/marketing/social-media.webp",
+    src: "/ads/catalog.png",
     alt: "Каталогът ти се вижда ясно",
     label: "Каталогът ти се вижда",
   },
   {
-    src: "/marketing/promotion.webp",
+    src: "/ads/remembering.png",
     alt: "Хората запомнят артикулите",
     label: "Хората запомнят артикулите",
   },
   {
-    src: "/stickers/social-media.png",
+    src: "/ads/returning-back-to-cart.png",
     alt: "Връщаме изоставените колички",
     label: "Връщаме изоставените колички",
   },

@@ -56,16 +56,16 @@ export function useAdsServiceUpsells({
   const handleBaseChannelChange = useCallback(
     (choiceId: AdsChannelChoiceId) => {
       setBaseChannelError(undefined);
-      onUpsellsChange(setAdsBaseChannelUpsell(upsells, choiceId));
+      handleUpsellsChange(setAdsBaseChannelUpsell(upsells, choiceId));
     },
-    [onUpsellsChange, upsells],
+    [handleUpsellsChange, upsells],
   );
 
   const handleExtraChannelEnabledChange = useCallback(
     (enabled: boolean) => {
-      onUpsellsChange(setAdsExtraChannelEnabled(upsells, enabled));
+      handleUpsellsChange(setAdsExtraChannelEnabled(upsells, enabled));
     },
-    [onUpsellsChange, upsells],
+    [handleUpsellsChange, upsells],
   );
 
   const validateBeforeAdd = useCallback(() => {

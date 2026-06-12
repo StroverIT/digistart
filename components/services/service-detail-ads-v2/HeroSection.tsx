@@ -67,7 +67,7 @@ const HeroSection = () => {
           </ul>
         </div>
 
-        <HeroVideo videoId="bL4jLLDggXI" title="DigiStart Google и Meta реклами" />
+        <HeroVideo videoId="DDY4Ado5BRA" title="DigiStart Google и Meta реклами" />
       </div>
     </LandingSection>
   );
