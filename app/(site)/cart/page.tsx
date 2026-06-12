@@ -100,7 +100,7 @@ function CartItemCard({
                 Предплатено за 1 година
               </div>
             ) : null}
-            <div className="text-xs text-muted-foreground mt-1">
+            <div className="mt-1 flex flex-col gap-0.5 text-xs text-muted-foreground">
               {prices.totalOneTime > 0 ? (
                 <span>
                   {!isAdminCheckout && prices.billingCycle === "annual-prepaid"
@@ -108,9 +108,6 @@ function CartItemCard({
                     : "Еднократно"}
                   : <Price value={prices.totalOneTime} />
                 </span>
-              ) : null}
-              {!isAdminCheckout && prices.totalOneTime > 0 && prices.totalMonthly > 0 ? (
-                <span> • </span>
               ) : null}
               {!isAdminCheckout && prices.totalMonthly > 0 ? (
                 <span>
