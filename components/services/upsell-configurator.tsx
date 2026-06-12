@@ -9,13 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Price } from "@/components/ui/price";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { CartItemUpsell, Service } from "@/lib/types";
 import type { UpsellEntryErrors } from "@/components/services/upsell-validation";
@@ -153,6 +146,23 @@ export function UpsellConfigurator({
     });
   };
 
+  const toggleDirectChoice = (upsellId: string, choiceId: string) => {
+    const current = byId.get(upsellId);
+    if (current?.quantity && current.choiceId === choiceId) {
+      setUpsell(upsellId, null);
+      return;
+    }
+    trackCtaClick(pageKey, `upsell_${service.slug}_${upsellId}`);
+    pulseUpsellRow(upsellId);
+    setUpsell(upsellId, {
+      upsellId,
+      quantity: 1,
+      choiceId,
+      entries: current?.entries ?? [],
+      note: current?.note,
+    });
+  };
+
   const updateEntries = (upsellId: string, entries: string[]) => {
     const current = byId.get(upsellId);
     if (!current) return;
@@ -173,6 +183,12 @@ export function UpsellConfigurator({
             ?.clicks ?? 0;
         const views = pageStats.find((entry) => entry.page === pageKey)?.views ?? 0;
         const showBadge = isAdmin && isAnalyticsMode && views > 0;
+        const isDirectChoice = upsell.kind === "choice" && upsell.directChoice;
+        const choiceCount = upsell.choices?.length ?? 0;
+        const minChoicePrice =
+          isDirectChoice && upsell.choices?.length
+            ? Math.min(...upsell.choices.map((choice) => choice.pricePerUnit))
+            : null;
 
         return (
           <div
@@ -203,65 +219,129 @@ export function UpsellConfigurator({
                 {upsell.helperText ? (
                   <p className="text-xs text-muted-foreground mt-1">{upsell.helperText}</p>
                 ) : null}
-                <p className="text-sm mt-2">
-                  {upsell.kind === "choice" ? (
-                    <span className="text-muted-foreground">Избери пакет</span>
-                  ) : (
-                    <>
-                      <Price value={upsell.pricePerUnit ?? 0} className="text-primary font-medium" />
-                      <span className="text-muted-foreground"> / {upsell.unit}</span>
-                    </>
-                  )}
-                  {upsell.isMonthly && !isMonthlyUnit(upsell.unit) ? (
-                    <span className="text-muted-foreground"> /мес</span>
-                  ) : null}
-                </p>
+                {!isDirectChoice ? (
+                  <p className="text-sm mt-2">
+                    {upsell.kind === "choice" ? (
+                      <span className="text-muted-foreground">Избери пакет</span>
+                    ) : (
+                      <>
+                        <Price value={upsell.pricePerUnit ?? 0} className="text-primary font-medium" />
+                        <span className="text-muted-foreground"> / {upsell.unit}</span>
+                      </>
+                    )}
+                    {upsell.isMonthly && !isMonthlyUnit(upsell.unit) ? (
+                      <span className="text-muted-foreground"> /мес</span>
+                    ) : null}
+                  </p>
+                ) : minChoicePrice != null ? (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    от{" "}
+                    <Price value={minChoicePrice} className="text-sm text-primary font-medium" />
+                    {upsell.isMonthly ? "/мес" : ""}
+                  </p>
+                ) : null}
               </div>
 
-              <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => updateQuantity(upsell.id, quantity - 1)}
-                  disabled={quantity <= min}
-                  aria-label={`Намали ${upsell.name}`}
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="w-10 text-center font-medium">{quantity}</span>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => updateQuantity(upsell.id, quantity + 1)}
-                  disabled={quantity >= max}
-                  aria-label={`Увеличи ${upsell.name}`}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
+              {!isDirectChoice ? (
+                <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => updateQuantity(upsell.id, quantity - 1)}
+                    disabled={quantity <= min}
+                    aria-label={`Намали ${upsell.name}`}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="w-10 text-center font-medium">{quantity}</span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => updateQuantity(upsell.id, quantity + 1)}
+                    disabled={quantity >= max}
+                    aria-label={`Увеличи ${upsell.name}`}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : null}
             </div>
 
-            {upsell.kind === "choice" && quantity > 0 && upsell.choices?.length ? (
-              <div className="mt-3">
-                <Select
-                  value={item?.choiceId ?? upsell.choices[0].id}
-                  onValueChange={(choiceId) => updateChoice(upsell.id, choiceId)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Избери опция" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {upsell.choices.map((choice) => (
-                      <SelectItem key={choice.id} value={choice.id}>
-                        {choice.name} (+{choice.pricePerUnit} €{choice.isMonthly ? "/мес" : ""})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {isDirectChoice && upsell.choices?.length ? (
+              <div
+                className={cn(
+                  "mt-3 grid gap-2",
+                  choiceCount >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2",
+                )}
+              >
+                {upsell.choices.map((choice) => {
+                  const isSelected = quantity > 0 && item?.choiceId === choice.id;
+
+                  return (
+                    <button
+                      key={choice.id}
+                      type="button"
+                      onClick={() => toggleDirectChoice(upsell.id, choice.id)}
+                      className={cn(
+                        "rounded-xl border bg-background/70 p-3 text-left transition-colors",
+                        isSelected
+                          ? "border-primary ring-1 ring-primary"
+                          : "border-border hover:border-primary/40",
+                      )}
+                    >
+                      <span className="block text-sm font-semibold">{choice.name}</span>
+                      <span className="mt-1 flex items-baseline gap-1 text-xs text-muted-foreground">
+                        +
+                        <Price value={choice.pricePerUnit} className="text-xs text-muted-foreground" />
+                        {choice.isMonthly ? "/мес" : ""}
+                      </span>
+                      {choice.description ? (
+                        <span className="mt-1 block text-xs text-muted-foreground">
+                          {choice.description}
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+
+            {!isDirectChoice && upsell.kind === "choice" && quantity > 0 && upsell.choices?.length ? (
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                {upsell.choices.map((choice) => {
+                  const selectedChoiceId = item?.choiceId ?? upsell.choices![0].id;
+                  const isSelected = selectedChoiceId === choice.id;
+
+                  return (
+                    <button
+                      key={choice.id}
+                      type="button"
+                      onClick={() => updateChoice(upsell.id, choice.id)}
+                      className={cn(
+                        "rounded-xl border bg-background/70 p-3 text-left transition-colors",
+                        isSelected
+                          ? "border-primary ring-1 ring-primary"
+                          : "border-border hover:border-primary/40",
+                      )}
+                    >
+                      <span className="block text-sm font-semibold">{choice.name}</span>
+                      <span className="mt-1 flex items-baseline gap-1 text-xs text-muted-foreground">
+                        +
+                        <Price value={choice.pricePerUnit} className="text-xs text-muted-foreground" />
+                        {choice.isMonthly ? "/мес" : ""}
+                      </span>
+                      {choice.description ? (
+                        <span className="mt-1 block text-xs text-muted-foreground">
+                          {choice.description}
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
               </div>
             ) : null}
 
@@ -290,12 +370,15 @@ export function UpsellConfigurator({
             {quantity > 0 ? (
               <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  {quantity} x{" "}
-                  {upsell.kind === "choice"
-                    ? item?.choiceId
+                  {upsell.kind === "choice" ? (
+                    item?.choiceId
                       ? upsell.choices?.find((choice) => choice.id === item.choiceId)?.name
                       : upsell.choices?.[0]?.name
-                    : <Price value={upsell.pricePerUnit ?? 0} />}
+                  ) : (
+                    <>
+                      {quantity} x <Price value={upsell.pricePerUnit ?? 0} />
+                    </>
+                  )}
                 </span>
                 <span className="font-medium text-primary">
                   +<Price value={amount} className="text-primary font-medium" />

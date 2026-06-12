@@ -22,6 +22,8 @@ export interface ServiceUpsell {
   includedUnits?: number;
   tierStep?: number;
   tierPrice?: number;
+  /** Click-to-select choices without quantity controls (e.g. courier pickers). */
+  directChoice?: boolean;
   choices?: {
     id: string;
     name: string;

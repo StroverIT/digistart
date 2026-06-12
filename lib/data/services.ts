@@ -53,8 +53,9 @@ export const services: Service[] = [
         id: "courier-integration",
         name: "Интеграция с куриер",
         description:
-          "Еконт или Спиди с избор на офис и автоматично изчисляване на доставка. Скоро: Box Now и Easybox.",
+          "Еконт, Спиди или и двата с избор на офис и автоматично изчисляване на доставка. Скоро: Box Now и Easybox.",
         kind: "choice",
+        directChoice: true,
         isMonthly: true,
         unit: "куриер",
         min: 0,
@@ -63,6 +64,7 @@ export const services: Service[] = [
         choices: [
           { id: "econt", name: "Еконт", pricePerUnit: 5, isMonthly: true },
           { id: "speedy", name: "Спиди", pricePerUnit: 5, isMonthly: true },
+          { id: "both", name: "Еконт и Спиди", pricePerUnit: 10, isMonthly: true },
         ],
       },
       ...brandUpsells,
