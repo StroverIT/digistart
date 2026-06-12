@@ -13,14 +13,15 @@ import { useLandingScrollAnimations } from "@/components/services/service-detail
 
 const benefits = [
   {
-    title: "Повече хора да стигнат до продуктите",
+    title: "Повече нови клиенти от Meta и Google",
     description:
-      "Показваме магазина на хора, които вече търсят или биха купили точно такъв артикул.",
+      "Показваме магазина на хора, които още не те познават, но търсят или биха купили такъв артикул.",
     image: "/stickers/my-business.png",
   },
   {
-    title: "Повече колички да станат поръчки",
-    description: "Връщаме хората, които са гледали продукт, но още не са купили.",
+    title: "Повече видимост в каталога и търсенето",
+    description:
+      "В Google Shopping продуктите излизат с цена и снимка точно когато някой сравнява или търси подобни артикули.",
     image: "/stickers/social-media.png",
   },
   {
