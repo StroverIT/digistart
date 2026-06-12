@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import {
   ArrowLeft,
+  Building2,
   CheckCircle2,
   CreditCard,
   Eye,
@@ -16,7 +17,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Price } from "@/components/ui/price";
@@ -40,7 +41,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
+import { FieldGroup, Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import {
   downloadPasswordBackup,
   generateStrongPassword,
@@ -51,6 +52,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "sonner";
 import Link from "next/link";
 import gsap from "gsap";
+import { cn } from "@/lib/utils";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
 const PAYMENT_PREPARE_MAX_RETRIES = 3;
@@ -70,6 +72,84 @@ function contactFieldsMissingMessage(
   if (missing.length === 1) return `Моля попълнете ${missing[0]}.`;
   if (missing.length === 2) return `Моля попълнете ${missing[0]} и ${missing[1]}.`;
   return "Моля попълнете име, имейл и телефон.";
+}
+
+const checkoutCheckboxClassName =
+  "mt-0.5 size-5 border-foreground/50 bg-background shadow-sm hover:border-foreground/80 group-hover:border-foreground/80";
+
+const checkoutChoiceLabelClassName =
+  "group flex cursor-pointer select-none items-start gap-3 rounded-lg p-3 transition-colors hover:bg-muted/30";
+
+const checkoutInputClassName =
+  "border-foreground/30 bg-background text-foreground shadow-none placeholder:text-muted-foreground/60 focus-visible:border-primary focus-visible:ring-primary/30 dark:border-foreground/35 dark:bg-background dark:text-foreground";
+
+const checkoutReadOnlyInputClassName =
+  "border-foreground/15 bg-muted/50 text-foreground shadow-none cursor-default dark:bg-muted/40 dark:text-foreground";
+
+type CheckoutLegalConsentProps = {
+  checkboxId: string;
+  checked: boolean;
+  onCheckedChange: (accepted: boolean) => void;
+  error?: string;
+  variant?: "bordered" | "plain";
+};
+
+function CheckoutLegalConsent({
+  checkboxId,
+  checked,
+  onCheckedChange,
+  error,
+  variant = "bordered",
+}: CheckoutLegalConsentProps) {
+  return (
+    <div
+      className={cn(
+        variant === "bordered" &&
+          "rounded-lg border border-border p-4 transition-colors has-focus-visible:ring-2 has-focus-visible:ring-ring/50",
+        variant === "plain" && "pt-1",
+      )}
+    >
+      <label htmlFor={checkboxId} className={checkoutChoiceLabelClassName}>
+        <Checkbox
+          id={checkboxId}
+          checked={checked}
+          className={checkoutCheckboxClassName}
+          onCheckedChange={(value) => onCheckedChange(value === true)}
+        />
+        <span className="text-sm leading-snug text-muted-foreground group-hover:text-foreground/85">
+          Съгласен/на съм с{" "}
+          <Link
+            href="/terms-and-conditions"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-foreground"
+          >
+            Общите условия
+          </Link>
+          ,{" "}
+          <Link
+            href="/privacy-policy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-foreground"
+          >
+            Политиката за поверителност
+          </Link>{" "}
+          и{" "}
+          <Link
+            href="/terms-and-conditions#refund-policy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-foreground"
+          >
+            Политиката за връщане на суми
+          </Link>
+          .
+        </span>
+      </label>
+      {error ? <p className="mt-2 text-xs text-red-500">{error}</p> : null}
+    </div>
+  );
 }
 
 export default function CheckoutPage() {
@@ -548,6 +628,7 @@ export default function CheckoutPage() {
                             value={formData.name}
                             onChange={handleInputChange}
                             placeholder="Иван Петров"
+                            className={checkoutInputClassName}
                             required
                           />
                         </Field>
@@ -561,6 +642,7 @@ export default function CheckoutPage() {
                               value={formData.email}
                               onChange={handleInputChange}
                               placeholder="ivan@example.com"
+                              className={checkoutInputClassName}
                               required
                             />
                           </Field>
@@ -572,7 +654,8 @@ export default function CheckoutPage() {
                               type="tel"
                               value={formData.phone}
                               onChange={handleInputChange}
-                              placeholder="+359"
+                              placeholder="+359 88 123 4567"
+                              className={checkoutInputClassName}
                               required
                             />
                           </Field>
@@ -603,7 +686,7 @@ export default function CheckoutPage() {
                               onFocus={() => setPasswordFieldTouched(true)}
                               placeholder="Създай сигурна парола"
                               autoComplete="new-password"
-                              className="pr-11"
+                              className={cn(checkoutInputClassName, "pr-11")}
                             />
                             <button
                               type="button"
@@ -714,7 +797,7 @@ export default function CheckoutPage() {
                               onChange={(e) => setPasswordConfirm(e.target.value)}
                               placeholder="Повтори паролата"
                               autoComplete="new-password"
-                              className="pr-11"
+                              className={cn(checkoutInputClassName, "pr-11")}
                             />
                             <button
                               type="button"
@@ -752,51 +835,15 @@ export default function CheckoutPage() {
                     </CardContent>
                   </Card>
                   {checkoutError ? <p className="text-sm text-red-500">{checkoutError}</p> : null}
-                  <div className="rounded-lg border border-border p-4">
-                    <label className="flex items-start gap-3 cursor-pointer">
-                      <Checkbox
-                        checked={acceptedCheckoutTerms}
-                        onCheckedChange={(value) => {
-                          const isAccepted = value === true;
-                          setAcceptedCheckoutTerms(isAccepted);
-                          if (isAccepted) setLegalConsentError("");
-                        }}
-                      />
-                      <span className="text-sm text-muted-foreground">
-                        Съгласен/на съм с{" "}
-                        <Link
-                          href="/terms-and-conditions"
-                          className="underline hover:text-foreground"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Общите условия
-                        </Link>
-                        ,{" "}
-                        <Link
-                          href="/privacy-policy"
-                          className="underline hover:text-foreground"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Политиката за поверителност
-                        </Link>{" "}
-                        и{" "}
-                        <Link
-                          href="/terms-and-conditions#refund-policy"
-                          className="underline hover:text-foreground"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Политиката за връщане на суми
-                        </Link>
-                        .
-                      </span>
-                    </label>
-                    {legalConsentError ? (
-                      <p className="mt-2 text-xs text-red-500">{legalConsentError}</p>
-                    ) : null}
-                  </div>
+                  <CheckoutLegalConsent
+                    checkboxId="checkout-terms-guest"
+                    checked={acceptedCheckoutTerms}
+                    onCheckedChange={(isAccepted) => {
+                      setAcceptedCheckoutTerms(isAccepted);
+                      if (isAccepted) setLegalConsentError("");
+                    }}
+                    error={legalConsentError}
+                  />
                   <Button
                     type="button"
                     size="lg"
@@ -812,47 +859,77 @@ export default function CheckoutPage() {
               {((isLoggedInForCheckout && logicalStep === 1) ||
                 (!isLoggedInForCheckout && logicalStep === 2)) ? (
                 <>
-                  <Card className="bg-card border-border">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Закупуване като фирма</CardTitle>
+                  <Card className="bg-card border-border shadow-sm">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Building2 className="h-5 w-5 text-primary shrink-0" />
+                        Закупуване като фирма
+                      </CardTitle>
+                      <CardDescription>
+                        По желание въведете фирмени данни за фактура. Полето за фирма е задължително
+                        само ако изберете закупуване като фирма.
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                       {isLoggedInForCheckout ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <Field>
-                            <FieldLabel>Имейл</FieldLabel>
-                            <Input value={formData.email} disabled className="opacity-80" />
-                          </Field>
-                          <Field>
-                            <FieldLabel htmlFor="phone2">Телефон *</FieldLabel>
-                            <Input
-                              id="phone2"
-                              name="phone"
-                              type="tel"
-                              value={formData.phone}
-                              onChange={handleInputChange}
-                              required
-                            />
-                          </Field>
-                        </div>
+                        <FieldGroup className="gap-5">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Field>
+                              <FieldLabel>Имейл</FieldLabel>
+                              <Input
+                                value={formData.email}
+                                disabled
+                                className={checkoutReadOnlyInputClassName}
+                              />
+                            </Field>
+                            <Field>
+                              <FieldLabel htmlFor="phone2">Телефон *</FieldLabel>
+                              <Input
+                                id="phone2"
+                                name="phone"
+                                type="tel"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                placeholder="+359 88 123 4567"
+                                className={checkoutInputClassName}
+                                required
+                              />
+                            </Field>
+                          </div>
+                        </FieldGroup>
                       ) : null}
 
-                      <div className="rounded-lg border border-border p-4 space-y-3">
-                        <label className="flex items-start gap-3 cursor-pointer">
+                      <div className="space-y-4">
+                        <label
+                          htmlFor="checkout-purchase-as-business"
+                          className={cn(
+                            checkoutChoiceLabelClassName,
+                            "items-center",
+                            purchaseAsBusiness && "bg-primary/5 hover:bg-primary/8",
+                          )}
+                        >
                           <Checkbox
+                            id="checkout-purchase-as-business"
                             checked={purchaseAsBusiness}
+                            className={checkoutCheckboxClassName}
                             onCheckedChange={(value) => {
                               const on = value === true;
                               setPurchaseAsBusiness(on);
                               if (!on) setCheckoutError("");
                             }}
                           />
-                          <span className="text-sm text-muted-foreground leading-snug">
+                          <span className="text-sm font-medium leading-snug text-foreground group-hover:text-foreground">
                             Закупувам като фирма
                           </span>
                         </label>
-                        <Field>
-                          <FieldLabel htmlFor="company">
+
+                        <Field
+                          className={cn(
+                            "rounded-lg px-3 py-3 transition-colors",
+                            purchaseAsBusiness && "bg-primary/5",
+                          )}
+                        >
+                          <FieldLabel htmlFor="company" className="text-foreground">
                             {purchaseAsBusiness ? "Име на фирмата *" : "Фирма (по избор)"}
                           </FieldLabel>
                           <Input
@@ -860,57 +937,30 @@ export default function CheckoutPage() {
                             name="company"
                             value={formData.company ?? ""}
                             onChange={handleInputChange}
-                            placeholder="Име на фирма"
+                            placeholder="Пример: Дигистарт ООД"
+                            className={checkoutInputClassName}
                             required={purchaseAsBusiness}
+                            aria-invalid={purchaseAsBusiness && !formData.company?.trim()}
                           />
+                          {!purchaseAsBusiness ? (
+                            <FieldDescription>
+                              Оставете празно, ако поръчката е за лично ползване.
+                            </FieldDescription>
+                          ) : null}
                         </Field>
                       </div>
+
                       {isLoggedInForCheckout ? (
-                        <div className="rounded-lg border border-border p-4">
-                          <label className="flex items-start gap-3 cursor-pointer">
-                            <Checkbox
-                              checked={acceptedCheckoutTerms}
-                              onCheckedChange={(value) => {
-                                const isAccepted = value === true;
-                                setAcceptedCheckoutTerms(isAccepted);
-                                if (isAccepted) setLegalConsentError("");
-                              }}
-                            />
-                            <span className="text-sm text-muted-foreground">
-                              Съгласен/на съм с{" "}
-                              <Link
-                                href="/terms-and-conditions"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="underline hover:text-foreground"
-                              >
-                                Общите условия
-                              </Link>
-                              ,{" "}
-                              <Link
-                                href="/privacy-policy"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="underline hover:text-foreground"
-                              >
-                                Политиката за поверителност
-                              </Link>{" "}
-                              и{" "}
-                              <Link
-                                href="/terms-and-conditions#refund-policy"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="underline hover:text-foreground"
-                              >
-                                Политиката за връщане на суми
-                              </Link>
-                              .
-                            </span>
-                          </label>
-                          {legalConsentError ? (
-                            <p className="mt-2 text-xs text-red-500">{legalConsentError}</p>
-                          ) : null}
-                        </div>
+                        <CheckoutLegalConsent
+                          checkboxId="checkout-terms-logged-in"
+                          checked={acceptedCheckoutTerms}
+                          onCheckedChange={(isAccepted) => {
+                            setAcceptedCheckoutTerms(isAccepted);
+                            if (isAccepted) setLegalConsentError("");
+                          }}
+                          error={legalConsentError}
+                          variant="plain"
+                        />
                       ) : null}
 
                     </CardContent>
@@ -1040,24 +1090,24 @@ export default function CheckoutPage() {
                         <ul className="mt-2 space-y-1">
                           {(cart.items.find((cartItem) => cartItem.id === item.id)?.upsells ?? []).map(
                             (upsell) => {
-                            const service = servicesById[item.serviceId] ?? getServiceById(item.serviceId);
-                            const serviceUpsell = service?.upsells.find((config) => config.id === upsell.upsellId);
-                            if (!serviceUpsell) return null;
-                            const choiceName =
-                              serviceUpsell.kind === "choice"
-                                ? serviceUpsell.choices?.find((choice) => choice.id === upsell.choiceId)?.name
-                                : null;
-                            return (
-                              <li key={upsell.upsellId} className="text-xs text-muted-foreground">
-                                + {serviceUpsell.name}
-                                {choiceName ? ` (${choiceName})` : ""}
-                                {upsell.quantity > 0 ? ` x${upsell.quantity}` : ""}
-                                {upsell.entries?.filter(Boolean).length
-                                  ? ` - ${upsell.entries.filter(Boolean).join(", ")}`
-                                  : ""}
-                              </li>
-                            );
-                          })}
+                              const service = servicesById[item.serviceId] ?? getServiceById(item.serviceId);
+                              const serviceUpsell = service?.upsells.find((config) => config.id === upsell.upsellId);
+                              if (!serviceUpsell) return null;
+                              const choiceName =
+                                serviceUpsell.kind === "choice"
+                                  ? serviceUpsell.choices?.find((choice) => choice.id === upsell.choiceId)?.name
+                                  : null;
+                              return (
+                                <li key={upsell.upsellId} className="text-xs text-muted-foreground">
+                                  + {serviceUpsell.name}
+                                  {choiceName ? ` (${choiceName})` : ""}
+                                  {upsell.quantity > 0 ? ` x${upsell.quantity}` : ""}
+                                  {upsell.entries?.filter(Boolean).length
+                                    ? ` - ${upsell.entries.filter(Boolean).join(", ")}`
+                                    : ""}
+                                </li>
+                              );
+                            })}
                         </ul>
                       ) : null}
                     </div>
@@ -1083,8 +1133,8 @@ export default function CheckoutPage() {
                         {isAdminCheckout
                           ? "Еднократно (админ)"
                           : displayCart.items.some((item) => item.billingCycle === "annual-prepaid")
-                          ? "Еднократни плащания и предплащания"
-                          : "Еднократни услуги"}
+                            ? "Еднократни плащания и предплащания"
+                            : "Еднократни услуги"}
                       </span>
                       <Price value={displayCart.totalOneTime} />
                     </div>
@@ -1108,15 +1158,15 @@ export default function CheckoutPage() {
                         className="text-2xl gradient-text"
                       />
                       {!isAdminCheckout &&
-                      displayCart.totalMonthly > 0 &&
-                      displayCart.totalOneTime === 0 ? (
+                        displayCart.totalMonthly > 0 &&
+                        displayCart.totalOneTime === 0 ? (
                         <span className="text-muted-foreground">/мес</span>
                       ) : null}
                     </div>
                   </div>
                   {!isAdminCheckout &&
-                  displayCart.totalMonthly > 0 &&
-                  displayCart.totalOneTime > 0 ? (
+                    displayCart.totalMonthly > 0 &&
+                    displayCart.totalOneTime > 0 ? (
                     <p className="text-sm text-muted-foreground text-right mt-1">
                       + <Price value={displayCart.totalMonthly} />/мес след това
                     </p>
