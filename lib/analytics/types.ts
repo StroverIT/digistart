@@ -68,6 +68,22 @@ export type AnalyticsAdminResponse = {
   };
   surveyStats: SurveyAnalyticsStat[];
   surveyCombinations: SurveyCombinationsAggregate;
+  checkoutFunnel: CheckoutFunnelAggregate;
+};
+
+export type CheckoutFunnelStageStat = {
+  stage: "account" | "business" | "payment";
+  label: string;
+  uniqueSessions: number;
+  dropOffFromPrevious: number | null;
+};
+
+export type CheckoutFunnelAggregate = {
+  allTimeStarted: number;
+  lastDaysStarted: number;
+  stages: CheckoutFunnelStageStat[];
+  dailyStarts: { date: string; starts: number }[];
+  dailyByStage: { date: string; stage: string; count: number }[];
 };
 
 export type UtmLandingEventPayload = {

@@ -43,10 +43,6 @@ export async function checkoutGuest(page: Page, details: GuestCheckoutDetails) {
   await page.getByRole("button", { name: "Напред", exact: true }).click();
   await expect(page.getByText(/Стъпка 2 от/)).toBeVisible();
 
-  const logoDesign = page.getByLabel("Искам изработка на лого (+50 €)");
-  await expect(logoDesign).toBeVisible();
-  await logoDesign.click();
-
   await page.getByRole("button", { name: "Напред към плащане" }).click();
   await expect(page.getByText(/Стъпка 3 от 3/)).toBeVisible({
     timeout: 60_000,

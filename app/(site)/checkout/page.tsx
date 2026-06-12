@@ -18,11 +18,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Price } from "@/components/ui/price";
 import type { Cart, CustomerInfo, Service } from "@/lib/types";
+import { getCheckoutStage } from "@/lib/analytics/checkout-funnel";
 import { getCart, clearCart, updateCartItemUpsells } from "@/lib/store/cart";
+import { recordCheckoutFunnelStage } from "@/lib/store/checkout-analytics";
 import {
   applyAdminPricingToCart,
   isAdminCheckoutRole,
@@ -44,8 +45,6 @@ import {
   downloadPasswordBackup,
   generateStrongPassword,
 } from "@/lib/password/generate-strong-password";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { getServiceById } from "@/lib/data/services";
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -57,9 +56,6 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY 
 const PAYMENT_PREPARE_MAX_RETRIES = 3;
 const PAYMENT_PREPARE_FAILED_MESSAGE =
   "Нещо се провали при подготовката за формата за плащане. Опитайте отново.";
-
-const LOGO_UPSELL = "logo-design";
-const BRAND_IMAGE_ACCEPT = "image/*,application/pdf";
 
 function contactFieldsMissingMessage(
   name: string,
@@ -105,18 +101,12 @@ export default function CheckoutPage() {
   const [acceptedCheckoutTerms, setAcceptedCheckoutTerms] = useState(false);
   const [purchaseAsBusiness, setPurchaseAsBusiness] = useState(false);
   const [legalConsentError, setLegalConsentError] = useState("");
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [brandUrls, setBrandUrls] = useState<{ logoUrl?: string }>({});
   const [templateSelection, setTemplateSelection] = useState<CheckoutTemplateSelection | null>(
     null,
   );
-  /** Merged URLs committed before entering payment (avoids stale state after upload). */
-  const [stripeBrandPayload, setStripeBrandPayload] = useState<{
-    logoUrl?: string | null;
-    paletteUrl?: string | null;
-  } | null>(null);
   const paymentInitRef = useRef(false);
   const checkoutRootRef = useRef<HTMLDivElement>(null);
+  const recordedFunnelStagesRef = useRef<Set<string>>(new Set());
 
   const [formData, setFormData] = useState<CustomerInfo>({
     name: "",
@@ -196,20 +186,6 @@ export default function CheckoutPage() {
     }
   }, [isLoggedInForCheckout, session?.user?.name, session?.user?.email]);
 
-  const firstCartItem = cart.items[0];
-  const hasLogoUpsell = Boolean(
-    firstCartItem?.upsells.some((u) => u.upsellId === LOGO_UPSELL && u.quantity > 0)
-  );
-  const setUpsellOnFirstItem = useCallback((upsellId: string, on: boolean) => {
-    const current = getCart();
-    const item = current.items[0];
-    if (!item) return;
-    const others = item.upsells.filter((u) => u.upsellId !== upsellId);
-    const next = on ? [...others, { upsellId, quantity: 1 }] : others;
-    const updated = updateCartItemUpsells(item.id, next);
-    setCart(updated);
-  }, []);
-
   const createEmbeddedSession = async () => {
     setCheckoutError("");
     const emailLooksValid = /\S+@\S+\.\S+/.test(formData.email);
@@ -229,11 +205,6 @@ export default function CheckoutPage() {
         }
         : undefined;
 
-    const brandSource = stripeBrandPayload ?? brandUrls;
-    const brandAssets = brandSource.logoUrl
-      ? { logoUrl: brandSource.logoUrl ?? null, paletteUrl: null }
-      : undefined;
-
     const response = await fetch("/api/checkout/stripe-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -248,7 +219,6 @@ export default function CheckoutPage() {
         },
         uiMode: "embedded",
         pendingUser,
-        brandAssets,
         purchaseAsBusiness,
         ...(templateSelection
           ? {
@@ -344,6 +314,20 @@ export default function CheckoutPage() {
     return () => ctx.revert();
   }, [mounted, cart.items.length, logicalStep]);
 
+  useEffect(() => {
+    if (!mounted || cart.items.length === 0) return;
+
+    const stage = getCheckoutStage(logicalStep, isLoggedInForCheckout);
+    if (recordedFunnelStagesRef.current.has(stage)) return;
+
+    recordedFunnelStagesRef.current.add(stage);
+    recordCheckoutFunnelStage(stage, {
+      logicalStep,
+      totalSteps,
+      isLoggedIn: isLoggedInForCheckout,
+    });
+  }, [mounted, cart.items.length, logicalStep, isLoggedInForCheckout, totalSteps]);
+
   const paymentStepIndex = totalSteps;
 
   useEffect(() => {
@@ -399,7 +383,6 @@ export default function CheckoutPage() {
     logicalStep,
     paymentStepIndex,
     sessionStatus,
-    stripeBrandPayload,
     acceptedCheckoutTerms,
     purchaseAsBusiness,
     formData.company,
@@ -431,10 +414,6 @@ export default function CheckoutPage() {
       setCheckoutError("Паролите не съвпадат.");
       return false;
     }
-    if (purchaseAsBusiness && !formData.company?.trim()) {
-      setCheckoutError("При закупуване като фирма въведете име на фирмата.");
-      return false;
-    }
     const res = await fetch("/api/checkout/account/precheck", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -448,54 +427,24 @@ export default function CheckoutPage() {
     return true;
   };
 
-  const validateAssetsAndContact = () => {
+  const validateBusinessStep = () => {
     setCheckoutError("");
-    const contactError = contactFieldsMissingMessage(
-      formData.name,
-      formData.email,
-      formData.phone
-    );
-    if (contactError) {
-      setCheckoutError(contactError);
-      return false;
+    if (isLoggedInForCheckout) {
+      const contactError = contactFieldsMissingMessage(
+        formData.name,
+        formData.email,
+        formData.phone
+      );
+      if (contactError) {
+        setCheckoutError(contactError);
+        return false;
+      }
     }
     if (purchaseAsBusiness && !formData.company?.trim()) {
       setCheckoutError("При закупуване като фирма въведете име на фирмата.");
       return false;
     }
-    if (!hasLogoUpsell && !logoFile && !brandUrls.logoUrl) {
-      setCheckoutError(
-        "Качете лого или изберете „Искам изработка на лого“."
-      );
-      return false;
-    }
     return true;
-  };
-
-  const uploadBrandFiles = async (): Promise<Record<string, string> | true | false> => {
-    if (!logoFile) return true;
-    const fd = new FormData();
-    if (logoFile) fd.append("logo", logoFile);
-    try {
-      const res = await fetch("/api/uploads/brand", { method: "POST", body: fd });
-      const json = (await res.json()) as {
-        logoUrl?: string | null;
-        paletteUrl?: string | null;
-        error?: string;
-      };
-      if (!res.ok) {
-        setCheckoutError(json.error ?? "Качването не бе успешно.");
-        return false;
-      }
-      const uploadedUrls: Record<string, string> = {};
-      if (typeof json.logoUrl === "string" && json.logoUrl) uploadedUrls.logoUrl = json.logoUrl;
-      const merged = { ...brandUrls, ...uploadedUrls };
-      setBrandUrls(merged);
-      return merged;
-    } catch {
-      setCheckoutError("Качването не бе успешно.");
-      return false;
-    }
   };
 
   const notifyMissingLegalConsent = () => {
@@ -514,22 +463,12 @@ export default function CheckoutPage() {
     setLogicalStep(2);
   };
 
-  const handleContinueFromAssets = async () => {
+  const handleContinueFromBusiness = () => {
     if (!acceptedCheckoutTerms) {
       notifyMissingLegalConsent();
       return;
     }
-    if (!validateAssetsAndContact()) return;
-    const uploaded = await uploadBrandFiles();
-    if (uploaded === false) return;
-    const merged =
-      uploaded === true
-        ? brandUrls
-        : { ...brandUrls, ...uploaded };
-    setStripeBrandPayload({
-      logoUrl: merged.logoUrl ?? null,
-      paletteUrl: null,
-    });
+    if (!validateBusinessStep()) return;
     paymentInitRef.current = false;
     setStripeClientSecret(null);
     setLogicalStep(isLoggedInForCheckout ? 2 : 3);
@@ -547,12 +486,12 @@ export default function CheckoutPage() {
 
   const displayStepLabel = useMemo(() => {
     if (isLoggedInForCheckout) {
-      return logicalStep === 1 ? "Лого" : "Плащане";
+      return logicalStep === 1 ? "Фирма" : "Плащане";
     }
     return logicalStep === 1
       ? "Акаунт"
       : logicalStep === 2
-        ? "Лого"
+        ? "Фирма"
         : "Плащане";
   }, [isLoggedInForCheckout, logicalStep]);
 
@@ -635,34 +574,6 @@ export default function CheckoutPage() {
                               onChange={handleInputChange}
                               placeholder="+359"
                               required
-                            />
-                          </Field>
-                        </div>
-                        <div className="rounded-lg border border-border p-4 space-y-3">
-                          <label className="flex items-start gap-3 cursor-pointer">
-                            <Checkbox
-                              checked={purchaseAsBusiness}
-                              onCheckedChange={(value) => {
-                                const on = value === true;
-                                setPurchaseAsBusiness(on);
-                                if (!on) setCheckoutError("");
-                              }}
-                            />
-                            <span className="text-sm text-muted-foreground leading-snug">
-                              Закупувам като фирма
-                            </span>
-                          </label>
-                          <Field>
-                            <FieldLabel htmlFor="company">
-                              {purchaseAsBusiness ? "Име на фирмата *" : "Фирма (по избор)"}
-                            </FieldLabel>
-                            <Input
-                              id="company"
-                              name="company"
-                              value={formData.company}
-                              onChange={handleInputChange}
-                              placeholder="Име на фирма"
-                              required={purchaseAsBusiness}
                             />
                           </Field>
                         </div>
@@ -837,16 +748,6 @@ export default function CheckoutPage() {
                             </div>
                           ) : null}
                         </Field>
-                        <Field>
-                          <FieldLabel htmlFor="notes">Бележки (по избор)</FieldLabel>
-                          <Textarea
-                            id="notes"
-                            name="notes"
-                            value={formData.notes}
-                            onChange={handleInputChange}
-                            rows={3}
-                          />
-                        </Field>
                       </FieldGroup>
                     </CardContent>
                   </Card>
@@ -913,107 +814,56 @@ export default function CheckoutPage() {
                 <>
                   <Card className="bg-card border-border">
                     <CardHeader>
-                      <CardTitle className="text-lg">Лого</CardTitle>
+                      <CardTitle className="text-lg">Закупуване като фирма</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
                       {isLoggedInForCheckout ? (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Field>
-                              <FieldLabel>Имейл</FieldLabel>
-                              <Input value={formData.email} disabled className="opacity-80" />
-                            </Field>
-                            <Field>
-                              <FieldLabel htmlFor="phone2">Телефон *</FieldLabel>
-                              <Input
-                                id="phone2"
-                                name="phone"
-                                type="tel"
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                                required
-                              />
-                            </Field>
-                          </div>
-                          <div className="rounded-lg border border-border p-4 space-y-3">
-                            <label className="flex items-start gap-3 cursor-pointer">
-                              <Checkbox
-                                checked={purchaseAsBusiness}
-                                onCheckedChange={(value) => {
-                                  const on = value === true;
-                                  setPurchaseAsBusiness(on);
-                                  if (!on) setCheckoutError("");
-                                }}
-                              />
-                              <span className="text-sm text-muted-foreground leading-snug">
-                                Закупувам като фирма
-                              </span>
-                            </label>
-                            <Field>
-                              <FieldLabel htmlFor="companyLoggedIn">
-                                {purchaseAsBusiness ? "Име на фирмата *" : "Фирма (по избор)"}
-                              </FieldLabel>
-                              <Input
-                                id="companyLoggedIn"
-                                name="company"
-                                value={formData.company ?? ""}
-                                onChange={handleInputChange}
-                                placeholder="Име на фирма"
-                                required={purchaseAsBusiness}
-                              />
-                            </Field>
-                          </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <Field>
+                            <FieldLabel>Имейл</FieldLabel>
+                            <Input value={formData.email} disabled className="opacity-80" />
+                          </Field>
+                          <Field>
+                            <FieldLabel htmlFor="phone2">Телефон *</FieldLabel>
+                            <Input
+                              id="phone2"
+                              name="phone"
+                              type="tel"
+                              value={formData.phone}
+                              onChange={handleInputChange}
+                              required
+                            />
+                          </Field>
                         </div>
                       ) : null}
 
-                      <p className="text-sm text-muted-foreground">
-                        За настройката на магазина ни трябва лого. Ако нямаш готово, можеш да
-                        поръчаш изработка; иначе качи файл по-долу.
-                      </p>
-
-                      <div className="space-y-3 rounded-lg border border-border p-4">
-                        <RadioGroup
-                          value={hasLogoUpsell ? "design" : "own"}
-                          onValueChange={(value) => {
-                            const wantsDesign = value === "design";
-                            setUpsellOnFirstItem(LOGO_UPSELL, wantsDesign);
-                            if (wantsDesign) setLogoFile(null);
-                          }}
-                          className="gap-2"
-                        >
-                          <div className="flex items-start gap-3 rounded-md p-2 hover:bg-secondary/40">
-                            <RadioGroupItem value="own" id="logo-own" className="mt-0.5" />
-                            <Label
-                              htmlFor="logo-own"
-                              className="cursor-pointer font-normal leading-snug"
-                            >
-                              Имам готово лого - ще го кача
-                            </Label>
-                          </div>
-                          <div className="flex items-start gap-3 rounded-md p-2 hover:bg-secondary/40">
-                            <RadioGroupItem value="design" id="logo-design-choice" className="mt-0.5" />
-                            <Label
-                              htmlFor="logo-design-choice"
-                              className="cursor-pointer font-normal leading-snug"
-                            >
-                              Искам изработка на лого (+50 €)
-                            </Label>
-                          </div>
-                        </RadioGroup>
-                        {!hasLogoUpsell ? (
-                          <Field>
-                            <FieldLabel htmlFor="logo">Качи лого *</FieldLabel>
-                            <Input
-                              id="logo"
-                              type="file"
-                              accept={BRAND_IMAGE_ACCEPT}
-                              onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
-                            />
-                            <p className="text-xs text-muted-foreground">
-                              PNG, JPG, WebP, SVG или друг формат на изображение (макс. 8 MB).
-                            </p>
-                          </Field>
-                        ) : null}
+                      <div className="rounded-lg border border-border p-4 space-y-3">
+                        <label className="flex items-start gap-3 cursor-pointer">
+                          <Checkbox
+                            checked={purchaseAsBusiness}
+                            onCheckedChange={(value) => {
+                              const on = value === true;
+                              setPurchaseAsBusiness(on);
+                              if (!on) setCheckoutError("");
+                            }}
+                          />
+                          <span className="text-sm text-muted-foreground leading-snug">
+                            Закупувам като фирма
+                          </span>
+                        </label>
+                        <Field>
+                          <FieldLabel htmlFor="company">
+                            {purchaseAsBusiness ? "Име на фирмата *" : "Фирма (по избор)"}
+                          </FieldLabel>
+                          <Input
+                            id="company"
+                            name="company"
+                            value={formData.company ?? ""}
+                            onChange={handleInputChange}
+                            placeholder="Име на фирма"
+                            required={purchaseAsBusiness}
+                          />
+                        </Field>
                       </div>
                       {isLoggedInForCheckout ? (
                         <div className="rounded-lg border border-border p-4">
@@ -1075,7 +925,7 @@ export default function CheckoutPage() {
                     <Button
                       type="button"
                       className="flex-1 glow-primary"
-                      onClick={handleContinueFromAssets}
+                      onClick={handleContinueFromBusiness}
                     >
                       Напред към плащане
                     </Button>

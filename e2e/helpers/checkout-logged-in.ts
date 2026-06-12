@@ -27,10 +27,6 @@ export async function checkoutLoggedInCustomer(
 
   await acceptCheckoutTerms(page);
 
-  const logoDesign = page.getByLabel("Искам изработка на лого (+50 €)");
-  await expect(logoDesign).toBeVisible();
-  await logoDesign.click();
-
   await page.getByRole("button", { name: "Напред към плащане" }).click();
   await expect(page.getByText(/Стъпка 2 от 2/)).toBeVisible({ timeout: 60_000 });
 

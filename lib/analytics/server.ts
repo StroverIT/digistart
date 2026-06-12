@@ -2,9 +2,15 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { comboCodeFromIndex } from "@/lib/analytics/survey-combinations";
 import {
+  CHECKOUT_FUNNEL_STAGE_LABELS,
+  CHECKOUT_FUNNEL_STAGES,
+  type CheckoutFunnelStage,
+} from "@/lib/analytics/checkout-funnel";
+import {
   ANALYTICS_EVENT_TYPES,
   type AnalyticsAdminResponse,
   type AnalyticsEventPayload,
+  type CheckoutFunnelAggregate,
   type CtaAnalyticsStats,
   type DailyAnalyticsStats,
   type PageAnalyticsStats,
@@ -18,6 +24,7 @@ import {
 
 const MAX_INGEST_BATCH_SIZE = 100;
 type AnalyticsRow = {
+  id: string;
   eventType: string;
   page: string;
   metadata: Prisma.JsonValue | null;
@@ -493,6 +500,99 @@ function buildSurveyCombinationStats(rows: AnalyticsRow[]): SurveyCombinationsAg
   };
 }
 
+function resolveSessionKey(row: AnalyticsRow): string {
+  if (row.sessionId && row.sessionId.trim().length > 0) {
+    return row.sessionId;
+  }
+  return `event:${row.id}`;
+}
+
+function buildCheckoutFunnelStats(rows: AnalyticsRow[], days = 30): CheckoutFunnelAggregate {
+  const funnelRows = rows.filter((row) => row.eventType === "checkout_funnel");
+
+  const allSessions = new Set<string>();
+  const stageSessions = new Map<CheckoutFunnelStage, Set<string>>();
+  for (const stage of CHECKOUT_FUNNEL_STAGES) {
+    stageSessions.set(stage, new Set());
+  }
+
+  const now = new Date();
+  const dailyStartsMap = new Map<string, Set<string>>();
+  const dailyByStageMap = new Map<string, Set<string>>();
+  const lastDaysSessions = new Set<string>();
+
+  for (let i = days - 1; i >= 0; i -= 1) {
+    const day = new Date(now);
+    day.setDate(now.getDate() - i);
+    dailyStartsMap.set(day.toISOString().split("T")[0], new Set());
+  }
+
+  const cutoff = new Date(now);
+  cutoff.setDate(now.getDate() - (days - 1));
+  cutoff.setHours(0, 0, 0, 0);
+
+  for (const row of funnelRows) {
+    const metadata = (row.metadata ?? {}) as Record<string, unknown>;
+    const stage = String(metadata.stage ?? "").trim() as CheckoutFunnelStage;
+    if (!CHECKOUT_FUNNEL_STAGES.includes(stage)) continue;
+
+    const sessionKey = resolveSessionKey(row);
+    allSessions.add(sessionKey);
+    stageSessions.get(stage)?.add(sessionKey);
+
+    const date = row.createdAt.toISOString().split("T")[0];
+    if (dailyStartsMap.has(date)) {
+      dailyStartsMap.get(date)?.add(sessionKey);
+      const dailyStageKey = `${date}::${stage}`;
+      if (!dailyByStageMap.has(dailyStageKey)) {
+        dailyByStageMap.set(dailyStageKey, new Set());
+      }
+      dailyByStageMap.get(dailyStageKey)?.add(sessionKey);
+    }
+
+    if (row.createdAt >= cutoff) {
+      lastDaysSessions.add(sessionKey);
+    }
+  }
+
+  const stageCounts = CHECKOUT_FUNNEL_STAGES.map((stage, index) => {
+    const uniqueSessions = stageSessions.get(stage)?.size ?? 0;
+    let dropOffFromPrevious: number | null = null;
+    if (index > 0) {
+      const previousStage = CHECKOUT_FUNNEL_STAGES[index - 1];
+      const previousCount = stageSessions.get(previousStage)?.size ?? 0;
+      dropOffFromPrevious =
+        previousCount > 0 ? Math.round((uniqueSessions / previousCount) * 100) : null;
+    }
+    return {
+      stage,
+      label: CHECKOUT_FUNNEL_STAGE_LABELS[stage],
+      uniqueSessions,
+      dropOffFromPrevious,
+    };
+  });
+
+  const dailyStarts = Array.from(dailyStartsMap.entries()).map(([date, sessions]) => ({
+    date,
+    starts: sessions.size,
+  }));
+
+  const dailyByStage: { date: string; stage: string; count: number }[] = [];
+  for (const [key, sessions] of dailyByStageMap.entries()) {
+    const [date, stage] = key.split("::");
+    dailyByStage.push({ date, stage, count: sessions.size });
+  }
+  dailyByStage.sort((a, b) => a.date.localeCompare(b.date) || a.stage.localeCompare(b.stage));
+
+  return {
+    allTimeStarted: allSessions.size,
+    lastDaysStarted: lastDaysSessions.size,
+    stages: stageCounts,
+    dailyStarts,
+    dailyByStage,
+  };
+}
+
 export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<AnalyticsAdminResponse> {
   const createdAtFilter =
     from || to
@@ -509,6 +609,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
       ...createdAtFilter,
     },
     select: {
+      id: true,
       eventType: true,
       page: true,
       metadata: true,
@@ -553,6 +654,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
   const cartAdditions = buildCartAdditionStats(rows, 30);
   const surveyStats = buildSurveyStats(rows);
   const surveyCombinations = buildSurveyCombinationStats(rows);
+  const checkoutFunnel = buildCheckoutFunnelStats(rows, 30);
 
   return {
     pageStats,
@@ -568,6 +670,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     cartAdditions,
     surveyStats,
     surveyCombinations,
+    checkoutFunnel,
   };
 }
 

@@ -20,6 +20,7 @@ import { UtmDailyViewsChart } from "@/components/admin/utm-daily-views-chart";
 import { UtmMonthlyViewsChart } from "@/components/admin/utm-monthly-views-chart";
 import type { AnalyticsAdminResponse } from "@/lib/analytics/types";
 import { CartAdditionsChart } from "@/components/admin/cart-additions-chart";
+import { CheckoutFunnelChart } from "@/components/admin/checkout-funnel-chart";
 import { SurveyCombinationsChart } from "@/components/admin/survey-combinations-chart";
 import { ViewsPerDayChart } from "@/components/admin/views-per-day-chart";
 import { ServiceSlotsPanel } from "@/components/admin/service-slots-panel";
@@ -91,6 +92,13 @@ export default function AdminDashboard() {
       dailyByCombo: [],
       topDay: null,
     },
+    checkoutFunnel: {
+      allTimeStarted: 0,
+      lastDaysStarted: 0,
+      stages: [],
+      dailyStarts: [],
+      dailyByStage: [],
+    },
   });
   const [revenueFromDate, setRevenueFromDate] = useState(() => getDateBefore(13));
   const [revenueToDate, setRevenueToDate] = useState(() => getTodayDateKey());
@@ -138,6 +146,13 @@ export default function AdminDashboard() {
               dailyTotals: [],
               dailyByCombo: [],
               topDay: null,
+            },
+            checkoutFunnel: {
+              allTimeStarted: 0,
+              lastDaysStarted: 0,
+              stages: [],
+              dailyStarts: [],
+              dailyByStage: [],
             },
           },
         );
@@ -322,6 +337,35 @@ export default function AdminDashboard() {
           title="Добавяния (30 дни)"
           value={analytics.cartAdditions.lastDaysTotalAdds.toString()}
           description="Последните 30 дни"
+          icon={<TrendingUp className="h-6 w-6" />}
+        />
+        <StatCard
+          title="Checkout посещения"
+          value={analytics.checkoutFunnel.allTimeStarted.toString()}
+          description="Уникални сесии в checkout"
+          icon={<CreditCard className="h-6 w-6" />}
+        />
+        <StatCard
+          title="Checkout (30 дни)"
+          value={analytics.checkoutFunnel.lastDaysStarted.toString()}
+          description="Уникални сесии"
+          icon={<CreditCard className="h-6 w-6" />}
+        />
+        <StatCard
+          title="Достигнали плащане"
+          value={(
+            analytics.checkoutFunnel.stages.find((s) => s.stage === "payment")?.uniqueSessions ?? 0
+          ).toString()}
+          description={
+            analytics.checkoutFunnel.allTimeStarted > 0
+              ? `${Math.round(
+                  ((analytics.checkoutFunnel.stages.find((s) => s.stage === "payment")
+                    ?.uniqueSessions ?? 0) /
+                    analytics.checkoutFunnel.allTimeStarted) *
+                    100,
+                )}% от checkout посещения`
+              : "Етап плащане"
+          }
           icon={<TrendingUp className="h-6 w-6" />}
         />
       </div>
@@ -790,6 +834,62 @@ export default function AdminDashboard() {
                   </div>
                 ))}
               </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card
+          data-admin-animate
+          className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)] lg:col-span-2"
+        >
+          <CardHeader>
+            <CardTitle>Checkout funnel</CardTitle>
+            <p className="text-sm text-muted-foreground font-normal">
+              Уникални сесии по етап. „Акаунт“ се показва само за гости.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {analytics.checkoutFunnel.allTimeStarted === 0 ? (
+              <p className="text-muted-foreground text-sm">Няма данни за checkout funnel.</p>
+            ) : (
+              <>
+                <div className="space-y-3">
+                  {analytics.checkoutFunnel.stages.map((entry) => {
+                    const maxCount = Math.max(
+                      ...analytics.checkoutFunnel.stages.map((s) => s.uniqueSessions),
+                      1,
+                    );
+                    const barWidth = Math.round((entry.uniqueSessions / maxCount) * 100);
+                    return (
+                      <div key={entry.stage} className="rounded-md border border-border p-3">
+                        <div className="flex items-center justify-between gap-4 mb-2">
+                          <p className="font-medium">{entry.label}</p>
+                          <div className="text-right">
+                            <p className="text-primary font-semibold">
+                              {entry.uniqueSessions} сесии
+                            </p>
+                            {entry.dropOffFromPrevious !== null ? (
+                              <p className="text-xs text-muted-foreground">
+                                {entry.dropOffFromPrevious}% от предишния етап
+                              </p>
+                            ) : null}
+                          </div>
+                        </div>
+                        <div className="h-2 rounded-full bg-muted overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-primary transition-all"
+                            style={{ width: `${barWidth}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <CheckoutFunnelChart
+                  dailyStarts={analytics.checkoutFunnel.dailyStarts}
+                  dailyByStage={analytics.checkoutFunnel.dailyByStage}
+                />
+              </>
             )}
           </CardContent>
         </Card>
