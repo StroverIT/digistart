@@ -67,14 +67,15 @@ const Creatives = () => {
             data-animate-card
             className={`overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm ${LANDING_CARD_CLASS}`}
           >
-            <div className="relative aspect-4/3 w-full bg-muted/30">
+            <div className="relative aspect-4/3 w-full overflow-hidden bg-linear-to-br from-zinc-800 via-zinc-950 to-black">
               <Image
                 src={creative.src}
                 alt={creative.alt}
                 fill
-                className="object-contain p-6"
+                className="object-cover object-center"
                 sizes="(max-width: 640px) 100vw, 50vw"
               />
+
             </div>
             <p className="border-t border-border/60 px-5 py-4 text-center text-sm font-semibold text-foreground">
               {creative.label}
