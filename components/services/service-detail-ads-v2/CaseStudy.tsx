@@ -22,7 +22,7 @@ const CaseStudy = () => {
         data-animate-reveal
         className={`mx-auto max-w-3xl text-center text-5xl ${LANDING_REVEAL_CLASS}`}
       >
-        Как изглеждат реални резултати от Google и Meta реклами
+        От boost към реклами с цел
       </h1>
 
       <div className="mt-12 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
@@ -53,17 +53,15 @@ const CaseStudy = () => {
             data-animate-reveal
             className={`text-base leading-relaxed sm:text-lg ${LANDING_REVEAL_CLASS}`}
           >
-            <span className="font-bold">Преди:</span> boost в Meta без стратегия и никакво търсене в
-            Google. Бюджетът изчезваше в харесвания, а двата Ads Manager-а парализираха с числа без
-            смисъл.
+            <span className="font-bold">Преди:</span> boost в Meta — кликове без ясни поръчки. Нулево
+            търсене в Google.
           </p>
           <p
             data-animate-reveal
             className={`border-t border-gray-200 pt-4 text-base leading-relaxed text-foreground sm:text-lg ${LANDING_REVEAL_CLASS}`}
           >
-            <span className="font-bold">След:</span> Google носи поръчки от търсене, Meta изгражда
-            аудитория с визуални реклами. Ясно проследяване, месечни корекции — и знаеш кой канал
-            колко струва и колко продава.
+            <span className="font-bold">След:</span> Google за поръчки от търсене. Meta за аудитория и
+            ретаргет. Проследяване и месечни корекции.
           </p>
         </div>
       </div>

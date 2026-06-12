@@ -13,21 +13,21 @@ import { useLandingScrollAnimations } from "@/components/services/service-detail
 
 const benefits = [
   {
-    title: "Google Ads — улавя готово търсене",
+    title: "Google — когато те търсят",
     description:
-      "Показваме реклами на хора, които вече търсят решение — по ключови думи, заявки и локация. Search, Shopping и YouTube носят бързи поръчки с високо намерение.",
+      "Search, Shopping, YouTube. По-скъп клик, но бърза поръчка при готово търсене.",
     image: "/stickers/my-business.png",
   },
   {
-    title: "Meta — генерира ново търсене",
+    title: "Meta — когато трябва да ги откриеш",
     description:
-      "Достигаме до хора по интереси и поведение, докато скролват Instagram и Facebook. Reels, Carousels и Stories създават интерес, когато още не са търсили активно.",
+      "Reels, Stories, Carousels. По-евтин тест, но нужни са визуали и време за конверсия.",
     image: "/stickers/social-media.png",
   },
   {
-    title: "Комбинирана стратегия и отчети",
+    title: "И двете — когато искаш система",
     description:
-      "Избираме правилния канал за всяка цел — бърза поръчка от Google или изграждане на аудитория в Meta. Месечен отчет показва какво работи и къде отива бюджетът.",
+      "Google за поръчки. Meta за аудитория и ретаргет. Отчет по канал всеки месец.",
     image: "/marketing/newsletter.webp",
   },
 ] as const;
@@ -213,7 +213,7 @@ const Benefits = () => {
         data-animate-reveal
         className={`mx-auto max-w-4xl text-center text-3xl font-medium text-white ${LANDING_REVEAL_CLASS}`}
       >
-        Google за търсене. Meta за откриване. Една система вместо два хаотични акаунта.
+        Google за търсене. Meta за откриване.
       </h2>
 
       <article className="mt-12 grid items-start gap-10 lg:grid-cols-2 lg:gap-16">

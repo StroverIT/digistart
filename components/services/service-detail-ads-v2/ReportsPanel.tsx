@@ -14,27 +14,23 @@ import { useLandingScrollAnimations } from "@/components/services/service-detail
 const reportFeatures = [
   {
     icon: Target,
-    title: "Стратегия по канал",
-    description:
-      "Изясняваме кога Google (търсене), кога Meta (откриване) — и какъв бюджет има смисъл за всеки.",
+    title: "Отчет по канал",
+    description: "Google и Meta отделно — разход, CPC и поръчки.",
   },
   {
     icon: ClipboardList,
-    title: "Управление на кампании",
-    description:
-      "Search и Shopping в Google. Reels и Stories в Meta. Пускаме, тестваме и спираме по данни — не по интуиция.",
+    title: "Ясни следващи стъпки",
+    description: "Какво работи, какво спираме, какво увеличаваме.",
   },
   {
     icon: Users,
-    title: "Ключови думи и аудитории",
-    description:
-      "В Google — ключови думи и локация. В Meta — интереси, поведение и ретаргет към посетители.",
+    title: "Проследяване от ден 1",
+    description: "Google Tag, Meta Pixel и конверсии.",
   },
   {
     icon: LineChart,
-    title: "Месечен отчет",
-    description:
-      "Виждаш разход, CPC и поръчки по канал на човешки език — без да превключваш между два Ads Manager-а.",
+    title: "Прозрачен бюджет",
+    description: "€150/мес управление · мин. €50/мес към платформата.",
   },
 ] as const;
 
@@ -49,7 +45,7 @@ const ReportsPanel = () => {
           data-animate-reveal
           className={`max-w-3xl font-heading text-2xl font-bold tracking-tight text-foreground md:max-w-lg lg:leading-tight ${LANDING_REVEAL_CLASS}`}
         >
-          Ясни отчети за Google и Meta — пълен контрол върху кампаниите и бюджета ти
+          Числа по канал. Решения всеки месец.
         </h1>
         <div data-animate-reveal className={LANDING_REVEAL_CLASS}>
           <Button

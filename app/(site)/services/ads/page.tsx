@@ -35,7 +35,7 @@ const BuySection = dynamic(() => import("@/components/services/service-detail-ad
 export const metadata: Metadata = {
   title: "Реклами · Google Ads и Meta",
   description:
-    "Управление на Google Ads и Meta реклами за малки бизнеси — от €150/мес на канал. Google улавя търсене, Meta генерира интерес. Бюджетът към платформите е отделно (мин. €50/мес).",
+    "Google за търсене. Meta за откриване. Управление от €150/мес на канал, мин. €50/мес бюджет към платформата.",
 };
 
 export default async function AdsPage() {

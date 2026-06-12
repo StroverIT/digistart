@@ -146,7 +146,7 @@ const MarketingTools = () => {
         data-animate-reveal
         className={`mx-auto max-w-3xl text-center text-4xl ${LANDING_REVEAL_CLASS}`}
       >
-        Два канала. Различна логика. Една ясна стратегия.
+        Два канала. Една стратегия.
       </h1>
 
       <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:[grid-template-areas:'google_meta_promo'_'analytics_analytics_promo'_'trackers_trackers_trackers']">
@@ -156,8 +156,8 @@ const MarketingTools = () => {
         >
           <IconCard
             icon={Search}
-            title="Google Ads — улавя търсене"
-            description="Хората вече търсят решение. Таргетираме по ключови думи, заявки и локация. Search, Shopping и YouTube — по-висок CPC, но бързи поръчки с високо намерение."
+            title="Google — улавя търсене"
+            description="Ключови думи и локация. Search, Shopping, YouTube — по-скъп клик, бърза поръчка."
           />
         </li>
 
@@ -167,8 +167,8 @@ const MarketingTools = () => {
         >
           <IconCard
             icon={Sparkles}
-            title="Meta — генерира интерес"
-            description="Хората скролват и се забавляват. Таргетираме по интереси, поведение и демография. Reels, Carousels и Stories — по-нисък CPC, но изисква време и грижа за конверсия."
+            title="Meta — създава интерес"
+            description="Интереси и поведение. Reels, Stories, Carousels — по-евтин тест, нужен е ретаргет."
           />
         </li>
 
@@ -178,8 +178,8 @@ const MarketingTools = () => {
             className={`${cardClassName} order-3 flex-1 lg:order-0 ${LANDING_CARD_CLASS}`}
           >
             <ImageBottomCard
-              title="Правилният канал за целта"
-              description="Искаш бърза поръчка от търсене? Google. Искаш да изградиш аудитория и да покажеш продукта визуално? Meta. Често и двете — с различен бюджет и послание."
+              title="Правилният канал"
+              description="Услуга на момента → Google. Визуален продукт → Meta. Магазин → често и двете."
               image="/marketing/promotion.png"
               imageContainerClassName="max-sm:mt-4 max-sm:aspect-auto max-sm:h-40"
             />
@@ -190,8 +190,8 @@ const MarketingTools = () => {
           >
             <IconCard
               icon={Star}
-              title="Социално доказателство в Meta"
-              description="В Google рекламата е текст и оферта. В Meta — визия, доверие и история. Използваме и двете, за да превърнем клика в поръчка."
+              title="Доверие в Meta"
+              description="В Google — текст и оферта. В Meta — визия и история."
             />
           </article>
         </li>
@@ -201,8 +201,8 @@ const MarketingTools = () => {
           className={`${cardClassName} order-4 ${LANDING_CARD_CLASS} lg:[grid-area:analytics] sm:col-span-2`}
         >
           <ImageRightCard
-            title="Отчети за двата канала"
-            description="Виждаш разход, CPC, поръчки и следващите стъпки на човешки език — отделно за Google и Meta, без да живееш в два Ads Manager-а."
+            title="Ясни очаквания"
+            description="Без гарантирани продажби. С настройка, проследяване и месечен отчет."
             image="/marketing/newsletter.png"
           />
         </li>
@@ -212,8 +212,8 @@ const MarketingTools = () => {
           className={`${cardClassName} order-6 w-full ${LANDING_CARD_CLASS} sm:col-span-2 lg:[grid-area:trackers] lg:min-h-56 xl:min-h-64`}
         >
           <ImageLeftCard
-            title="Проследяване от първи ден"
-            description="Google Tag, Meta Pixel и конверсии — настройваме ги още при старта, за да знаеш кой канал носи поръчки, а кой само кликове."
+            title="Проследяване от ден 1"
+            description="Google Tag, Meta Pixel и конверсии — още при старта."
             image="/marketing/social-media.png"
           />
         </li>

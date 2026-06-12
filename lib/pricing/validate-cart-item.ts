@@ -1,4 +1,5 @@
 import type { CartBillingCycle, CartItemUpsell } from "@/lib/types";
+import { validateAdsChannelUpsells } from "@/lib/data/ads-channels";
 import { getPlanComponentsForRecalc, getPlanById, serviceIdToPlanId, type PlanId } from "@/lib/data/plans";
 import { getServiceById } from "@/lib/data/services";
 import type { Service, ServiceUpsell } from "@/lib/types";
@@ -125,5 +126,12 @@ export function validateCartItemSelections(params: {
     return "Годишното предплащане не е налично за тази опция.";
   }
 
-  return validateServiceUpsells(service, params.upsells);
+  const upsellError = validateServiceUpsells(service, params.upsells);
+  if (upsellError) return upsellError;
+
+  if (params.serviceId === "ads") {
+    return validateAdsChannelUpsells(params.upsells);
+  }
+
+  return null;
 }

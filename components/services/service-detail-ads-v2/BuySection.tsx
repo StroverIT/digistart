@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
+import { useAdsServiceUpsells } from "@/components/services/use-ads-service-upsells";
 import { getServiceById, getServicePlanPrice } from "@/lib/data/services";
 import { ADS_LANDING } from "@/config/service-landing/ads";
 import { ADS_SOCIAL_MEDIA_COMPANION } from "@/lib/data/service-companions";
@@ -19,37 +20,24 @@ interface BuySectionProps {
   availability?: ServiceSlotAvailability | null;
 }
 
-const BuySection = ({ availability: initialAvailability }: BuySectionProps) => {
+function AdsBuySectionContent({
+  service,
+  availability,
+}: {
+  service: NonNullable<ReturnType<typeof getServiceById>>;
+  availability: ServiceSlotAvailability | null;
+}) {
   const sectionRef = useRef<HTMLElement>(null);
-  const [availability, setAvailability] = useState<ServiceSlotAvailability | null>(
-    initialAvailability ?? null,
-  );
-  useLandingScrollAnimations(sectionRef, { staggerReveal: 0.1 });
-
-  useEffect(() => {
-    if (initialAvailability) return;
-
-    const controller = new AbortController();
-    fetch(`/api/service-slots?serviceId=${encodeURIComponent(ADS_SERVICE_ID)}`, {
-      signal: controller.signal,
-    })
-      .then((res) => (res.ok ? res.json() : Promise.reject(new Error("slots"))))
-      .then((data: { availability?: ServiceSlotAvailability }) => {
-        setAvailability(data.availability ?? null);
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) setAvailability(null);
-      });
-
-    return () => controller.abort();
-  }, [initialAvailability]);
-
-  const service = getServiceById(ADS_SERVICE_ID);
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
+  useLandingScrollAnimations(sectionRef, { staggerReveal: 0.1 });
 
-  if (!service) return null;
+  const adsUpsells = useAdsServiceUpsells({
+    service,
+    upsells,
+    onUpsellsChange: setUpsells,
+  });
 
   const planPrice = getServicePlanPrice(service, ADS_OPTION_ID);
 
@@ -97,11 +85,11 @@ const BuySection = ({ availability: initialAvailability }: BuySectionProps) => {
       <div className={landingContainerClass}>
         <ServiceBuySection
           service={service}
-          title="Готов ли си Google и Meta да носят поръчки, не само кликове?"
+          title="Готов ли си за реклами с цел?"
           price={planPrice}
           monthlyLabel="/месец"
           upsells={upsells}
-          onUpsellsChange={setUpsells}
+          onUpsellsChange={adsUpsells.handleUpsellsChange}
           onAddToCart={handleCheckout}
           isAdding={isAdding}
           cartSelectedOptionId={ADS_OPTION_ID}
@@ -109,10 +97,43 @@ const BuySection = ({ availability: initialAvailability }: BuySectionProps) => {
           ctaId={`${ADS_LANDING.ctaIdPrefix}_buy_section_add_to_cart`}
           ctaPage={ADS_LANDING.pagePath}
           availability={availability}
+          hiddenUpsellIds={adsUpsells.hiddenUpsellIds}
+          validateBeforeAdd={adsUpsells.validateBeforeAdd}
+          customUpsellsContent={adsUpsells.customUpsellsContent}
+          basePackageExtra={adsUpsells.basePackageExtra}
         />
       </div>
     </section>
   );
+}
+
+const BuySection = ({ availability: initialAvailability }: BuySectionProps) => {
+  const [availability, setAvailability] = useState<ServiceSlotAvailability | null>(
+    initialAvailability ?? null,
+  );
+
+  useEffect(() => {
+    if (initialAvailability) return;
+
+    const controller = new AbortController();
+    fetch(`/api/service-slots?serviceId=${encodeURIComponent(ADS_SERVICE_ID)}`, {
+      signal: controller.signal,
+    })
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error("slots"))))
+      .then((data: { availability?: ServiceSlotAvailability }) => {
+        setAvailability(data.availability ?? null);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setAvailability(null);
+      });
+
+    return () => controller.abort();
+  }, [initialAvailability]);
+
+  const service = getServiceById(ADS_SERVICE_ID);
+  if (!service) return null;
+
+  return <AdsBuySectionContent service={service} availability={availability} />;
 };
 
 export default BuySection;

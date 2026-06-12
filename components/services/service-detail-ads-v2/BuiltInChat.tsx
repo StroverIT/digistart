@@ -19,7 +19,7 @@ const BuiltInChat = () => {
         data-animate-reveal
         className={`mx-auto max-w-3xl text-center text-4xl ${LANDING_REVEAL_CLASS}`}
       >
-        На всяка стъпка сме до теб — Google, Meta или и двете
+        На всяка стъпка сме до теб
       </h1>
 
       <div className="mt-12 grid gap-8 md:grid-cols-2">
@@ -42,8 +42,7 @@ const BuiltInChat = () => {
           <div className="flex flex-1 flex-col px-6 py-8 sm:px-10">
             <h2 className="font-heading text-xl font-bold text-white sm:text-2xl">Вграден чат</h2>
             <p className="mt-3 text-base leading-relaxed text-white">
-              Питай за Google или Meta кампании, бюджети и резултати — отговаряме бързо и ясно
-              (всеки ден от 9:00 до 22:00)
+              Питаш кой канал — Google, Meta или и двете. Отговаряме всеки ден 9:00–22:00.
             </p>
           </div>
         </article>
@@ -68,8 +67,7 @@ const BuiltInChat = () => {
               Няма глупави въпроси
             </h2>
             <p className="mt-3 text-base leading-relaxed text-black">
-              Не разбираш числата в Google Ads или Meta Ads Manager? Питай ни. Обясняваме какво
-              работи, какво спираме и защо.
+              Продукт, рекламен акаунт и място за клика. Ако липсва нещо — казваме какво да подготвиш.
             </p>
           </div>
         </article>

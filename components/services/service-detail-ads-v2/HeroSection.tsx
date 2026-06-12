@@ -36,11 +36,10 @@ const HeroSection = () => {
             Google Ads и Meta реклами
           </p>
           <h1 className="font-heading mt-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
-            Търсене. Откриване. Продажби.
+            Търсене. Откриване. Продаважби.
           </h1>
           <p className="mt-4 max-w-lg text-2xl text-muted-foreground">
-            Google улавя готово търсене. Meta създава интерес. Ние управляваме и двете с ясна
-            стратегия и месечни отчети.
+            Meta Ads създават интерес. Google Ads правят директните продажби. Ние управляваме и двете.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 lg:items-start">
             <a

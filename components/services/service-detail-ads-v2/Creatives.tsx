@@ -12,22 +12,22 @@ import { useLandingScrollAnimations } from "@/components/services/service-detail
 const FEATURED_CREATIVES = [
   {
     src: "/stickers/my-business.png",
-    alt: "Google Search и Shopping реклами",
-    label: "Google Search & Shopping",
+    alt: "Google Search",
+    label: "Google Search",
   },
   {
     src: "/marketing/social-media.webp",
-    alt: "Meta Reels и Stories реклами",
-    label: "Meta Reels & Stories",
+    alt: "Google Shopping",
+    label: "Google Shopping",
   },
   {
     src: "/marketing/promotion.webp",
-    alt: "Сезонни кампании в Google и Meta",
-    label: "Промоции и оферти",
+    alt: "Meta Reels & Stories",
+    label: "Meta Reels & Stories",
   },
   {
     src: "/stickers/social-media.png",
-    alt: "Визуални креативи за Meta Carousels",
+    alt: "Meta Carousels",
     label: "Meta Carousels",
   },
 ] as const;
@@ -49,15 +49,14 @@ const Creatives = () => {
             data-animate-reveal
             className={`max-w-md text-5xl font-bold md:text-left ${LANDING_REVEAL_CLASS}`}
           >
-            Различни формати за различни канали
+            Формат за всеки канал
           </h2>
         </div>
         <p
           data-animate-reveal
           className={`mt-4 max-w-lg text-base text-muted-foreground sm:text-2xl md:text-left ${LANDING_REVEAL_CLASS}`}
         >
-          Текст и Shopping за Google. Reels, Stories и Carousels за Meta. Адаптираме всеки формат
-          спрямо продукта, офертата и канала.
+          Текст и Shopping за Google. Reels и Stories за Meta.
         </p>
       </div>
 

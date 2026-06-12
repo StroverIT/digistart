@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
-import { ArrowLeft, ArrowRight, ChevronDown, Package, ShoppingCart, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Package, ShoppingCart, Trash2 } from "lucide-react";
 import gsap from "gsap";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,7 +21,7 @@ import {
   AdditionalServicesGrid,
   AdditionalServicesUpsellCard,
 } from "@/components/services/additional-services-grid";
-import { UpsellConfigurator } from "@/components/services/upsell-configurator";
+import { ServiceItemUpsells } from "@/components/services/service-item-upsells";
 
 function CartItemCard({
   item,
@@ -49,54 +49,8 @@ function CartItemCard({
     }
     return fromApi;
   }, [serviceFromDb, item.serviceId]);
-  const [showUpsells, setShowUpsells] = useState(false);
   const isPlanItem = Boolean(item.planId || serviceIdToPlanId(item.serviceId));
   const hasUpsells = Boolean(service?.upsells.length) && !isPlanItem;
-  const upsellsWrapperRef = useRef<HTMLDivElement | null>(null);
-  const upsellsContentRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const wrapper = upsellsWrapperRef.current;
-    if (!wrapper || !hasUpsells) return;
-
-    gsap.set(wrapper, { height: 0, autoAlpha: 0, display: "none" });
-  }, [hasUpsells]);
-
-  useEffect(() => {
-    const wrapper = upsellsWrapperRef.current;
-    const content = upsellsContentRef.current;
-    if (!wrapper || !content || !hasUpsells) return;
-
-    gsap.killTweensOf(wrapper);
-
-    if (showUpsells) {
-      gsap.set(wrapper, { display: "block" });
-      gsap.fromTo(
-        wrapper,
-        { height: 0, autoAlpha: 0 },
-        {
-          height: content.scrollHeight,
-          autoAlpha: 1,
-          duration: 0.3,
-          ease: "power2.out",
-          onComplete: () => gsap.set(wrapper, { height: "auto" }),
-        }
-      );
-      return;
-    }
-
-    gsap.fromTo(
-      wrapper,
-      { height: wrapper.offsetHeight, autoAlpha: 1 },
-      {
-        height: 0,
-        autoAlpha: 0,
-        duration: 0.24,
-        ease: "power2.in",
-        onComplete: () => gsap.set(wrapper, { display: "none" }),
-      }
-    );
-  }, [hasUpsells, showUpsells]);
 
   return (
     <Card data-cart-item className="bg-card border-border opacity-0 translate-y-10">
@@ -122,34 +76,13 @@ function CartItemCard({
               </Button>
             </div>
 
-            {/* Upsells */}
             {service && hasUpsells ? (
-              <div className="mt-3 pt-3 border-t border-border">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="h-auto w-full justify-between px-0 py-1 text-sm font-medium hover:bg-transparent hover:text-primary cursor-pointer"
-                  onClick={() => setShowUpsells((current) => !current)}
-                  aria-expanded={showUpsells}
-                >
-                  <span>Допълнителни функционалности</span>
-                  <span className="flex items-center gap-2 text-muted-foreground">
-                    {showUpsells ? "Скрий" : "Покажи"}
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform ${showUpsells ? "rotate-180" : ""}`}
-                    />
-                  </span>
-                </Button>
-                <div ref={upsellsWrapperRef} className="mt-2 overflow-hidden">
-                  <div ref={upsellsContentRef}>
-                    <UpsellConfigurator
-                      service={service}
-                      value={item.upsells}
-                      onChange={(upsells) => onUpsellsChange(item.id, upsells)}
-                    />
-                  </div>
-                </div>
-              </div>
+              <ServiceItemUpsells
+                service={service}
+                upsells={item.upsells}
+                onUpsellsChange={(upsells) => onUpsellsChange(item.id, upsells)}
+                collapsible
+              />
             ) : null}
           </div>
 

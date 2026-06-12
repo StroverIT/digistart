@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import gsap from "gsap";
@@ -11,7 +11,7 @@ import { Price } from "@/components/ui/price";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServiceCompanionOffer } from "@/components/services/service-companion-offer";
 import type { ServiceCompanionOfferConfig } from "@/lib/types";
-import { UpsellConfigurator } from "@/components/services/upsell-configurator";
+import { ServiceUpsellsSection } from "@/components/services/service-upsells-section";
 import {
   validateUpsellEntries,
   type UpsellEntryErrors,
@@ -86,7 +86,20 @@ interface ServiceBuySectionProps {
   plansSectionId?: string;
   /** Slot availability for this service; when sold out, buy UI is blurred and waitlist is shown. */
   availability?: ServiceSlotAvailability | null;
+  /** Extra controls rendered inside the base package card (e.g. required channel pickers). */
+  basePackageExtra?: ReactNode;
+  /** Upsell ids hidden from the additional services configurator. */
+  hiddenUpsellIds?: string[];
+  /** Return an error message to block add-to-cart, or null when valid. */
+  validateBeforeAdd?: () => string | null;
+  /** Custom upsell UI rendered in the additional services section. */
+  customUpsellsContent?: ReactNode;
+  /** Hides upsells and companion blocks (e.g. minimal buy UI). */
+  hideAdditionalServices?: boolean;
 }
+
+export { ServiceUpsellsSection } from "@/components/services/service-upsells-section";
+export type { ServiceUpsellsSectionProps } from "@/components/services/service-upsells-section";
 
 export function ServiceBuySection({
   service,
@@ -105,6 +118,11 @@ export function ServiceBuySection({
   plansSectionId = "plans",
   companion,
   availability,
+  basePackageExtra,
+  hiddenUpsellIds = [],
+  validateBeforeAdd,
+  customUpsellsContent,
+  hideAdditionalServices = false,
 }: ServiceBuySectionProps) {
   const { data: session } = useSession();
   const isAdminCheckout = isAdminCheckoutRole(session?.user?.role);
@@ -125,7 +143,13 @@ export function ServiceBuySection({
   const basicPackageInViewRef = useRef(false);
   const [isMobileStickyRevealReady, setIsMobileStickyRevealReady] = useState(false);
 
-  const hasUpsells = useMemo(() => service.upsells.length > 0, [service.upsells.length]);
+  const visibleUpsells = useMemo(
+    () => service.upsells.filter((upsell) => !hiddenUpsellIds.includes(upsell.id)),
+    [hiddenUpsellIds, service.upsells],
+  );
+  const hasUpsells =
+    !hideAdditionalServices &&
+    (visibleUpsells.length > 0 || Boolean(customUpsellsContent));
   const selectedOption = useMemo(
     () => service.options.find((option) => option.id === cartSelectedOptionId) ?? service.options[0],
     [cartSelectedOptionId, service.options],
@@ -239,6 +263,11 @@ export function ServiceBuySection({
 
   const handleAddClick = () => {
     if (isSoldOut) return;
+    const customValidationError = validateBeforeAdd?.();
+    if (customValidationError) {
+      toast.error(customValidationError);
+      return;
+    }
     const validation = validateUpsellEntries(service.upsells, upsells);
     setErrors(validation.errors);
     if (!validation.isValid) {
@@ -512,6 +541,7 @@ export function ServiceBuySection({
                   ))}
                 </ul>
               ) : null}
+              {basePackageExtra}
             </div>
             {isAdding ? (
               <div className="mb-6 space-y-3">
@@ -521,21 +551,20 @@ export function ServiceBuySection({
                 <Skeleton className="h-16 w-full" />
               </div>
             ) : null}
-            {(hasUpsells || companion) && !isAdding ? (
+            {(hasUpsells || (!hideAdditionalServices && companion)) && !isAdding ? (
               <div className="mb-6 space-y-6">
                 {hasUpsells ? (
-                  <div>
-                    <h3 className="font-semibold mb-3">Допълнителни функционалности</h3>
-                    <UpsellConfigurator
-                      service={service}
-                      value={upsells}
-                      onChange={handleChange}
-                      errors={errors}
-                      analyticsPage={ctaPage ?? `/services/${service.slug}`}
-                    />
-                  </div>
+                  <ServiceUpsellsSection
+                    service={service}
+                    upsells={upsells}
+                    onUpsellsChange={handleChange}
+                    hiddenUpsellIds={hiddenUpsellIds}
+                    customUpsellsContent={customUpsellsContent}
+                    errors={errors}
+                    analyticsPage={ctaPage ?? `/services/${service.slug}`}
+                  />
                 ) : null}
-                {companion ? (
+                {!hideAdditionalServices && companion ? (
                   <div>
                     <h3 className="font-semibold mb-3">Комбинирай с</h3>
                     <ServiceCompanionOffer

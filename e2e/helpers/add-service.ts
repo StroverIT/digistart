@@ -27,6 +27,14 @@ export async function addServiceFromPage(
 ) {
   await page.goto(`/services/${slug}`, { waitUntil: "networkidle" });
 
+  if (slug === "ads") {
+    await page
+      .locator("#buy-now")
+      .getByRole("button", { name: "Google Ads" })
+      .first()
+      .click({ timeout: 30_000 });
+  }
+
   const addButton = page
     .locator("#buy-now")
     .getByRole("button", { name: "Добави в кошницата" });
@@ -67,6 +75,14 @@ export async function addServiceFromCartUpsell(page: Page, slug: ServiceSlug) {
   await link.click();
 
   await page.waitForURL(`**/services/${slug}**`);
+
+  if (slug === "ads") {
+    await page
+      .locator("#buy-now")
+      .getByRole("button", { name: "Google Ads" })
+      .first()
+      .click({ timeout: 30_000 });
+  }
 
   const addButton = page
     .locator("#buy-now")

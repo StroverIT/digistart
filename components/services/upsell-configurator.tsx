@@ -128,10 +128,12 @@ export function UpsellConfigurator({
     }
     trackCtaClick(pageKey, `upsell_${service.slug}_${upsellId}`);
     pulseUpsellRow(upsellId);
+    const defaultChoiceId =
+      upsell.kind === "choice" && upsell.choices?.length ? upsell.choices[0].id : undefined;
     setUpsell(upsellId, {
       upsellId,
       quantity: safeQuantity,
-      choiceId: current?.choiceId,
+      choiceId: current?.choiceId ?? defaultChoiceId,
       entries: current?.entries ?? [],
       note: current?.note,
     });
