@@ -4,27 +4,31 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ChevronDown } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
-import { LandingSection } from "./shared";
-import { LANDING_CARD_CLASS, LANDING_REVEAL_CLASS } from "./landing-animation-classes";
-import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
+import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
+import {
+  LANDING_CARD_CLASS,
+  LANDING_REVEAL_CLASS,
+} from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
+import { useLandingScrollAnimations } from "@/components/services/service-detail-ready-store-v2/use-landing-scroll-animations";
 
 const benefits = [
   {
-    title: "Онлайн плащания",
-    description: "Клиентите ти имат възможност да плащат с абсолютно всичко което пожелаеш",
-    image: "/benefits/онлайн-плащания.webp",
+    title: "Google Ads — улавя готово търсене",
+    description:
+      "Показваме реклами на хора, които вече търсят решение — по ключови думи, заявки и локация. Search, Shopping и YouTube носят бързи поръчки с високо намерение.",
+    image: "/stickers/my-business.png",
   },
   {
-    title: "Hosting и SSL сертификат",
+    title: "Meta — генерира ново търсене",
     description:
-      "Ние се грижим за цялата техническа част. Твоята грижа е само да изпращаш пратки",
-    image: "/benefits/hosting-and-ssl-2.webp",
+      "Достигаме до хора по интереси и поведение, докато скролват Instagram и Facebook. Reels, Carousels и Stories създават интерес, когато още не са търсили активно.",
+    image: "/stickers/social-media.png",
   },
   {
-    title: "Tоварителници",
+    title: "Комбинирана стратегия и отчети",
     description:
-      "Автоматично при създаване и връщане на поръчка се създава товарителница от избрания доставчик",
-    image: "/benefits/автоматично-създаване-на-товарителници-3.webp",
+      "Избираме правилния канал за всяка цел — бърза поръчка от Google или изграждане на аудитория в Meta. Месечен отчет показва какво работи и къде отива бюджетът.",
+    image: "/marketing/newsletter.webp",
   },
 ] as const;
 
@@ -209,8 +213,7 @@ const Benefits = () => {
         data-animate-reveal
         className={`mx-auto max-w-4xl text-center text-3xl font-medium text-white ${LANDING_REVEAL_CLASS}`}
       >
-        Създай онлайн магазин за рекордно време - от нула до това да продаваш в рамките на
-        часове, не седмици
+        Google за търсене. Meta за откриване. Една система вместо два хаотични акаунта.
       </h2>
 
       <article className="mt-12 grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
@@ -221,7 +224,7 @@ const Benefits = () => {
               benefit={benefit}
               isActive={index === activeIndex}
               onSelect={() => setActiveIndex(index)}
-              panelId={`benefit-panel-${index}`}
+              panelId={`ads-benefit-panel-${index}`}
             />
           ))}
         </ul>

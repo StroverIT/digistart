@@ -4,16 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServiceById, getServicePlanPrice } from "@/lib/data/services";
-import {
-  ONLINE_STORE_LANDING,
-  ONLINE_STORE_OPTION_ID,
-  ONLINE_STORE_SERVICE_ID,
-} from "@/config/service-landing/online-store";
+import { ADS_LANDING } from "@/config/service-landing/ads";
+import { ADS_SOCIAL_MEDIA_COMPANION } from "@/lib/data/service-companions";
 import type { CartBillingCycle, CartItemUpsell, ServiceSlotAvailability } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
-import { addToCart, findCartItemByService, updateCartItemUpsells } from "@/lib/store/cart";
-import { landingContainerClass } from "./shared";
-import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
+import { addOrUpdateServiceInCart } from "@/lib/store/cart";
+import { landingContainerClass } from "@/components/services/service-detail-ready-store-v2/shared";
+import { useLandingScrollAnimations } from "@/components/services/service-detail-ready-store-v2/use-landing-scroll-animations";
+
+const ADS_SERVICE_ID = "ads";
+const ADS_OPTION_ID = "default";
 
 interface BuySectionProps {
   availability?: ServiceSlotAvailability | null;
@@ -30,10 +30,9 @@ const BuySection = ({ availability: initialAvailability }: BuySectionProps) => {
     if (initialAvailability) return;
 
     const controller = new AbortController();
-    fetch(
-      `/api/service-slots?serviceId=${encodeURIComponent(ONLINE_STORE_SERVICE_ID)}`,
-      { signal: controller.signal },
-    )
+    fetch(`/api/service-slots?serviceId=${encodeURIComponent(ADS_SERVICE_ID)}`, {
+      signal: controller.signal,
+    })
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error("slots"))))
       .then((data: { availability?: ServiceSlotAvailability }) => {
         setAvailability(data.availability ?? null);
@@ -45,43 +44,41 @@ const BuySection = ({ availability: initialAvailability }: BuySectionProps) => {
     return () => controller.abort();
   }, [initialAvailability]);
 
-  const service = getServiceById(ONLINE_STORE_SERVICE_ID);
+  const service = getServiceById(ADS_SERVICE_ID);
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
 
   if (!service) return null;
 
-  const planPrice = getServicePlanPrice(service, ONLINE_STORE_OPTION_ID);
+  const planPrice = getServicePlanPrice(service, ADS_OPTION_ID);
 
-  const handleCheckout = (options?: { billingCycle?: CartBillingCycle }) => {
+  const handleCheckout = (options?: {
+    includeCompanion?: boolean;
+    billingCycle?: CartBillingCycle;
+  }) => {
     setIsAdding(true);
-    const existing = findCartItemByService(ONLINE_STORE_SERVICE_ID, ONLINE_STORE_OPTION_ID);
-    if (existing) {
-      updateCartItemUpsells(existing.id, upsells, options?.billingCycle);
+    const result = addOrUpdateServiceInCart(ADS_SERVICE_ID, ADS_OPTION_ID, upsells, {
+      includeCompanion: options?.includeCompanion,
+      companionServiceId: ADS_SOCIAL_MEDIA_COMPANION.serviceId,
+      companionOptionId: ADS_SOCIAL_MEDIA_COMPANION.optionId,
+      billingCycle: options?.billingCycle,
+    });
+    if (!result.added && result.reason === "duplicate") {
       setIsAdding(false);
       return;
     }
-
-    const result = addToCart(
-      ONLINE_STORE_SERVICE_ID,
-      ONLINE_STORE_OPTION_ID,
-      upsells,
-      options?.billingCycle,
-    );
     if (!result.added) {
       setIsAdding(false);
       return;
     }
 
     const addedItem = result.cart.items.find(
-      (item) =>
-        item.serviceId === ONLINE_STORE_SERVICE_ID &&
-        item.selectedOptionId === ONLINE_STORE_OPTION_ID,
+      (item) => item.serviceId === ADS_SERVICE_ID && item.selectedOptionId === ADS_OPTION_ID,
     );
     if (addedItem) {
       trackMetaAddToCart([cartItemToMetaLineItem(addedItem)], {
-        page_path: ONLINE_STORE_LANDING.pagePath,
+        page_path: ADS_LANDING.pagePath,
       });
     }
 
@@ -100,15 +97,17 @@ const BuySection = ({ availability: initialAvailability }: BuySectionProps) => {
       <div className={landingContainerClass}>
         <ServiceBuySection
           service={service}
-          header="Готов ли си за продажби?"
+          title="Готов ли си Google и Meta да носят поръчки, не само кликове?"
           price={planPrice}
+          monthlyLabel="/месец"
           upsells={upsells}
           onUpsellsChange={setUpsells}
           onAddToCart={handleCheckout}
           isAdding={isAdding}
-          cartSelectedOptionId={ONLINE_STORE_OPTION_ID}
-          ctaId={`${ONLINE_STORE_LANDING.ctaIdPrefix}_buy_section_add_to_cart`}
-          ctaPage={ONLINE_STORE_LANDING.pagePath}
+          cartSelectedOptionId={ADS_OPTION_ID}
+          companion={ADS_SOCIAL_MEDIA_COMPANION}
+          ctaId={`${ADS_LANDING.ctaIdPrefix}_buy_section_add_to_cart`}
+          ctaPage={ADS_LANDING.pagePath}
           availability={availability}
         />
       </div>

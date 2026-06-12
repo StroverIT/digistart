@@ -2,9 +2,11 @@
 
 import dynamic from "next/dynamic";
 import { Check } from "lucide-react";
-import { LandingSection } from "./shared";
-import { LANDING_GLASS_CLASS, LANDING_GLASS_ACCENT_CLASS } from "./landing-animation-classes";
-import GoogleReviewsSection from "./GoogleReviewsSection";
+import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
+import {
+  LANDING_GLASS_CLASS,
+  LANDING_GLASS_ACCENT_CLASS,
+} from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 
 const HeroVideo = dynamic(() => import("./HeroVideo"), {
   loading: () => (
@@ -19,51 +21,55 @@ const HeroVideo = dynamic(() => import("./HeroVideo"), {
   ),
 });
 
+const HERO_BULLETS = [
+  "Google Ads",
+  "Meta Ads",
+  "Анализи и седмични отчети",
+] as const;
+
 const HeroSection = () => {
   return (
     <LandingSection className="border-b-0 bg-linear-to-b from-white to-primary md:pt-10">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 lg:items-center lg:gap-16">
         <div className="flex w-full flex-col items-center text-center">
           <p className="text-sm font-semibold uppercase tracking-widest text-primary">
-            Адаптивен онлайн магазин
+            Google Ads и Meta реклами
           </p>
           <h1 className="font-heading mt-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
-            Пусни. Продавай. Адаптирай.
+            Търсене. Откриване. Продажби.
           </h1>
           <p className="mt-4 max-w-lg text-2xl text-muted-foreground">
-            Вземи всичко необходимо за изграждане на онлайн продажби
+            Google улавя готово търсене. Meta създава интерес. Ние управляваме и двете с ясна
+            стратегия и месечни отчети.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 lg:items-start">
             <a
               href="#buy-section"
               className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-colors hover:bg-primary/90"
             >
-              Започни безплатно
+              Стартирай реклами
             </a>
-            <p className="text-sm text-muted-foreground">Пробният период е 14 дни.</p>
+
           </div>
           <ul className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-3 lg:justify-start">
-            {["Онлайн плащания", "Лесно за настройсване", "Оптимизиран за мобилни устройства"].map(
-              (item) => (
-                <li
-                  key={item}
-                  className={`flex items-center gap-2.5 rounded-full px-4 py-2 text-sm font-medium text-foreground ${LANDING_GLASS_CLASS}`}
+            {HERO_BULLETS.map((item) => (
+              <li
+                key={item}
+                className={`flex items-center gap-2.5 rounded-full px-4 py-2 text-sm font-medium text-foreground ${LANDING_GLASS_CLASS}`}
+              >
+                <span
+                  className={`flex size-6 shrink-0 items-center justify-center rounded-full text-foreground ${LANDING_GLASS_ACCENT_CLASS}`}
                 >
-                  <span
-                    className={`flex size-6 shrink-0 items-center justify-center rounded-full text-foreground ${LANDING_GLASS_ACCENT_CLASS}`}
-                  >
-                    <Check className="size-3.5" strokeWidth={3} />
-                  </span>
-                  {item}
-                </li>
-              ),
-            )}
+                  <Check className="size-3.5" strokeWidth={3} />
+                </span>
+                {item}
+              </li>
+            ))}
           </ul>
         </div>
 
-        <HeroVideo videoId="mMNGqvyngLE" title="YouTube video player" />
+        <HeroVideo videoId="bL4jLLDggXI" title="DigiStart Google и Meta реклами" />
       </div>
-      <GoogleReviewsSection />
     </LandingSection>
   );
 };

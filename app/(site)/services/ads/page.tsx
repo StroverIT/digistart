@@ -1,21 +1,61 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { ServiceDetailAds } from "@/components/services/service-detail-ads";
-import { getServiceById } from "@/lib/data/services";
+import dynamic from "next/dynamic";
+import HeroSection from "@/components/services/service-detail-ads-v2/HeroSection";
+import { ADS_LANDING } from "@/config/service-landing/ads";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
+const InnerNavigation = dynamic(
+  () => import("@/components/services/service-detail-ads-v2/InnerNavigation"),
+);
+
+const PasFaqSection = dynamic(() =>
+  import("@/components/services/service-pas-landing/faq-section").then((mod) => ({
+    default: mod.PasFaqSection,
+  })),
+);
+
+const Creatives = dynamic(() => import("@/components/services/service-detail-ads-v2/Creatives"));
+
+const Benefits = dynamic(() => import("@/components/services/service-detail-ads-v2/Benefits"));
+
+const BuiltInChat = dynamic(() => import("@/components/services/service-detail-ads-v2/BuiltInChat"));
+
+const MarketingTools = dynamic(
+  () => import("@/components/services/service-detail-ads-v2/MarketingTools"),
+);
+
+const ReportsPanel = dynamic(
+  () => import("@/components/services/service-detail-ads-v2/ReportsPanel"),
+);
+
+const CaseStudy = dynamic(() => import("@/components/services/service-detail-ads-v2/CaseStudy"));
+
+const BuySection = dynamic(() => import("@/components/services/service-detail-ads-v2/BuySection"));
+
 export const metadata: Metadata = {
-  title: "Реклами · Facebook и Instagram Ads",
+  title: "Реклами · Google Ads и Meta",
   description:
-    "Управление на Meta реклами за малки бизнеси - от €150/мес на канал, ясно таргетиране, месечни отчети. Бюджетът към Meta е отделно (мин. €50/мес).",
+    "Управление на Google Ads и Meta реклами за малки бизнеси — от €150/мес на канал. Google улавя търсене, Meta генерира интерес. Бюджетът към платформите е отделно (мин. €50/мес).",
 };
 
 export default async function AdsPage() {
-  const service = getServiceById("ads");
-  if (!service) {
-    notFound();
-  }
-
   const availability = await getServiceSlotAvailability("ads");
-  return <ServiceDetailAds service={service} availability={availability} />;
+
+  return (
+    <section className="pt-28 md:pt-32">
+      <HeroSection />
+      <div className="bg-white pt-10 md:rounded-t-4xl md:-mt-10">
+        <InnerNavigation />
+        <Creatives />
+        <Benefits />
+        <BuiltInChat />
+        <MarketingTools />
+        <ReportsPanel />
+        <CaseStudy />
+      </div>
+
+      <BuySection availability={availability} />
+      <PasFaqSection {...ADS_LANDING.faq} />
+    </section>
+  );
 }

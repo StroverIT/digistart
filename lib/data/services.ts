@@ -277,7 +277,7 @@ export const services: Service[] = [
     slug: "ads",
     name: "Реклами",
     description:
-      "Настройваме и управляваме платени реклами в социалните мрежи, за да достигнеш до правилните клиенти.",
+      "Настройваме и управляваме Google Ads и Meta реклами — търсене, Shopping, YouTube, Reels и Stories.",
     icon: "Megaphone",
     basePrice: 150,
     isMonthly: true,

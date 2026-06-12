@@ -3,16 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { READY_STORE_SECTION_NAV } from "./section-nav";
+import { ADS_SECTION_NAV } from "./section-nav";
 
-/** Sticky nav top offset (top-28) plus approximate nav height. */
 const SCROLL_SPY_OFFSET = 160;
 
-function getActiveSectionId(): (typeof READY_STORE_SECTION_NAV)[number]["id"] {
-  let currentId: (typeof READY_STORE_SECTION_NAV)[number]["id"] =
-    READY_STORE_SECTION_NAV[0].id;
+function getActiveSectionId(): (typeof ADS_SECTION_NAV)[number]["id"] {
+  let currentId: (typeof ADS_SECTION_NAV)[number]["id"] = ADS_SECTION_NAV[0].id;
 
-  for (const { id } of READY_STORE_SECTION_NAV) {
+  for (const { id } of ADS_SECTION_NAV) {
     const section = document.getElementById(id);
     if (!section) continue;
 
@@ -40,8 +38,8 @@ const InnerNavigation = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const linkRefs = useRef(new Map<string, HTMLAnchorElement>());
-  const [activeId, setActiveId] = useState<(typeof READY_STORE_SECTION_NAV)[number]["id"]>(
-    READY_STORE_SECTION_NAV[0].id,
+  const [activeId, setActiveId] = useState<(typeof ADS_SECTION_NAV)[number]["id"]>(
+    ADS_SECTION_NAV[0].id,
   );
 
   useEffect(() => {
@@ -63,9 +61,9 @@ const InnerNavigation = () => {
 
     syncActiveSection();
 
-    const sections = READY_STORE_SECTION_NAV.map(({ id }) =>
-      document.getElementById(id),
-    ).filter((section): section is HTMLElement => section !== null);
+    const sections = ADS_SECTION_NAV.map(({ id }) => document.getElementById(id)).filter(
+      (section): section is HTMLElement => section !== null,
+    );
 
     const observer = new IntersectionObserver(syncActiveSection, {
       rootMargin: `-${SCROLL_SPY_OFFSET}px 0px -55% 0px`,
@@ -91,7 +89,7 @@ const InnerNavigation = () => {
         ref={scrollContainerRef}
         className="scrollbar-none flex gap-1 overflow-x-auto px-3 py-2 sm:px-4 sm:py-2.5"
       >
-        {READY_STORE_SECTION_NAV.map((item) => (
+        {ADS_SECTION_NAV.map((item) => (
           <a
             key={item.id}
             ref={(element) => {
@@ -115,7 +113,7 @@ const InnerNavigation = () => {
           </a>
         ))}
         <Button asChild variant="default" size="sm" className="shrink-0 rounded-full uppercase">
-          <a href="#buy-now" className="font-semibold">
+          <a href="#buy-section" className="font-semibold">
             Купи сега
           </a>
         </Button>

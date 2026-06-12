@@ -1,12 +1,15 @@
 "use client";
 
 import { useRef } from "react";
-import { BarChart3, Search, Star } from "lucide-react";
+import { Search, Sparkles, Star } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { LandingSection } from "./shared";
-import { LANDING_REVEAL_CLASS, LANDING_CARD_CLASS } from "./landing-animation-classes";
-import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
+import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
+import {
+  LANDING_REVEAL_CLASS,
+  LANDING_CARD_CLASS,
+} from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
+import { useLandingScrollAnimations } from "@/components/services/service-detail-ready-store-v2/use-landing-scroll-animations";
 
 const cardClassName =
   "flex flex-col rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 h-full";
@@ -143,29 +146,29 @@ const MarketingTools = () => {
         data-animate-reveal
         className={`mx-auto max-w-3xl text-center text-4xl ${LANDING_REVEAL_CLASS}`}
       >
-        Продавай лесно с нашите вградени маркетинг инструменти
+        Два канала. Различна логика. Една ясна стратегия.
       </h1>
 
-      <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:[grid-template-areas:'seo_analytics_promo'_'email_email_promo'_'trackers_trackers_trackers']">
+      <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:[grid-template-areas:'google_meta_promo'_'analytics_analytics_promo'_'trackers_trackers_trackers']">
         <li
           data-animate-card
-          className={`${cardClassName} order-1 ${LANDING_CARD_CLASS} lg:[grid-area:seo]`}
+          className={`${cardClassName} order-1 ${LANDING_CARD_CLASS} lg:[grid-area:google]`}
         >
           <IconCard
             icon={Search}
-            title="SEO оптимизиран"
-            description="Изкачвай се в органичното търсене. Всичко е SEO оптимизирано още при пускането на онлайн магазина"
+            title="Google Ads — улавя търсене"
+            description="Хората вече търсят решение. Таргетираме по ключови думи, заявки и локация. Search, Shopping и YouTube — по-висок CPC, но бързи поръчки с високо намерение."
           />
         </li>
 
         <li
           data-animate-card
-          className={`${cardClassName} order-2 ${LANDING_CARD_CLASS} lg:[grid-area:analytics]`}
+          className={`${cardClassName} order-2 ${LANDING_CARD_CLASS} lg:[grid-area:meta]`}
         >
           <IconCard
-            icon={BarChart3}
-            title="Digi Analytics"
-            description="Над 40% от данните се губят в meta pixel, google analytics, google tag manager и други системи. Затова изградихме вътрешна система за 100% точност"
+            icon={Sparkles}
+            title="Meta — генерира интерес"
+            description="Хората скролват и се забавляват. Таргетираме по интереси, поведение и демография. Reels, Carousels и Stories — по-нисък CPC, но изисква време и грижа за конверсия."
           />
         </li>
 
@@ -175,9 +178,9 @@ const MarketingTools = () => {
             className={`${cardClassName} order-3 flex-1 lg:order-0 ${LANDING_CARD_CLASS}`}
           >
             <ImageBottomCard
-              title="Промоции и намаления"
-              description="На специфична дата сложи промоция или специфични секции да имат намаление"
-              image="/marketing/promotion.webp"
+              title="Правилният канал за целта"
+              description="Искаш бърза поръчка от търсене? Google. Искаш да изградиш аудитория и да покажеш продукта визуално? Meta. Често и двете — с различен бюджет и послание."
+              image="/marketing/promotion.png"
               imageContainerClassName="max-sm:mt-4 max-sm:aspect-auto max-sm:h-40"
             />
           </article>
@@ -187,20 +190,20 @@ const MarketingTools = () => {
           >
             <IconCard
               icon={Star}
-              title="Ревюта"
-              description="При успешно направена поръчка клиентът получава имейл за ревю към google my business. Хората първо там проверяват дали е легитимен бизнеса"
+              title="Социално доказателство в Meta"
+              description="В Google рекламата е текст и оферта. В Meta — визия, доверие и история. Използваме и двете, за да превърнем клика в поръчка."
             />
           </article>
         </li>
 
         <li
           data-animate-card
-          className={`${cardClassName} order-4 ${LANDING_CARD_CLASS} lg:[grid-area:email]`}
+          className={`${cardClassName} order-4 ${LANDING_CARD_CLASS} lg:[grid-area:analytics] sm:col-span-2`}
         >
           <ImageRightCard
-            title="Имейл маркетинг"
-            description="Събирай автоматично имейлите на клиентите които искат да се запишат за бюлетина. И автоматично пращане на имейли за персонализирани имейли или създаване на кампания"
-            image="/marketing/newsletter.webp"
+            title="Отчети за двата канала"
+            description="Виждаш разход, CPC, поръчки и следващите стъпки на човешки език — отделно за Google и Meta, без да живееш в два Ads Manager-а."
+            image="/marketing/newsletter.png"
           />
         </li>
 
@@ -209,9 +212,9 @@ const MarketingTools = () => {
           className={`${cardClassName} order-6 w-full ${LANDING_CARD_CLASS} sm:col-span-2 lg:[grid-area:trackers] lg:min-h-56 xl:min-h-64`}
         >
           <ImageLeftCard
-            title="Вградени тракери за проследяване"
-            description="Готов за реклама и проследяване на клиентите ти от първи ден. Многокалано продаване като в google и meta"
-            image="/marketing/social-media.webp"
+            title="Проследяване от първи ден"
+            description="Google Tag, Meta Pixel и конверсии — настройваме ги още при старта, за да знаеш кой канал носи поръчки, а кой само кликове."
+            image="/marketing/social-media.png"
           />
         </li>
       </ul>
