@@ -22,7 +22,7 @@ const BuiltInChat = () => {
       <div className="mt-12 grid gap-8 md:grid-cols-2">
         <article
           data-animate-card
-          className={`flex flex-col overflow-hidden rounded-2xl bg-[#111111] ${LANDING_CARD_CLASS}`}
+          className={`flex flex-col overflow-hidden rounded-2xl bg-[#31003c] ${LANDING_CARD_CLASS}`}
         >
           <div className="relative flex items-center justify-center p-6">
             <div className="relative h-56 w-full sm:h-[20rem]">
