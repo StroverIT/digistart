@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Montserrat } from "next/font/google";
+import { Inter, Roboto_Slab, Unbounded } from "next/font/google";
 import { headers } from "next/headers";
 import { DigiStartAnalytics } from "@/components/analytics/digistart-analytics";
 import { MetaPixelConsentLoader } from "@/components/analytics/meta-pixel-consent-loader";
@@ -11,9 +11,9 @@ import { shouldRenderComingSoonInLayout } from "@/lib/coming-soon";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const montserrat = Montserrat({
+const unbounded = Unbounded({
   subsets: ["latin", "cyrillic"],
-  variable: "--font-montserrat",
+  variable: "--font-unbounded",
   display: "swap",
   preload: false,
 });
@@ -23,6 +23,13 @@ const inter = Inter({
   variable: "--font-inter",
   display: "swap",
   preload: true,
+});
+
+const robotoSlab = Roboto_Slab({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-roboto-slab",
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -86,7 +93,7 @@ export default async function RootLayout({
   return (
     <html lang="bg" className="bg-background">
       <body
-        className={`${inter.variable} ${montserrat.variable} font-sans antialiased overflow-x-hidden`}
+        className={`${inter.variable} ${unbounded.variable} ${robotoSlab.variable} font-sans antialiased overflow-x-hidden`}
       >
         {showComingSoon ? (
           <>

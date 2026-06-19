@@ -4,7 +4,6 @@ import { CaseStudy } from "@/components/home/case-study";
 import { HomeHero } from "@/components/home/hero";
 import { MotivationBlock } from "@/components/home/motivation-block";
 import { PathTabs } from "@/components/home/path-tabs";
-import { ProcessSteps } from "@/components/home/process-steps";
 
 export const metadata: Metadata = {
   title: "DigiStart – Дигитална екосистема за твоя бизнес",
@@ -24,7 +23,6 @@ export default function HomePage() {
       <PathTabs />
       <MotivationBlock />
       <CaseStudy />
-      <ProcessSteps />
       <BookingForm />
     </>
   );

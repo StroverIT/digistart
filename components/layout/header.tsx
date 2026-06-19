@@ -14,11 +14,12 @@ import { AnalyticsToolbar } from "@/components/analytics/analytics-toolbar";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
 import { clearPreferences, hasCompletedSurvey } from "@/lib/visitor-preferences/storage";
-
-const LOGO_WIDTH = 58;
-const LOGO_HEIGHT = 64;
-/** Display height is h-8 (32px); width follows aspect ratio (~29px). */
-const LOGO_SIZES = "29px";
+import {
+  SITE_LOGO_HEIGHT,
+  SITE_LOGO_SIZES,
+  SITE_LOGO_SRC,
+  SITE_LOGO_WIDTH,
+} from "@/lib/site-brand";
 
 let gsapModule: Promise<typeof import("gsap")> | null = null;
 function loadGsap() {
@@ -451,16 +452,17 @@ export function Header() {
             <div className="flex items-center justify-between h-16 md:h-20">
               <TransitionLink href="/" className="flex items-center gap-2 group rounded-lg z-60 relative">
                 <Image
-                  src="/logo.webp"
+                  src={SITE_LOGO_SRC}
                   alt="DigiStart logo"
-                  width={LOGO_WIDTH}
-                  height={LOGO_HEIGHT}
-                  sizes={LOGO_SIZES}
+                  width={SITE_LOGO_WIDTH}
+                  height={SITE_LOGO_HEIGHT}
+                  sizes={SITE_LOGO_SIZES}
                   className="h-8 w-auto transition-transform group-hover:scale-110"
                 />
                 <span className="flex flex-col leading-tight">
                   <span className="text-xl font-bold tracking-tight">
-                    Digi<span className="text-primary">Start</span>
+                    <span className="text-primary">Digi</span>
+                    <span className="text-accent">Start</span>
                   </span>
                   <span className="text-[10px] sm:text-xs text-muted-foreground font-medium tracking-widest uppercase">
                     Easy Start
@@ -555,16 +557,17 @@ export function Header() {
                 onClick={() => void closeMenu()}
               >
                 <Image
-                  src="/logo.webp"
+                  src={SITE_LOGO_SRC}
                   alt="DigiStart logo"
-                  width={LOGO_WIDTH}
-                  height={LOGO_HEIGHT}
-                  sizes={LOGO_SIZES}
+                  width={SITE_LOGO_WIDTH}
+                  height={SITE_LOGO_HEIGHT}
+                  sizes={SITE_LOGO_SIZES}
                   className="h-8 w-auto transition-transform group-hover:scale-110"
                 />
                 <span className="flex flex-col leading-tight">
                   <span className="text-xl font-bold tracking-tight">
-                    Digi<span className="text-primary">Start</span>
+                    <span className="text-primary">Digi</span>
+                    <span className="text-accent">Start</span>
                   </span>
                   <span className="text-[10px] sm:text-xs text-zinc-400 font-medium tracking-widest uppercase">
                     Easy Start

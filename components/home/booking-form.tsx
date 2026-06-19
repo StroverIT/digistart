@@ -1,11 +1,5 @@
-import { CheckCircle2 } from "lucide-react";
 import ConsultationBookingForm from "@/components/consultation/consultation-booking-form";
-
-const benefits = [
-  "30 минути разговор – без ангажимент",
-  "Получаваш прозрачна оферта в рамките на 48 часа",
-  "Реален човек на телефона, не бот",
-];
+import { ProcessStepsContent } from "@/components/home/process-steps";
 
 export function BookingForm() {
   return (
@@ -24,18 +18,9 @@ export function BookingForm() {
               Попълни формата и нека обсъдим следващата стъпка за твоя бизнес.
             </p>
 
-            <ul className="mt-8 space-y-4">
-              {benefits.map((text) => (
-                <li key={text} className="flex items-start gap-3.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-                    <CheckCircle2 className="h-4 w-4" strokeWidth={2.5} />
-                  </div>
-                  <span className="pt-1.5 text-sm leading-relaxed text-foreground md:text-base">
-                    {text}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <div className="mt-10 border-t border-border/60 pt-10">
+              <ProcessStepsContent variant="embedded" />
+            </div>
           </div>
 
           <div className="p-2 md:p-4 lg:p-2">

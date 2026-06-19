@@ -21,7 +21,7 @@ const blocks = [
     key: "problem",
     title: "Проблемът",
     icon: AlertTriangle,
-    tone: "muted" as const,
+    tone: "accent" as const,
   },
   {
     key: "agitate",
@@ -67,6 +67,7 @@ export function PathContent({ path }: { path: PathContentType }) {
           {blocks.map((block, idx) => {
             const text = path[block.key as "problem" | "agitate" | "solution"];
             const isHighlight = block.tone === "highlight";
+            const isAccent = block.tone === "accent";
             const Icon = block.icon;
 
             return (
@@ -89,7 +90,7 @@ export function PathContent({ path }: { path: PathContentType }) {
                   <div
                     className={cn(
                       "inline-flex h-12 w-12 items-center justify-center rounded-2xl shadow-md ring-4 ring-card",
-                      isHighlight
+                      isHighlight || isAccent
                         ? "bg-accent text-accent-foreground"
                         : "bg-accent/10 text-accent",
                     )}
@@ -97,7 +98,14 @@ export function PathContent({ path }: { path: PathContentType }) {
                     <Icon className="h-5 w-5" strokeWidth={2.2} />
                   </div>
 
-                  <h3 className="mt-6 font-heading text-xl font-bold text-foreground md:text-2xl">
+                  <h3
+                    className={cn(
+                      "mt-6 text-xl font-bold md:text-2xl",
+                      isAccent
+                        ? "font-accent text-accent"
+                        : "font-heading text-foreground",
+                    )}
+                  >
                     {block.title}
                   </h3>
 

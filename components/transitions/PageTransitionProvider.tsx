@@ -12,13 +12,15 @@ import { usePathname, useSearchParams } from "next/navigation";
 import gsap from "gsap";
 import { PageTransitionContext } from "./transition-context";
 import { PageTransitionContextType } from "./types";
+import { SITE_LOGO_SRC } from "@/lib/site-brand";
 
 type PageTransitionProviderProps = {
   children: ReactNode;
 };
 
 const OVERLAY_BG = "#050505";
-const TRANSITION_LOGO_SRC = "/logo.png";
+
+const TRANSITION_LOGO_SRC = SITE_LOGO_SRC;
 const BOLT_STRIKE_FILL = "#ffffff";
 const BOLT_CHARGE_FILL = "#3b82f6";
 const LOGO_GLOW = "drop-shadow(0px 0px 35px rgba(59, 130, 246, 1))";

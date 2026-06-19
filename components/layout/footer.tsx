@@ -3,8 +3,22 @@
 import { useEffect, useRef } from "react";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import Image from "next/image";
-import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
+import {
+  ArrowRight,
+  Mail,
+  Phone,
+  Facebook,
+  Instagram,
+  Linkedin,
+} from "lucide-react";
 import { siteContact } from "@/lib/site-contact";
+import {
+  SITE_LOGO_HEIGHT,
+  SITE_LOGO_SIZES,
+  SITE_LOGO_SRC,
+  SITE_LOGO_WIDTH,
+} from "@/lib/site-brand";
+import { cn } from "@/lib/utils";
 
 const services = [
   { href: "/services/ai-automation", label: "AI Automation" },
@@ -16,11 +30,56 @@ const services = [
 
 const quickLinks = [
   { href: "/", label: "Начало" },
-  { href: "/consultation", label: "Безплатна консултация" },
-  { href: "/#services", label: "Услуги" },
-  { href: "/#process", label: "Как работим" },
-  { href: "/#contacts", label: "Контакти" },
+  { href: "/#booking", label: "Безплатна консултация" },
+  { href: "/#paths", label: "Как работим" },
+  { href: "/about", label: "За нас" },
+  { href: "/templates", label: "Шаблони" },
+  { href: "/blog", label: "Блог" },
 ];
+
+const legalLinks = [
+  { href: "/privacy-policy", label: "Поверителност", ctaId: "footer_privacy_policy" },
+  { href: "/terms-and-conditions", label: "Условия", ctaId: "footer_terms_conditions" },
+  { href: "/cookies-policy", label: "Бисквитки", ctaId: "footer_cookies_policy" },
+] as const;
+
+const socialLinks = [
+  { href: siteContact.facebook, label: "Facebook", icon: Facebook },
+  { href: siteContact.instagram, label: "Instagram", icon: Instagram },
+  { href: siteContact.linkedin, label: "LinkedIn", icon: Linkedin },
+] as const;
+
+function FooterColumnHeading({ children }: { children: string }) {
+  return (
+    <h3 className="mb-4 font-heading text-xs font-bold uppercase tracking-[0.2em] text-accent">
+      {children}
+    </h3>
+  );
+}
+
+function FooterNavLink({
+  href,
+  ctaId,
+  children,
+}: {
+  href: string;
+  ctaId: string;
+  children: string;
+}) {
+  return (
+    <TrackedCtaLink
+      href={href}
+      ctaId={ctaId}
+      className="group inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+    >
+      <span className="relative">
+        {children}
+        <span className="absolute -bottom-px left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
+      </span>
+      <ArrowRight className="h-3.5 w-3.5 shrink-0 opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-60 group-hover:translate-x-0" />
+    </TrackedCtaLink>
+  );
+}
 
 export function Footer() {
   const footerRef = useRef<HTMLElement>(null);
@@ -45,16 +104,23 @@ export function Footer() {
       const ctx = gsap.context(() => {
         const cols = root.querySelectorAll<HTMLElement>("[data-footer-column]");
         if (!cols.length) return;
-        gsap.set(cols, { opacity: 0, y: 40 });
+
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reducedMotion) {
+          gsap.set(cols, { opacity: 1, y: 0 });
+          return;
+        }
+
+        gsap.set(cols, { opacity: 0, y: 32 });
         gsap.to(cols, {
           opacity: 1,
           y: 0,
-          duration: 0.55,
-          stagger: 0.12,
-          ease: "back.out(1.4)",
+          duration: 0.5,
+          stagger: 0.08,
+          ease: "power3.out",
           scrollTrigger: {
             trigger: root,
-            start: "top 90%",
+            start: "top 92%",
             toggleActions: "play none none none",
           },
         });
@@ -70,155 +136,171 @@ export function Footer() {
   }, []);
 
   return (
-    <footer ref={footerRef} className="bg-card border-t border-border">
-      <div className="container mx-auto px-4 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-          {/* Brand */}
-          <div data-footer-column className="lg:col-span-1 opacity-0 translate-y-10">
-            <TrackedCtaLink href="/" ctaId="footer_logo_home" className="flex items-center gap-2 mb-4">
-              <Image
-                src="/logo.webp"
-                alt="DigiStart logo"
-                width={58}
-                height={64}
-                sizes="29px"
-                className="h-8 w-auto"
-              />
-              <span className="text-xl font-bold">
-                Digi<span className="text-primary">Start</span>
-              </span>
-            </TrackedCtaLink>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              Помагаме на малки бизнеси и странични проекти да стартират онлайн бързо, ясно и без
-              излишен риск.
-            </p>
-            <div className="flex items-center gap-3">
-              <a
-                href={siteContact.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                aria-label="Facebook"
+    <footer ref={footerRef} className="relative mt-8 border-t border-border/80">
+      {/* Main footer */}
+      <div className="relative overflow-hidden bg-card">
+        <div
+          className="pointer-events-none absolute inset-0 -z-0 opacity-60"
+          style={{ background: "var(--gradient-soft)" }}
+        />
+        <div className="pointer-events-none absolute -right-24 top-0 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+
+        <div className="container relative mx-auto px-4 py-10 md:px-8 md:py-14">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-12 lg:gap-x-8">
+            {/* Brand */}
+            <div
+              data-footer-column
+              className="col-span-2 opacity-0 translate-y-8 lg:col-span-4"
+            >
+              <TrackedCtaLink
+                href="/"
+                ctaId="footer_logo_home"
+                className="group mb-4 inline-flex items-center gap-2.5"
               >
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a
-                href={siteContact.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a
-                href={siteContact.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="h-5 w-5" />
-              </a>
+                <Image
+                  src={SITE_LOGO_SRC}
+                  alt="DigiStart logo"
+                  width={SITE_LOGO_WIDTH}
+                  height={SITE_LOGO_HEIGHT}
+                  sizes={SITE_LOGO_SIZES}
+                  className="h-8 w-auto transition-transform group-hover:scale-105"
+                />
+                <span className="flex flex-col leading-tight">
+                  <span className="text-xl font-bold tracking-tight">
+                    <span className="text-primary">Digi</span>
+                    <span className="text-accent">Start</span>
+                  </span>
+                  <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                    Easy Start
+                  </span>
+                </span>
+              </TrackedCtaLink>
+
+              <p className="mb-6 max-w-sm text-sm leading-relaxed text-muted-foreground">
+                Помагаме на малки бизнеси и странични проекти да стартират онлайн бързо,
+                ясно и без излишен риск.
+              </p>
+
+              <div className="flex items-center gap-2.5">
+                {socialLinks.map(({ href, label, icon: Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/80 text-muted-foreground",
+                      "transition-all duration-200 hover:border-primary/30 hover:bg-primary/10 hover:text-accent hover:shadow-[0_0_20px_-6px] hover:shadow-primary/40"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Services */}
+            <div data-footer-column className="opacity-0 translate-y-8 lg:col-span-2">
+              <FooterColumnHeading>Услуги</FooterColumnHeading>
+              <ul className="space-y-2.5">
+                {services.map((service) => (
+                  <li key={service.href}>
+                    <FooterNavLink
+                      href={service.href}
+                      ctaId={`footer_service_${service.href.replaceAll("/", "_")}`}
+                    >
+                      {service.label}
+                    </FooterNavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Quick Links */}
+            <div data-footer-column className="opacity-0 translate-y-8 lg:col-span-3">
+              <FooterColumnHeading>Бързи връзки</FooterColumnHeading>
+              <ul className="space-y-2.5">
+                {quickLinks.map((link) => (
+                  <li key={link.label}>
+                    <FooterNavLink
+                      href={link.href}
+                      ctaId={`footer_quick_${link.href.replaceAll("/", "_").replaceAll("#", "")}`}
+                    >
+                      {link.label}
+                    </FooterNavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div data-footer-column className="col-span-2 opacity-0 translate-y-8 lg:col-span-3">
+              <FooterColumnHeading>Контакти</FooterColumnHeading>
+              <ul className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1">
+                <li>
+                  <a
+                    href={`mailto:${siteContact.email}`}
+                    className="group flex items-start gap-3 rounded-xl border border-border/80 bg-background/70 p-3.5 transition-colors hover:border-primary/25 hover:bg-background"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-accent">
+                      <Mail className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0 pt-0.5">
+                      <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        Имейл
+                      </span>
+                      <span className="mt-0.5 block truncate text-sm text-foreground transition-colors group-hover:text-accent">
+                        {siteContact.email}
+                      </span>
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={siteContact.phoneHref}
+                    className="group flex items-start gap-3 rounded-xl border border-border/80 bg-background/70 p-3.5 transition-colors hover:border-primary/25 hover:bg-background"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-accent">
+                      <Phone className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0 pt-0.5">
+                      <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        Телефон
+                      </span>
+                      <span className="mt-0.5 block text-sm text-foreground transition-colors group-hover:text-accent">
+                        {siteContact.phoneLabel}
+                      </span>
+                    </span>
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
 
-          {/* Services */}
-          <div data-footer-column className="opacity-0 translate-y-10">
-            <h3 className="font-semibold text-foreground mb-4">Услуги</h3>
-            <ul className="space-y-3">
-              {services.map((service) => (
-                <li key={service.href}>
-                  <TrackedCtaLink
-                    href={service.href}
-                    ctaId={`footer_service_${service.href.replaceAll("/", "_")}`}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {service.label}
-                  </TrackedCtaLink>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Quick Links */}
-          <div data-footer-column className="opacity-0 translate-y-10">
-            <h3 className="font-semibold text-foreground mb-4">Бързи връзки</h3>
-            <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.label}>
-                  <TrackedCtaLink
-                    href={link.href}
-                    ctaId={`footer_quick_${link.href.replaceAll("/", "_").replaceAll("#", "")}`}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {link.label}
-                  </TrackedCtaLink>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div data-footer-column className="opacity-0 translate-y-10">
-            <h3 className="font-semibold text-foreground mb-4">Контакти</h3>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <Mail className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <a
-                  href={`mailto:${siteContact.email}`}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+          {/* Bottom bar */}
+          <div
+            data-footer-column
+            className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border/80 pt-6 opacity-0 translate-y-8 md:flex-row md:pt-8"
+          >
+            <p className="text-center text-sm text-muted-foreground md:text-left">
+              &copy; {new Date().getFullYear()} DigiStart. Всички права запазени.
+            </p>
+            <nav
+              aria-label="Правни документи"
+              className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2"
+            >
+              {legalLinks.map((link) => (
+                <TrackedCtaLink
+                  key={link.href}
+                  href={link.href}
+                  ctaId={link.ctaId}
+                  className="text-sm text-muted-foreground transition-colors hover:text-accent"
                 >
-                  {siteContact.email}
-                </a>
-              </li>
-              <li className="flex items-start gap-3">
-                <Phone className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <a
-                  href={siteContact.phoneHref}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {siteContact.phoneLabel}
-                </a>
-              </li>
-              <li className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm text-muted-foreground">София, България</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div
-          data-footer-column
-          className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 opacity-0 translate-y-10"
-        >
-          <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} DigiStart. Всички права запазени.
-          </p>
-          <div className="flex items-center gap-6">
-            <TrackedCtaLink
-              href="/privacy-policy"
-              ctaId="footer_privacy_policy"
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              Поверителност
-            </TrackedCtaLink>
-            <TrackedCtaLink
-              href="/terms-and-conditions"
-              ctaId="footer_terms_conditions"
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              Условия за ползване
-            </TrackedCtaLink>
-            <TrackedCtaLink
-              href="/cookies-policy"
-              ctaId="footer_cookies_policy"
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              Бисквитки
-            </TrackedCtaLink>
+                  {link.label}
+                </TrackedCtaLink>
+              ))}
+            </nav>
           </div>
         </div>
       </div>

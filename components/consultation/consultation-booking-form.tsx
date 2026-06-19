@@ -111,10 +111,12 @@ export default function ConsultationBookingForm({
         const loadedDays = (data.days ?? []) as SlotDay[];
         setDays(loadedDays);
 
-        const firstWithAvailability = loadedDays.find((day) => day.availableTimes.length > 0);
-        if (firstWithAvailability) {
-          setSelectedDate(firstWithAvailability.date);
-          setSelectedTime(firstWithAvailability.availableTimes[0] ?? "");
+        if (!isEmbedded) {
+          const firstWithAvailability = loadedDays.find((day) => day.availableTimes.length > 0);
+          if (firstWithAvailability) {
+            setSelectedDate(firstWithAvailability.date);
+            setSelectedTime(firstWithAvailability.availableTimes[0] ?? "");
+          }
         }
       } catch {
         setError("Не успяхме да заредим часовете. Моля опитайте отново.");
@@ -124,22 +126,56 @@ export default function ConsultationBookingForm({
     };
 
     void loadSlots();
-  }, []);
+  }, [isEmbedded]);
 
   const availableTimes = useMemo(() => {
     return days.find((day) => day.date === selectedDate)?.availableTimes ?? [];
   }, [days, selectedDate]);
+
+  const isContactComplete = useMemo(() => {
+    const name = formData.name.trim();
+    const phone = formData.phone.trim();
+    const email = formData.email.trim();
+    return name.length > 0 && phone.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }, [formData.name, formData.phone, formData.email]);
+
+  const showDayPicker = isContactComplete;
+  const showTimePicker = isContactComplete && Boolean(selectedDate);
+
+  useEffect(() => {
+    if (!isContactComplete) {
+      setSelectedDate("");
+      setSelectedTime("");
+    }
+  }, [isContactComplete]);
+
+  useEffect(() => {
+    if (!selectedDate) {
+      setSelectedTime("");
+    }
+  }, [selectedDate]);
 
   const isTimeLocallyDisabled = (date: string, time: string) =>
     locallyDisabledSlots[date]?.has(time) ?? false;
 
   useEffect(() => {
     if (!selectedDate) return;
-    if (!availableTimes.includes(selectedTime) || isTimeLocallyDisabled(selectedDate, selectedTime)) {
-      const firstEnabledTime = availableTimes.find((time) => !isTimeLocallyDisabled(selectedDate, time));
-      setSelectedTime(firstEnabledTime ?? "");
+
+    const timeIsValid =
+      selectedTime &&
+      availableTimes.includes(selectedTime) &&
+      !isTimeLocallyDisabled(selectedDate, selectedTime);
+
+    if (timeIsValid) return;
+
+    if (isEmbedded) {
+      setSelectedTime("");
+      return;
     }
-  }, [availableTimes, selectedDate, selectedTime, locallyDisabledSlots]);
+
+    const firstEnabledTime = availableTimes.find((time) => !isTimeLocallyDisabled(selectedDate, time));
+    setSelectedTime(firstEnabledTime ?? "");
+  }, [availableTimes, selectedDate, selectedTime, locallyDisabledSlots, isEmbedded]);
 
   useEffect(() => {
     if (isLoadingSlots) return;
@@ -160,7 +196,7 @@ export default function ConsultationBookingForm({
     }, root);
 
     return () => ctx.revert();
-  }, [isLoadingSlots]);
+  }, [isLoadingSlots, isContactComplete, selectedDate]);
 
   useEffect(() => {
     if (!success) return;
@@ -272,64 +308,9 @@ export default function ConsultationBookingForm({
     <div className={cn(isEmbedded ? "grid gap-5" : "space-y-6")}>
       <div
         data-consult-animate
-        className={cn("space-y-2 opacity-0 translate-y-10", isEmbedded && "order-3")}
-      >
-        {isEmbedded ? (
-          <Label>Избери ден</Label>
-        ) : (
-          <p className="text-sm font-medium">Изберете ден</p>
-        )}
-        <div className={cn("grid gap-2", isEmbedded ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2 sm:grid-cols-3")}>
-          {days.map((day) => (
-            <button
-              key={day.date}
-              type="button"
-              onClick={() => setSelectedDate(day.date)}
-              className={dayButtonClass(day)}
-              disabled={day.availableTimes.length === 0}
-            >
-              {formatDisplayDate(day.date, variant)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div
-        data-consult-animate
-        className={cn("space-y-2 opacity-0 translate-y-10", isEmbedded && "order-4")}
-      >
-        {isEmbedded ? (
-          <Label>
-            {selectedDate
-              ? `Свободни часове за ${formatDisplayDate(selectedDate, variant)}`
-              : "Избери час"}
-          </Label>
-        ) : (
-          <p className="text-sm font-medium">Изберете час</p>
-        )}
-        <div className={cn(isEmbedded ? "grid grid-cols-3 gap-2 md:grid-cols-4" : "flex flex-wrap gap-2")}>
-          {availableTimes.map((time) => (
-            <button
-              key={time}
-              type="button"
-              onClick={() => setSelectedTime(time)}
-              className={timeButtonClass(time)}
-              disabled={isTimeLocallyDisabled(selectedDate, time)}
-            >
-              {time}
-            </button>
-          ))}
-          {availableTimes.length === 0 && (
-            <p className="text-sm text-muted-foreground">Няма свободни часове за избрания ден.</p>
-          )}
-        </div>
-      </div>
-
-      <div
-        data-consult-animate
         className={cn(
           "opacity-0 translate-y-10",
-          isEmbedded ? "order-1 grid gap-5" : "grid grid-cols-1 gap-4 sm:grid-cols-2",
+          isEmbedded ? "grid gap-5" : "grid grid-cols-1 gap-4 sm:grid-cols-2",
         )}
       >
         {isEmbedded ? (
@@ -412,6 +393,55 @@ export default function ConsultationBookingForm({
         )}
       </div>
 
+      {showDayPicker ? (
+        <div data-consult-animate className="space-y-2 opacity-0 translate-y-10">
+          {isEmbedded ? (
+            <Label>Избери ден</Label>
+          ) : (
+            <p className="text-sm font-medium">Изберете ден</p>
+          )}
+          <div className={cn("grid gap-2", isEmbedded ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2 sm:grid-cols-3")}>
+            {days.map((day) => (
+              <button
+                key={day.date}
+                type="button"
+                onClick={() => setSelectedDate(day.date)}
+                className={dayButtonClass(day)}
+                disabled={day.availableTimes.length === 0}
+              >
+                {formatDisplayDate(day.date, variant)}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {showTimePicker ? (
+        <div data-consult-animate className="space-y-2 opacity-0 translate-y-10">
+          {isEmbedded ? (
+            <Label>Свободни часове</Label>
+          ) : (
+            <p className="text-sm font-medium">Изберете час</p>
+          )}
+          <div className={cn(isEmbedded ? "grid grid-cols-3 gap-2 md:grid-cols-4" : "flex flex-wrap gap-2")}>
+            {availableTimes.map((time) => (
+              <button
+                key={time}
+                type="button"
+                onClick={() => setSelectedTime(time)}
+                className={timeButtonClass(time)}
+                disabled={isTimeLocallyDisabled(selectedDate, time)}
+              >
+                {time}
+              </button>
+            ))}
+            {availableTimes.length === 0 && (
+              <p className="text-sm text-muted-foreground">Няма свободни часове за избрания ден.</p>
+            )}
+          </div>
+        </div>
+      ) : null}
+
       {!isEmbedded && showNotesField ? (
         <div data-consult-animate className="opacity-0 translate-y-10">
           <Textarea
@@ -424,33 +454,35 @@ export default function ConsultationBookingForm({
         </div>
       ) : null}
 
-      {error ? <p className={cn("text-sm text-red-500", isEmbedded && "order-5")}>{error}</p> : null}
+      {error ? <p className="text-sm text-red-500">{error}</p> : null}
       {success ? (
-        <p data-consult-success className={cn("text-sm text-green-600", isEmbedded && "order-6")}>
+        <p data-consult-success className="text-sm text-green-600">
           {success}
         </p>
       ) : null}
 
-      <div data-consult-animate className={cn("opacity-0 translate-y-10", isEmbedded && "order-7")}>
-        <Button
-          type="button"
-          onClick={() => void handleSubmit()}
-          disabled={
-            isSubmitting ||
-            !selectedDate ||
-            !selectedTime ||
-            availableTimes.length === 0 ||
-            isTimeLocallyDisabled(selectedDate, selectedTime)
-          }
-          className={cn(
-            "w-full",
-            isEmbedded &&
-              "h-14 rounded-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90",
-          )}
-        >
-          {isSubmitting ? "Запазване..." : submitLabel}
-        </Button>
-      </div>
+      {showTimePicker ? (
+        <div data-consult-animate className="opacity-0 translate-y-10">
+          <Button
+            type="button"
+            onClick={() => void handleSubmit()}
+            disabled={
+              isSubmitting ||
+              !selectedDate ||
+              !selectedTime ||
+              availableTimes.length === 0 ||
+              isTimeLocallyDisabled(selectedDate, selectedTime)
+            }
+            className={cn(
+              "w-full",
+              isEmbedded &&
+                "h-14 rounded-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90",
+            )}
+          >
+            {isSubmitting ? "Запазване..." : submitLabel}
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 

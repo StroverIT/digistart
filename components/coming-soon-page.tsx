@@ -6,6 +6,7 @@ import {
 } from "@/lib/server/newsletter";
 import { NewsletterSignupForm } from "@/components/newsletter/newsletter-signup-form";
 import TransitionLink from "@/components/transitions/TransitionLink";
+import { SITE_LOGO_SRC } from "@/lib/site-brand";
 
 const offerBullets = [
   "Едно от 20-те места за ранен старт (преди да обявим публично).",
@@ -41,7 +42,7 @@ export async function ComingSoonPage() {
           <div className="text-center">
             <div className="mb-8 flex justify-center">
               <Image
-                src="/logo.webp"
+                src={SITE_LOGO_SRC}
                 alt="DigiStart logo"
                 width={40}
                 height={40}
