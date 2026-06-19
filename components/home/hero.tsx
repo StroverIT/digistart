@@ -15,18 +15,19 @@ export function HomeHero() {
             Дигитална екосистема за бизнес
           </span>
           <h1 className="mt-6 font-heading text-4xl font-bold leading-[1.05] tracking-tight text-foreground md:text-6xl lg:text-7xl">
-            Ние не продаваме услуги.
+            НЕ услуги.
             <span className="block">
               Ние създаваме твоето{" "}
               <span className="relative inline-block">
                 <span className="relative z-10">бъдеще.</span>
-                <span className="absolute inset-x-0 bottom-1 -z-0 h-3 bg-primary/20" />
+                <span className="absolute inset-x-0 bottom-1 -z-0 h-3 bg-primary" />
               </span>
             </span>
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
             Разполагаме с всички необходими инструменти и експертиза, за да накараме
-            бизнеса ти да процъфти – от онлайн магазин до печеливши реклами и
+            бизнеса ти да процъфти.
+            <div className="my-2" /> От онлайн магазин до печеливши реклами и
             съдържание, което продава. Ние вършим черната работа. Ти растеш.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">

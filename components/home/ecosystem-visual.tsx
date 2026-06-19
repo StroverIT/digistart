@@ -130,11 +130,11 @@ export function EcosystemVisual() {
       <div data-eco-orbit className="absolute inset-0">
         <div
           data-eco-ring
-          className="absolute inset-8 rounded-full border-2 border-dashed border-primary/20 opacity-0"
+          className="absolute inset-8 rounded-full border-2 border-dashed border-accent/20 opacity-0"
         />
         <div
           data-eco-ring
-          className="absolute inset-16 rounded-full border-2 border-dashed border-primary/15 opacity-0"
+          className="absolute inset-16 rounded-full border-2 border-dashed border-accent/15 opacity-0"
         />
 
         {nodes.map(({ icon: Icon, label, className }) => (
