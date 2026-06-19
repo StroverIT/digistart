@@ -26,12 +26,8 @@ export function ProcessSteps() {
   return (
     <section id="process" className="container mx-auto px-4 py-16 md:px-8 md:py-24">
       <div className="mx-auto max-w-2xl text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent">
-          <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-          Как работим
-        </span>
-        <h2 className="mt-5 font-heading text-3xl font-bold tracking-tight text-foreground md:text-5xl">
-          Как работи процесът
+        <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-5xl">
+          Какъв е процеса
         </h2>
         <p className="mt-4 text-muted-foreground md:text-lg">
           Три ясни стъпки – без сложни термини, без скрити такси.
@@ -75,7 +71,7 @@ export function ProcessSteps() {
                       "hover:border-primary/30 hover:shadow-[var(--shadow-soft)]",
                     )}
                   >
-                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-accent">
                       <Icon className="h-5 w-5" strokeWidth={2.2} />
                     </div>
                     <h3 className="font-heading text-xl font-bold text-foreground">{step.title}</h3>

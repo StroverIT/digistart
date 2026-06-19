@@ -232,28 +232,37 @@ export default function ConsultationBookingForm({
 
   const dayButtonClass = (day: SlotDay) =>
     cn(
-      "border text-sm font-semibold transition-all",
-      isEmbedded ? "h-11 rounded-xl px-3" : "rounded-md px-3 py-2",
-      selectedDate === day.date
-        ? isEmbedded
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-primary bg-primary/10 text-primary"
-        : "border-border hover:border-primary/40",
+      "text-sm font-semibold transition-all",
+      isEmbedded ? "h-11 rounded-xl px-3" : "rounded-md border px-3 py-2",
+      isEmbedded
+        ? selectedDate === day.date
+          ? "bg-accent text-accent-foreground shadow-md"
+          : "bg-background/80 text-foreground hover:bg-background"
+        : selectedDate === day.date
+          ? "border-primary bg-primary/10 text-primary"
+          : "border-border hover:border-primary/40",
+      !isEmbedded && "border",
       day.availableTimes.length === 0 && "cursor-not-allowed opacity-50",
     );
 
   const timeButtonClass = (time: string) =>
     cn(
-      "border text-sm font-semibold transition-all",
+      "text-sm font-semibold transition-all",
       isEmbedded ? "h-11 rounded-xl px-3" : "rounded-md px-3 py-1.5",
-      selectedTime === time
-        ? isEmbedded
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-primary bg-primary/10 text-primary"
-        : "border-border hover:border-primary/40",
+      isEmbedded
+        ? selectedTime === time
+          ? "bg-accent text-accent-foreground shadow-md"
+          : "bg-background/80 text-foreground hover:bg-background"
+        : selectedTime === time
+          ? "border-primary bg-primary/10 text-primary"
+          : "border-border hover:border-primary/40",
+      !isEmbedded && "border",
       isTimeLocallyDisabled(selectedDate, time) &&
         "cursor-not-allowed opacity-50 line-through hover:border-border",
     );
+
+  const embeddedInputClass =
+    "h-12 border-0 bg-background shadow-sm ring-1 ring-foreground/[0.06] focus-visible:ring-accent/30";
 
   const formContent = isLoadingSlots ? (
     <div className="flex items-center justify-center py-10">
@@ -332,7 +341,7 @@ export default function ConsultationBookingForm({
               value={formData.name}
               onChange={onInputChange}
               placeholder="Иван Иванов"
-              className="h-12"
+              className={cn(isEmbedded ? embeddedInputClass : undefined, "h-12")}
               required
             />
           </div>
@@ -356,7 +365,7 @@ export default function ConsultationBookingForm({
                 value={formData.phone}
                 onChange={onInputChange}
                 placeholder="0888 123 456"
-                className="h-12"
+                className={cn(isEmbedded ? embeddedInputClass : undefined, "h-12")}
                 required
               />
             </div>
@@ -369,7 +378,7 @@ export default function ConsultationBookingForm({
                 value={formData.email}
                 onChange={onInputChange}
                 placeholder="ivan@example.com"
-                className="h-12"
+                className={cn(isEmbedded ? embeddedInputClass : undefined, "h-12")}
                 required
               />
             </div>

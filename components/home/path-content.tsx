@@ -39,7 +39,18 @@ const blocks = [
 
 const FIT_ICONS: LucideIcon[] = [Target, Clock, Users, Sparkles];
 
+function splitFitTitle(fitTitle: string) {
+  const question = fitTitle.match(/Това ти ли си\?/)?.[0];
+  const lead = fitTitle.replace(/\s*Това ти ли си\?\s*$/, "").replace(/\.$/, "").trim();
+
+  return {
+    lead: lead || fitTitle,
+    question: question ?? fitTitle,
+  };
+}
+
 export function PathContent({ path }: { path: PathContentType }) {
+  const { lead: fitLead, question: fitQuestion } = splitFitTitle(path.fitTitle);
   return (
     <div className="space-y-12">
       <div className="relative overflow-hidden rounded-[2rem] bg-card shadow-[var(--shadow-soft)] ring-1 ring-foreground/[0.04] md:rounded-[2.5rem]">
@@ -102,23 +113,14 @@ export function PathContent({ path }: { path: PathContentType }) {
         </div>
       </div>
 
-      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-b from-muted/40 to-background px-4 py-10 md:rounded-[2.5rem] md:px-8 md:py-12">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-16 top-0 h-48 w-48 rounded-full bg-primary/20 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-12 bottom-0 h-56 w-56 rounded-full bg-accent/10 blur-3xl"
-        />
-
-        <div className="relative mx-auto max-w-2xl text-center">
+      <div className="relative px-1 pt-4 md:px-4 md:pt-8">
+        <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent">
             <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-            Провери дали пасва
+            {fitLead}
           </span>
           <h3 className="mt-5 font-heading text-2xl font-bold text-foreground md:text-3xl">
-            {path.fitTitle}
+            {fitQuestion}
           </h3>
         </div>
 

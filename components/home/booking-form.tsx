@@ -1,46 +1,55 @@
 import { CheckCircle2 } from "lucide-react";
 import ConsultationBookingForm from "@/components/consultation/consultation-booking-form";
 
+const benefits = [
+  "30 минути разговор – без ангажимент",
+  "Получаваш прозрачна оферта в рамките на 48 часа",
+  "Реален човек на телефона, не бот",
+];
+
 export function BookingForm() {
   return (
     <section id="booking" className="container mx-auto px-4 py-20 md:px-8 md:py-28">
-      <div className="grid gap-10 rounded-[2.5rem] border border-border bg-card p-6 md:p-12 lg:grid-cols-[1fr_1.2fr]">
-        <div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-            Безплатна консултация
-          </span>
-          <h2 className="mt-5 font-heading text-3xl font-bold tracking-tight text-foreground md:text-5xl">
-            Запази своя час
-          </h2>
-          <p className="mt-4 text-muted-foreground md:text-lg">
-            Попълни формата и нека обсъдим следващата стъпка за твоя бизнес.
-          </p>
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-card shadow-[var(--shadow-glow)] ring-1 ring-foreground/[0.04]">
+        <div className="relative grid gap-10 p-6 md:p-10 lg:grid-cols-[1fr_1.15fr] lg:items-start lg:p-12">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              Безплатна консултация
+            </span>
+            <h2 className="mt-5 font-heading text-3xl font-bold tracking-tight text-foreground md:text-5xl">
+              Запази своя час
+            </h2>
+            <p className="mt-4 max-w-md text-muted-foreground md:text-lg">
+              Попълни формата и нека обсъдим следващата стъпка за твоя бизнес.
+            </p>
 
-          <ul className="mt-8 space-y-3 text-sm text-foreground">
-            {[
-              "30 минути разговор – без ангажимент",
-              "Получаваш прозрачна оферта в рамките на 48 часа",
-              "Реален човек на телефона, не бот",
-            ].map((t) => (
-              <li key={t} className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span>{t}</span>
-              </li>
-            ))}
-          </ul>
+            <ul className="mt-8 space-y-4">
+              {benefits.map((text) => (
+                <li key={text} className="flex items-start gap-3.5">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+                    <CheckCircle2 className="h-4 w-4" strokeWidth={2.5} />
+                  </div>
+                  <span className="pt-1.5 text-sm leading-relaxed text-foreground md:text-base">
+                    {text}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="p-2 md:p-4 lg:p-2">
+            <ConsultationBookingForm
+              source="public"
+              variant="embedded"
+              showCompanyField={false}
+              showNotesField={false}
+              submitLabel="Потвърди консултацията"
+              analyticsPath="/"
+              analyticsCtaId="home_booking_submit"
+            />
+          </div>
         </div>
-
-        <ConsultationBookingForm
-          source="public"
-          variant="embedded"
-          className="rounded-3xl border border-border bg-background p-6 md:p-8"
-          showCompanyField={false}
-          showNotesField={false}
-          submitLabel="Потвърди консултацията"
-          analyticsPath="/"
-          analyticsCtaId="home_booking_submit"
-        />
       </div>
     </section>
   );
