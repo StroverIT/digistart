@@ -61,7 +61,7 @@ export function ServiceCompanionOffer({
           <p className="text-sm mt-2">
             <Price
               value={companionOption.price}
-              className="text-primary font-medium"
+              className="text-accent font-medium"
             />
             <span className="text-muted-foreground">
               {companionOption.isMonthly ? " /месец" : ""}
@@ -99,11 +99,11 @@ export function ServiceCompanionOffer({
       {quantity > 0 && !alreadyInCart ? (
         <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-sm">
           <span className="text-muted-foreground">{companionOption.name}</span>
-          <span className="font-medium text-primary">
+          <span className="font-medium text-accent">
             +
             <Price
               value={companionOption.price}
-              className="text-primary font-medium"
+              className="text-accent font-medium"
             />
             {companionOption.isMonthly ? "/мес" : ""}
           </span>

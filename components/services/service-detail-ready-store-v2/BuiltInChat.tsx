@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { LandingSection } from "./shared";
-import { LANDING_REVEAL_CLASS, LANDING_CARD_CLASS } from "./landing-animation-classes";
+import { LANDING_CARD_CLASS, LANDING_HEADING_CLASS, LANDING_REVEAL_CLASS, LANDING_SECTION_TITLE_CENTER_CLASS } from "./landing-animation-classes";
 import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
 
 const BuiltInChat = () => {
@@ -14,7 +14,7 @@ const BuiltInChat = () => {
     <LandingSection ref={sectionRef} id="support">
       <h1
         data-animate-reveal
-        className={`mx-auto max-w-3xl text-center text-4xl ${LANDING_REVEAL_CLASS}`}
+        className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_CENTER_CLASS} ${LANDING_REVEAL_CLASS}`}
       >
         На всяка стъпка сме до теб
       </h1>

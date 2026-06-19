@@ -1,5 +1,6 @@
 import { forwardRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { LANDING_HEADING_CLASS } from "./landing-animation-classes";
 
 export const landingSectionClass =
   "scroll-mt-28 py-14 md:py-20 lg:py-24 border-b border-border/60 last:border-b-0";
@@ -33,10 +34,7 @@ export function LandingSectionTitle({
 }) {
   return (
     <Tag
-      className={cn(
-        "font-heading text-balance text-center text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-tight",
-        className,
-      )}
+      className={cn(LANDING_HEADING_CLASS, "text-balance text-center text-3xl sm:text-4xl lg:text-[2.75rem] lg:leading-tight", className)}
     >
       {children}
     </Tag>

@@ -5,7 +5,7 @@ import { BarChart3, Search, Star } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { LandingSection } from "./shared";
-import { LANDING_REVEAL_CLASS, LANDING_CARD_CLASS } from "./landing-animation-classes";
+import { LANDING_CARD_CLASS, LANDING_HEADING_CLASS, LANDING_REVEAL_CLASS, LANDING_SECTION_TITLE_CENTER_CLASS } from "./landing-animation-classes";
 import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
 
 const cardClassName =
@@ -141,7 +141,7 @@ const MarketingTools = () => {
     >
       <h1
         data-animate-reveal
-        className={`mx-auto max-w-3xl text-center text-4xl ${LANDING_REVEAL_CLASS}`}
+        className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_CENTER_CLASS} ${LANDING_REVEAL_CLASS}`}
       >
         Продавай лесно с нашите вградени маркетинг инструменти
       </h1>

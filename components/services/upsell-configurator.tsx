@@ -225,7 +225,7 @@ export function UpsellConfigurator({
                       <span className="text-muted-foreground">Избери пакет</span>
                     ) : (
                       <>
-                        <Price value={upsell.pricePerUnit ?? 0} className="text-primary font-medium" />
+                        <Price value={upsell.pricePerUnit ?? 0} className="text-accent font-medium" />
                         <span className="text-muted-foreground"> / {upsell.unit}</span>
                       </>
                     )}
@@ -236,7 +236,7 @@ export function UpsellConfigurator({
                 ) : minChoicePrice != null ? (
                   <p className="mt-2 text-sm text-muted-foreground">
                     от{" "}
-                    <Price value={minChoicePrice} className="text-sm text-primary font-medium" />
+                    <Price value={minChoicePrice} className="text-sm text-accent font-medium" />
                     {upsell.isMonthly ? "/мес" : ""}
                   </p>
                 ) : null}
@@ -381,7 +381,7 @@ export function UpsellConfigurator({
                   )}
                 </span>
                 <span className="font-medium text-primary">
-                  +<Price value={amount} className="text-primary font-medium" />
+                  +<Price value={amount} className="text-accent font-medium" />
                   {upsell.isMonthly ? "/мес" : ""}
                 </span>
               </div>

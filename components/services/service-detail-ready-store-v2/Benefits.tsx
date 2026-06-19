@@ -5,7 +5,7 @@ import gsap from "gsap";
 import { ChevronDown } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
 import { LandingSection } from "./shared";
-import { LANDING_CARD_CLASS, LANDING_REVEAL_CLASS } from "./landing-animation-classes";
+import { LANDING_CARD_CLASS, LANDING_HEADING_CLASS, LANDING_REVEAL_CLASS } from "./landing-animation-classes";
 import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
 
 const benefits = [
@@ -144,7 +144,7 @@ function BenefitRow({
         className="flex w-full items-start justify-between gap-4 px-0 py-5 text-left text-white sm:py-6"
       >
         <span className="min-w-0 flex-1">
-          <span className="block text-lg font-semibold sm:text-3xl">{benefit.title}</span>
+          <span className={`block ${LANDING_HEADING_CLASS} text-lg sm:text-3xl`}>{benefit.title}</span>
           <div ref={descRef} id={panelId} className="overflow-hidden" aria-hidden={!isActive}>
             <div ref={contentRef}>
               <p className="pt-2 text-sm leading-relaxed text-white sm:text-xl font-light">
@@ -207,7 +207,7 @@ const Benefits = () => {
     >
       <h2
         data-animate-reveal
-        className={`mx-auto max-w-4xl text-center text-3xl font-medium text-white ${LANDING_REVEAL_CLASS}`}
+        className={`mx-auto max-w-4xl text-center ${LANDING_HEADING_CLASS} text-3xl text-white md:text-4xl ${LANDING_REVEAL_CLASS}`}
       >
         Създай онлайн магазин за рекордно време - от нула до това да продаваш в рамките на
         часове, не седмици

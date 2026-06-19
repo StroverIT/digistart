@@ -2,7 +2,7 @@
 
 import TransitionLink from "@/components/transitions/TransitionLink";
 import { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { ChevronDown, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ import { useSession, signOut } from "next-auth/react";
 import { AnalyticsToolbar } from "@/components/analytics/analytics-toolbar";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
-import { clearPreferences, hasCompletedSurvey } from "@/lib/visitor-preferences/storage";
 import {
   SITE_LOGO_HEIGHT,
   SITE_LOGO_SIZES,
@@ -297,12 +296,10 @@ function ServicesNavGroup({
 
 export function Header() {
   const pathname = usePathname();
-  const router = useRouter();
   const { data: session } = useSession();
   const [cartCount, setCartCount] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [hasSurveyPreferences, setHasSurveyPreferences] = useState(false);
   const [servicesExpanded, setServicesExpanded] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
@@ -322,19 +319,11 @@ export function Header() {
   useEffect(() => {
     setCartCount(getCartItemCount());
     const handleCartUpdate = () => setCartCount(getCartItemCount());
-    const syncSurveyPreferences = () => {
-      setHasSurveyPreferences(hasCompletedSurvey());
-    };
-    syncSurveyPreferences();
     window.addEventListener("cart-updated", handleCartUpdate);
-    window.addEventListener("visitor-preferences-updated", syncSurveyPreferences);
-    window.addEventListener("storage", syncSurveyPreferences);
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("cart-updated", handleCartUpdate);
-      window.removeEventListener("visitor-preferences-updated", syncSurveyPreferences);
-      window.removeEventListener("storage", syncSurveyPreferences);
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
@@ -373,12 +362,6 @@ export function Header() {
       });
     });
   }, []);
-
-  const resetSurveyPreferences = useCallback(() => {
-    clearPreferences();
-    setHasSurveyPreferences(false);
-    void closeMenu().then(() => router.push("/"));
-  }, [closeMenu, router]);
 
   const openMenu = useCallback(() => {
     setIsOpen(true);
@@ -550,31 +533,7 @@ export function Header() {
       >
         <div className="flex flex-col pb-10 px-6 min-h-full">
           <div className="sticky top-0 -mx-6 px-6 bg-zinc-900/95 backdrop-blur-md border-b border-zinc-800 z-10">
-            <div className="flex items-center justify-between h-16 md:h-20">
-              <TransitionLink
-                href="/"
-                className="flex items-center gap-2 group rounded-lg"
-                onClick={() => void closeMenu()}
-              >
-                <Image
-                  src={SITE_LOGO_SRC}
-                  alt="DigiStart logo"
-                  width={SITE_LOGO_WIDTH}
-                  height={SITE_LOGO_HEIGHT}
-                  sizes={SITE_LOGO_SIZES}
-                  className="h-8 w-auto transition-transform group-hover:scale-110"
-                />
-                <span className="flex flex-col leading-tight">
-                  <span className="text-xl font-bold tracking-tight">
-                    <span className="text-primary">Digi</span>
-                    <span className="text-accent">Start</span>
-                  </span>
-                  <span className="text-[10px] sm:text-xs text-zinc-400 font-medium tracking-widest uppercase">
-                    Easy Start
-                  </span>
-                </span>
-              </TransitionLink>
-
+            <div className="flex items-center justify-end h-16 md:h-20">
               <div className="flex items-center gap-2">
                 <TransitionLink href="/cart" onClick={() => void closeMenu()}>
                   <Button
@@ -654,18 +613,6 @@ export function Header() {
                   </Button>
                 </TrackedCtaLink>
               </li>
-              {hasSurveyPreferences ? (
-                <li>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="w-full border-zinc-600 text-zinc-50 bg-transparent hover:bg-zinc-800"
-                    onClick={resetSurveyPreferences}
-                  >
-                    Промени мнението си
-                  </Button>
-                </li>
-              ) : null}
             </ul>
           </nav>
 

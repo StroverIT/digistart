@@ -439,7 +439,7 @@ export function ServiceBuySection({
     <section ref={sectionRef} id="buy-now" data-animate-section className="py-12 md:py-16">
       <h2
         data-animate-reveal
-        className="mb-6 text-center text-4xl font-bold opacity-0 translate-y-10"
+        className="mb-6 text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl opacity-0 translate-y-10"
       >
         {header}
       </h2>
@@ -447,7 +447,7 @@ export function ServiceBuySection({
         {(availability && remainingSlots !== undefined && !isSoldOut) || canPrepayAnnually ? (
           <div
             className={cn(
-              "relative mb-5 rounded-2xl border border-primary/20 bg-primary/5 p-4",
+              "relative mb-5 rounded-2xl p-4",
               isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
             )}
           >
@@ -457,10 +457,10 @@ export function ServiceBuySection({
                   type="button"
                   onClick={() => setBillingCycle("monthly")}
                   className={cn(
-                    "w-full rounded-xl border bg-background/70 p-3 text-left transition-colors",
+                    "w-full rounded-xl border border-primary/20 bg-primary/5 p-3 text-left transition-colors",
                     effectiveBillingCycle === "monthly"
                       ? "border-primary ring-1 ring-primary"
-                      : "border-border hover:border-primary/40",
+                      : "hover:border-primary/40",
                   )}
                 >
                   <span className="block text-sm font-semibold">Месечно</span>
@@ -472,10 +472,10 @@ export function ServiceBuySection({
                   type="button"
                   onClick={() => setBillingCycle("annual-prepaid")}
                   className={cn(
-                    "relative w-full overflow-hidden rounded-xl border bg-background/70 p-3 pr-14 pt-3 text-left transition-colors",
+                    "relative w-full overflow-hidden rounded-xl border border-primary/20 bg-primary/5 p-3 pr-14 pt-3 text-left transition-colors",
                     effectiveBillingCycle === "annual-prepaid"
                       ? "border-primary ring-1 ring-primary"
-                      : "border-border hover:border-primary/40",
+                      : "hover:border-primary/40",
                   )}
                 >
                   <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground shadow-sm">
@@ -517,7 +517,7 @@ export function ServiceBuySection({
             >
               <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-accent">
                     Базов пакет
                   </p>
                   <h3 className="mt-1 text-lg font-semibold">
@@ -588,7 +588,7 @@ export function ServiceBuySection({
             <div className="rounded-2xl border border-border bg-card p-5">
               <p className="text-sm text-muted-foreground mb-2">Общо</p>
               <div data-total-pulse className="mb-1 flex items-end gap-2">
-                <Price value={totalPrice} layout="vertical" className="text-3xl text-primary" />
+                <Price value={totalPrice} layout="vertical" className="text-3xl text-accent" />
                 {totalFrequencyLabel ? (
                   <span className="pb-1 text-muted-foreground">{totalFrequencyLabel}</span>
                 ) : null}
@@ -625,7 +625,7 @@ export function ServiceBuySection({
               <Price
                 value={totalPrice}
                 layout="vertical"
-                className="text-base sm:text-lg text-primary leading-none"
+                className="text-base sm:text-lg text-accent leading-none"
               />
               {totalFrequencyLabel ? (
                 <span className="text-xs text-muted-foreground">{totalFrequencyLabel}</span>

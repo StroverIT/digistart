@@ -6,7 +6,7 @@ import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SitePreviewViewer } from "@/components/preview/site-preview-viewer";
 import { LandingSection } from "./shared";
-import { LANDING_REVEAL_CLASS, LANDING_CARD_CLASS } from "./landing-animation-classes";
+import { LANDING_CARD_CLASS, LANDING_HEADING_CLASS, LANDING_REVEAL_CLASS, LANDING_SECTION_TITLE_CENTER_CLASS } from "./landing-animation-classes";
 import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
 
 const stars = Array.from({ length: 5 });
@@ -21,7 +21,7 @@ const RealShop = () => {
     <LandingSection ref={sectionRef} id="real-shop" className="bg-muted/30">
       <h1
         data-animate-reveal
-        className={`mx-auto max-w-3xl text-center text-5xl ${LANDING_REVEAL_CLASS}`}
+        className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_CENTER_CLASS} ${LANDING_REVEAL_CLASS}`}
       >
         Как реално изглежда готов онлайн магазин
       </h1>

@@ -1,10 +1,29 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Check } from "lucide-react";
+import { ArrowRight, CreditCard, Settings2, Smartphone } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { LandingSection } from "./shared";
-import { LANDING_GLASS_CLASS, LANDING_GLASS_ACCENT_CLASS } from "./landing-animation-classes";
+import { LANDING_BODY_CLASS } from "./landing-animation-classes";
 import GoogleReviewsSection from "./GoogleReviewsSection";
+
+const heroFeatures = [
+  {
+    icon: CreditCard,
+    label: "Онлайн плащания",
+    hint: "Карти и наложен платеж",
+  },
+  {
+    icon: Settings2,
+    label: "Лесно за настройсване",
+    hint: "Без технически познания",
+  },
+  {
+    icon: Smartphone,
+    label: "Мобилна версия",
+    hint: "Продавай от телефона",
+  },
+] as const;
 
 const HeroVideo = dynamic(() => import("./HeroVideo"), {
   loading: () => (
@@ -24,41 +43,53 @@ const HeroSection = () => {
     <LandingSection className="border-b-0 bg-linear-to-b from-white to-primary md:pt-10">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 lg:items-center lg:gap-16">
         <div className="flex w-full flex-col items-center text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+          <p className="text-sm font-semibold uppercase tracking-widest text-accent">
             Адаптивен онлайн магазин
           </p>
           <h1 className="font-heading mt-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
             Пусни. Продавай. Адаптирай.
           </h1>
-          <p className="mt-4 max-w-lg text-2xl text-muted-foreground">
+          <p className={cn("mt-4 max-w-lg", LANDING_BODY_CLASS)}>
             Вземи всичко необходимо за изграждане на онлайн продажби
           </p>
-          <div className="mt-8 flex flex-col items-center gap-3 lg:items-start">
-            <a
-              href="#buy-section"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-colors hover:bg-primary/90"
-            >
-              Започни безплатно
-            </a>
-            <p className="text-sm text-muted-foreground">Пробният период е 14 дни.</p>
-          </div>
-          <ul className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-3 lg:justify-start">
-            {["Онлайн плащания", "Лесно за настройсване", "Оптимизиран за мобилни устройства"].map(
-              (item) => (
+
+          <div className="mt-8 w-full max-w-3xl overflow-hidden rounded-2xl border border-primary/20 bg-card shadow-[var(--shadow-soft)]">
+            <div className="border-b border-primary/10 bg-primary/5 px-4 py-3 sm:px-5">
+              <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+                Включено още от старта
+              </p>
+            </div>
+
+            <ul className="grid divide-y divide-primary/10 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+              {heroFeatures.map(({ icon: Icon, label, hint }) => (
                 <li
-                  key={item}
-                  className={`flex items-center gap-2.5 rounded-full px-4 py-2 text-sm font-medium text-foreground ${LANDING_GLASS_CLASS}`}
+                  key={label}
+                  className="flex flex-col items-center gap-2 px-4 py-5 text-center sm:px-3"
                 >
-                  <span
-                    className={`flex size-6 shrink-0 items-center justify-center rounded-full text-foreground ${LANDING_GLASS_ACCENT_CLASS}`}
-                  >
-                    <Check className="size-3.5" strokeWidth={3} />
+                  <span className="flex size-10 items-center justify-center rounded-xl bg-primary/15 text-accent ring-1 ring-primary/20">
+                    <Icon className="size-5" strokeWidth={2.25} aria-hidden />
                   </span>
-                  {item}
+                  <span className="font-heading text-sm font-bold leading-snug text-foreground">
+                    {label}
+                  </span>
+                  <span className="max-w-[11rem] text-xs leading-relaxed text-muted-foreground">
+                    {hint}
+                  </span>
                 </li>
-              ),
-            )}
-          </ul>
+              ))}
+            </ul>
+
+            <div className="flex flex-col items-center gap-3 border-t border-primary/10 bg-linear-to-b from-transparent to-primary/5 px-4 py-6 sm:px-6">
+              <a
+                href="#buy-section"
+                className="group inline-flex h-12 w-full max-w-sm items-center justify-center gap-2 rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition-transform hover:scale-[1.02] motion-reduce:hover:scale-100 sm:w-auto"
+              >
+                Започни безплатно
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+              </a>
+              <p className="text-sm text-muted-foreground">Пробният период е 14 дни.</p>
+            </div>
+          </div>
         </div>
 
         <HeroVideo videoId="mMNGqvyngLE" title="YouTube video player" />

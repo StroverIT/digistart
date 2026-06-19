@@ -7,7 +7,7 @@ import { LandingSection } from "./shared";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight } from "lucide-react";
-import { LANDING_REVEAL_CLASS, LANDING_CARD_CLASS } from "./landing-animation-classes";
+import { LANDING_CARD_CLASS, LANDING_HEADING_CLASS, LANDING_REVEAL_CLASS, LANDING_SECTION_TITLE_LEFT_CLASS, LANDING_BODY_CLASS } from "./landing-animation-classes";
 import { useLandingScrollAnimations } from "./use-landing-scroll-animations";
 
 const FEATURED_TEMPLATE_IDS = ["1", "2", "5", "9"];
@@ -32,14 +32,14 @@ const Templates = () => {
         <div className="flex justify-start">
           <h2
             data-animate-reveal
-            className={`max-w-md text-5xl font-bold md:text-left ${LANDING_REVEAL_CLASS}`}
+            className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_LEFT_CLASS} md:text-left ${LANDING_REVEAL_CLASS}`}
           >
             Темплейта е старт, а не финал
           </h2>
         </div>
         <p
           data-animate-reveal
-          className={`mt-4 max-w-lg text-base text-muted-foreground sm:text-2xl md:text-left ${LANDING_REVEAL_CLASS}`}
+          className={`mt-4 max-w-lg md:text-left ${LANDING_BODY_CLASS} ${LANDING_REVEAL_CLASS}`}
         >
           Избери един от доказаните ни стартиращи темплейти по твой вкус. След това го адаптираме спрямо твоя бизнес.
         </p>

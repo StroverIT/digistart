@@ -12,7 +12,7 @@ export function PasSectionIntro({
   eyebrow,
   title,
   description,
-  headingFontClass,
+  headingFontClass = "font-heading tracking-tight",
   titleClassName,
 }: PasSectionIntroProps) {
   return (
