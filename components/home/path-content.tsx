@@ -1,5 +1,10 @@
 import { AlertTriangle, Check, Flame, Lightbulb } from "lucide-react";
 import type { PathContent as PathContentType } from "@/lib/data/home-paths";
+import { cn } from "@/lib/utils";
+
+function splitSentences(text: string) {
+  return text.match(/[^.!?]+[.!?]+(?:\s|$)|[^.!?]+$/g)?.map((sentence) => sentence.trim()) ?? [text];
+}
 
 const blocks = [
   {
@@ -37,7 +42,7 @@ export function PathContent({ path }: { path: PathContentType }) {
             <div
               className={`flex h-11 w-11 items-center justify-center rounded-xl ${
                 isSolution
-                  ? "bg-primary-foreground/15 text-primary-foreground"
+                  ? "bg-accent text-accent-foreground"
                   : "bg-primary/10 text-primary"
               }`}
             >
@@ -52,7 +57,14 @@ export function PathContent({ path }: { path: PathContentType }) {
                 isSolution ? "text-primary-foreground/90" : "text-muted-foreground"
               }`}
             >
-              {text}
+              {splitSentences(text).map((sentence, sentenceIdx) => (
+                <span
+                  key={sentenceIdx}
+                  className={cn("block", sentenceIdx > 0 && "mt-3")}
+                >
+                  {sentence}
+                </span>
+              ))}
             </p>
           </article>
         );

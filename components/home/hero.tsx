@@ -10,8 +10,8 @@ export function HomeHero() {
       />
       <div className="container mx-auto grid gap-12 px-4 py-20 md:px-8 md:py-28 lg:grid-cols-2 lg:items-center">
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+          <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
             Дигитална екосистема за бизнес
           </span>
           <h1 className="mt-6 font-heading text-4xl font-bold leading-[1.05] tracking-tight text-foreground md:text-6xl lg:text-7xl">
@@ -19,7 +19,7 @@ export function HomeHero() {
             <span className="block">
               Ние създаваме твоето{" "}
               <span className="relative inline-block">
-                <span className="relative z-10 gradient-text">бъдеще.</span>
+                <span className="relative z-10">бъдеще.</span>
                 <span className="absolute inset-x-0 bottom-1 -z-0 h-3 bg-primary/20" />
               </span>
             </span>
