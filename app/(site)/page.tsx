@@ -1,14 +1,31 @@
 import type { Metadata } from "next";
-import { HomePageClient } from "@/components/visitor-survey/home-page-client";
+import { BookingForm } from "@/components/home/booking-form";
+import { CaseStudy } from "@/components/home/case-study";
+import { HomeHero } from "@/components/home/hero";
+import { MotivationBlock } from "@/components/home/motivation-block";
+import { PathTabs } from "@/components/home/path-tabs";
+import { ProcessSteps } from "@/components/home/process-steps";
 
 export const metadata: Metadata = {
-  title: "DigiStart - кажи ни какво търсиш",
+  title: "DigiStart – Дигитална екосистема за твоя бизнес",
   description:
-    "Кратък въпросник: къде продаваш и коя услуга те интересува - за персонализирано изживяване в DigiStart.",
+    "От онлайн магазин до реклами и съдържание, което продава. Реални хора, не AI ботове. Запиши безплатна консултация.",
+  openGraph: {
+    title: "DigiStart – Дигитална екосистема за твоя бизнес",
+    description:
+      "Превръщаме чатовете в автоматизирани поръчки. Сайт, реклами и съдържание – всичко на едно място.",
+  },
 };
 
 export default function HomePage() {
-  return <main>
-
-  </main>
+  return (
+    <>
+      <HomeHero />
+      <PathTabs />
+      <MotivationBlock />
+      <CaseStudy />
+      <ProcessSteps />
+      <BookingForm />
+    </>
+  );
 }

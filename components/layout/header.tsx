@@ -13,12 +13,7 @@ import { useSession, signOut } from "next-auth/react";
 import { AnalyticsToolbar } from "@/components/analytics/analytics-toolbar";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
-import {
-  getHomeNavigationPath,
-  isHomeNavActive,
-} from "@/lib/visitor-preferences/navigation";
-import { getServicePath } from "@/lib/visitor-preferences/paths";
-import { clearPreferences, getPreferences, hasCompletedSurvey } from "@/lib/visitor-preferences/storage";
+import { clearPreferences, hasCompletedSurvey } from "@/lib/visitor-preferences/storage";
 
 const LOGO_WIDTH = 58;
 const LOGO_HEIGHT = 64;
@@ -91,16 +86,6 @@ function isPathActive(pathname: string, paths: readonly string[]) {
 
 function isServicesNavActive(pathname: string) {
   return serviceNavLinks.some((link) => isPathActive(pathname, link.paths));
-}
-
-function isOnSelectedServiceHome(pathname: string): boolean {
-  const prefs = getPreferences();
-  if (!prefs) return false;
-  const primaryHref = getServicePath(prefs.primaryService);
-  const primaryLink = serviceNavLinks.find((link) => link.href === primaryHref);
-  return primaryLink
-    ? isPathActive(pathname, primaryLink.paths)
-    : isPathActive(pathname, [primaryHref]);
 }
 
 function AnimatedNavLink({
@@ -318,8 +303,6 @@ export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [hasSurveyPreferences, setHasSurveyPreferences] = useState(false);
   const [servicesExpanded, setServicesExpanded] = useState(false);
-  const [homeHref, setHomeHref] = useState("/");
-  const [hideHomeNav, setHideHomeNav] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -340,8 +323,6 @@ export function Header() {
     const handleCartUpdate = () => setCartCount(getCartItemCount());
     const syncSurveyPreferences = () => {
       setHasSurveyPreferences(hasCompletedSurvey());
-      setHomeHref(getHomeNavigationPath());
-      setHideHomeNav(isOnSelectedServiceHome(pathname));
     };
     syncSurveyPreferences();
     window.addEventListener("cart-updated", handleCartUpdate);
@@ -356,10 +337,6 @@ export function Header() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  useLayoutEffect(() => {
-    setHideHomeNav(isOnSelectedServiceHome(pathname));
-  }, [pathname, hasSurveyPreferences]);
 
   const closeMenu = useCallback(() => {
     return new Promise<void>((resolve) => {
@@ -472,7 +449,7 @@ export function Header() {
         >
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between h-16 md:h-20">
-              <TransitionLink href={homeHref} className="flex items-center gap-2 group rounded-lg z-60 relative">
+              <TransitionLink href="/" className="flex items-center gap-2 group rounded-lg z-60 relative">
                 <Image
                   src="/logo.webp"
                   alt="DigiStart logo"
@@ -573,7 +550,7 @@ export function Header() {
           <div className="sticky top-0 -mx-6 px-6 bg-zinc-900/95 backdrop-blur-md border-b border-zinc-800 z-10">
             <div className="flex items-center justify-between h-16 md:h-20">
               <TransitionLink
-                href={homeHref}
+                href="/"
                 className="flex items-center gap-2 group rounded-lg"
                 onClick={() => void closeMenu()}
               >
@@ -634,17 +611,15 @@ export function Header() {
 
           <nav aria-label="Основна навигация" className="pt-8">
             <ul ref={linksRef} className="flex flex-col gap-y-5 md:gap-y-7">
-              {!hideHomeNav ? (
-                <li>
-                  <AnimatedNavLink
-                    href={homeHref}
-                    isActive={isHomeNavActive(pathname)}
-                    onNavigate={() => void closeMenu()}
-                  >
-                    {navLinks[0].label}
-                  </AnimatedNavLink>
-                </li>
-              ) : null}
+              <li>
+                <AnimatedNavLink
+                  href="/"
+                  isActive={isPathActive(pathname, navLinks[0].paths)}
+                  onNavigate={() => void closeMenu()}
+                >
+                  {navLinks[0].label}
+                </AnimatedNavLink>
+              </li>
               <ServicesNavGroup
                 pathname={pathname}
                 isExpanded={servicesExpanded}

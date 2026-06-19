@@ -3,61 +3,69 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* DigiStart - Light theme with electric blue accent */
+/* DigiStart — #FFF7FF bg, #ADEEC5 primary, #480058 accent */
 :root {
-  /* White background; main text = previous dark background tone */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.13 0.005 260);
+  --background: oklch(0.985 0.012 330);
+  --foreground: oklch(0.22 0.13 320);
 
-  /* Card - subtle lift from page */
-  --card: oklch(0.99 0.003 260);
+  --card: oklch(1 0 0);
   --card-foreground: var(--foreground);
 
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
 
-  /* Electric blue primary — slightly darker for WCAG AA contrast on buttons */
-  --primary: oklch(0.55 0.22 250);
-  --primary-foreground: oklch(1 0 0);
+  --primary: oklch(0.9 0.11 155);
+  --primary-foreground: oklch(0.22 0.13 320);
 
-  --secondary: oklch(0.95 0.012 260);
+  --secondary: oklch(0.96 0.02 330);
   --secondary-foreground: var(--foreground);
 
-  --muted: oklch(0.95 0.01 260);
-  --muted-foreground: oklch(0.45 0.02 260);
+  --muted: oklch(0.95 0.015 330);
+  --muted-foreground: oklch(0.45 0.06 320);
 
-  --accent: oklch(0.55 0.22 250);
-  --accent-foreground: oklch(1 0 0);
+  --accent: oklch(0.32 0.16 320);
+  --accent-foreground: oklch(0.985 0.012 330);
 
-  --destructive: oklch(0.55 0.22 25);
-  --destructive-foreground: oklch(1 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0.012 330);
 
-  --border: oklch(0.9 0.01 260);
-  --input: oklch(0.96 0.01 260);
-  --ring: oklch(0.55 0.22 250);
+  --border: oklch(0.9 0.03 330);
+  --input: oklch(0.9 0.03 330);
+  --ring: oklch(0.32 0.16 320);
 
-  /* Charts */
-  --chart-1: oklch(0.65 0.22 250);
+  --chart-1: oklch(0.9 0.11 155);
   --chart-2: oklch(0.7 0.18 180);
   --chart-3: oklch(0.75 0.15 140);
-  --chart-4: oklch(0.65 0.2 300);
+  --chart-4: oklch(0.32 0.16 320);
   --chart-5: oklch(0.7 0.2 30);
-  --chart-6: oklch(65.68% 0.167 282.34);
+  --chart-6: oklch(0.42 0.14 320);
 
   --radius: 0.5rem;
 
-  /* Sidebar */
-  --sidebar: oklch(0.98 0.006 260);
+  --sidebar: oklch(0.98 0.01 330);
   --sidebar-foreground: var(--foreground);
-  --sidebar-primary: oklch(0.55 0.22 250);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.94 0.012 260);
+  --sidebar-primary: oklch(0.32 0.16 320);
+  --sidebar-primary-foreground: oklch(0.985 0.012 330);
+  --sidebar-accent: oklch(0.94 0.02 330);
   --sidebar-accent-foreground: var(--foreground);
-  --sidebar-border: oklch(0.9 0.01 260);
-  --sidebar-ring: oklch(0.55 0.22 250);
+  --sidebar-border: oklch(0.9 0.03 330);
+  --sidebar-ring: oklch(0.32 0.16 320);
 
   --success: oklch(0.65 0.2 145);
   --success-foreground: oklch(1 0 0);
+
+  --gradient-hero: linear-gradient(
+    135deg,
+    oklch(0.9 0.11 155) 0%,
+    oklch(0.32 0.16 320) 100%
+  );
+  --gradient-soft: linear-gradient(
+    180deg,
+    oklch(0.985 0.012 330) 0%,
+    oklch(0.95 0.04 155 / 0.4) 100%
+  );
+  --shadow-soft: 0 4px 24px -8px oklch(0.32 0.16 320 / 0.15);
+  --shadow-glow: 0 20px 60px -20px oklch(0.32 0.16 320 / 0.35);
 }
 
 @theme inline {
@@ -109,6 +117,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -130,16 +143,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: oklch(0.96 0.01 260);
+  background: oklch(0.96 0.015 330);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.75 0.02 260);
+  background: oklch(0.75 0.04 330);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.6 0.02 260);
+  background: oklch(0.55 0.08 320);
 }
 
 .scrollbar-none {
@@ -155,8 +168,8 @@
 .gradient-text {
   background: linear-gradient(
     135deg,
-    oklch(0.65 0.22 250),
-    oklch(0.75 0.18 280)
+    oklch(0.9 0.11 155),
+    oklch(0.32 0.16 320)
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -165,11 +178,11 @@
 
 /* Glow effect for buttons */
 .glow-primary {
-  box-shadow: 0 0 20px oklch(0.65 0.22 250 / 0.3);
+  box-shadow: 0 0 20px oklch(0.32 0.16 320 / 0.3);
 }
 
 .glow-primary:hover {
-  box-shadow: 0 0 30px oklch(0.65 0.22 250 / 0.5);
+  box-shadow: 0 0 30px oklch(0.32 0.16 320 / 0.5);
 }
 
 /* Mobile nav link clip animation (Strover-style) */
@@ -245,19 +258,19 @@
 .blob-left {
   width: 500px;
   height: 200px;
-  background-color: #d1fae5; /* Soft mint/emerald */
+  background-color: #adeec5;
   bottom: -5%;
   left: -10%;
 }
 
-/* Positions the teal glow on the top right */
+/* Positions the purple glow on the top right */
 .blob-right {
   width: 450px;
   height: 450px;
-  background-color: #ccfbf1; /* Soft teal */
+  background-color: oklch(0.32 0.16 320 / 0.35);
   top: 15%;
   right: -5%;
-  animation-delay: 2s; /* Offsets the animation so they don't pulse perfectly together */
+  animation-delay: 2s;
 }
 
 /* Optional Animation Keyframes */
