@@ -1,4 +1,14 @@
-import { AlertTriangle, Check, Flame, Lightbulb } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  Clock,
+  Flame,
+  Lightbulb,
+  Sparkles,
+  Target,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import type { PathContent as PathContentType } from "@/lib/data/home-paths";
 import { cn } from "@/lib/utils";
 
@@ -11,86 +21,150 @@ const blocks = [
     key: "problem",
     title: "Проблемът",
     icon: AlertTriangle,
+    tone: "muted" as const,
   },
   {
     key: "agitate",
     title: "Защо това е сериозно",
     icon: Flame,
+    tone: "muted" as const,
   },
   {
     key: "solution",
     title: "Нашето решение",
     icon: Lightbulb,
+    tone: "highlight" as const,
   },
 ] as const;
 
+const FIT_ICONS: LucideIcon[] = [Target, Clock, Users, Sparkles];
+
 export function PathContent({ path }: { path: PathContentType }) {
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
-      {blocks.map((b, idx) => {
-        const text = path[b.key as "problem" | "agitate" | "solution"];
-        const isSolution = b.key === "solution";
-        return (
-          <article
-            key={b.key}
-            className={`relative rounded-3xl border p-7 ${
-              isSolution
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-card"
-            }`}
-          >
-            <div
-              className={`flex h-11 w-11 items-center justify-center rounded-xl ${
-                isSolution
-                  ? "bg-accent text-accent-foreground"
-                  : "bg-primary/10 text-primary"
-              }`}
-            >
-              <b.icon className="h-5 w-5" strokeWidth={2.2} />
-            </div>
-            <div className="mt-5 text-xs font-bold uppercase tracking-widest opacity-70">
-              0{idx + 1}
-            </div>
-            <h3 className="mt-1 font-heading text-xl font-bold">{b.title}</h3>
-            <p
-              className={`mt-3 text-sm leading-relaxed ${
-                isSolution ? "text-primary-foreground/90" : "text-muted-foreground"
-              }`}
-            >
-              {splitSentences(text).map((sentence, sentenceIdx) => (
-                <span
-                  key={sentenceIdx}
-                  className={cn("block", sentenceIdx > 0 && "mt-3")}
-                >
-                  {sentence}
-                </span>
-              ))}
-            </p>
-          </article>
-        );
-      })}
+    <div className="space-y-12">
+      <div className="relative overflow-hidden rounded-[2rem] bg-card shadow-[var(--shadow-soft)] ring-1 ring-foreground/[0.04] md:rounded-[2.5rem]">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-accent/10 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-primary/25 blur-3xl"
+        />
 
-      <div className="lg:col-span-3">
-        <div className="mt-4 rounded-3xl border border-border bg-card p-8 md:p-10">
-          <h3 className="font-heading text-2xl font-bold text-foreground md:text-3xl">
+        <div className="relative grid divide-y divide-border/50 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+          {blocks.map((block, idx) => {
+            const text = path[block.key as "problem" | "agitate" | "solution"];
+            const isHighlight = block.tone === "highlight";
+            const Icon = block.icon;
+
+            return (
+              <article
+                key={block.key}
+                className={cn(
+                  "relative p-8 md:p-10",
+                  isHighlight &&
+                    "bg-gradient-to-br from-primary/20 via-primary/10 to-accent/[0.08] lg:shadow-[-12px_0_32px_-20px_oklch(0.32_0.16_320_/_0.18)]",
+                )}
+              >
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute right-5 top-4 select-none font-heading text-7xl font-bold leading-none text-foreground/[0.04] md:right-8 md:top-6 md:text-8xl"
+                >
+                  0{idx + 1}
+                </span>
+
+                <div className="relative z-10">
+                  <div
+                    className={cn(
+                      "inline-flex h-12 w-12 items-center justify-center rounded-2xl shadow-md ring-4 ring-card",
+                      isHighlight
+                        ? "bg-accent text-accent-foreground"
+                        : "bg-accent/10 text-accent",
+                    )}
+                  >
+                    <Icon className="h-5 w-5" strokeWidth={2.2} />
+                  </div>
+
+                  <h3 className="mt-6 font-heading text-xl font-bold text-foreground md:text-2xl">
+                    {block.title}
+                  </h3>
+
+                  <div className="mt-5 space-y-3 text-sm leading-relaxed text-muted-foreground">
+                    {splitSentences(text).map((sentence, sentenceIdx) => (
+                      <p key={sentenceIdx}>{sentence}</p>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-b from-muted/40 to-background px-4 py-10 md:rounded-[2.5rem] md:px-8 md:py-12">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-16 top-0 h-48 w-48 rounded-full bg-primary/20 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-12 bottom-0 h-56 w-56 rounded-full bg-accent/10 blur-3xl"
+        />
+
+        <div className="relative mx-auto max-w-2xl text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+            Провери дали пасва
+          </span>
+          <h3 className="mt-5 font-heading text-2xl font-bold text-foreground md:text-3xl">
             {path.fitTitle}
           </h3>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {path.fits.map((f) => (
-              <div
-                key={f.title}
-                className="flex gap-4 rounded-2xl border border-border/70 bg-background p-5"
+        </div>
+
+        <div className="relative mt-8 grid gap-4 sm:grid-cols-2">
+          {path.fits.map((fit, index) => {
+            const Icon = FIT_ICONS[index % FIT_ICONS.length];
+
+            return (
+              <article
+                key={fit.title}
+                className="group relative overflow-hidden rounded-2xl bg-card p-6 shadow-[var(--shadow-soft)] ring-1 ring-foreground/[0.04] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-glow)] md:p-7"
               >
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Check className="h-5 w-5" strokeWidth={3} />
+                <div
+                  aria-hidden
+                  className="absolute inset-y-0 left-0 w-1 bg-accent"
+                />
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-primary/15 blur-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                />
+
+                <div className="relative flex gap-4 pl-2">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/15 to-primary/25 text-accent shadow-sm ring-4 ring-card transition-transform duration-300 group-hover:scale-105">
+                    <Icon className="h-5 w-5" strokeWidth={2.2} />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-accent">
+                        Критерий 0{index + 1}
+                      </span>
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/10 text-accent opacity-0 transition-all duration-300 group-hover:opacity-100">
+                        <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                      </div>
+                    </div>
+                    <h4 className="mt-1 font-heading text-base font-bold leading-snug text-foreground md:text-lg">
+                      {fit.title}
+                    </h4>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {fit.description}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-heading font-bold text-foreground">{f.title}</div>
-                  <p className="mt-1 text-sm text-muted-foreground">{f.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </div>
