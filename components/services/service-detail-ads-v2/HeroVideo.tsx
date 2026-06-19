@@ -1,5 +1,3 @@
-"use client";
-
 import { LazyYouTubeEmbed } from "@/components/services/service-detail-ready-store-v2/lazy-youtube-embed";
 
 type HeroVideoProps = {
