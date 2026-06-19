@@ -46,9 +46,7 @@ export function HomeHero() {
           </div>
         </div>
 
-        <div className="animate-in fade-in zoom-in-95 duration-1000">
-          <EcosystemVisual />
-        </div>
+        <EcosystemVisual />
       </div>
     </section>
   );
