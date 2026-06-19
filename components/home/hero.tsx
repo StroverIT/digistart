@@ -20,7 +20,10 @@ export function HomeHero() {
               Ние създаваме твоето{" "}
               <span className="relative inline-block">
                 <span className="relative z-10">бъдеще.</span>
-                <span className="absolute inset-x-0 bottom-1 -z-0 h-3 bg-primary" />
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-0 bottom-[0.06em] -z-0 h-[0.14em] bg-primary"
+                />
               </span>
             </span>
           </h1>
