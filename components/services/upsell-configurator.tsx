@@ -326,7 +326,9 @@ export function UpsellConfigurator({
                     size="sm"
                     className={cn(
                       "h-9 shrink-0 self-start rounded-full px-4 font-semibold sm:self-auto",
-                      quantity > 0 && "border-border text-foreground hover:bg-muted/50",
+                      quantity > 0
+                        ? "border-border text-foreground hover:bg-muted/50"
+                        : "bg-accent text-accent-foreground hover:bg-accent/90",
                     )}
                     onClick={() => updateQuantity(upsell.id, quantity > 0 ? 0 : 1)}
                   >

@@ -493,13 +493,13 @@ export function ServiceBuySection({
                     type="button"
                     onClick={() => setBillingCycle("annual-prepaid")}
                     className={cn(
-                      "relative z-10 rounded-xl px-4 py-3 pr-14 text-left transition-colors",
+                      "relative z-10 rounded-xl px-4 py-3 pr-16 text-left transition-colors",
                       effectiveBillingCycle === "annual-prepaid"
                         ? "text-foreground"
                         : "hover:bg-card/50",
                     )}
                   >
-                    <span className="absolute right-2 top-2 rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-accent-foreground shadow-sm">
+                    <span className="absolute -right-2 -top-2 rounded-full bg-primary px-3 py-1 text-sm font-bold text-primary-foreground shadow-sm">
                       -{annualDiscountPercent}%
                     </span>
                     <span className="block text-sm font-semibold text-foreground">За година</span>
@@ -522,16 +522,16 @@ export function ServiceBuySection({
               service.slug !== "ads" &&
               service.slug !== "social-media" &&
               service.slug !== "google-business" && (
-              <p className="mb-6 text-sm text-pretty text-muted-foreground">
-                Избери сам <span className="font-semibold text-foreground">ИЛИ</span>{" "}
-                <Link
-                  href={`#${plansSectionId}`}
-                  className="font-medium text-primary underline-offset-4 hover:underline"
-                >
-                  избери нашите готови планове с до 15% отстъпка
-                </Link>
-              </p>
-            )}
+                <p className="mb-6 text-sm text-pretty text-muted-foreground">
+                  Избери сам <span className="font-semibold text-foreground">ИЛИ</span>{" "}
+                  <Link
+                    href={`#${plansSectionId}`}
+                    className="font-medium text-primary underline-offset-4 hover:underline"
+                  >
+                    избери нашите готови планове с до 15% отстъпка
+                  </Link>
+                </p>
+              )}
             <div ref={basicPackageRef}>
               <p className="text-xs font-semibold uppercase tracking-widest text-accent">
                 Базов пакет
