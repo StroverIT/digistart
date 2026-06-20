@@ -12,5 +12,12 @@ export async function closeMainMenu(page: Page) {
 
 export async function navigateViaMenu(page: Page, linkName: string) {
   await openMainMenu(page);
-  await page.getByRole("dialog", { name: "Главно меню" }).getByRole("link", { name: linkName }).click();
+  const menu = page.getByRole("dialog", { name: "Главно меню" });
+  const link = menu.getByRole("link", { name: linkName });
+
+  if (!(await link.isVisible())) {
+    await menu.getByRole("button", { name: "Полезни" }).click();
+  }
+
+  await link.click();
 }

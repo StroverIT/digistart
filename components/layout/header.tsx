@@ -28,11 +28,6 @@ function loadGsap() {
 
 const serviceNavLinks = [
   {
-    href: "/services/ai-automation",
-    label: "AI Automation",
-    paths: ["/услуги/ai-automation", "/services/ai-automation"],
-  },
-  {
     href: "/services/online-store",
     label: "Онлайн магазин",
     paths: ["/услуги/онлайн-магазин", "/services/online-store"],
@@ -54,8 +49,7 @@ const serviceNavLinks = [
   },
 ] as const;
 
-const navLinks = [
-  { href: "/", label: "Начало", paths: ["/"] },
+const usefulNavLinks = [
   {
     href: "/templates",
     label: "Шаблони",
@@ -65,6 +59,8 @@ const navLinks = [
   { href: "/about", label: "За нас", paths: ["/about"] },
   { href: "/blog", label: "Блог", paths: ["/blog"] },
 ] as const;
+
+const navLinks = [{ href: "/", label: "Начало", paths: ["/"] }] as const;
 
 function isPathActive(pathname: string, paths: readonly string[]) {
   const decoded = (() => {
@@ -84,8 +80,8 @@ function isPathActive(pathname: string, paths: readonly string[]) {
   });
 }
 
-function isServicesNavActive(pathname: string) {
-  return serviceNavLinks.some((link) => isPathActive(pathname, link.paths));
+function isUsefulNavActive(pathname: string) {
+  return usefulNavLinks.some((link) => isPathActive(pathname, link.paths));
 }
 
 function AnimatedNavLink({
@@ -124,7 +120,7 @@ function AnimatedNavLink({
   );
 }
 
-function ServicesNavGroup({
+function UsefulNavGroup({
   pathname,
   isExpanded,
   onToggle,
@@ -135,7 +131,7 @@ function ServicesNavGroup({
   onToggle: () => void;
   onNavigate: () => void;
 }) {
-  const isActive = isServicesNavActive(pathname);
+  const isActive = isUsefulNavActive(pathname);
   const submenuRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLUListElement>(null);
   const chevronRef = useRef<SVGSVGElement>(null);
@@ -264,7 +260,7 @@ function ServicesNavGroup({
           isActive && "text-primary"
         )}
       >
-        <span>Услуги</span>
+        <span>Полезни</span>
         <ChevronDown
           ref={chevronRef}
           className="h-6 w-6 shrink-0 text-background/60 group-hover:text-primary/80"
@@ -276,7 +272,7 @@ function ServicesNavGroup({
           ref={contentRef}
           className="flex flex-col gap-y-3 border-l-2 border-background/15 pl-4"
         >
-          {serviceNavLinks.map((link) => (
+          {usefulNavLinks.map((link) => (
             <li key={link.href}>
               <AnimatedNavLink
                 href={link.href}
@@ -300,7 +296,7 @@ export function Header() {
   const [cartCount, setCartCount] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [servicesExpanded, setServicesExpanded] = useState(false);
+  const [usefulExpanded, setUsefulExpanded] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -334,7 +330,7 @@ export function Header() {
         const tl = gsap.timeline({
           onComplete: () => {
             setIsOpen(false);
-            setServicesExpanded(false);
+            setUsefulExpanded(false);
             if (backdropRef.current) gsap.set(backdropRef.current, { display: "none" });
             resolve();
           },
@@ -591,34 +587,31 @@ export function Header() {
                   {navLinks[0].label}
                 </AnimatedNavLink>
               </li>
-              <ServicesNavGroup
+              {serviceNavLinks.map((link) => (
+                <li key={link.href}>
+                  <AnimatedNavLink
+                    href={link.href}
+                    isActive={isPathActive(pathname, link.paths)}
+                    onNavigate={() => void closeMenu()}
+                  >
+                    {link.label}
+                  </AnimatedNavLink>
+                </li>
+              ))}
+              <UsefulNavGroup
                 pathname={pathname}
-                isExpanded={servicesExpanded}
-                onToggle={() => setServicesExpanded((current) => !current)}
+                isExpanded={usefulExpanded}
+                onToggle={() => setUsefulExpanded((current) => !current)}
                 onNavigate={() => void closeMenu()}
               />
-              {navLinks.slice(1).map((link) => {
-                const active = isPathActive(pathname, link.paths);
-                return (
-                  <li key={link.href}>
-                    <AnimatedNavLink
-                      href={link.href}
-                      isActive={active}
-                      onNavigate={() => void closeMenu()}
-                    >
-                      {link.label}
-                    </AnimatedNavLink>
-                  </li>
-                );
-              })}
               <li>
                 <TrackedCtaLink
-                  href="/digital-roadmap"
-                  ctaId="menu_digital_roadmap"
+                  href="/#booking"
+                  ctaId="menu_free_consultation"
                   onClick={() => closeMenu()}
                 >
                   <Button className="w-full glow-primary mt-2" size="lg">
-                    Запази безплатна дигитална пътна карта
+                    Запази безплатна консултация
                   </Button>
                 </TrackedCtaLink>
               </li>
