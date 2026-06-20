@@ -204,7 +204,7 @@ const MarketingTools = () => {
           className={`${cardClassName} order-4 ${LANDING_CARD_CLASS} lg:[grid-area:analytics] sm:col-span-2`}
         >
           <ImageRightCard
-            title="Пази магазина в движение"
+            title="Пазим магазина в движение"
             description="Не плащаш за едно пускане. Плащаш за тестове, промени и решения според продажбите."
             image="/marketing/newsletter.png"
           />
