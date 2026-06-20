@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import { Search, Sparkles, Star } from "lucide-react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
   LANDING_CARD_CLASS,
@@ -34,41 +33,6 @@ function IconCard({
       <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
         {description}
       </p>
-    </>
-  );
-}
-
-function ImageBottomCard({
-  title,
-  description,
-  image,
-  imageContainerClassName,
-}: {
-  title: string;
-  description: string;
-  image: string;
-  imageContainerClassName?: string;
-}) {
-  return (
-    <>
-      <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-        {description}
-      </p>
-      <div
-        className={cn(
-          "relative mt-6 aspect-4/3 w-full overflow-hidden rounded-xl lg:aspect-auto lg:min-h-48 lg:flex-1",
-          imageContainerClassName,
-        )}
-      >
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-contain object-bottom"
-          sizes="(max-width: 1024px) 50vw, 33vw"
-        />
-      </div>
     </>
   );
 }
@@ -152,44 +116,21 @@ const MarketingTools = () => {
         Защо да не рекламираш магазина сам?
       </h1>
 
-      <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:[grid-template-areas:'google_meta_promo'_'analytics_analytics_promo'_'trackers_trackers_trackers']">
-        <li
-          data-animate-card
-          className={`${cardClassName} order-1 ${LANDING_CARD_CLASS} lg:[grid-area:google]`}
-        >
-          <IconCard
-            icon={Search}
-            title="Не губиш време в кампании"
-            description="Ние управляваме рекламите. Ти качваш продукти, обслужваш поръчки и пращаш доставки."
-          />
-        </li>
-
-        <li
-          data-animate-card
-          className={`${cardClassName} order-2 ${LANDING_CARD_CLASS} lg:[grid-area:meta]`}
-        >
-          <IconCard
-            icon={Sparkles}
-            title="Не харчиш на сляпо"
-            description="Целта не е трафик. Целта е хората да стигнат до продукт и да купят."
-          />
-        </li>
-
-        <li className="contents lg:flex lg:flex-col lg:gap-5 lg:[grid-area:promo]">
+      <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[auto_auto_auto_auto] lg:[grid-template-areas:'stack_movement_movement'_'stack_google_google'_'channel_channel_channel'_'trackers_trackers_trackers']">
+        <li className="contents lg:flex lg:flex-col lg:gap-5 lg:[grid-area:stack]">
           <article
             data-animate-card
-            className={`${cardClassName} order-3 flex-1 lg:order-0 ${LANDING_CARD_CLASS}`}
+            className={`${cardClassName} order-1 lg:order-0 ${LANDING_CARD_CLASS}`}
           >
-            <ImageBottomCard
-              title="Избираме правилния канал"
-              description="Google за търсене на продукти. Meta за откриване, връщане и импулсни покупки."
-              image="/services/ads/marketing-tools/right-channel.png"
-              imageContainerClassName="max-sm:mt-4 max-sm:aspect-auto max-sm:h-40"
+            <IconCard
+              icon={Sparkles}
+              title="Не харчиш на сляпо"
+              description="Целта не е трафик. Целта е хората да стигнат до продукт и да купят."
             />
           </article>
           <article
             data-animate-card
-            className={`${cardClassName} order-5 sm:col-span-2 lg:order-0 lg:col-span-auto ${LANDING_CARD_CLASS}`}
+            className={`${cardClassName} order-2 lg:order-0 ${LANDING_CARD_CLASS}`}
           >
             <IconCard
               icon={Star}
@@ -201,12 +142,34 @@ const MarketingTools = () => {
 
         <li
           data-animate-card
-          className={`${cardClassName} order-4 ${LANDING_CARD_CLASS} lg:[grid-area:analytics] sm:col-span-2`}
+          className={`${cardClassName} order-4 sm:col-span-2 lg:col-span-2 lg:min-h-64 ${LANDING_CARD_CLASS} lg:[grid-area:movement]`}
         >
           <ImageRightCard
             title="Пазим магазина в движение"
             description="Не плащаш просто за рекламна кампания. Плащаш за тестове, промени и решения според продажбите."
             image="/services/ads/marketing-tools/movement.png"
+          />
+        </li>
+
+        <li
+          data-animate-card
+          className={`${cardClassName} order-5 sm:col-span-2 lg:col-span-2 ${LANDING_CARD_CLASS} lg:[grid-area:google]`}
+        >
+          <IconCard
+            icon={Search}
+            title="Не губиш време в кампании"
+            description="Ние управляваме рекламите. Ти качваш продукти, обслужваш поръчки и пращаш доставки."
+          />
+        </li>
+
+        <li
+          data-animate-card
+          className={`${cardClassName} order-3 w-full sm:col-span-2 lg:col-span-3 lg:min-h-64 xl:min-h-72 ${LANDING_CARD_CLASS} lg:[grid-area:channel]`}
+        >
+          <ImageRightCard
+            title="Избираме правилния канал"
+            description="Google за търсене на продукти. Meta за откриване, връщане и импулсни покупки."
+            image="/services/ads/marketing-tools/right-channel.png"
           />
         </li>
 
