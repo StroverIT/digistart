@@ -443,7 +443,7 @@ export function Header() {
                 />
                 <span className="flex flex-col leading-tight">
                   <span className="text-xl font-bold tracking-tight">
-                    <span className="text-primary">Digi</span>
+                    <span className="text-accent">Digi</span>
                     <span className="text-accent">Start</span>
                   </span>
                   <span className="text-[10px] sm:text-xs text-muted-foreground font-medium tracking-widest uppercase">

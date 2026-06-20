@@ -167,7 +167,7 @@ export function Footer() {
                 />
                 <span className="flex flex-col leading-tight">
                   <span className="text-xl font-bold tracking-tight">
-                    <span className="text-primary">Digi</span>
+                    <span className="text-accent">Digi</span>
                     <span className="text-accent">Start</span>
                   </span>
                   <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
