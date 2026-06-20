@@ -7,15 +7,17 @@ import {
   MessageCircle,
   ShoppingBag,
   Sparkles,
+  Store,
   Truck,
 } from "lucide-react";
 
 const nodes = [
   { icon: ShoppingBag, label: "Онлайн магазин", className: "top-0 left-1/2 -translate-x-1/2" },
-  { icon: Megaphone, label: "Реклами", className: "top-1/4 right-0" },
-  { icon: Truck, label: "Доставка", className: "bottom-1/4 right-0" },
+  { icon: Megaphone, label: "Реклами", className: "top-[12%] right-[10%]" },
+  { icon: Store, label: "Физически магазини", className: "top-[42%] right-0 -translate-y-1/2" },
+  { icon: Truck, label: "Доставка", className: "bottom-[18%] right-[10%]" },
   { icon: MapPin, label: "Google Maps", className: "bottom-0 left-1/2 -translate-x-1/2" },
-  { icon: MessageCircle, label: "Соц. мрежи", className: "bottom-1/4 left-0" },
+  { icon: MessageCircle, label: "Социални мрежи", className: "bottom-1/4 left-0" },
   { icon: Sparkles, label: "Съдържание", className: "top-1/4 left-0" },
 ];
 

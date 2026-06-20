@@ -75,7 +75,7 @@ const PasSection = () => {
           data-animate-reveal
           className={`mt-4 max-w-lg md:text-left ${LANDING_BODY_CLASS} ${LANDING_REVEAL_CLASS}`}
         >
-          Бъди честен със себе си – без Google профил губиш клиенти, преди да стигнат до обекта
+          Без Google профил губиш клиенти, преди да стигнат до обекта
           ти.
         </p>
       </div>
