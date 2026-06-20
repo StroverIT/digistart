@@ -17,18 +17,18 @@ const benefits = [
     title: "Повече нови клиенти от Meta и Google",
     description:
       "Показваме магазина на хора, които още не те познават, но търсят или биха купили такъв артикул.",
-    image: "/stickers/my-business.png",
+    image: "/services/ads/benefits/shop-1.png",
   },
   {
     title: "Повече видимост в каталога и търсенето",
     description:
       "В Google Shopping продуктите излизат с цена и снимка точно когато някой сравнява или търси подобни артикули.",
-    image: "/stickers/social-media.png",
+    image: "/services/ads/benefits/visibility.png",
   },
   {
     title: "Повече бюджет към печелившите артикули",
     description: "Спираме слабите реклами и засилваме продуктите, които носят поръчки.",
-    image: "/marketing/newsletter.webp",
+    image: "/services/ads/benefits/budget.png",
   },
 ] as const;
 
