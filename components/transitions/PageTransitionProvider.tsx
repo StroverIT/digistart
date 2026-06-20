@@ -18,7 +18,7 @@ type PageTransitionProviderProps = {
 };
 
 /** Set to true to keep the loading overlay visible for design work. */
-const FORCE_LOADING_OVERLAY = true;
+const FORCE_LOADING_OVERLAY = false;
 
 const TRANSITION_LOGO_SRC = "/DigiStart.webp";
 const TRANSITION_LOGO_SIZE = 180;
