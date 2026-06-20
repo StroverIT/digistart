@@ -1,6 +1,7 @@
 import type { Service, ServiceUpsell } from "@/lib/types";
 import { ADS_PRICING } from "@/lib/data/ads-pricing";
 import { READY_STORE_PRICING } from "@/lib/data/ready-store-pricing";
+import { SOCIAL_MEDIA_PRICING } from "@/lib/data/social-media-pricing";
 
 /** Shared checkout/cart upsells: logo design + color palette (per plan). */
 export const brandUpsells: ServiceUpsell[] = [
@@ -201,14 +202,14 @@ export const services: Service[] = [
     description:
       "Създаваме съдържание и управляваме присъствието ви в социалните мрежи.",
     icon: "Share2",
-    basePrice: 200,
+    basePrice: SOCIAL_MEDIA_PRICING.baseMonthly,
     isMonthly: true,
     options: [
       {
         id: "default",
         name: "Базов маркетинг пакет",
         description: "2 публикации седмично за 1 канал",
-        price: 200,
+        price: SOCIAL_MEDIA_PRICING.baseMonthly,
         isMonthly: true,
       },
     ],
@@ -233,11 +234,11 @@ export const services: Service[] = [
       {
         id: "extra-channels",
         name: "Допълнителни канали",
-        description: "€99/месец на канал, включва 1 публикация всеки ден.",
+        description: `€${SOCIAL_MEDIA_PRICING.extraChannelMonthly}/месец на канал, включва 1 публикация всеки ден.`,
         hideBuySectionDescription: true,
         kind: "quantity",
         isMonthly: true,
-        pricePerUnit: 99,
+        pricePerUnit: SOCIAL_MEDIA_PRICING.extraChannelMonthly,
         unit: "канал",
         min: 0,
         max: 10,
