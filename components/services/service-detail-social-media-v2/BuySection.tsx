@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { getServiceById, getServicePlanPrice } from "@/lib/data/services";
-import { SOCIAL_MEDIA_LANDING } from "@/config/service-landing/social-media";
+import { SOCIAL_MEDIA_BUY_SECTION, SOCIAL_MEDIA_LANDING } from "@/config/service-landing/social-media";
 import type { CartBillingCycle, CartItemUpsell, ServiceSlotAvailability } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { addOrUpdateServiceInCart } from "@/lib/store/cart";
@@ -90,6 +90,7 @@ function SocialMediaBuySectionContent({
           ctaPage={SOCIAL_MEDIA_LANDING.pagePath}
           availability={availability}
           hiddenUpsellIds={["extra-channels"]}
+          basePackageSubtitle={SOCIAL_MEDIA_BUY_SECTION.basePackageSubtitle}
         />
       </div>
     </section>

@@ -99,6 +99,8 @@ interface ServiceBuySectionProps {
   hideAdditionalServices?: boolean;
   /** Overrides `service.features` in the base package list. */
   features?: string[];
+  /** Shown under the base package heading (e.g. channel scope). */
+  basePackageSubtitle?: string;
 }
 
 export { ServiceUpsellsSection } from "@/components/services/service-upsells-section";
@@ -127,6 +129,7 @@ export function ServiceBuySection({
   customUpsellsContent,
   hideAdditionalServices = false,
   features: featuresOverride,
+  basePackageSubtitle,
 }: ServiceBuySectionProps) {
   const { data: session } = useSession();
   const isAdminCheckout = isAdminCheckoutRole(session?.user?.role);
@@ -540,6 +543,9 @@ export function ServiceBuySection({
               <p className="text-xs font-semibold uppercase tracking-widest text-accent">
                 Базов пакет
               </p>
+              {basePackageSubtitle ? (
+                <p className="mt-1 text-sm text-muted-foreground">{basePackageSubtitle}</p>
+              ) : null}
               {displayFeatures.length ? (
                 <ul className="mt-5 grid gap-x-6 gap-y-2.5 text-sm sm:grid-cols-2">
                   {displayFeatures.map((feature) => (

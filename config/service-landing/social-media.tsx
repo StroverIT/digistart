@@ -1,5 +1,9 @@
 import type { ServicePasLandingContent } from "@/components/services/service-pas-landing/types";
 
+export const SOCIAL_MEDIA_BUY_SECTION = {
+  basePackageSubtitle: "Instagram и Facebook (Meta)",
+} as const;
+
 export const SOCIAL_MEDIA_LANDING: ServicePasLandingContent = {
   pagePath: "/services/social-media",
   primaryCtaLabel: "Увеличи продажбите си сега",
