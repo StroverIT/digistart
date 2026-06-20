@@ -65,7 +65,7 @@ const ReportsPanel = () => {
             data-animate-card
             className={`flex flex-col lg:border-l lg:px-10 ${LANDING_CARD_CLASS}`}
           >
-            <span className="mb-4 flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <span className="mb-4 flex size-11 items-center justify-center rounded-xl bg-accent/10 text-accent">
               <feature.icon className="size-5" aria-hidden />
             </span>
             <h2 className="font-heading text-sm font-bold">{feature.title}</h2>
