@@ -232,6 +232,19 @@ export const services: Service[] = [
         ],
       },
       {
+        id: "on-location-shooting",
+        name: "Снимане на място в магазина",
+        description:
+          "За физически магазин в София - идваме при теб и снимаме продукти и обстановката на място.",
+        kind: "toggle",
+        isMonthly: true,
+        pricePerUnit: SOCIAL_MEDIA_PRICING.onLocationShootingMonthly,
+        unit: "месец",
+        min: 0,
+        max: 1,
+        default: 0,
+      },
+      {
         id: "extra-channels",
         name: "Допълнителни канали",
         description: `€${SOCIAL_MEDIA_PRICING.extraChannelMonthly}/месец на канал, включва 1 публикация всеки ден.`,
