@@ -12,16 +12,21 @@ import { usePathname, useSearchParams } from "next/navigation";
 import gsap from "gsap";
 import { PageTransitionContext } from "./transition-context";
 import { PageTransitionContextType } from "./types";
-import { SITE_LOGO_SRC } from "@/lib/site-brand";
 
 type PageTransitionProviderProps = {
   children: ReactNode;
 };
 
-const TRANSITION_LOGO_SRC = SITE_LOGO_SRC;
+/** Set to true to keep the loading overlay visible for design work. */
+const FORCE_LOADING_OVERLAY = true;
+
+const TRANSITION_LOGO_SRC = "/DigiStart.webp";
+const TRANSITION_LOGO_SIZE = 180;
+const LIGHTNING_HEIGHT = 210;
+const LIGHTNING_WIDTH = 105;
 const BOLT_STRIKE_FILL = "#ffffff";
-const BOLT_CHARGE_FILL = "#3b82f6";
-const LOGO_GLOW = "drop-shadow(0px 0px 35px rgba(59, 130, 246, 1))";
+const BOLT_CHARGE_FILL = "#ADEEC5";
+const LOGO_GLOW = "drop-shadow(0px 0px 50px rgba(173, 238, 197, 1))";
 const LIGHTNING_GLOW = LOGO_GLOW;
 const STRIKE_GLOW =
   "brightness(1.5) drop-shadow(0px 0px 80px rgba(255, 255, 255, 1))";
@@ -41,10 +46,10 @@ function resetLightning(
   boltRight: SVGPathElement | null,
 ) {
   if (lightningLeft) {
-    gsap.set(lightningLeft, { scale: 1, opacity: 0, filter: "none", x: 16, y: 0 });
+    gsap.set(lightningLeft, { scale: 1, opacity: 0, filter: "none", x: 24, y: 0 });
   }
   if (lightningRight) {
-    gsap.set(lightningRight, { scale: 1, opacity: 0, filter: "none", x: 16, y: 0 });
+    gsap.set(lightningRight, { scale: 1, opacity: 0, filter: "none", x: 24, y: 0 });
   }
   if (boltLeft) {
     gsap.set(boltLeft, { fill: BOLT_STRIKE_FILL });
@@ -151,7 +156,7 @@ function PageTransitionProviderContent({
         // Logo slowly hovers up and down while waiting
         if (logo) {
           gsap.to(logo, {
-            y: -8,
+            y: -12,
             duration: 1.5,
             yoyo: true,
             repeat: -1,
@@ -210,12 +215,12 @@ function PageTransitionProviderContent({
         // Side lightnings flash simultaneously
         .fromTo(
           lightnings,
-          { scale: 1.35, opacity: 0, filter: STRIKE_GLOW, x: 28, y: -8 },
+          { scale: 1.35, opacity: 0, filter: STRIKE_GLOW, x: 42, y: -12 },
           {
             scale: 1,
             opacity: 1,
             filter: STRIKE_GLOW,
-            x: 16,
+            x: 24,
             y: 0,
             duration: 0.04,
             ease: "none",
@@ -229,7 +234,7 @@ function PageTransitionProviderContent({
         .to(lightnings, {
           opacity: 0,
           scale: 1.2,
-          x: 24,
+          x: 36,
           duration: 0.07,
           ease: "power2.in",
         })
@@ -241,6 +246,8 @@ function PageTransitionProviderContent({
   }, []);
 
   const finishTransition = useCallback(() => {
+    if (FORCE_LOADING_OVERLAY) return;
+
     const overlay = overlayRef.current;
     const lightningLeft = lightningLeftRef.current;
     const lightningRight = lightningRightRef.current;
@@ -267,6 +274,11 @@ function PageTransitionProviderContent({
     isAnimatingRef.current = false;
     setIsTransitioning(false);
   }, []);
+
+  useEffect(() => {
+    if (!FORCE_LOADING_OVERLAY) return;
+    playExit(() => { });
+  }, [playExit]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -359,19 +371,21 @@ function PageTransitionProviderContent({
             ref={logoRef}
             src={TRANSITION_LOGO_SRC}
             alt=""
-            width={120}
-            height={120}
-            className="relative z-10 w-[120px]"
+            width={TRANSITION_LOGO_SIZE}
+            height={TRANSITION_LOGO_SIZE}
+            className="relative z-10"
+            style={{ width: TRANSITION_LOGO_SIZE, height: TRANSITION_LOGO_SIZE }}
             draggable={false}
           />
 
           {/* Left Lightning Wrapper (Mirrored) */}
-          <div className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 scale-x-[-1]">
+          <div className="pointer-events-none absolute right-full top-1/2 mr-5 -translate-y-1/2 scale-x-[-1]">
             <div ref={lightningLeftRef}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 200 400"
-                className="h-[150px] w-[75px]"
+                className="shrink-0"
+                style={{ width: LIGHTNING_WIDTH, height: LIGHTNING_HEIGHT }}
                 aria-hidden="true"
               >
                 <path
@@ -384,12 +398,13 @@ function PageTransitionProviderContent({
           </div>
 
           {/* Right Lightning Wrapper */}
-          <div className="pointer-events-none absolute left-full top-1/2 ml-3 -translate-y-1/2">
+          <div className="pointer-events-none absolute left-full top-1/2 ml-5 -translate-y-1/2">
             <div ref={lightningRightRef}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 200 400"
-                className="h-[150px] w-[75px]"
+                className="shrink-0"
+                style={{ width: LIGHTNING_WIDTH, height: LIGHTNING_HEIGHT }}
                 aria-hidden="true"
               >
                 <path
