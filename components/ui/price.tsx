@@ -2,8 +2,6 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
-const EUR_TO_BGN = 1.95583
-
 function formatAmount(amount: number, forceTwoDecimals = false) {
   return new Intl.NumberFormat('bg-BG', {
     minimumFractionDigits: forceTwoDecimals ? 2 : 0,
@@ -15,45 +13,28 @@ function formatEuro(value: number) {
   return `€${formatAmount(value)}`
 }
 
-function formatBgn(value: number) {
-  return `${formatAmount(value * EUR_TO_BGN, true)} лв.`
-}
-
+/** @deprecated Use formatEuro — kept for existing chart formatters */
 function formatPriceWithBgn(value: number) {
-  return `${formatEuro(value)} (${formatBgn(value)})`
+  return formatEuro(value)
 }
 
 interface PriceProps extends React.ComponentProps<'span'> {
-  /** Euro value used as source for conversion */
+  /** Euro amount */
   value: number
-  /** Controls alignment between EUR and BGN values. */
+  /** @deprecated No longer affects layout; prices are shown in EUR only */
   layout?: 'horizontal' | 'vertical' | 'responsive'
 }
 
-function Price({ value, className, layout = 'horizontal', ...props }: PriceProps) {
-  const euro = formatEuro(value)
-  const bgn = formatBgn(value)
-  const layoutClass =
-    layout === 'vertical'
-      ? 'flex-col items-start gap-1'
-      : layout === 'responsive'
-        ? 'flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-2'
-        : 'items-center gap-2'
-
+function Price({ value, className, ...props }: PriceProps) {
   return (
     <span
       data-slot="price"
-      className={cn(
-        'inline-flex',
-        layoutClass,
-        className
-      )}
+      className={cn('inline-flex font-semibold tabular-nums', className)}
       {...props}
     >
-      <span className="font-semibold tabular-nums">{euro}</span>
-      <span className="text-muted-foreground tabular-nums">({bgn})</span>
+      {formatEuro(value)}
     </span>
   )
 }
 
-export { Price, EUR_TO_BGN, formatEuro, formatBgn, formatPriceWithBgn }
+export { Price, formatEuro, formatPriceWithBgn }
