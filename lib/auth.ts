@@ -1,16 +1,31 @@
 import type { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { clearPostCheckoutTokenInDb } from "@/lib/server/orders";
+import { upsertGoogleOAuthUser } from "@/lib/server/oauth-users";
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@digistart.bg";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "admin123";
 
 type AppUser = NextAuthUser & { role?: string };
 
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+export const isGoogleAuthConfigured = Boolean(googleClientId && googleClientSecret);
+
 export const authOptions: NextAuthOptions = {
   providers: [
+    ...(isGoogleAuthConfigured
+      ? [
+          GoogleProvider({
+            clientId: googleClientId!,
+            clientSecret: googleClientSecret!,
+          }),
+        ]
+      : []),
     CredentialsProvider({
       id: "admin",
       name: "Admin",
@@ -46,7 +61,7 @@ export const authOptions: NextAuthOptions = {
         if (!email || !password) return null;
 
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) return null;
+        if (!user?.passwordHash) return null;
 
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) return null;
@@ -107,6 +122,23 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        if (!user.email) return false;
+        try {
+          const dbUser = await upsertGoogleOAuthUser({
+            email: user.email,
+            name: user.name,
+          });
+          user.id = dbUser.id;
+          (user as AppUser).role = dbUser.role === "admin" ? "admin" : "customer";
+          return true;
+        } catch {
+          return false;
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;

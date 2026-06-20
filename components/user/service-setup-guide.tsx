@@ -181,7 +181,7 @@ export function ServiceSetupGuide({ orderItemId, serviceName, items }: ServiceSe
                     {task.href.startsWith("mailto:") ? (
                       <a
                         href={task.href}
-                        className="text-xs font-semibold text-primary underline-offset-4 hover:underline"
+                        className="text-xs font-semibold text-accent underline-offset-4 hover:underline"
                       >
                         {task.cta}
                       </a>
@@ -189,14 +189,14 @@ export function ServiceSetupGuide({ orderItemId, serviceName, items }: ServiceSe
                       <a
                         href={task.href}
                         onClick={(event) => handleInPageAnchorClick(event, task.href!)}
-                        className="text-xs font-semibold text-primary underline-offset-4 hover:underline"
+                        className="text-xs font-semibold text-accent underline-offset-4 hover:underline"
                       >
                         {task.cta}
                       </a>
                     ) : (
                       <Link
                         href={task.href}
-                        className="text-xs font-semibold text-primary underline-offset-4 hover:underline"
+                        className="text-xs font-semibold text-accent underline-offset-4 hover:underline"
                       >
                         {task.cta}
                       </Link>
@@ -212,7 +212,7 @@ export function ServiceSetupGuide({ orderItemId, serviceName, items }: ServiceSe
           <div className="mx-4 mt-2 border-t border-border/70 pt-3">
             <Link
               href={`/onboarding?orderItemId=${encodeURIComponent(orderItemId)}`}
-              className="inline-flex text-xs font-semibold text-primary underline-offset-4 hover:underline"
+              className="inline-flex text-xs font-semibold text-accent underline-offset-4 hover:underline"
             >
               Отвори онбординга
             </Link>
@@ -221,7 +221,7 @@ export function ServiceSetupGuide({ orderItemId, serviceName, items }: ServiceSe
 
         <p className="mx-4 mt-2 border-t border-border/70 pt-3 text-xs leading-relaxed text-muted-foreground">
           Имате нужда от помощ,{" "}
-          <Link href="/user/support" className="font-medium text-primary underline underline-offset-4">
+          <Link href="/user/support" className="font-medium text-accent underline underline-offset-4">
             пишете ни в чата
           </Link>
           .

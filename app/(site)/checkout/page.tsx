@@ -55,6 +55,9 @@ import { toast } from "sonner";
 import Link from "next/link";
 import gsap from "gsap";
 import { cn } from "@/lib/utils";
+import {
+  GoogleSignInButton,
+} from "@/components/auth/google-sign-in-button";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
 const PAYMENT_PREPARE_MAX_RETRIES = 3;
@@ -636,17 +639,17 @@ export default function CheckoutPage() {
 
   const displayStepLabel = useMemo(() => {
     if (isLoggedInForCheckout) {
-      return logicalStep === 1 ? "Фирма" : "Плащане";
+      return logicalStep === 1 ? "Детайли" : "Плащане";
     }
     return logicalStep === 1
       ? "Акаунт"
       : logicalStep === 2
-        ? "Фирма"
+        ? "Детайли"
         : "Плащане";
   }, [isLoggedInForCheckout, logicalStep]);
 
   const checkoutStepLabels = useMemo(
-    () => (isLoggedInForCheckout ? ["Фирма", "Плащане"] : ["Акаунт", "Фирма", "Плащане"]),
+    () => (isLoggedInForCheckout ? ["Детайли", "Плащане"] : ["Акаунт", "Детайли", "Плащане"]),
     [isLoggedInForCheckout],
   );
 
@@ -691,7 +694,13 @@ export default function CheckoutPage() {
             <CheckoutStepIndicator currentStep={logicalStep} labels={checkoutStepLabels} />
 
             <div className="space-y-6">
-              {!isLoggedInForCheckout && logicalStep === 1 ? (
+              {sessionStatus === "loading" && logicalStep === 1 ? (
+                <Card className={checkoutFormCardClassName}>
+                  <CardContent className="flex justify-center py-16">
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+                  </CardContent>
+                </Card>
+              ) : !isLoggedInForCheckout && logicalStep === 1 ? (
                 <>
                   <Card className={checkoutFormCardClassName}>
                     <CardHeader className={checkoutFormCardHeaderClassName}>
@@ -703,7 +712,20 @@ export default function CheckoutPage() {
                         Създайте акаунт, за да управлявате поръчката и услугите си.
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="pt-6">
+                    <CardContent className="space-y-6 pt-6">
+                      <div className="space-y-6">
+                        <GoogleSignInButton callbackUrl="/checkout" label="Продължи с Google" />
+                        <div className="relative">
+                          <div className="absolute inset-0 flex items-center" aria-hidden>
+                            <div className="w-full border-t border-border" />
+                          </div>
+                          <div className="relative flex justify-center">
+                            <span className="bg-card px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                              или с имейл
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                       <FieldGroup>
                         <Field>
                           <FieldLabel htmlFor="name">Име и фамилия *</FieldLabel>
@@ -937,7 +959,7 @@ export default function CheckoutPage() {
                       className="w-full glow-primary"
                       onClick={handleContinueFromAccount}
                     >
-                      Напред
+                      Продължи с имейл
                     </Button>
                   </div>
 

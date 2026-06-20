@@ -50,7 +50,7 @@ function CopyValue({ label, value }: { label: string; value: string }) {
           <p className="mt-1 font-mono text-sm break-all">{value}</p>
         </div>
         <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={copy}>
-          {copied ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4" />}
+          {copied ? <Check className="h-4 w-4 text-accent" /> : <Copy className="h-4 w-4" />}
           <span className="sr-only">Копирай</span>
         </Button>
       </div>
@@ -134,7 +134,7 @@ export function DomainSetupCard({ orderItemId, vpsIp }: DomainSetupCardProps) {
       <CardHeader>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Globe className="h-5 w-5 text-primary" />
+            <Globe className="h-5 w-5 text-accent" />
             Домейн
           </CardTitle>
           {record ? (
@@ -154,7 +154,7 @@ export function DomainSetupCard({ orderItemId, vpsIp }: DomainSetupCardProps) {
                 href={`https://${record.domain}`}
                 target="_blank"
                 rel="noreferrer"
-                className="font-medium text-primary underline"
+                className="font-medium text-accent underline"
               >
                 {record.domain}
               </a>
@@ -195,7 +195,7 @@ export function DomainSetupCard({ orderItemId, vpsIp }: DomainSetupCardProps) {
               {error}
             </p>
           ) : null}
-          {success ? <p className="text-sm text-primary">{success}</p> : null}
+          {success ? <p className="text-sm text-accent">{success}</p> : null}
           <Button type="submit" disabled={saving || !domainInput.trim()}>
             {saving ? (
               <>

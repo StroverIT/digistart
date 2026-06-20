@@ -289,7 +289,7 @@ function SuccessContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm text-muted-foreground">Номер на поръчка</span>
-                <span className="font-mono font-bold text-primary">{order.id}</span>
+                <span className="font-mono font-bold text-accent">{order.id}</span>
               </div>
 
               <div className="border-t border-border pt-4 space-y-3">
@@ -310,7 +310,7 @@ function SuccessContent() {
                 <span className="font-semibold">Обща сума</span>
                 <Price
                   value={order.cart.totalOneTime + order.cart.totalMonthly}
-                  className="text-xl gradient-text"
+                  className="text-xl text-accent"
                 />
               </div>
 

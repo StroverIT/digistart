@@ -2,6 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+  Building2,
+  Check,
+  LayoutTemplate,
+  Package,
+  Share2,
+  type LucideIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +24,6 @@ import {
   getNextWizardStep,
   getPrevWizardStep,
   isProductSalesType,
-  isValidEmail,
   isValidUrl,
   normalizeSocialChannels,
   normalizeWizardStep,
@@ -31,6 +38,13 @@ import { isWizardStepComplete } from "@/lib/onboarding/setup-steps";
 import { PreviewLink } from "@/components/preview/preview-link";
 import type { TenantProjectDto } from "@/lib/server/tenant-projects";
 import { cn } from "@/lib/utils";
+
+const WIZARD_STEP_ICONS: Record<number, LucideIcon> = {
+  1: Package,
+  2: LayoutTemplate,
+  3: Building2,
+  4: Share2,
+};
 
 const DEFAULT_REQUIREMENTS: OnboardingRequirements = {
   showCategoryTemplate: true,
@@ -65,8 +79,6 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
   const [productSalesType, setProductSalesType] = useState<ProductSalesType | null>(null);
   const [selectedTemplateIds, setSelectedTemplateIds] = useState<string[]>([]);
   const [businessName, setBusinessName] = useState("");
-  const [businessPhone, setBusinessPhone] = useState("");
-  const [businessEmail, setBusinessEmail] = useState("");
   const [productNotes, setProductNotes] = useState("");
   const [channels, setChannels] = useState<SocialChannelInput[]>([]);
   const [googleBusinessUrl, setGoogleBusinessUrl] = useState("");
@@ -85,8 +97,6 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
       setProductSalesType(isProductSalesType(salesType) ? salesType : null);
       setSelectedTemplateIds(parseSelectedTemplateIds(bs, p.templateId));
       setBusinessName(String(bs.businessName ?? ""));
-      setBusinessPhone(String(bs.phone ?? ""));
-      setBusinessEmail(String(bs.email ?? ""));
       setProductNotes(String(bs.productNotes ?? ""));
       const ss = p.socialSettings ?? {};
       setGoogleBusinessUrl(String(ss.googleBusinessUrl ?? ""));
@@ -117,8 +127,6 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
 
   const buildBusinessSettings = (): Record<string, unknown> => ({
     businessName: businessName.trim(),
-    phone: businessPhone.trim(),
-    email: businessEmail.trim(),
     productNotes: productNotes.trim(),
     ...(productSalesType ? { productSalesType } : {}),
     ...(selectedTemplateIds.length > 0 ? { selectedTemplateIds } : {}),
@@ -198,18 +206,6 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
   const validateBusinessStep = (): boolean => {
     if (!businessName.trim()) {
       toast.error("Моля, въведете име на бизнеса.");
-      return false;
-    }
-    if (!businessPhone.trim()) {
-      toast.error("Моля, въведете телефон.");
-      return false;
-    }
-    if (!businessEmail.trim()) {
-      toast.error("Моля, въведете имейл за контакт.");
-      return false;
-    }
-    if (!isValidEmail(businessEmail)) {
-      toast.error("Моля, въведете валиден имейл адрес.");
       return false;
     }
     if (requirements.showCategoryTemplate && !productNotes.trim()) {
@@ -314,28 +310,86 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
   const currentStepTitle = activeSteps.find((s) => s.id === step)?.title ?? "";
   const stepsCompleted = project?.onboardingStepsCompleted ?? {};
 
+  const stepGridCols =
+    activeSteps.length === 2
+      ? "lg:grid-cols-2"
+      : activeSteps.length === 3
+        ? "lg:grid-cols-3"
+        : "sm:grid-cols-2 lg:grid-cols-4";
+
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-        {activeSteps.map((s) => {
-          const done =
-            isWizardStepComplete(s.id, stepsCompleted, requirements) || step > s.id;
-          return (
-          <div
-            key={s.id}
-            className={cn(
-              "flex-1 min-w-[100px] text-center text-xs sm:text-sm py-2 px-2 rounded-lg border",
-              step === s.id
-                ? "border-primary bg-primary/10 text-primary font-medium"
-                : done
-                  ? "border-primary/30 bg-primary/5 text-primary/80"
-                  : "border-border text-muted-foreground",
-            )}
-          >
-            {s.title}
-          </div>
-          );
-        })}
+    <div className="max-w-4xl mx-auto">
+      <div className="relative mb-8 overflow-hidden rounded-[2rem] bg-card shadow-[var(--shadow-soft)] ring-1 ring-foreground/[0.04] md:rounded-[2.5rem]">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-accent/10 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-primary/25 blur-3xl"
+        />
+
+        <div
+          className={cn(
+            "relative grid divide-y divide-border/50 lg:divide-x lg:divide-y-0",
+            stepGridCols,
+          )}
+        >
+          {activeSteps.map((s, idx) => {
+            const isActive = step === s.id;
+            const done =
+              isWizardStepComplete(s.id, stepsCompleted, requirements) || step > s.id;
+            const Icon = WIZARD_STEP_ICONS[s.id] ?? Package;
+
+            return (
+              <article
+                key={s.id}
+                className={cn(
+                  "relative min-w-0 p-5 md:p-6",
+                  isActive &&
+                    "bg-gradient-to-br from-primary/20 via-primary/10 to-accent/[0.08] lg:shadow-[-12px_0_32px_-20px_oklch(0.32_0.16_320_/_0.18)]",
+                )}
+              >
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute right-3 top-2 select-none font-heading text-5xl font-bold leading-none text-foreground/[0.04] md:right-5 md:top-3 md:text-6xl"
+                >
+                  0{idx + 1}
+                </span>
+
+                <div className="relative z-10">
+                  <div
+                    className={cn(
+                      "inline-flex h-10 w-10 items-center justify-center rounded-xl shadow-md ring-4 ring-card",
+                      isActive || done
+                        ? "bg-accent text-accent-foreground"
+                        : "bg-accent/10 text-accent",
+                    )}
+                  >
+                    {done && !isActive ? (
+                      <Check className="h-4 w-4" strokeWidth={2.8} />
+                    ) : (
+                      <Icon className="h-4 w-4" strokeWidth={2.2} />
+                    )}
+                  </div>
+
+                  <h3
+                    className={cn(
+                      "mt-4 font-heading text-sm font-bold leading-snug md:text-base",
+                      isActive
+                        ? "font-accent text-accent"
+                        : done
+                          ? "text-foreground"
+                          : "text-muted-foreground",
+                    )}
+                  >
+                    {s.title}
+                  </h3>
+                </div>
+              </article>
+            );
+          })}
+        </div>
       </div>
 
       <Card>
@@ -402,29 +456,6 @@ export function OnboardingWizard({ orderItemId: orderItemIdProp }: OnboardingWiz
                   required
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="businessPhone">
-                  Телефон <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="businessPhone"
-                  required
-                  value={businessPhone}
-                  onChange={(e) => setBusinessPhone(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="businessEmail">
-                  Имейл за контакт <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="businessEmail"
-                  type="email"
-                  required
-                  value={businessEmail}
-                  onChange={(e) => setBusinessEmail(e.target.value)}
                 />
               </div>
               {requirements.showCategoryTemplate ? (

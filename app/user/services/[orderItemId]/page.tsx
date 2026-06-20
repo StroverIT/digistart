@@ -177,7 +177,7 @@ export default async function UserServiceDetailPage({
       <div className="rounded-3xl border border-border bg-card/80 p-6 shadow-sm backdrop-blur md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
               <PackageCheck className="h-3.5 w-3.5" />
               Активна услуга
             </div>
@@ -191,7 +191,7 @@ export default async function UserServiceDetailPage({
                 <Price
                   value={item.totalOneTime}
                   layout="vertical"
-                  className="mt-1 text-2xl font-bold text-primary lg:items-end"
+                  className="mt-1 text-2xl font-bold text-accent lg:items-end"
                 />
                 <p className="mt-2 flex flex-wrap items-baseline gap-x-1 text-xs text-muted-foreground lg:justify-end">
                   <span>+</span>
@@ -205,7 +205,7 @@ export default async function UserServiceDetailPage({
                 <Price
                   value={item.totalOneTime}
                   layout="vertical"
-                  className="mt-1 text-2xl font-bold text-primary lg:items-end"
+                  className="mt-1 text-2xl font-bold text-accent lg:items-end"
                 />
               </>
             )}
@@ -217,7 +217,7 @@ export default async function UserServiceDetailPage({
         <Card className="h-full min-w-0 border-border bg-card/80 shadow-sm">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <ReceiptText className="h-4 w-4 shrink-0 text-primary" />
+              <ReceiptText className="h-4 w-4 shrink-0 text-accent" />
               Разбивка на цената
             </CardTitle>
             <CardDescription>Какво плащате за тази услуга</CardDescription>
@@ -226,7 +226,7 @@ export default async function UserServiceDetailPage({
             <div className="rounded-xl border border-border/60 bg-secondary/40 px-4 py-3">
               <div className="flex items-start gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background shadow-sm">
-                  <Wallet className="h-4 w-4 text-primary" />
+                  <Wallet className="h-4 w-4 text-accent" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-medium">Еднократно</p>
@@ -242,7 +242,7 @@ export default async function UserServiceDetailPage({
               <div className="rounded-xl border border-border/60 bg-secondary/40 px-4 py-3">
                 <div className="flex items-start gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background shadow-sm">
-                    <RefreshCw className="h-4 w-4 text-primary" />
+                    <RefreshCw className="h-4 w-4 text-accent" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium">Месечно</p>
@@ -264,7 +264,7 @@ export default async function UserServiceDetailPage({
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <CalendarClock className="h-4 w-4 shrink-0 text-primary" />
+                    <CalendarClock className="h-4 w-4 shrink-0 text-accent" />
                     Абонамент
                   </CardTitle>
                   <CardDescription className="mt-1.5">Месечно автоматично подновяване</CardDescription>
@@ -279,8 +279,8 @@ export default async function UserServiceDetailPage({
               {renew ? (
                 <>
                   <div className="flex flex-col gap-4 @sm:flex-row @sm:items-start">
-                    <div className="flex h-18 w-18 shrink-0 flex-col items-center justify-center self-start rounded-2xl border border-primary/20 bg-primary/5">
-                      <span className="text-2xl font-bold leading-none tabular-nums text-primary">
+                    <div className="flex h-18 w-18 shrink-0 flex-col items-center justify-center self-start rounded-2xl border border-accent/20 bg-accent/5">
+                      <span className="text-2xl font-bold leading-none tabular-nums text-accent">
                         {renew.getDate()}
                       </span>
                       <span className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
@@ -333,7 +333,7 @@ export default async function UserServiceDetailPage({
           <Card className="h-full min-w-0 border-border bg-card/80 shadow-sm">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
-                <CalendarClock className="h-4 w-4 shrink-0 text-primary" />
+                <CalendarClock className="h-4 w-4 shrink-0 text-accent" />
                 Тип плащане
               </CardTitle>
               <CardDescription>Без месечен абонамент</CardDescription>
@@ -341,7 +341,7 @@ export default async function UserServiceDetailPage({
             <CardContent>
               <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-secondary/40 px-4 py-4">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background shadow-sm">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                  <CheckCircle2 className="h-4 w-4 text-accent" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">Еднократно закупена услуга</p>
@@ -392,7 +392,7 @@ export default async function UserServiceDetailPage({
       <Card className="border-border bg-card/80 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200 fill-mode-both">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <Sparkles className="h-5 w-5 text-accent" />
             Закупени добавки
           </CardTitle>
         </CardHeader>

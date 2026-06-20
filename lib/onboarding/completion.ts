@@ -1,7 +1,6 @@
 import type { OnboardingRequirements } from "@/lib/onboarding/requirements";
 import {
   isProductSalesType,
-  isValidEmail,
   isValidUrl,
   parseSocialChannelsFromSettings,
 } from "@/lib/onboarding/requirements";
@@ -11,9 +10,7 @@ import { hasSelectedTemplates } from "@/lib/onboarding/selected-templates";
 function businessFieldsOk(project: TenantProjectDto | null | undefined): boolean {
   const bs = project?.businessSettings ?? {};
   const name = String(bs.businessName ?? "").trim();
-  const phone = String(bs.phone ?? "").trim();
-  const email = String(bs.email ?? "").trim();
-  return Boolean(name && phone && email && isValidEmail(email));
+  return name.length > 0;
 }
 
 function filledSocialChannels(project: TenantProjectDto | null | undefined): { label?: string; profileUrl: string }[] {

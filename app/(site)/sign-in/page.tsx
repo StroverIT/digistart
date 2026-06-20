@@ -11,11 +11,15 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
+import {
+  GoogleSignInButton,
+} from "@/components/auth/google-sign-in-button";
 
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/user";
+  const safeCallbackUrl = callbackUrl.startsWith("/") ? callbackUrl : "/user";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,7 +57,7 @@ function SignInForm() {
         setLoading(false);
         return;
       }
-      router.push(callbackUrl.startsWith("/") ? callbackUrl : "/user");
+      router.push(safeCallbackUrl);
       router.refresh();
     } catch {
       setError("Възникна грешка.");
@@ -70,13 +74,24 @@ function SignInForm() {
         <CardHeader>
           <CardTitle>Вход</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           {error ? (
-            <Alert variant="destructive" className="mb-4">
+            <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           ) : null}
+          <GoogleSignInButton callbackUrl={safeCallbackUrl} label="Вход с Google" />
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center" aria-hidden>
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-card px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                или с имейл
+              </span>
+            </div>
+          </div>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field>
@@ -117,7 +132,7 @@ function SignInForm() {
                 </div>
               </Field>
               <Button type="submit" className="w-full glow-primary" disabled={loading}>
-                {loading ? "Влизане..." : "Вход"}
+                {loading ? "Влизане..." : "Вход с имейл"}
               </Button>
             </FieldGroup>
           </form>

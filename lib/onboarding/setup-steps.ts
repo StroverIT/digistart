@@ -1,6 +1,6 @@
 import { isStoreSocialSetupComplete } from "@/lib/onboarding/completion";
 import type { OnboardingRequirements } from "@/lib/onboarding/requirements";
-import { isProductSalesType, isValidEmail } from "@/lib/onboarding/requirements";
+import { isProductSalesType } from "@/lib/onboarding/requirements";
 import { hasSelectedTemplates } from "@/lib/onboarding/selected-templates";
 import type { TenantProjectDto } from "@/lib/server/tenant-projects";
 
@@ -33,9 +33,7 @@ export function parseOnboardingStepsCompleted(raw: unknown): OnboardingStepsComp
 function businessFieldsOk(project: TenantProjectDto | null | undefined): boolean {
   const bs = project?.businessSettings ?? {};
   const name = String(bs.businessName ?? "").trim();
-  const phone = String(bs.phone ?? "").trim();
-  const email = String(bs.email ?? "").trim();
-  return Boolean(name && phone && email && isValidEmail(email));
+  return name.length > 0;
 }
 
 /** Derive step completion from saved project fields (backfill + recompute on save). */
