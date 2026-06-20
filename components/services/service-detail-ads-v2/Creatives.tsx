@@ -4,8 +4,11 @@ import { useRef } from "react";
 import Image from "next/image";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
-  LANDING_REVEAL_CLASS,
+  LANDING_BODY_CLASS,
   LANDING_CARD_CLASS,
+  LANDING_HEADING_CLASS,
+  LANDING_REVEAL_CLASS,
+  LANDING_SECTION_TITLE_LEFT_CLASS,
 } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useLandingScrollAnimations } from "@/components/services/service-detail-ready-store-v2/use-landing-scroll-animations";
 
@@ -47,27 +50,27 @@ const Creatives = () => {
         <div className="flex justify-start">
           <h2
             data-animate-reveal
-            className={`max-w-md text-5xl font-bold md:text-left ${LANDING_REVEAL_CLASS}`}
+            className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_LEFT_CLASS} md:text-left ${LANDING_REVEAL_CLASS}`}
           >
             Реклами за онлайн поръчки
           </h2>
         </div>
         <p
           data-animate-reveal
-          className={`mt-4 max-w-lg text-base text-muted-foreground sm:text-2xl md:text-left ${LANDING_REVEAL_CLASS}`}
+          className={`mt-4 max-w-lg md:text-left ${LANDING_BODY_CLASS} ${LANDING_REVEAL_CLASS}`}
         >
           Водим хората към продукта, количката и завършена покупка.
         </p>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:mt-14">
+      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:mt-14">
         {FEATURED_CREATIVES.map((creative) => (
           <article
             key={creative.label}
             data-animate-card
             className={`overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm ${LANDING_CARD_CLASS}`}
           >
-            <div className="relative aspect-4/3 w-full overflow-hidden bg-linear-to-br from-zinc-800 via-zinc-950 to-black">
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted/40">
               <Image
                 src={creative.src}
                 alt={creative.alt}

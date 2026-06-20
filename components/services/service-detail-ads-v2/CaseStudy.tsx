@@ -5,8 +5,10 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
-  LANDING_REVEAL_CLASS,
   LANDING_CARD_CLASS,
+  LANDING_HEADING_CLASS,
+  LANDING_REVEAL_CLASS,
+  LANDING_SECTION_TITLE_CENTER_CLASS,
 } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useLandingScrollAnimations } from "@/components/services/service-detail-ready-store-v2/use-landing-scroll-animations";
 
@@ -20,7 +22,7 @@ const CaseStudy = () => {
     <LandingSection ref={sectionRef} id="case-study" className="bg-muted/30">
       <h1
         data-animate-reveal
-        className={`mx-auto max-w-3xl text-center text-5xl ${LANDING_REVEAL_CLASS}`}
+        className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_CENTER_CLASS} ${LANDING_REVEAL_CLASS}`}
       >
         От магазин към повече онлайн поръчки
       </h1>
@@ -28,7 +30,7 @@ const CaseStudy = () => {
       <div className="mt-12 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <div
           data-animate-card
-          className={`relative order-2 aspect-4/3 w-full lg:order-1 ${LANDING_CARD_CLASS}`}
+          className={`relative order-2 aspect-[4/3] w-full lg:order-1 ${LANDING_CARD_CLASS}`}
         >
           <Image
             src="/what-we-offer/restyled-mock-up.png"

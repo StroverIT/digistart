@@ -437,12 +437,14 @@ export function ServiceBuySection({
 
   return (
     <section ref={sectionRef} id="buy-now" data-animate-section className="py-12 md:pt-16 md:pb-12">
-      <h2
-        data-animate-reveal
-        className="mb-6 text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl opacity-0 translate-y-10"
-      >
-        {header}
-      </h2>
+      {header && service.slug !== "ads" ? (
+        <h2
+          data-animate-reveal
+          className="mb-6 text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl opacity-0 translate-y-10"
+        >
+          {header}
+        </h2>
+      ) : null}
       <div className="container mx-auto px-4">
         <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           {isSoldOut && availability ? (
@@ -500,8 +502,10 @@ export function ServiceBuySection({
               </div>
             ) : null}
 
-            {service.slug !== "online-store" && <h2 className="text-2xl font-bold mb-2">{title}</h2>}
-            {service.slug !== "online-store" && (
+            {service.slug !== "online-store" && service.slug !== "ads" && (
+              <h2 className="text-2xl font-bold mb-2">{title}</h2>
+            )}
+            {service.slug !== "online-store" && service.slug !== "ads" && (
               <p className="mb-6 text-sm text-pretty text-muted-foreground">
                 Избери сам <span className="font-semibold text-foreground">ИЛИ</span>{" "}
                 <Link
@@ -516,9 +520,15 @@ export function ServiceBuySection({
               <p className="text-xs font-semibold uppercase tracking-widest text-accent">
                 Базов пакет
               </p>
-              <h3 className="mt-2 font-heading text-xl font-bold text-foreground sm:text-2xl">
-                {selectedOption?.name ?? service.name}
-              </h3>
+              {service.slug === "ads" && header ? (
+                <h3 className="mt-2 font-heading text-xl font-bold text-foreground sm:text-2xl">
+                  {header}
+                </h3>
+              ) : service.slug !== "ads" ? (
+                <h3 className="mt-2 font-heading text-xl font-bold text-foreground sm:text-2xl">
+                  {selectedOption?.name ?? service.name}
+                </h3>
+              ) : null}
               {service.features.length ? (
                 <ul className="mt-5 grid gap-x-6 gap-y-2.5 text-sm sm:grid-cols-2">
                   {service.features.map((feature) => (

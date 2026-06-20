@@ -7,6 +7,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
   LANDING_CARD_CLASS,
+  LANDING_HEADING_CLASS,
   LANDING_REVEAL_CLASS,
 } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useLandingScrollAnimations } from "@/components/services/service-detail-ready-store-v2/use-landing-scroll-animations";
@@ -138,19 +139,19 @@ function BenefitRow({
   }, [isActive]);
 
   return (
-    <li data-animate-card className={`border-b border-white/20 last:border-b-0 ${LANDING_CARD_CLASS}`}>
+    <li data-animate-card className={`border-b border-background/15 last:border-b-0 ${LANDING_CARD_CLASS}`}>
       <button
         type="button"
         onClick={onSelect}
         aria-expanded={isActive}
         aria-controls={panelId}
-        className="flex w-full items-start justify-between gap-4 px-0 py-5 text-left text-white sm:py-6"
+        className="flex w-full items-start justify-between gap-4 px-0 py-5 text-left text-background sm:py-6"
       >
         <span className="min-w-0 flex-1">
-          <span className="block text-lg font-semibold sm:text-3xl">{benefit.title}</span>
+          <span className={`block ${LANDING_HEADING_CLASS} text-lg sm:text-3xl`}>{benefit.title}</span>
           <div ref={descRef} id={panelId} className="overflow-hidden" aria-hidden={!isActive}>
             <div ref={contentRef}>
-              <p className="pt-2 text-sm leading-relaxed text-white sm:text-xl font-light">
+              <p className="pt-2 text-sm leading-relaxed text-background/85 sm:text-xl font-light">
                 {benefit.description}
               </p>
               <div className="relative mt-4 aspect-6/5 w-full lg:hidden">
@@ -165,7 +166,7 @@ function BenefitRow({
             </div>
           </div>
         </span>
-        <ChevronDown ref={arrowRef} className="mt-1 size-5 shrink-0 text-white" aria-hidden />
+        <ChevronDown ref={arrowRef} className="mt-1 size-5 shrink-0 text-background" aria-hidden />
       </button>
     </li>
   );
@@ -206,11 +207,12 @@ const Benefits = () => {
       ref={sectionRef}
       id="benefits"
       data-nav-theme="dark"
-      className="border-white/20 bg-[#111111] text-white"
+      withGradients
+      className="border-background/15 bg-foreground text-background"
     >
       <h2
         data-animate-reveal
-        className={`mx-auto max-w-4xl text-center text-3xl font-medium text-white ${LANDING_REVEAL_CLASS}`}
+        className={`mx-auto max-w-4xl text-center ${LANDING_HEADING_CLASS} text-3xl md:text-4xl ${LANDING_REVEAL_CLASS}`}
       >
         Как рекламите помагат на онлайн магазина?
       </h2>

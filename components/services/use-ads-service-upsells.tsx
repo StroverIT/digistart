@@ -2,19 +2,15 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { AdsChannelPicker } from "@/components/services/service-detail-ads-v2/AdsChannelPicker";
-import { AdsExtraChannelOffer } from "@/components/services/service-detail-ads-v2/AdsExtraChannelOffer";
 import {
   ADS_BASE_CHANNEL_UPSELL_ID,
   ADS_EXTRA_CHANNEL_UPSELL_ID,
-  getAdsBaseChannelChoiceId,
-  getAdsExtraChannelChoiceId,
-  isAdsExtraChannelEnabled,
+  getAdsChannelPickerValue,
   normalizeAdsChannelUpsells,
-  setAdsBaseChannelUpsell,
-  setAdsExtraChannelEnabled,
+  setAdsChannelPickerValue,
   validateAdsChannelUpsells,
 } from "@/lib/data/ads-channels";
-import type { AdsChannelChoiceId } from "@/lib/data/ads-channels";
+import type { AdsChannelPickerValue } from "@/lib/data/ads-channels";
 import type { CartItemUpsell, Service } from "@/lib/types";
 
 interface UseAdsServiceUpsellsOptions {
@@ -37,14 +33,8 @@ export function useAdsServiceUpsells({
     () => service.upsells.find((upsell) => upsell.id === ADS_BASE_CHANNEL_UPSELL_ID),
     [service.upsells],
   );
-  const extraChannelUpsell = useMemo(
-    () => service.upsells.find((upsell) => upsell.id === ADS_EXTRA_CHANNEL_UPSELL_ID),
-    [service.upsells],
-  );
 
-  const selectedBaseChannel = useMemo(() => getAdsBaseChannelChoiceId(upsells), [upsells]);
-  const selectedExtraChannel = useMemo(() => getAdsExtraChannelChoiceId(upsells), [upsells]);
-  const extraChannelEnabled = useMemo(() => isAdsExtraChannelEnabled(upsells), [upsells]);
+  const selectedChannel = useMemo(() => getAdsChannelPickerValue(upsells), [upsells]);
 
   const handleUpsellsChange = useCallback(
     (nextUpsells: CartItemUpsell[]) => {
@@ -53,24 +43,17 @@ export function useAdsServiceUpsells({
     [onUpsellsChange],
   );
 
-  const handleBaseChannelChange = useCallback(
-    (choiceId: AdsChannelChoiceId) => {
+  const handleChannelChange = useCallback(
+    (value: AdsChannelPickerValue) => {
       setBaseChannelError(undefined);
-      handleUpsellsChange(setAdsBaseChannelUpsell(upsells, choiceId));
-    },
-    [handleUpsellsChange, upsells],
-  );
-
-  const handleExtraChannelEnabledChange = useCallback(
-    (enabled: boolean) => {
-      handleUpsellsChange(setAdsExtraChannelEnabled(upsells, enabled));
+      handleUpsellsChange(setAdsChannelPickerValue(upsells, value));
     },
     [handleUpsellsChange, upsells],
   );
 
   const validateBeforeAdd = useCallback(() => {
     const error = validateAdsChannelUpsells(upsells);
-    if (error?.includes("базовия пакет")) {
+    if (error?.includes("рекламен канал")) {
       setBaseChannelError(error);
     } else {
       setBaseChannelError(undefined);
@@ -82,22 +65,11 @@ export function useAdsServiceUpsells({
     baseChannelUpsell ? (
       <AdsChannelPicker
         upsell={baseChannelUpsell}
-        value={selectedBaseChannel}
-        onChange={handleBaseChannelChange}
+        value={selectedChannel}
+        onChange={handleChannelChange}
         label="Рекламен канал за базовия пакет"
         required
         error={baseChannelError}
-      />
-    ) : null;
-
-  const customUpsellsContent =
-    extraChannelUpsell ? (
-      <AdsExtraChannelOffer
-        upsell={extraChannelUpsell}
-        enabled={extraChannelEnabled}
-        autoChoiceId={selectedExtraChannel}
-        baseChannelSelected={Boolean(selectedBaseChannel)}
-        onEnabledChange={handleExtraChannelEnabledChange}
       />
     ) : null;
 
@@ -108,6 +80,5 @@ export function useAdsServiceUpsells({
     validateBeforeAdd,
     basePackageExtra: showBaseChannelInUpsells ? undefined : baseChannelPicker,
     prefixContent: showBaseChannelInUpsells ? baseChannelPicker : undefined,
-    customUpsellsContent,
   };
 }

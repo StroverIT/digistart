@@ -2,13 +2,21 @@
 
 import { cn } from "@/lib/utils";
 import type { ServiceUpsell } from "@/lib/types";
-import type { AdsChannelChoiceId } from "@/lib/data/ads-channels";
+import {
+  ADS_BOTH_CHANNELS_SELECTION,
+  type AdsChannelPickerValue,
+} from "@/lib/data/ads-channels";
+
+const BOTH_CHANNELS_OPTION = {
+  id: ADS_BOTH_CHANNELS_SELECTION,
+  name: "И двете",
+  description: "Google Ads + Meta Ads",
+} as const;
 
 interface AdsChannelPickerProps {
   upsell: ServiceUpsell;
-  value?: AdsChannelChoiceId;
-  onChange: (choiceId: AdsChannelChoiceId) => void;
-  disabledChoiceId?: AdsChannelChoiceId;
+  value?: AdsChannelPickerValue;
+  onChange: (value: AdsChannelPickerValue) => void;
   label?: string;
   required?: boolean;
   error?: string;
@@ -18,12 +26,12 @@ export function AdsChannelPicker({
   upsell,
   value,
   onChange,
-  disabledChoiceId,
   label = "Избери канал",
   required = false,
   error,
 }: AdsChannelPickerProps) {
   const choices = upsell.choices ?? [];
+  const options = [...choices, BOTH_CHANNELS_OPTION];
 
   return (
     <div className="mt-4">
@@ -31,23 +39,20 @@ export function AdsChannelPicker({
         {label}
         {required ? <span className="text-destructive"> *</span> : null}
       </p>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {choices.map((choice) => {
+      <div className="grid gap-2 sm:grid-cols-3">
+        {options.map((choice) => {
           const isSelected = value === choice.id;
-          const isDisabled = disabledChoiceId === choice.id;
 
           return (
             <button
               key={choice.id}
               type="button"
-              disabled={isDisabled}
-              onClick={() => onChange(choice.id as AdsChannelChoiceId)}
+              onClick={() => onChange(choice.id as AdsChannelPickerValue)}
               className={cn(
                 "rounded-xl border p-3 text-left transition-colors",
                 isSelected
                   ? "border-primary bg-primary/10 ring-1 ring-primary"
                   : "border-border bg-background/70 hover:border-primary/40",
-                isDisabled && "cursor-not-allowed opacity-50 hover:border-border",
               )}
             >
               <span className="block text-sm font-semibold">{choice.name}</span>

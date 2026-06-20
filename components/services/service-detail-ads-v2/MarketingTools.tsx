@@ -6,8 +6,10 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
-  LANDING_REVEAL_CLASS,
   LANDING_CARD_CLASS,
+  LANDING_HEADING_CLASS,
+  LANDING_REVEAL_CLASS,
+  LANDING_SECTION_TITLE_CENTER_CLASS,
 } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useLandingScrollAnimations } from "@/components/services/service-detail-ready-store-v2/use-landing-scroll-animations";
 
@@ -140,11 +142,12 @@ const MarketingTools = () => {
       ref={sectionRef}
       id="marketing"
       data-nav-theme="dark"
-      className="bg-[#111111] text-white"
+      withGradients
+      className="bg-foreground text-background"
     >
       <h1
         data-animate-reveal
-        className={`mx-auto max-w-3xl text-center text-4xl ${LANDING_REVEAL_CLASS}`}
+        className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_CENTER_CLASS} ${LANDING_REVEAL_CLASS}`}
       >
         Защо да не рекламираш магазина сам?
       </h1>

@@ -6,7 +6,6 @@ import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { useAdsServiceUpsells } from "@/components/services/use-ads-service-upsells";
 import { getServiceById, getServicePlanPrice } from "@/lib/data/services";
 import { ADS_LANDING } from "@/config/service-landing/ads";
-import { ADS_SOCIAL_MEDIA_COMPANION } from "@/lib/data/service-companions";
 import type { CartBillingCycle, CartItemUpsell, ServiceSlotAvailability } from "@/lib/types";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { addOrUpdateServiceInCart } from "@/lib/store/cart";
@@ -41,15 +40,9 @@ function AdsBuySectionContent({
 
   const planPrice = getServicePlanPrice(service, ADS_OPTION_ID);
 
-  const handleCheckout = (options?: {
-    includeCompanion?: boolean;
-    billingCycle?: CartBillingCycle;
-  }) => {
+  const handleCheckout = (options?: { billingCycle?: CartBillingCycle }) => {
     setIsAdding(true);
     const result = addOrUpdateServiceInCart(ADS_SERVICE_ID, ADS_OPTION_ID, upsells, {
-      includeCompanion: options?.includeCompanion,
-      companionServiceId: ADS_SOCIAL_MEDIA_COMPANION.serviceId,
-      companionOptionId: ADS_SOCIAL_MEDIA_COMPANION.optionId,
       billingCycle: options?.billingCycle,
     });
     if (!result.added && result.reason === "duplicate") {
@@ -85,7 +78,7 @@ function AdsBuySectionContent({
       <div className={landingContainerClass}>
         <ServiceBuySection
           service={service}
-          title="Готов ли си за реклами с цел?"
+          header="Готов ли си за продажби?"
           price={planPrice}
           monthlyLabel="/месец"
           upsells={upsells}
@@ -93,14 +86,13 @@ function AdsBuySectionContent({
           onAddToCart={handleCheckout}
           isAdding={isAdding}
           cartSelectedOptionId={ADS_OPTION_ID}
-          companion={ADS_SOCIAL_MEDIA_COMPANION}
           ctaId={`${ADS_LANDING.ctaIdPrefix}_buy_section_add_to_cart`}
           ctaPage={ADS_LANDING.pagePath}
           availability={availability}
           hiddenUpsellIds={adsUpsells.hiddenUpsellIds}
           validateBeforeAdd={adsUpsells.validateBeforeAdd}
-          customUpsellsContent={adsUpsells.customUpsellsContent}
           basePackageExtra={adsUpsells.basePackageExtra}
+          hideAdditionalServices
         />
       </div>
     </section>

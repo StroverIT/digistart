@@ -47,7 +47,7 @@ export function ServiceCompanionOffer({
             <Label className="font-semibold">{title}</Label>
             <Link
               href={config.learnMoreHref}
-              className="text-xs font-medium text-primary underline-offset-4 hover:underline"
+              className="text-xs font-medium text-accent underline-offset-4 hover:underline"
             >
               Научи повече
             </Link>

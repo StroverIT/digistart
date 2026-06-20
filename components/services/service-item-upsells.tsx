@@ -31,7 +31,6 @@ function AdsServiceItemUpsells({
       onUpsellsChange={adsUpsells.handleUpsellsChange}
       hiddenUpsellIds={adsUpsells.hiddenUpsellIds}
       prefixContent={adsUpsells.prefixContent}
-      customUpsellsContent={adsUpsells.customUpsellsContent}
       collapsible={collapsible}
     />
   );
