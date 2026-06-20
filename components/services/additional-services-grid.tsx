@@ -12,6 +12,10 @@ const serviceStickerMap: Record<string, string> = {
   ads: "/stickers/social-media.png",
 };
 
+function visibleAdditionalServices(services: Service[]) {
+  return services.filter((service) => service.id !== "ai-automation");
+}
+
 function AdditionalServiceSticker({ service }: { service: Service }) {
   const src = serviceStickerMap[service.id];
   if (!src) return null;
@@ -34,7 +38,7 @@ export function AdditionalServicesGrid({
   description?: string;
   ctaIdPrefix?: string;
 }) {
-  if (services.length === 0) return null;
+  if (visibleAdditionalServices(services).length === 0) return null;
 
   return (
     <div>
@@ -47,7 +51,7 @@ export function AdditionalServicesGrid({
         </div>
       ) : null}
       <div className="grid gap-3 xl:grid-cols-2">
-        {services.map((service) => {
+        {visibleAdditionalServices(services).map((service) => {
           const prompt = additionalServicePrompts[service.id];
           return (
             <div key={service.id} className="[&>span]:flex [&>span]:w-full">
@@ -83,7 +87,7 @@ export function AdditionalServicesUpsellCard({
   dataMarker?: "cart" | "success";
   ctaIdPrefix?: string;
 }) {
-  if (services.length === 0) return null;
+  if (visibleAdditionalServices(services).length === 0) return null;
 
   return (
     <Card
@@ -98,7 +102,7 @@ export function AdditionalServicesUpsellCard({
             Добави липсващите услуги, за да покриеш повече канали за продажби.
           </p>
         </div>
-        <AdditionalServicesGrid services={services} ctaIdPrefix={ctaIdPrefix} />
+        {/* <AdditionalServicesGrid services={services} ctaIdPrefix={ctaIdPrefix} /> */}
       </CardContent>
     </Card>
   );

@@ -89,14 +89,14 @@ function CartItemCard({
           {/* Price */}
           <div className="text-right shrink-0">
             {isAdminCheckout ? (
-              <p className="text-sm font-medium text-primary">Включено</p>
+              <p className="text-sm font-medium text-accent">Включено</p>
             ) : (
-              <Price value={prices.totalPrice} className="text-2xl text-primary" />
+              <Price value={prices.totalPrice} className="text-2xl text-accent" />
             )}
             {isAdminCheckout ? (
               <div className="text-xs font-medium text-muted-foreground mt-1">Админ поръчка</div>
             ) : prices.billingCycle === "annual-prepaid" ? (
-              <div className="text-xs font-medium text-primary mt-1">
+              <div className="text-xs font-medium text-accent mt-1">
                 Предплатено за 1 година
               </div>
             ) : null}
@@ -245,7 +245,7 @@ export default function CartPage() {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div data-cart-header className="flex items-center gap-4 mb-8 opacity-0 translate-y-10">
-          <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+          <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
             <ShoppingCart className="h-6 w-6" />
           </div>
           <div>
@@ -276,11 +276,11 @@ export default function CartPage() {
                   Изберете услуга и я добавете в кошницата.
                 </p>
               </div>
-              <AdditionalServicesGrid
+              {/* <AdditionalServicesGrid
                 services={additionalServices}
                 title="Нашите услуги"
                 description="Изберете услуга според нуждите на бизнеса ви."
-              />
+              /> */}
             </CardContent>
           </Card>
         ) : (
@@ -302,7 +302,7 @@ export default function CartPage() {
                 );
               })}
 
-              {additionalServices.length > 0 ? (
+              {/* {additionalServices.length > 0 ? (
                 <div className="hidden lg:block">
                   <AdditionalServicesUpsellCard
                     services={additionalServices}
@@ -310,7 +310,7 @@ export default function CartPage() {
                     className="opacity-0 translate-y-10"
                   />
                 </div>
-              ) : null}
+              ) : null} */}
 
               <TrackedCtaLink
                 href="/#services"
@@ -360,7 +360,7 @@ export default function CartPage() {
                       <span className="font-semibold">Обща сума</span>
                       <Price
                         value={displayCart.totalOneTime + displayCart.totalMonthly}
-                        className="text-2xl gradient-text"
+                        className="text-2xl text-accent"
                       />
                     </div>
                     {!isAdminCheckout &&
