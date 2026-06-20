@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, Suspense, useRef } from "react";
+import { useEffect, useState, Suspense, useRef } from "react";
 import gsap from "gsap";
 import { useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
@@ -12,9 +12,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Price } from "@/components/ui/price";
 import { siteContact } from "@/lib/site-contact";
 import { cartItemToMetaLineItem, trackMetaPurchase } from "@/lib/analytics/meta-pixel";
-import { getAdditionalServices } from "@/lib/cart/additional-services";
+// import { getAdditionalServices } from "@/lib/cart/additional-services";
 import { clearCart } from "@/lib/store/cart";
-import { AdditionalServicesUpsellCard } from "@/components/services/additional-services-grid";
+// import { AdditionalServicesUpsellCard } from "@/components/services/additional-services-grid";
 import {
   findFirstOnboardingOrderItem,
   getCheckoutSuccessSetupCta,
@@ -228,10 +228,10 @@ function SuccessContent() {
     });
   }, [order, orderId]);
 
-  const additionalServices = useMemo(
-    () => (order ? getAdditionalServices(order.cart.items) : []),
-    [order],
-  );
+  // const additionalServices = useMemo(
+  //   () => (order ? getAdditionalServices(order.cart.items) : []),
+  //   [order],
+  // );
 
   if (!mounted) {
     return (
@@ -406,7 +406,7 @@ function SuccessContent() {
           </TrackedCtaLink>
         ) : null}
       </div>
-      {order && additionalServices.length > 0 ? (
+      {/* {order && additionalServices.length > 0 ? (
         <div className="lg:hidden mt-10">
           <AdditionalServicesUpsellCard
             services={additionalServices}
@@ -415,7 +415,7 @@ function SuccessContent() {
             ctaIdPrefix="checkout_success_upsell"
           />
         </div>
-      ) : null}
+      ) : null} */}
     </div>
   );
 }
