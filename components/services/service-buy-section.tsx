@@ -464,14 +464,23 @@ export function ServiceBuySection({
                   isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
                 )}
               >
-                <div className="grid gap-1.5 sm:grid-cols-2">
+                <div className="relative grid gap-1.5 sm:grid-cols-2">
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "pointer-events-none absolute left-0.75 top-0.75 z-0 h-[calc(50%-0.375rem)] w-[calc(100%-0.375rem)] rounded-xl bg-card shadow-sm transition-transform duration-300 ease-out sm:inset-y-0.75 sm:top-auto sm:h-auto sm:w-[calc(50%-0.375rem)]",
+                      effectiveBillingCycle === "annual-prepaid"
+                        ? "translate-y-full sm:translate-y-0 sm:translate-x-full"
+                        : "translate-y-0 sm:translate-x-0",
+                    )}
+                  />
                   <button
                     type="button"
                     onClick={() => setBillingCycle("monthly")}
                     className={cn(
-                      "rounded-xl px-4 py-3 text-left transition-all",
+                      "relative z-10 rounded-xl px-4 py-3 text-left transition-colors",
                       effectiveBillingCycle === "monthly"
-                        ? "bg-card shadow-sm"
+                        ? "text-foreground"
                         : "hover:bg-card/50",
                     )}
                   >
@@ -484,9 +493,9 @@ export function ServiceBuySection({
                     type="button"
                     onClick={() => setBillingCycle("annual-prepaid")}
                     className={cn(
-                      "relative rounded-xl px-4 py-3 pr-14 text-left transition-all",
+                      "relative z-10 rounded-xl px-4 py-3 pr-14 text-left transition-colors",
                       effectiveBillingCycle === "annual-prepaid"
-                        ? "bg-card shadow-sm"
+                        ? "text-foreground"
                         : "hover:bg-card/50",
                     )}
                   >
