@@ -8,7 +8,7 @@ const stars = Array.from({ length: 5 });
 const GoogleReviewsSection = () => {
   return (
     <article className="mx-auto mb-10 mt-4 w-full max-w-3xl rounded-2xl border border-border/80 bg-white from-muted/50 to-background px-6 py-10 text-center shadow-sm sm:px-10">
-      <p className="text-sm font-semibold uppercase tracking-widest text-primary">Google Reviews</p>
+      <p className="text-sm font-semibold uppercase tracking-widest text-accent">Google Reviews</p>
 
       <div className="mt-4 flex items-center justify-center gap-1" role="img" aria-label="5 от 5 звезди">
         {stars.map((_, index) => (

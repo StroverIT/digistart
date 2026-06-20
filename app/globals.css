@@ -156,12 +156,24 @@
 
 @layer utilities {
   .pt-site-header {
-    padding-top: calc(var(--site-header-height) + var(--site-slots-banner-height));
+    padding-top: calc(
+      var(--site-header-height) + var(--site-slots-banner-height) + 1.5rem
+    );
   }
 
   @media (min-width: 768px) {
     .pt-site-header {
-      padding-top: calc(var(--site-header-height-md) + var(--site-slots-banner-height));
+      padding-top: calc(
+        var(--site-header-height-md) + var(--site-slots-banner-height) + 2.5rem
+      );
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .pt-site-header {
+      padding-top: calc(
+        var(--site-header-height-md) + var(--site-slots-banner-height) + 3.5rem
+      );
     }
   }
 }
