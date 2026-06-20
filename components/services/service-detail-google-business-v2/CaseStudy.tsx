@@ -34,14 +34,14 @@ const CaseStudy = () => {
       <div className="mt-12 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <div
           data-animate-card
-          className={`relative order-2 flex min-h-80 w-full items-center justify-center overflow-hidden rounded-2xl border border-border/80 bg-card p-6 sm:min-h-96 lg:min-h-[32rem] xl:min-h-[36rem] lg:order-1 ${LANDING_CARD_CLASS}`}
+          className={`relative order-2 w-full min-h-80 sm:min-h-96 lg:min-h-[32rem] xl:min-h-[36rem] lg:order-1 ${LANDING_CARD_CLASS}`}
         >
           <Image
-            src="/stickers/my-business.png"
-            alt="Google Business профил – примерна визуализация"
-            width={480}
-            height={480}
-            className="h-auto w-full max-w-sm object-contain"
+            src="/what-we-offer/restyled-mock-up.png"
+            alt="Restyled - Google Business профил преди и след"
+            fill
+            className="object-contain object-center"
+            sizes="(max-width: 1024px) 100vw, 50vw"
             loading="lazy"
           />
         </div>

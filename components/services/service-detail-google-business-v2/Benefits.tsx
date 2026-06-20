@@ -159,8 +159,8 @@ function ImageRightBlock({
   height: number;
 }) {
   return (
-    <div className="flex h-full min-h-0 flex-col gap-6 lg:flex-row lg:items-center lg:gap-8">
-      <div className="flex min-h-0 flex-1 flex-col lg:justify-center">
+    <div className="flex h-full min-h-0 flex-col gap-6 sm:flex-row sm:items-center sm:gap-8 lg:gap-10">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col sm:justify-center">
         <span className="mb-3 block text-4xl font-bold leading-none text-muted-foreground/20 tabular-nums select-none">
           {number}
         </span>
@@ -169,7 +169,7 @@ function ImageRightBlock({
           {description}
         </p>
       </div>
-      <div className="flex min-h-0 min-w-0 flex-1 items-center justify-center">
+      <div className="flex min-h-52 w-full min-w-0 flex-1 items-center justify-center overflow-hidden rounded-xl sm:min-h-48">
         <ImagePlaceholder width={width} height={height} label={title} className="w-full" />
       </div>
     </div>
@@ -285,7 +285,12 @@ const Benefits = () => {
 
         <li
           data-animate-card
-          className={cn(cardClassName, "order-5", LANDING_CARD_CLASS, "lg:[grid-area:info]")}
+          className={cn(
+            cardClassName,
+            "order-5 w-full",
+            LANDING_CARD_CLASS,
+            "sm:col-span-2 lg:[grid-area:info] lg:min-h-56 xl:min-h-64",
+          )}
         >
           <ImageRightBlock
             number={block5.number}
