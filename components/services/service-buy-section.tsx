@@ -437,7 +437,7 @@ export function ServiceBuySection({
 
   return (
     <section ref={sectionRef} id="buy-now" data-animate-section className="py-12 md:pt-16 md:pb-12">
-      {header && service.slug !== "ads" ? (
+      {header ? (
         <h2
           data-animate-reveal
           className="mb-6 text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl opacity-0 translate-y-10"
