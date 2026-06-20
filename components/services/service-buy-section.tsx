@@ -468,7 +468,7 @@ export function ServiceBuySection({
                   <span
                     aria-hidden
                     className={cn(
-                      "pointer-events-none absolute left-0.75 top-0.75 z-0 h-[calc(50%-0.375rem)] w-[calc(100%-0.375rem)] rounded-xl bg-card shadow-sm transition-transform duration-300 ease-out sm:inset-y-0.75 sm:top-auto sm:h-auto sm:w-[calc(50%-0.375rem)]",
+                      "pointer-events-none absolute left-0.75 top-0.75 z-0 h-[calc(50%-0.375rem)] w-[calc(100%-0.375rem)] rounded-xl bg-card shadow-sm transition-transform duration-300 ease-out sm:inset-y-0.75 sm:h-auto sm:w-[calc(50%-0.375rem)]",
                       effectiveBillingCycle === "annual-prepaid"
                         ? "translate-y-full sm:translate-y-0 sm:translate-x-full"
                         : "translate-y-0 sm:translate-x-0",
