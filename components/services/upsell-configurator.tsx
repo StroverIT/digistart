@@ -51,9 +51,21 @@ const upsellChoiceButtonClass = (isSelected: boolean) =>
 const upsellChoiceGridClass = (choiceCount: number) =>
   cn("grid gap-1.5", choiceCount >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2");
 
+function getMultiChoiceTotalQuantity(item?: CartItemUpsell): number {
+  if (!item?.choiceQuantities) return 0;
+  return Object.values(item.choiceQuantities).reduce((sum, qty) => sum + qty, 0);
+}
+
 function getUpsellAmount(service: Service, item: CartItemUpsell): number {
   const upsell = service.upsells.find((u) => u.id === item.upsellId);
   if (!upsell || item.quantity <= 0) return 0;
+
+  if (upsell.kind === "choice" && upsell.multiQuantityChoice && upsell.choices?.length) {
+    return upsell.choices.reduce((sum, choice) => {
+      const qty = item.choiceQuantities?.[choice.id] ?? 0;
+      return sum + choice.pricePerUnit * qty;
+    }, 0);
+  }
 
   if (upsell.kind === "choice" && upsell.choices?.length) {
     const selectedChoice = upsell.choices.find((choice) => choice.id === item.choiceId);
@@ -172,6 +184,38 @@ export function UpsellConfigurator({
     });
   };
 
+  const updateChoiceQuantity = (upsellId: string, choiceId: string, quantity: number) => {
+    const upsell = service.upsells.find((u) => u.id === upsellId);
+    if (!upsell) return;
+    const current = byId.get(upsellId);
+    const min = upsell.min ?? 0;
+    const max = upsell.max ?? 9999;
+    const safeQuantity = Math.max(0, Math.min(max, quantity));
+    const choiceQuantities = { ...(current?.choiceQuantities ?? {}) };
+
+    if (safeQuantity <= 0) {
+      delete choiceQuantities[choiceId];
+    } else {
+      choiceQuantities[choiceId] = safeQuantity;
+    }
+
+    const totalQuantity = getMultiChoiceTotalQuantity({ upsellId, quantity: 0, choiceQuantities });
+    if (totalQuantity <= 0) {
+      setUpsell(upsellId, null);
+      return;
+    }
+
+    trackCtaClick(pageKey, `upsell_${service.slug}_${upsellId}`);
+    pulseUpsellRow(upsellId);
+    setUpsell(upsellId, {
+      upsellId,
+      quantity: totalQuantity,
+      choiceQuantities,
+      entries: current?.entries ?? [],
+      note: current?.note,
+    });
+  };
+
   const updateEntries = (upsellId: string, entries: string[]) => {
     const current = byId.get(upsellId);
     if (!current) return;
@@ -182,7 +226,11 @@ export function UpsellConfigurator({
     <div ref={rootRef} className="divide-y divide-border/40">
       {service.upsells.map((upsell) => {
         const item = byId.get(upsell.id);
-        const quantity = item?.quantity ?? 0;
+        const isMultiQuantityChoice =
+          upsell.kind === "choice" && upsell.multiQuantityChoice && (upsell.choices?.length ?? 0) > 0;
+        const quantity = isMultiQuantityChoice
+          ? getMultiChoiceTotalQuantity(item)
+          : item?.quantity ?? 0;
         const amount = item ? getUpsellAmount(service, item) : 0;
         const min = upsell.min ?? 0;
         const max = upsell.max ?? 9999;
@@ -193,7 +241,7 @@ export function UpsellConfigurator({
         const views = pageStats.find((entry) => entry.page === pageKey)?.views ?? 0;
         const showBadge = isAdmin && isAnalyticsMode && views > 0;
         const isDirectChoice = upsell.kind === "choice" && upsell.directChoice;
-        const isSingleToggle = !isDirectChoice && max === 1;
+        const isSingleToggle = !isDirectChoice && !isMultiQuantityChoice && max === 1;
         const choiceCount = upsell.choices?.length ?? 0;
         const minChoicePrice =
           isDirectChoice && upsell.choices?.length
@@ -238,7 +286,7 @@ export function UpsellConfigurator({
                 {upsell.helperText ? (
                   <p className="mt-1 text-xs text-muted-foreground">{upsell.helperText}</p>
                 ) : null}
-                {!isDirectChoice ? (
+                {!isDirectChoice && !isMultiQuantityChoice ? (
                   <p className="mt-2 text-sm">
                     {upsell.kind === "choice" ? (
                       <span className="text-muted-foreground">Избери пакет</span>
@@ -252,6 +300,15 @@ export function UpsellConfigurator({
                       <span className="text-muted-foreground"> /мес</span>
                     ) : null}
                   </p>
+                ) : isMultiQuantityChoice && upsell.choices?.length ? (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    от{" "}
+                    <Price
+                      value={Math.min(...upsell.choices.map((choice) => choice.pricePerUnit))}
+                      className="text-sm font-medium text-accent"
+                    />
+                    /мес
+                  </p>
                 ) : minChoicePrice != null ? (
                   <p className="mt-2 text-sm text-muted-foreground">
                     от{" "}
@@ -261,7 +318,7 @@ export function UpsellConfigurator({
                 ) : null}
               </div>
 
-              {!isDirectChoice ? (
+              {!isDirectChoice && !isMultiQuantityChoice ? (
                 isSingleToggle ? (
                   <Button
                     type="button"
@@ -281,7 +338,7 @@ export function UpsellConfigurator({
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 rounded-full hover:bg-card"
+                      className="h-8 w-8 rounded-full text-foreground hover:bg-card hover:text-foreground"
                       onClick={() => updateQuantity(upsell.id, quantity - 1)}
                       disabled={quantity <= min}
                       aria-label={`Намали ${upsell.name}`}
@@ -295,7 +352,7 @@ export function UpsellConfigurator({
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 rounded-full hover:bg-card"
+                      className="h-8 w-8 rounded-full text-foreground hover:bg-card hover:text-foreground"
                       onClick={() => updateQuantity(upsell.id, quantity + 1)}
                       disabled={quantity >= max}
                       aria-label={`Увеличи ${upsell.name}`}
@@ -306,6 +363,56 @@ export function UpsellConfigurator({
                 )
               ) : null}
             </div>
+
+            {isMultiQuantityChoice && upsell.choices?.length ? (
+              <div className="mt-4 space-y-3">
+                {upsell.choices.map((choice) => {
+                  const choiceQty = item?.choiceQuantities?.[choice.id] ?? 0;
+
+                  return (
+                    <div
+                      key={choice.id}
+                      className="flex flex-col gap-3 rounded-2xl bg-muted/40 p-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-foreground">{choice.name}</p>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          <Price value={choice.pricePerUnit} className="font-medium text-accent" />
+                          {choice.isMonthly ? " /мес" : ""}
+                        </p>
+                      </div>
+                      <div className="inline-flex shrink-0 items-center gap-1 self-start rounded-full bg-background/80 p-1 sm:self-auto">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full text-foreground hover:bg-card hover:text-foreground"
+                          onClick={() => updateChoiceQuantity(upsell.id, choice.id, choiceQty - 1)}
+                          disabled={choiceQty <= min}
+                          aria-label={`Намали ${choice.name}`}
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="min-w-8 text-center text-sm font-semibold tabular-nums">
+                          {choiceQty}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full text-foreground hover:bg-card hover:text-foreground"
+                          onClick={() => updateChoiceQuantity(upsell.id, choice.id, choiceQty + 1)}
+                          disabled={choiceQty >= max}
+                          aria-label={`Увеличи ${choice.name}`}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
 
             {isDirectChoice && upsell.choices?.length ? (
               <div className="mt-4 rounded-2xl bg-muted/40 p-1.5">
@@ -343,7 +450,11 @@ export function UpsellConfigurator({
               </div>
             ) : null}
 
-            {!isDirectChoice && upsell.kind === "choice" && quantity > 0 && upsell.choices?.length ? (
+            {!isDirectChoice &&
+            !isMultiQuantityChoice &&
+            upsell.kind === "choice" &&
+            quantity > 0 &&
+            upsell.choices?.length ? (
               <div className="mt-4 rounded-2xl bg-muted/40 p-1.5">
                 <div className={upsellChoiceGridClass(upsell.choices.length)}>
                   {upsell.choices.map((choice) => {
@@ -405,7 +516,16 @@ export function UpsellConfigurator({
             {quantity > 0 && !isDirectChoice ? (
               <div className="mt-4 flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  {upsell.kind === "choice" ? (
+                  {isMultiQuantityChoice ? (
+                    upsell.choices
+                      ?.map((choice) => {
+                        const choiceQty = item?.choiceQuantities?.[choice.id] ?? 0;
+                        if (choiceQty <= 0) return null;
+                        return `${choiceQty} x ${choice.name}`;
+                      })
+                      .filter(Boolean)
+                      .join(", ")
+                  ) : upsell.kind === "choice" ? (
                     item?.choiceId
                       ? upsell.choices?.find((choice) => choice.id === item.choiceId)?.name
                       : upsell.choices?.[0]?.name

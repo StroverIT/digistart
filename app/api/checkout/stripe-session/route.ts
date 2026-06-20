@@ -30,6 +30,7 @@ const upsellSchema: z.ZodType<CartItemUpsell> = z.object({
   upsellId: z.string(),
   quantity: z.number().int(),
   choiceId: z.string().optional(),
+  choiceQuantities: z.record(z.string(), z.number().int()).optional(),
   entries: z.array(z.string()).optional(),
   note: z.string().optional(),
 });

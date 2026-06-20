@@ -24,6 +24,8 @@ export interface ServiceUpsell {
   tierPrice?: number;
   /** Click-to-select choices without quantity controls (e.g. courier pickers). */
   directChoice?: boolean;
+  /** Each choice has its own quantity (e.g. posts + carousels + reels). */
+  multiQuantityChoice?: boolean;
   choices?: {
     id: string;
     name: string;
@@ -69,6 +71,8 @@ export interface CartItemUpsell {
   upsellId: string;
   quantity: number;
   choiceId?: string;
+  /** Per-choice quantities when the upsell uses `multiQuantityChoice`. */
+  choiceQuantities?: Record<string, number>;
   entries?: string[];
   note?: string;
 }

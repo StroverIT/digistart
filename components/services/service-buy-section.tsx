@@ -505,12 +505,14 @@ export function ServiceBuySection({
             {service.slug !== "online-store" &&
               service.slug !== "ads" &&
               service.slug !== "social-media" &&
+              service.slug !== "google-business" &&
               title ? (
               <h2 className="text-2xl font-bold mb-2">{title}</h2>
             ) : null}
             {service.slug !== "online-store" &&
               service.slug !== "ads" &&
-              service.slug !== "social-media" && (
+              service.slug !== "social-media" &&
+              service.slug !== "google-business" && (
               <p className="mb-6 text-sm text-pretty text-muted-foreground">
                 Избери сам <span className="font-semibold text-foreground">ИЛИ</span>{" "}
                 <Link
@@ -525,15 +527,6 @@ export function ServiceBuySection({
               <p className="text-xs font-semibold uppercase tracking-widest text-accent">
                 Базов пакет
               </p>
-              {header ? (
-                <h3 className="mt-2 font-heading text-xl font-bold text-foreground sm:text-2xl">
-                  {header}
-                </h3>
-              ) : service.slug !== "ads" ? (
-                <h3 className="mt-2 font-heading text-xl font-bold text-foreground sm:text-2xl">
-                  {selectedOption?.name ?? service.name}
-                </h3>
-              ) : null}
               {service.features.length ? (
                 <ul className="mt-5 grid gap-x-6 gap-y-2.5 text-sm sm:grid-cols-2">
                   {service.features.map((feature) => (

@@ -1094,14 +1094,26 @@ export default function CheckoutPage() {
                               const serviceUpsell = service?.upsells.find((config) => config.id === upsell.upsellId);
                               if (!serviceUpsell) return null;
                               const choiceName =
-                                serviceUpsell.kind === "choice"
+                                serviceUpsell.kind === "choice" && !serviceUpsell.multiQuantityChoice
                                   ? serviceUpsell.choices?.find((choice) => choice.id === upsell.choiceId)?.name
+                                  : null;
+                              const multiChoiceSummary =
+                                serviceUpsell.multiQuantityChoice && upsell.choiceQuantities
+                                  ? serviceUpsell.choices
+                                      ?.map((choice) => {
+                                        const choiceQty = upsell.choiceQuantities?.[choice.id] ?? 0;
+                                        if (choiceQty <= 0) return null;
+                                        return `${choice.name} x${choiceQty}`;
+                                      })
+                                      .filter(Boolean)
+                                      .join(", ")
                                   : null;
                               return (
                                 <li key={upsell.upsellId} className="text-xs text-muted-foreground">
                                   + {serviceUpsell.name}
+                                  {multiChoiceSummary ? ` (${multiChoiceSummary})` : ""}
                                   {choiceName ? ` (${choiceName})` : ""}
-                                  {upsell.quantity > 0 ? ` x${upsell.quantity}` : ""}
+                                  {!multiChoiceSummary && upsell.quantity > 0 ? ` x${upsell.quantity}` : ""}
                                   {upsell.entries?.filter(Boolean).length
                                     ? ` - ${upsell.entries.filter(Boolean).join(", ")}`
                                     : ""}

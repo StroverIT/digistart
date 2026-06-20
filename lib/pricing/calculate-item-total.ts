@@ -42,6 +42,16 @@ export function calculateItemTotal(
     if (!serviceUpsell || upsellItem.quantity <= 0) continue;
 
     const isChoice = serviceUpsell.kind === "choice" && serviceUpsell.choices?.length;
+    if (isChoice && serviceUpsell.multiQuantityChoice) {
+      for (const choice of serviceUpsell.choices!) {
+        const qty = upsellItem.choiceQuantities?.[choice.id] ?? 0;
+        if (qty <= 0) continue;
+        const upsellAmount = choice.pricePerUnit * qty;
+        if (choice.isMonthly) monthlyTotal += upsellAmount;
+        else oneTimeTotal += upsellAmount;
+      }
+      continue;
+    }
     if (isChoice) {
       const selectedChoice = serviceUpsell.choices!.find((c) => c.id === upsellItem.choiceId);
       if (!selectedChoice) continue;

@@ -20,6 +20,19 @@ function validateUpsellConfig(
   }
 
   const isChoice = config.kind === "choice" && (config.choices?.length ?? 0) > 0;
+  if (isChoice && config.multiQuantityChoice) {
+    const quantities = upsell.choiceQuantities ?? {};
+    for (const [choiceId, qty] of Object.entries(quantities)) {
+      if (qty <= 0) continue;
+      if (!config.choices!.some((choice) => choice.id === choiceId)) {
+        return `Невалидна опция за „${config.name}“.`;
+      }
+      if (qty > max) {
+        return `Количеството за „${config.name}“ е над максимума (${max}).`;
+      }
+    }
+    return null;
+  }
   if (isChoice) {
     if (!upsell.choiceId) {
       return `Изберете опция за „${config.name}“.`;
