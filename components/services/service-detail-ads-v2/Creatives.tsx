@@ -84,8 +84,8 @@ const Creatives = () => {
               <div
                 data-animate-card-copy
                 className={cn(
-                  "space-y-3 opacity-0 lg:py-4",
-                  imageFirst ? "order-2 lg:order-2" : "order-1 lg:order-1",
+                  "order-1 space-y-3 opacity-0 lg:py-4",
+                  imageFirst ? "lg:order-2" : "lg:order-1",
                 )}
               >
                 <h3 className="font-heading text-xl font-semibold leading-snug text-foreground sm:text-2xl">
@@ -99,8 +99,8 @@ const Creatives = () => {
               <div
                 data-animate-card-image
                 className={cn(
-                  "relative aspect-square w-full overflow-hidden rounded-2xl will-change-transform",
-                  imageFirst ? "order-1 lg:order-1" : "order-2 lg:order-2",
+                  "relative order-2 aspect-square w-full overflow-hidden rounded-2xl will-change-transform",
+                  imageFirst ? "lg:order-1" : "lg:order-2",
                 )}
               >
                 <Image

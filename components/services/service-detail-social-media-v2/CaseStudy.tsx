@@ -1,8 +1,11 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SitePreviewViewer } from "@/components/preview/site-preview-viewer";
+import { RESTYLED_CASE } from "@/components/services/service-detail-ready-store/constants";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
   LANDING_CARD_CLASS,
@@ -16,6 +19,7 @@ const stars = Array.from({ length: 5 });
 
 const CaseStudy = () => {
   const sectionRef = useRef<HTMLElement>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
   useLandingScrollAnimations(sectionRef, { staggerReveal: 0.12, staggerCard: 0.16 });
 
   return (
@@ -50,6 +54,14 @@ const CaseStudy = () => {
                 <Star key={index} className="size-5 text-amber-400" fill="currentColor" />
               ))}
             </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-4"
+              onClick={() => setPreviewOpen(true)}
+            >
+              Виж сайта
+            </Button>
           </div>
           <p
             data-animate-reveal
@@ -68,6 +80,13 @@ const CaseStudy = () => {
           </p>
         </div>
       </div>
+
+      <SitePreviewViewer
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        src={RESTYLED_CASE.website}
+        title="Restyled"
+      />
     </LandingSection>
   );
 };
