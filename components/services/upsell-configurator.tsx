@@ -42,6 +42,15 @@ function isMonthlyUnit(unit?: string): boolean {
   return normalized === "месец" || normalized === "месеца" || normalized === "мес";
 }
 
+const upsellChoiceButtonClass = (isSelected: boolean) =>
+  cn(
+    "rounded-xl px-3 py-2.5 text-left transition-all",
+    isSelected ? "bg-card shadow-sm" : "hover:bg-card/50",
+  );
+
+const upsellChoiceGridClass = (choiceCount: number) =>
+  cn("grid gap-1.5", choiceCount >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2");
+
 function getUpsellAmount(service: Service, item: CartItemUpsell): number {
   const upsell = service.upsells.find((u) => u.id === item.upsellId);
   if (!upsell || item.quantity <= 0) return 0;
@@ -170,7 +179,7 @@ export function UpsellConfigurator({
   };
 
   return (
-    <div ref={rootRef} className="space-y-4">
+    <div ref={rootRef} className="divide-y divide-border/40">
       {service.upsells.map((upsell) => {
         const item = byId.get(upsell.id);
         const quantity = item?.quantity ?? 0;
@@ -184,6 +193,7 @@ export function UpsellConfigurator({
         const views = pageStats.find((entry) => entry.page === pageKey)?.views ?? 0;
         const showBadge = isAdmin && isAnalyticsMode && views > 0;
         const isDirectChoice = upsell.kind === "choice" && upsell.directChoice;
+        const isSingleToggle = !isDirectChoice && max === 1;
         const choiceCount = upsell.choices?.length ?? 0;
         const minChoicePrice =
           isDirectChoice && upsell.choices?.length
@@ -196,18 +206,25 @@ export function UpsellConfigurator({
             key={upsell.id}
             data-upsell-animate-row
             className={cn(
-              "group rounded-lg border p-4 transition-colors will-change-transform opacity-0 translate-y-10",
-              quantity > 0 ? "border-primary/50 bg-primary/5" : "border-border",
+              "group py-6 will-change-transform opacity-0 translate-y-10 first:pt-0 last:pb-0",
+              quantity > 0 && !isDirectChoice && "relative",
             )}
           >
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-              <div className="flex-1">
-                <div className="mb-1 flex items-center gap-2">
-                  <Label className="font-semibold">{upsell.name}</Label>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0 flex-1">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  <Label className="font-heading text-base font-bold text-foreground">
+                    {upsell.name}
+                  </Label>
+                  {quantity > 0 && !isDirectChoice && !isSingleToggle ? (
+                    <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
+                      Добавено
+                    </span>
+                  ) : null}
                   {showBadge ? (
                     <span
                       className={cn(
-                        "rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold transition-opacity",
+                        "rounded-full border border-accent/20 bg-accent/5 px-2 py-0.5 text-[10px] font-semibold transition-opacity",
                         showAllCtaStats ? "opacity-100" : "opacity-0 group-hover:opacity-100",
                       )}
                     >
@@ -215,17 +232,19 @@ export function UpsellConfigurator({
                     </span>
                   ) : null}
                 </div>
-                <p className="text-sm text-muted-foreground">{upsell.description}</p>
+                {!upsell.hideBuySectionDescription ? (
+                  <p className="text-sm leading-relaxed text-muted-foreground">{upsell.description}</p>
+                ) : null}
                 {upsell.helperText ? (
-                  <p className="text-xs text-muted-foreground mt-1">{upsell.helperText}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{upsell.helperText}</p>
                 ) : null}
                 {!isDirectChoice ? (
-                  <p className="text-sm mt-2">
+                  <p className="mt-2 text-sm">
                     {upsell.kind === "choice" ? (
                       <span className="text-muted-foreground">Избери пакет</span>
                     ) : (
                       <>
-                        <Price value={upsell.pricePerUnit ?? 0} className="text-accent font-medium" />
+                        <Price value={upsell.pricePerUnit ?? 0} className="font-medium text-accent" />
                         <span className="text-muted-foreground"> / {upsell.unit}</span>
                       </>
                     )}
@@ -236,117 +255,133 @@ export function UpsellConfigurator({
                 ) : minChoicePrice != null ? (
                   <p className="mt-2 text-sm text-muted-foreground">
                     от{" "}
-                    <Price value={minChoicePrice} className="text-sm text-accent font-medium" />
+                    <Price value={minChoicePrice} className="text-sm font-medium text-accent" />
                     {upsell.isMonthly ? "/мес" : ""}
                   </p>
                 ) : null}
               </div>
 
               {!isDirectChoice ? (
-                <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+                isSingleToggle ? (
                   <Button
                     type="button"
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => updateQuantity(upsell.id, quantity - 1)}
-                    disabled={quantity <= min}
-                    aria-label={`Намали ${upsell.name}`}
+                    variant={quantity > 0 ? "outline" : "default"}
+                    size="sm"
+                    className={cn(
+                      "h-9 shrink-0 self-start rounded-full px-4 font-semibold sm:self-auto",
+                      quantity > 0 && "border-border text-foreground hover:bg-muted/50",
+                    )}
+                    onClick={() => updateQuantity(upsell.id, quantity > 0 ? 0 : 1)}
                   >
-                    <Minus className="h-4 w-4" />
+                    {quantity > 0 ? "Премахни" : "Добави"}
                   </Button>
-                  <span className="w-10 text-center font-medium">{quantity}</span>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => updateQuantity(upsell.id, quantity + 1)}
-                    disabled={quantity >= max}
-                    aria-label={`Увеличи ${upsell.name}`}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
+                ) : (
+                  <div className="inline-flex shrink-0 items-center gap-1 self-start rounded-full bg-muted/40 p-1 sm:self-auto">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full hover:bg-card"
+                      onClick={() => updateQuantity(upsell.id, quantity - 1)}
+                      disabled={quantity <= min}
+                      aria-label={`Намали ${upsell.name}`}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="min-w-8 text-center text-sm font-semibold tabular-nums">
+                      {quantity}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full hover:bg-card"
+                      onClick={() => updateQuantity(upsell.id, quantity + 1)}
+                      disabled={quantity >= max}
+                      aria-label={`Увеличи ${upsell.name}`}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )
               ) : null}
             </div>
 
             {isDirectChoice && upsell.choices?.length ? (
-              <div
-                className={cn(
-                  "mt-3 grid gap-2",
-                  choiceCount >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2",
-                )}
-              >
-                {upsell.choices.map((choice) => {
-                  const isSelected = quantity > 0 && item?.choiceId === choice.id;
+              <div className="mt-4 rounded-2xl bg-muted/40 p-1.5">
+                <div className={upsellChoiceGridClass(choiceCount)}>
+                  {upsell.choices.map((choice) => {
+                    const isSelected = quantity > 0 && item?.choiceId === choice.id;
 
-                  return (
-                    <button
-                      key={choice.id}
-                      type="button"
-                      onClick={() => toggleDirectChoice(upsell.id, choice.id)}
-                      className={cn(
-                        "rounded-xl border bg-background/70 p-3 text-left transition-colors",
-                        isSelected
-                          ? "border-primary ring-1 ring-primary"
-                          : "border-border hover:border-primary/40",
-                      )}
-                    >
-                      <span className="block text-sm font-semibold">{choice.name}</span>
-                      <span className="mt-1 flex items-baseline gap-1 text-xs text-muted-foreground">
-                        +
-                        <Price value={choice.pricePerUnit} className="text-xs text-muted-foreground" />
-                        {choice.isMonthly ? "/мес" : ""}
-                      </span>
-                      {choice.description ? (
-                        <span className="mt-1 block text-xs text-muted-foreground">
-                          {choice.description}
+                    return (
+                      <button
+                        key={choice.id}
+                        type="button"
+                        onClick={() => toggleDirectChoice(upsell.id, choice.id)}
+                        className={upsellChoiceButtonClass(isSelected)}
+                      >
+                        <span className="block text-sm font-semibold text-foreground">
+                          {choice.name}
                         </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
+                        <span className="mt-1 flex items-baseline gap-1 text-xs text-foreground/65">
+                          +
+                          <Price
+                            value={choice.pricePerUnit}
+                            className="text-xs text-foreground/65"
+                          />
+                          {choice.isMonthly ? "/мес" : ""}
+                        </span>
+                        {choice.description ? (
+                          <span className="mt-1 block text-xs text-foreground/65">
+                            {choice.description}
+                          </span>
+                        ) : null}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             ) : null}
 
             {!isDirectChoice && upsell.kind === "choice" && quantity > 0 && upsell.choices?.length ? (
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                {upsell.choices.map((choice) => {
-                  const selectedChoiceId = item?.choiceId ?? upsell.choices![0].id;
-                  const isSelected = selectedChoiceId === choice.id;
+              <div className="mt-4 rounded-2xl bg-muted/40 p-1.5">
+                <div className={upsellChoiceGridClass(upsell.choices.length)}>
+                  {upsell.choices.map((choice) => {
+                    const selectedChoiceId = item?.choiceId ?? upsell.choices![0].id;
+                    const isSelected = selectedChoiceId === choice.id;
 
-                  return (
-                    <button
-                      key={choice.id}
-                      type="button"
-                      onClick={() => updateChoice(upsell.id, choice.id)}
-                      className={cn(
-                        "rounded-xl border bg-background/70 p-3 text-left transition-colors",
-                        isSelected
-                          ? "border-primary ring-1 ring-primary"
-                          : "border-border hover:border-primary/40",
-                      )}
-                    >
-                      <span className="block text-sm font-semibold">{choice.name}</span>
-                      <span className="mt-1 flex items-baseline gap-1 text-xs text-muted-foreground">
-                        +
-                        <Price value={choice.pricePerUnit} className="text-xs text-muted-foreground" />
-                        {choice.isMonthly ? "/мес" : ""}
-                      </span>
-                      {choice.description ? (
-                        <span className="mt-1 block text-xs text-muted-foreground">
-                          {choice.description}
+                    return (
+                      <button
+                        key={choice.id}
+                        type="button"
+                        onClick={() => updateChoice(upsell.id, choice.id)}
+                        className={upsellChoiceButtonClass(isSelected)}
+                      >
+                        <span className="block text-sm font-semibold text-foreground">
+                          {choice.name}
                         </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
+                        <span className="mt-1 flex items-baseline gap-1 text-xs text-foreground/65">
+                          +
+                          <Price
+                            value={choice.pricePerUnit}
+                            className="text-xs text-foreground/65"
+                          />
+                          {choice.isMonthly ? "/мес" : ""}
+                        </span>
+                        {choice.description ? (
+                          <span className="mt-1 block text-xs text-foreground/65">
+                            {choice.description}
+                          </span>
+                        ) : null}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             ) : null}
 
             {upsell.allowEntries && quantity > 0 ? (
-              <div className="mt-3 space-y-2">
+              <div className="mt-4 space-y-2">
                 {Array.from({ length: quantity }).map((_, index) => (
                   <div key={`${upsell.id}-entry-${index}`}>
                     <Input
@@ -367,8 +402,8 @@ export function UpsellConfigurator({
               </div>
             ) : null}
 
-            {quantity > 0 ? (
-              <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-sm">
+            {quantity > 0 && !isDirectChoice ? (
+              <div className="mt-4 flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
                   {upsell.kind === "choice" ? (
                     item?.choiceId
@@ -380,8 +415,8 @@ export function UpsellConfigurator({
                     </>
                   )}
                 </span>
-                <span className="font-medium text-primary">
-                  +<Price value={amount} className="text-accent font-medium" />
+                <span className="font-semibold text-accent">
+                  +<Price value={amount} className="font-semibold text-accent" />
                   {upsell.isMonthly ? "/мес" : ""}
                 </span>
               </div>

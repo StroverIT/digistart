@@ -158,7 +158,6 @@ export const SOCIAL_MEDIA_LANDING: ServicePasLandingContent = {
   },
   socialProofType: "social-media",
   faq: {
-    eyebrow: "Въпроси",
     title: "Често задавани въпроси",
     description: "Ясни отговори за съдържание, реклами, съобщения и контрол върху профилите.",
     items: [

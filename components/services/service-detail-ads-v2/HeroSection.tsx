@@ -29,7 +29,10 @@ const HERO_BULLETS = [
 
 const HeroSection = () => {
   return (
-    <LandingSection className="border-b-0 bg-linear-to-b from-white to-primary md:pt-10">
+    <LandingSection
+      className="border-b-0 bg-linear-to-b from-white to-primary pt-0 pb-14 md:pb-20 lg:pb-24"
+      contentClassName="pt-site-header"
+    >
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 lg:items-center lg:gap-16">
         <div className="flex w-full flex-col items-center text-center">
           <p className="text-sm font-semibold uppercase tracking-widest text-primary">

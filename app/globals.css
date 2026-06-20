@@ -66,6 +66,11 @@
   );
   --shadow-soft: 0 4px 24px -8px oklch(0.32 0.16 320 / 0.15);
   --shadow-glow: 0 20px 60px -20px oklch(0.32 0.16 320 / 0.35);
+
+  /* Fixed header (h-16/md:h-20) + service slots banner (py-2) */
+  --site-header-height: 4rem;
+  --site-header-height-md: 5rem;
+  --site-slots-banner-height: 2.375rem;
 }
 
 @theme inline {
@@ -146,6 +151,18 @@
   a[class*="rounded-full"][class*="font-medium"],
   a[class*="rounded-full"][class*="font-bold"] {
     font-family: var(--font-accent);
+  }
+}
+
+@layer utilities {
+  .pt-site-header {
+    padding-top: calc(var(--site-header-height) + var(--site-slots-banner-height));
+  }
+
+  @media (min-width: 768px) {
+    .pt-site-header {
+      padding-top: calc(var(--site-header-height-md) + var(--site-slots-banner-height));
+    }
   }
 }
 

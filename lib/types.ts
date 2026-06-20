@@ -34,6 +34,8 @@ export interface ServiceUpsell {
   allowEntries?: boolean;
   entryLabel?: string;
   entryPlaceholder?: string;
+  /** Hides the description paragraph in the buy-section configurator. */
+  hideBuySectionDescription?: boolean;
 }
 
 export interface Service {

@@ -154,7 +154,6 @@ export const AI_AUTOMATION_LANDING: ServicePasLandingContent = {
   },
   socialProofType: null,
   faq: {
-    eyebrow: "Въпроси",
     title: "Често задавани въпроси",
     description: "Директни отговори без увъртане.",
     items: [

@@ -79,7 +79,6 @@ export type ServicePasLandingContent = {
   };
   socialProofType: SocialProofSectionType | null;
   faq: {
-    eyebrow: string;
     title: string;
     description: string;
     items: readonly FaqItem[];

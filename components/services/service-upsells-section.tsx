@@ -154,7 +154,6 @@ export function ServiceUpsellsSection({
 
   return (
     <div className={className}>
-      <h3 className="mb-3 font-semibold">Допълнителни функционалности</h3>
       {upsellBody}
     </div>
   );

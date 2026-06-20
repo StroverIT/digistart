@@ -44,7 +44,7 @@ export const metadata: Metadata = {
 
 export default function OnlineStorePage() {
   return (
-    <section className="pt-28 md:pt-32">
+    <section>
       <HeroSection />
       <div className="bg-white pt-10 md:rounded-t-4xl md:-mt-10">
         <InnerNavigation />

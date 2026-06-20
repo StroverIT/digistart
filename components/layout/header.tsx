@@ -106,7 +106,7 @@ function AnimatedNavLink({
       href={href}
       onClick={onNavigate}
       className={cn(
-        "block text-zinc-100 font-bold relative overflow-hidden nav-link py-1",
+        "block font-bold relative overflow-hidden nav-link py-1 text-background",
         variant === "default" ? "text-2xl md:text-3xl" : "text-lg md:text-xl",
         isActive && "nav-link-active"
       )}
@@ -260,21 +260,21 @@ function ServicesNavGroup({
         onClick={onToggle}
         aria-expanded={isExpanded}
         className={cn(
-          "group flex w-full items-center justify-start gap-2 text-left text-zinc-100 text-2xl md:text-3xl font-bold py-1 transition-colors hover:text-primary/90",
+          "group flex w-full items-center justify-start gap-2 text-left text-background text-2xl md:text-3xl font-bold py-1 transition-colors hover:text-primary/90",
           isActive && "text-primary"
         )}
       >
         <span>Услуги</span>
         <ChevronDown
           ref={chevronRef}
-          className="h-6 w-6 shrink-0 text-zinc-400 group-hover:text-primary/80"
+          className="h-6 w-6 shrink-0 text-background/60 group-hover:text-primary/80"
           aria-hidden
         />
       </button>
       <div ref={submenuRef} className="overflow-hidden" aria-hidden={!isExpanded}>
         <ul
           ref={contentRef}
-          className="flex flex-col gap-y-3 border-l-2 border-zinc-700 pl-4"
+          className="flex flex-col gap-y-3 border-l-2 border-background/15 pl-4"
         >
           {serviceNavLinks.map((link) => (
             <li key={link.href}>
@@ -524,45 +524,53 @@ export function Header() {
 
       <div
         ref={menuRef}
-        className="fixed top-0 right-0 h-dvh translate-x-full bg-zinc-900 text-zinc-50 shadow-xl z-55 w-screen sm:w-[min(100%,28rem)] md:w-[40%] overflow-y-auto will-change-transform"
+        className="fixed top-0 right-0 z-55 h-dvh w-screen translate-x-full overflow-y-auto overflow-x-hidden bg-foreground text-background shadow-xl will-change-transform sm:w-[min(100%,28rem)] md:w-[40%]"
         role="dialog"
         aria-modal="true"
         aria-label="Главно меню"
         aria-hidden={!isOpen}
       >
-        <div className="flex flex-col pb-10 px-6 min-h-full">
-          <div className="sticky top-0 -mx-6 px-6 bg-zinc-900/95 backdrop-blur-md border-b border-zinc-800 z-10">
-            <div className="flex items-center justify-end h-16 md:h-20">
-              <div className="flex items-center gap-2">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
+        />
+        <div className="relative flex min-h-full flex-col px-6 pb-10">
+          <div className="sticky top-0 -mx-6 z-10 bg-foreground/95 px-6 backdrop-blur-md">
+            <div className="flex h-16 items-center justify-end md:h-20">
+              <div className="flex items-center gap-5">
                 <TransitionLink href="/cart" onClick={() => void closeMenu()}>
                   <Button
                     variant="ghost"
-                    size="icon"
+                    size="icon-xl"
                     className={cn(
                       "relative group rounded-xl transition-all duration-200 ease-out",
-                      "text-zinc-100 hover:text-primary",
+                      "text-background hover:text-primary",
                       "hover:bg-primary/10 hover:ring-1 hover:ring-primary/20",
                       "hover:shadow-[0_0_24px_-8px] hover:shadow-primary/30",
                       "active:scale-[0.96] motion-reduce:active:scale-100"
                     )}
                     aria-label="Кошница"
                   >
-                    <ShoppingCart className="h-5 w-5 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:scale-100" />
+                    <ShoppingCart className="size-6 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:scale-100" />
                     {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                         {cartCount}
                       </span>
                     )}
                   </Button>
                 </TransitionLink>
 
-                <div className="flex items-center justify-center rounded-full bg-zinc-800 border border-zinc-700 w-12 h-12">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-background/20 bg-background/10">
                   <Hamburger
                     toggled={isOpen}
                     toggle={toggleMenu}
                     size={18}
                     rounded
-                    color="white"
+                    color="#fafafa"
                     label={isOpen ? "Затвори менюто" : "Отвори менюто"}
                   />
                 </div>
@@ -615,7 +623,7 @@ export function Header() {
             </ul>
           </nav>
 
-          <div className="mt-auto pt-10 border-t border-zinc-700 space-y-3">
+          <div className="mt-auto space-y-3 border-t border-background/15 pt-10">
             {session?.user ? (
               <>
                 {session.user.role === "customer" ? (
@@ -627,7 +635,7 @@ export function Header() {
                 ) : null}
                 <Button
                   variant="outline"
-                  className="w-full mt-4 border-zinc-600 text-zinc-50 bg-transparent"
+                  className="mt-4 w-full border-background/20 bg-transparent text-background"
                   onClick={() => {
                     void closeMenu();
                     void signOut({ callbackUrl: "/" });

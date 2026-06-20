@@ -1,5 +1,6 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -158,7 +159,6 @@ export function ServiceBuySection({
   const ctaText =
     ctaLabel ?? (serviceInCart ? "Промени в кошницата" : "Добави в кошницата");
   const isSoldOut = availability?.isSoldOut ?? false;
-  const remainingSlots = availability?.remaining;
 
   useEffect(() => {
     const cloneUpsells = (list: CartItemUpsell[]) =>
@@ -436,7 +436,7 @@ export function ServiceBuySection({
   }, [isActiveMobileSticky, isSoldOut, isMobileStickyRevealReady]);
 
   return (
-    <section ref={sectionRef} id="buy-now" data-animate-section className="py-12 md:py-16">
+    <section ref={sectionRef} id="buy-now" data-animate-section className="py-12 md:pt-16 md:pb-12">
       <h2
         data-animate-reveal
         className="mb-6 text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl opacity-0 translate-y-10"
@@ -444,52 +444,6 @@ export function ServiceBuySection({
         {header}
       </h2>
       <div className="container mx-auto px-4">
-        {(availability && remainingSlots !== undefined && !isSoldOut) || canPrepayAnnually ? (
-          <div
-            className={cn(
-              "relative mb-5 rounded-2xl p-4",
-              isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
-            )}
-          >
-            {canPrepayAnnually ? (
-              <div className="grid gap-2 sm:grid-cols-2 ">
-                <button
-                  type="button"
-                  onClick={() => setBillingCycle("monthly")}
-                  className={cn(
-                    "w-full rounded-xl border bg-card p-3 text-left transition-colors",
-                    effectiveBillingCycle === "monthly"
-                      ? "border-accent ring-1 ring-accent shadow-sm"
-                      : "border-border hover:border-accent/40",
-                  )}
-                >
-                  <span className="block text-sm font-semibold text-foreground">Месечно</span>
-                  <span className="mt-1 block text-xs text-foreground/70">
-                    Може по всяко време да се откажеш
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBillingCycle("annual-prepaid")}
-                  className={cn(
-                    "relative w-full overflow-hidden rounded-xl border bg-card p-3 pr-14 pt-3 text-left transition-colors",
-                    effectiveBillingCycle === "annual-prepaid"
-                      ? "border-accent ring-1 ring-accent shadow-sm"
-                      : "border-border hover:border-accent/40",
-                  )}
-                >
-                  <span className="absolute right-2 top-2 rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-accent-foreground shadow-sm">
-                    -{annualDiscountPercent}%
-                  </span>
-                  <span className="block text-sm font-semibold text-foreground">За година</span>
-                  <span className="mt-1 block text-xs text-foreground/70">
-                    {annualSavingsDescription}
-                  </span>
-                </button>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
         <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           {isSoldOut && availability ? (
             <ServiceWaitlistOverlay availability={availability} />
@@ -497,45 +451,83 @@ export function ServiceBuySection({
           <div
             ref={mainPanelRef}
             className={cn(
-              "rounded-2xl border border-border bg-card p-5 sm:p-6 opacity-0 translate-y-10",
+              "rounded-[2rem] bg-card p-6 sm:p-8 opacity-0 translate-y-10 shadow-[var(--shadow-soft)] ring-1 ring-foreground/[0.04]",
               isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
             )}
           >
-            {service.slug !== "online-store" && <h2 className="text-2xl font-bold mb-2">{title}</h2>}
-            {service.slug !== "online-store" && <p className="mb-5 text-sm text-pretty text-muted-foreground">
-              Избери сам <span className="font-semibold text-foreground">ИЛИ</span>{" "}
-              <Link
-                href={`#${plansSectionId}`}
-                className="font-medium text-primary underline-offset-4 hover:underline"
+            {canPrepayAnnually ? (
+              <div
+                className={cn(
+                  "mb-8 rounded-2xl bg-muted/40 p-1.5",
+                  isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
+                )}
               >
-                избери нашите готови планове с до 15% отстъпка
-              </Link>
-            </p>}
-            <div
-              ref={basicPackageRef}
-              className="mb-6 rounded-2xl border border-primary/15 bg-primary/5 p-4"
-            >
-              <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-accent">
-                    Базов пакет
-                  </p>
-                  <h3 className="mt-1 text-lg font-semibold">
-                    {selectedOption?.name ?? service.name}
-                  </h3>
-                  {selectedOption?.description ? (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {selectedOption.description}
-                    </p>
-                  ) : null}
+                <div className="grid gap-1.5 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => setBillingCycle("monthly")}
+                    className={cn(
+                      "rounded-xl px-4 py-3 text-left transition-all",
+                      effectiveBillingCycle === "monthly"
+                        ? "bg-card shadow-sm"
+                        : "hover:bg-card/50",
+                    )}
+                  >
+                    <span className="block text-sm font-semibold text-foreground">Месечно</span>
+                    <span className="mt-1 block text-xs text-foreground/65">
+                      Може по всяко време да се откажеш
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBillingCycle("annual-prepaid")}
+                    className={cn(
+                      "relative rounded-xl px-4 py-3 pr-14 text-left transition-all",
+                      effectiveBillingCycle === "annual-prepaid"
+                        ? "bg-card shadow-sm"
+                        : "hover:bg-card/50",
+                    )}
+                  >
+                    <span className="absolute right-2 top-2 rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-accent-foreground shadow-sm">
+                      -{annualDiscountPercent}%
+                    </span>
+                    <span className="block text-sm font-semibold text-foreground">За година</span>
+                    <span className="mt-1 block text-xs text-foreground/65">
+                      {annualSavingsDescription}
+                    </span>
+                  </button>
                 </div>
-
               </div>
+            ) : null}
+
+            {service.slug !== "online-store" && <h2 className="text-2xl font-bold mb-2">{title}</h2>}
+            {service.slug !== "online-store" && (
+              <p className="mb-6 text-sm text-pretty text-muted-foreground">
+                Избери сам <span className="font-semibold text-foreground">ИЛИ</span>{" "}
+                <Link
+                  href={`#${plansSectionId}`}
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  избери нашите готови планове с до 15% отстъпка
+                </Link>
+              </p>
+            )}
+            <div ref={basicPackageRef}>
+              <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+                Базов пакет
+              </p>
+              <h3 className="mt-2 font-heading text-xl font-bold text-foreground sm:text-2xl">
+                {selectedOption?.name ?? service.name}
+              </h3>
               {service.features.length ? (
-                <ul className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
+                <ul className="mt-5 grid gap-x-6 gap-y-2.5 text-sm sm:grid-cols-2">
                   {service.features.map((feature) => (
-                    <li key={feature} className="flex gap-2">
-                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                    <li key={feature} className="flex items-start gap-2.5 text-foreground/80">
+                      <Check
+                        className="mt-0.5 size-4 shrink-0 text-accent"
+                        strokeWidth={2.5}
+                        aria-hidden
+                      />
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -544,7 +536,7 @@ export function ServiceBuySection({
               {basePackageExtra}
             </div>
             {isAdding ? (
-              <div className="mb-6 space-y-3">
+              <div className="mt-8 space-y-3 border-t border-border/40 pt-8">
                 <Skeleton className="h-5 w-48" />
                 <Skeleton className="h-16 w-full" />
                 <Skeleton className="h-16 w-full" />
@@ -552,7 +544,7 @@ export function ServiceBuySection({
               </div>
             ) : null}
             {(hasUpsells || (!hideAdditionalServices && companion)) && !isAdding ? (
-              <div className="mb-6 space-y-6">
+              <div className="mt-8 space-y-6 border-t border-border/40 pt-8">
                 {hasUpsells ? (
                   <ServiceUpsellsSection
                     service={service}
@@ -566,7 +558,7 @@ export function ServiceBuySection({
                 ) : null}
                 {!hideAdditionalServices && companion ? (
                   <div>
-                    <h3 className="font-semibold mb-3">Комбинирай с</h3>
+                    <h3 className="mb-3 font-semibold">Комбинирай с</h3>
                     <ServiceCompanionOffer
                       config={companion}
                       included={includeCompanion}
@@ -585,15 +577,15 @@ export function ServiceBuySection({
               isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
             )}
           >
-            <div className="rounded-2xl border border-border bg-card p-5">
-              <p className="text-sm text-muted-foreground mb-2">Общо</p>
+            <div className="rounded-[2rem] bg-card p-6 shadow-[var(--shadow-soft)] ring-1 ring-foreground/[0.04]">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">Общо</p>
               <div data-total-pulse className="mb-1 flex items-end gap-2">
                 <Price value={totalPrice} layout="vertical" className="text-3xl text-accent" />
                 {totalFrequencyLabel ? (
                   <span className="pb-1 text-muted-foreground">{totalFrequencyLabel}</span>
                 ) : null}
               </div>
-              <p className="mb-5 text-xs text-muted-foreground">
+              <p className="mb-6 text-xs leading-relaxed text-muted-foreground">
                 {effectiveBillingCycle === "annual-prepaid"
                   ? `Включва 12 месеца, еднократните суми и ${annualDiscountPercent}% отстъпка`
                   : "Включва избраните допълнителни услуги"}
@@ -604,7 +596,7 @@ export function ServiceBuySection({
                 disabled={isAdding || isSoldOut}
                 analyticsCtaId={ctaId}
                 analyticsPage={ctaPage ?? `/services/${service.slug}`}
-                className="h-12 w-full px-6 text-base bg-orange-500 hover:bg-orange-600 text-white"
+                className="h-12 w-full rounded-full px-6 text-base font-semibold shadow-[var(--shadow-glow)]"
               >
                 {isAdding ? "Обработка..." : ctaText}
               </Button>
@@ -638,7 +630,7 @@ export function ServiceBuySection({
             disabled={isAdding || isSoldOut}
             analyticsCtaId={ctaId}
             analyticsPage={ctaPage ?? `/services/${service.slug}`}
-            className="h-11 shrink-0 px-4 text-xs sm:text-sm bg-orange-500 hover:bg-orange-600 text-white"
+            className="h-11 shrink-0 rounded-full px-4 text-xs font-semibold sm:text-sm shadow-[var(--shadow-glow)]"
           >
             {isAdding ? "Обработка..." : ctaText}
           </Button>

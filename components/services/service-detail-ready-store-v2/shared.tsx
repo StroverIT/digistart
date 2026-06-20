@@ -29,11 +29,12 @@ export const LandingSection = forwardRef<
   {
     id?: string;
     className?: string;
+    contentClassName?: string;
     children: ReactNode;
     "data-nav-theme"?: "dark" | "light";
     withGradients?: boolean;
   }
->(function LandingSection({ id, className, children, "data-nav-theme": navTheme, withGradients }, ref) {
+>(function LandingSection({ id, className, contentClassName, children, "data-nav-theme": navTheme, withGradients }, ref) {
   return (
     <section
       ref={ref}
@@ -42,7 +43,9 @@ export const LandingSection = forwardRef<
       className={cn(landingSectionClass, withGradients && "relative overflow-hidden", className)}
     >
       {withGradients && <LandingSectionGradients />}
-      <div className={cn(landingContainerClass, withGradients && "relative")}>{children}</div>
+      <div className={cn(landingContainerClass, withGradients && "relative", contentClassName)}>
+        {children}
+      </div>
     </section>
   );
 });

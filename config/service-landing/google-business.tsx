@@ -149,7 +149,6 @@ export const GOOGLE_BUSINESS_LANDING: ServicePasLandingContent = {
   },
   socialProofType: null,
   faq: {
-    eyebrow: "Въпроси",
     title: "Често задавани въпроси",
     description: "Ясно какво включва настройката, кога е нужна и как работи без физически магазин.",
     items: [

@@ -154,7 +154,6 @@ export const ONLINE_STORE_LANDING: ServicePasLandingContent = {
   },
   socialProofType: "online-store",
   faq: {
-    eyebrow: "Въпроси",
     title: "Често задавани въпроси",
     description: "Всичко, което трябва да знаеш за старта, поддръжката и гаранцията.",
     items: [

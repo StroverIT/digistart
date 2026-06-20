@@ -136,7 +136,7 @@ export function Footer() {
   }, []);
 
   return (
-    <footer ref={footerRef} className="relative mt-8 border-t border-border/80">
+    <footer ref={footerRef} className="relative border-t border-border/80">
       {/* Main footer */}
       <div className="relative overflow-hidden bg-card">
         <div
@@ -243,7 +243,7 @@ export function Footer() {
                     href={`mailto:${siteContact.email}`}
                     className="group flex items-start gap-3 rounded-xl border border-border/80 bg-background/70 p-3.5 transition-colors hover:border-primary/25 hover:bg-background"
                   >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-accent">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
                       <Mail className="h-4 w-4" />
                     </span>
                     <span className="min-w-0 pt-0.5">
@@ -261,7 +261,7 @@ export function Footer() {
                     href={siteContact.phoneHref}
                     className="group flex items-start gap-3 rounded-xl border border-border/80 bg-background/70 p-3.5 transition-colors hover:border-primary/25 hover:bg-background"
                   >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-accent">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
                       <Phone className="h-4 w-4" />
                     </span>
                     <span className="min-w-0 pt-0.5">

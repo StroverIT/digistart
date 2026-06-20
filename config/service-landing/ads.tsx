@@ -157,7 +157,6 @@ export const ADS_LANDING: ServicePasLandingContent = {
   },
   socialProofType: "ads",
   faq: {
-    eyebrow: "Въпроси",
     title: "Често задавани въпроси",
     description: "Онлайн поръчки, бюджет и как работим.",
     items: [

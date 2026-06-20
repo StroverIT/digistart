@@ -10,7 +10,6 @@ import { PasSectionIntro } from "./section-intro";
 import { useSectionScrollAnimations } from "./use-section-scroll-animations";
 
 export interface PasFaqSectionProps {
-  eyebrow: string;
   title: string;
   description: string;
   items: readonly FaqItem[];
@@ -19,7 +18,6 @@ export interface PasFaqSectionProps {
 }
 
 export function PasFaqSection({
-  eyebrow,
   title,
   description,
   items,
@@ -30,10 +28,9 @@ export function PasFaqSection({
   useSectionScrollAnimations(sectionRef, { staggerReveal: 0.08 });
 
   return (
-    <section ref={sectionRef} id="faq" className="bg-card/40 py-8 md:py-20">
+    <section ref={sectionRef} id="faq" className="bg-card/40 py-8 md:py-14">
       <div className="container mx-auto px-4">
         <PasSectionIntro
-          eyebrow={eyebrow}
           title={title}
           description={description}
           headingFontClass={headingFontClass}

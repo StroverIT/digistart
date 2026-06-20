@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 export interface PasSectionIntroProps {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description?: string;
   headingFontClass?: string;
@@ -17,12 +17,14 @@ export function PasSectionIntro({
 }: PasSectionIntroProps) {
   return (
     <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-      <span
-        data-animate-reveal
-        className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary mb-4 opacity-0 translate-y-10"
-      >
-        {eyebrow}
-      </span>
+      {eyebrow ? (
+        <span
+          data-animate-reveal
+          className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary mb-4 opacity-0 translate-y-10"
+        >
+          {eyebrow}
+        </span>
+      ) : null}
       <h2
         data-animate-reveal
         className={cn(

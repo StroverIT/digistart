@@ -41,6 +41,7 @@ export const services: Service[] = [
         name: "Плащане с карта",
         description:
           "Сигурни картови плащания, включително Apple Pay и Google Pay. Скоро: DSK Bank и Борика.",
+        hideBuySectionDescription: true,
         kind: "toggle",
         isMonthly: true,
         pricePerUnit: 10,
@@ -54,6 +55,7 @@ export const services: Service[] = [
         name: "Интеграция с куриер",
         description:
           "Еконт, Спиди или и двата с избор на офис и автоматично изчисляване на доставка. Скоро: Box Now и Easybox.",
+        hideBuySectionDescription: true,
         kind: "choice",
         directChoice: true,
         isMonthly: true,
@@ -67,7 +69,9 @@ export const services: Service[] = [
           { id: "both", name: "Еконт и Спиди", pricePerUnit: 10, isMonthly: true },
         ],
       },
-      ...brandUpsells,
+      ...brandUpsells.map((upsell) =>
+        upsell.id === "logo-design" ? { ...upsell, hideBuySectionDescription: true } : upsell,
+      ),
     ],
     features: [
       "Адаптивен темплейт за магазин",
