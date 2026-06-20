@@ -168,24 +168,24 @@ export function CookieConsent() {
             </p>
             <Link
               href="/cookies-policy"
-              className="mt-1 inline-flex text-sm text-primary hover:text-primary/80 underline transition-colors"
+              className="mt-1 inline-flex text-sm text-accent hover:text-accent/80 underline transition-colors"
             >
               Прочетете политиката за бисквитки
             </Link>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:flex-wrap">
             <button
               type="button"
               onClick={() => setShowPreferences(true)}
-              className="rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+              className="shrink-0 whitespace-nowrap rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
             >
               Персонализирай
             </button>
             <button
               type="button"
               onClick={handleAcceptAll}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
+              className="shrink-0 whitespace-nowrap rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
             >
               Приеми всички
             </button>
@@ -256,25 +256,25 @@ export function CookieConsent() {
               </div>
             </div>
 
-            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <div className="mt-6 flex shrink-0 flex-col-reverse gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
               <button
                 type="button"
                 onClick={() => closePreferences()}
-                className="rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                className="shrink-0 whitespace-nowrap rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
               >
                 Назад
               </button>
               <button
                 type="button"
                 onClick={handleAcceptAll}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
+                className="shrink-0 whitespace-nowrap rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
               >
                 Приеми всички
               </button>
               <button
                 type="button"
                 onClick={handleConfirmSelection}
-                className="rounded-md border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10 transition-colors"
+                className="shrink-0 whitespace-nowrap rounded-md border border-primary px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10 transition-colors"
               >
                 Запази избора
               </button>

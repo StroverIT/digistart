@@ -37,67 +37,67 @@ export default function TermsAndConditions() {
               <nav className="space-y-2">
                 <Link
                   href="#terminology"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   1. Терминология
                 </Link>
                 <Link
                   href="#cookies"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   2. Бисквитки (Cookies)
                 </Link>
                 <Link
                   href="#license"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   3. Лиценз и права върху съдържанието
                 </Link>
                 <Link
                   href="#comments"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   4. Коментари и потребителско съдържание
                 </Link>
                 <Link
                   href="#links"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   5. Връзки към нашето съдържание
                 </Link>
                 <Link
                   href="#content-responsibility"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   6. Отговорност за съдържанието
                 </Link>
                 <Link
                   href="#privacy"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   7. Поверителност
                 </Link>
                 <Link
                   href="#refund-policy"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   8. Политика за връщане на суми
                 </Link>
                 <Link
                   href="#changes"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   9. Промени в Общите условия
                 </Link>
                 <Link
                   href="#disclaimer"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   10. Отказ от отговорност
                 </Link>
                 <Link
                   href="#jurisdiction"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   11. Приложимо право и юрисдикция
                 </Link>
@@ -125,7 +125,7 @@ export default function TermsAndConditions() {
                     href="https://digistart.bg"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:text-primary/80 underline transition-colors"
+                    className="text-accent hover:text-accent/80 underline transition-colors"
                   >
                     https://digistart.bg
                   </Link>
@@ -164,7 +164,7 @@ export default function TermsAndConditions() {
                     съответствие с нашата{" "}
                     <Link
                       href="/privacy-policy"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       Политика за поверителност
                     </Link>
@@ -223,7 +223,7 @@ export default function TermsAndConditions() {
                     Други организации могат да поискат разрешение чрез имейл на:{" "}
                     <Link
                       href="mailto:digistartbg@gmail.com"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       digistartbg@gmail.com
                     </Link>
@@ -251,7 +251,7 @@ export default function TermsAndConditions() {
                     Моля, запознайте се с нашата{" "}
                     <Link
                       href="/privacy-policy"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       Политика за поверителност
                     </Link>
@@ -280,7 +280,7 @@ export default function TermsAndConditions() {
                     имейл:{" "}
                     <Link
                       href="mailto:digistartbg@gmail.com"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       digistartbg@gmail.com
                     </Link>
@@ -335,7 +335,7 @@ export default function TermsAndConditions() {
                     <strong>Имейл за контакт:</strong>{" "}
                     <Link
                       href="mailto:digistartbg@gmail.com"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       digistartbg@gmail.com
                     </Link>
@@ -346,7 +346,7 @@ export default function TermsAndConditions() {
                       href="https://digistart.bg"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       https://digistart.bg
                     </Link>

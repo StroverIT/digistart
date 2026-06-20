@@ -37,49 +37,49 @@ export default function PrivacyPolicy() {
               <nav className="space-y-2">
                 <Link
                   href="#data-types"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   Видове данни, които събираме
                 </Link>
                 <Link
                   href="#processing-methods"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   Начин и място на обработване на Данните
                 </Link>
                 <Link
                   href="#cookies"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   Политика за бисквитки
                 </Link>
                 <Link
                   href="#eu-users"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   Допълнителна информация за Потребители в ЕС
                 </Link>
                 <Link
                   href="#user-rights"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   Правата на потребителите съгласно ОРЗД (GDPR)
                 </Link>
                 <Link
                   href="#additional-info"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   Допълнителна информация относно събирането и обработването
                 </Link>
                 <Link
                   href="#policy-changes"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   Промени в тази Политика за поверителност
                 </Link>
                 <Link
                   href="#definitions"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   Определения и правни препратки
                 </Link>
@@ -103,7 +103,7 @@ export default function PrivacyPolicy() {
                     <strong>Имейл за контакт със собственика:</strong>{" "}
                     <Link
                       href="mailto:digistartbg@gmail.com"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       digistartbg@gmail.com
                     </Link>
@@ -143,7 +143,7 @@ export default function PrivacyPolicy() {
                     Всяко използване на{" "}
                     <Link
                       href="#cookies"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       Бисквитки
                     </Link>{" "}
@@ -154,7 +154,7 @@ export default function PrivacyPolicy() {
                     други цели, описани в настоящия документ и в{" "}
                     <Link
                       href="#cookies"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       Политиката за бисквитки
                     </Link>
@@ -231,7 +231,7 @@ export default function PrivacyPolicy() {
                     запознаят с отделната{" "}
                     <Link
                       href="/cookies-policy"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       Политика за бисквитки
                     </Link>
@@ -385,7 +385,7 @@ export default function PrivacyPolicy() {
                     до Собственика на{" "}
                     <Link
                       href="mailto:digistartbg@gmail.com"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       digistartbg@gmail.com
                     </Link>

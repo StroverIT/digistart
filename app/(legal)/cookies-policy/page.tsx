@@ -37,31 +37,31 @@ export default function CookiesPolicy() {
               <nav className="space-y-2">
                 <Link
                   href="#what-are-cookies"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   1. Какво представляват бисквитките?
                 </Link>
                 <Link
                   href="#types-of-cookies"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   2. Какви видове бисквитки използваме?
                 </Link>
                 <Link
                   href="#how-we-use-cookies"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   3. Как използваме бисквитките?
                 </Link>
                 <Link
                   href="#third-party-cookies"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   4. Бисквитки на трети страни
                 </Link>
                 <Link
                   href="#control-cookies"
-                  className="block text-sm text-primary/80 hover:text-primary transition-colors"
+                  className="block text-sm text-accent/80 hover:text-accent transition-colors"
                 >
                   5. Как можете да контролирате бисквитките?
                 </Link>
@@ -85,7 +85,7 @@ export default function CookiesPolicy() {
                     <strong>Имейл за контакт:</strong>{" "}
                     <Link
                       href="mailto:digistartbg@gmail.com"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       digistartbg@gmail.com
                     </Link>
@@ -118,7 +118,7 @@ export default function CookiesPolicy() {
                       href="https://digistart.bg"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary hover:text-primary/80 underline transition-colors"
+                      className="text-accent hover:text-accent/80 underline transition-colors"
                     >
                       digistart.bg
                     </Link>{" "}
@@ -187,7 +187,7 @@ export default function CookiesPolicy() {
                         href="https://policies.google.com/privacy?hl=bg"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-primary hover:text-primary/80 underline transition-colors"
+                        className="text-accent hover:text-accent/80 underline transition-colors"
                       >
                         Политика за поверителност на Google
                       </Link>
@@ -197,7 +197,7 @@ export default function CookiesPolicy() {
                         href="https://www.facebook.com/policy.php"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-primary hover:text-primary/80 underline transition-colors"
+                        className="text-accent hover:text-accent/80 underline transition-colors"
                       >
                         Политика за поверителност на Meta (Facebook)
                       </Link>
