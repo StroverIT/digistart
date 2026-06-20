@@ -183,7 +183,7 @@ const MarketingTools = () => {
             <ImageBottomCard
               title="Избираме правилния канал"
               description="Google за търсене на продукти. Meta за откриване, връщане и импулсни покупки."
-              image="/marketing/promotion.png"
+              image="/services/ads/marketing-tools/right-channel.png"
               imageContainerClassName="max-sm:mt-4 max-sm:aspect-auto max-sm:h-40"
             />
           </article>
@@ -206,7 +206,7 @@ const MarketingTools = () => {
           <ImageRightCard
             title="Пазим магазина в движение"
             description="Не плащаш просто за рекламна кампания. Плащаш за тестове, промени и решения според продажбите."
-            image="/marketing/newsletter.png"
+            image="/services/ads/marketing-tools/movement.png"
           />
         </li>
 
@@ -217,7 +217,7 @@ const MarketingTools = () => {
           <ImageLeftCard
             title="Засилваме продаващите продукти"
             description="Следим кои артикули носят поръчки и местим бюджета натам."
-            image="/marketing/social-media.png"
+            image="/services/ads/marketing-tools/boosting.png"
           />
         </li>
       </ul>
