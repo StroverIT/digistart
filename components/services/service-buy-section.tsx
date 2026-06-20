@@ -493,13 +493,13 @@ export function ServiceBuySection({
                     type="button"
                     onClick={() => setBillingCycle("annual-prepaid")}
                     className={cn(
-                      "relative z-10 rounded-xl px-4 py-3 pr-16 text-left transition-colors",
+                      "relative z-10 rounded-xl px-4 py-3 text-left transition-colors sm:pr-16",
                       effectiveBillingCycle === "annual-prepaid"
                         ? "text-foreground"
                         : "hover:bg-card/50",
                     )}
                   >
-                    <span className="absolute -right-2 -top-2 rounded-full bg-primary px-3 py-1 text-sm font-bold text-primary-foreground shadow-sm">
+                    <span className="absolute top-1/2 right-0 rounded-full bg-primary px-3 py-1 text-sm font-bold text-primary-foreground shadow-sm sm:left-auto sm:translate-x-0 sm:-right-2">
                       -{annualDiscountPercent}%
                     </span>
                     <span className="block text-sm font-semibold text-foreground">За година</span>
