@@ -17,10 +17,10 @@ import {
   isAdminCheckoutRole,
 } from "@/lib/pricing/admin-checkout-pricing";
 import { getServiceById } from "@/lib/data/services";
-import {
-  AdditionalServicesGrid,
-  AdditionalServicesUpsellCard,
-} from "@/components/services/additional-services-grid";
+// import {
+//   AdditionalServicesGrid,
+//   AdditionalServicesUpsellCard,
+// } from "@/components/services/additional-services-grid";
 import { ServiceItemUpsells } from "@/components/services/service-item-upsells";
 
 function CartItemCard({

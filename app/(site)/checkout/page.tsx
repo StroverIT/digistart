@@ -12,8 +12,10 @@ import {
   Eye,
   EyeOff,
   KeyRound,
+  Package,
   RefreshCw,
   Shield,
+  User,
   XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -86,6 +88,71 @@ const checkoutInputClassName =
 const checkoutReadOnlyInputClassName =
   "border-foreground/15 bg-muted/50 text-foreground shadow-none cursor-default dark:bg-muted/40 dark:text-foreground";
 
+const checkoutFormCardClassName = "bg-card border-border shadow-sm overflow-hidden";
+const checkoutFormCardHeaderClassName = "border-b border-border/60 bg-muted/20 pb-4";
+
+type CheckoutStepIndicatorProps = {
+  currentStep: number;
+  labels: string[];
+};
+
+function CheckoutStepIndicator({ currentStep, labels }: CheckoutStepIndicatorProps) {
+  return (
+    <ol className="mb-8 flex items-center gap-1 sm:gap-2" aria-label="Стъпки на поръчката">
+      {labels.map((label, index) => {
+        const stepNum = index + 1;
+        const isComplete = stepNum < currentStep;
+        const isCurrent = stepNum === currentStep;
+
+        return (
+          <li key={label} className="flex min-w-0 flex-1 items-center gap-1 sm:gap-2">
+            <div className="flex min-w-0 items-center gap-2">
+              <span
+                className={cn(
+                  "flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors",
+                  isComplete && "bg-accent text-accent-foreground",
+                  isCurrent && "bg-accent/15 text-accent ring-2 ring-accent/25",
+                  !isComplete && !isCurrent && "bg-muted text-muted-foreground",
+                )}
+              >
+                {isComplete ? <CheckCircle2 className="size-4" aria-hidden /> : stepNum}
+              </span>
+              <span
+                className={cn(
+                  "hidden truncate text-sm font-medium sm:block",
+                  isCurrent ? "text-foreground" : "text-muted-foreground",
+                )}
+              >
+                {label}
+              </span>
+            </div>
+            {index < labels.length - 1 ? (
+              <div
+                className={cn(
+                  "h-px min-w-3 flex-1",
+                  stepNum < currentStep ? "bg-accent/40" : "bg-border",
+                )}
+                aria-hidden
+              />
+            ) : null}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function CheckoutErrorAlert({ message }: { message: string }) {
+  return (
+    <div
+      role="alert"
+      className="rounded-lg border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive"
+    >
+      {message}
+    </div>
+  );
+}
+
 type CheckoutLegalConsentProps = {
   checkboxId: string;
   checked: boolean;
@@ -105,24 +172,27 @@ function CheckoutLegalConsent({
     <div
       className={cn(
         variant === "bordered" &&
-          "rounded-lg border border-border p-4 transition-colors has-focus-visible:ring-2 has-focus-visible:ring-ring/50",
+          "rounded-lg border border-border bg-muted/25 p-4 transition-colors has-focus-visible:ring-2 has-focus-visible:ring-ring/50",
         variant === "plain" && "pt-1",
       )}
     >
-      <label htmlFor={checkboxId} className={checkoutChoiceLabelClassName}>
+      <label
+        htmlFor={checkboxId}
+        className={cn(checkoutChoiceLabelClassName, variant === "bordered" && "-m-3 p-3")}
+      >
         <Checkbox
           id={checkboxId}
           checked={checked}
           className={checkoutCheckboxClassName}
           onCheckedChange={(value) => onCheckedChange(value === true)}
         />
-        <span className="text-sm leading-snug text-muted-foreground group-hover:text-foreground/85">
+        <span className="text-sm font-medium leading-relaxed text-foreground">
           Съгласен/на съм с{" "}
           <Link
             href="/terms-and-conditions"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-foreground"
+            className="font-semibold text-accent underline underline-offset-2 hover:text-accent/80"
           >
             Общите условия
           </Link>
@@ -131,7 +201,7 @@ function CheckoutLegalConsent({
             href="/privacy-policy"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-foreground"
+            className="font-semibold text-accent underline underline-offset-2 hover:text-accent/80"
           >
             Политиката за поверителност
           </Link>{" "}
@@ -140,7 +210,7 @@ function CheckoutLegalConsent({
             href="/terms-and-conditions#refund-policy"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-foreground"
+            className="font-semibold text-accent underline underline-offset-2 hover:text-accent/80"
           >
             Политиката за връщане на суми
           </Link>
@@ -575,6 +645,11 @@ export default function CheckoutPage() {
         : "Плащане";
   }, [isLoggedInForCheckout, logicalStep]);
 
+  const checkoutStepLabels = useMemo(
+    () => (isLoggedInForCheckout ? ["Фирма", "Плащане"] : ["Акаунт", "Фирма", "Плащане"]),
+    [isLoggedInForCheckout],
+  );
+
   if (!mounted || cart.items.length === 0) {
     return (
       <div className="pt-24 pb-16">
@@ -590,35 +665,45 @@ export default function CheckoutPage() {
   return (
     <div ref={checkoutRootRef} className="pt-24 pb-16">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div data-checkout-reveal className="opacity-0 translate-y-10">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div data-checkout-reveal className="space-y-6 opacity-0 translate-y-10 lg:col-span-2">
             <TrackedCtaLink
               href="/cart"
               ctaId="checkout_back_to_cart"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" />
               Обратно към кошницата
             </TrackedCtaLink>
 
-            <h1 className="text-2xl sm:text-3xl font-bold mb-6">Завършване на поръчка</h1>
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
+                <CreditCard className="h-6 w-6" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold sm:text-3xl">Завършване на поръчка</h1>
+                <p className="text-muted-foreground">
+                  Стъпка {logicalStep} от {totalSteps}: {displayStepLabel}
+                </p>
+              </div>
+            </div>
+
+            <CheckoutStepIndicator currentStep={logicalStep} labels={checkoutStepLabels} />
 
             <div className="space-y-6">
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    Стъпка {logicalStep} от {totalSteps}: {displayStepLabel}
-                  </CardTitle>
-                </CardHeader>
-              </Card>
-
               {!isLoggedInForCheckout && logicalStep === 1 ? (
                 <>
-                  <Card className="bg-card border-border">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Създаване на акаунт</CardTitle>
+                  <Card className={checkoutFormCardClassName}>
+                    <CardHeader className={checkoutFormCardHeaderClassName}>
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <User className="h-5 w-5 shrink-0 text-accent" />
+                        Създаване на акаунт
+                      </CardTitle>
+                      <CardDescription>
+                        Създайте акаунт, за да управлявате поръчката и услугите си.
+                      </CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-6">
                       <FieldGroup>
                         <Field>
                           <FieldLabel htmlFor="name">Име и фамилия *</FieldLabel>
@@ -669,7 +754,7 @@ export default function CheckoutPage() {
                               type="button"
                               variant="outline"
                               size="sm"
-                              className="h-8 gap-1.5 text-xs"
+                              className="h-8 gap-1.5 border-accent/30 text-xs text-accent hover:bg-accent/10 hover:text-accent"
                               onClick={openGeneratePasswordDialog}
                             >
                               <KeyRound className="h-3.5 w-3.5" />
@@ -834,24 +919,27 @@ export default function CheckoutPage() {
                       </FieldGroup>
                     </CardContent>
                   </Card>
-                  {checkoutError ? <p className="text-sm text-red-500">{checkoutError}</p> : null}
-                  <CheckoutLegalConsent
-                    checkboxId="checkout-terms-guest"
-                    checked={acceptedCheckoutTerms}
-                    onCheckedChange={(isAccepted) => {
-                      setAcceptedCheckoutTerms(isAccepted);
-                      if (isAccepted) setLegalConsentError("");
-                    }}
-                    error={legalConsentError}
-                  />
-                  <Button
-                    type="button"
-                    size="lg"
-                    className="w-full glow-primary"
-                    onClick={handleContinueFromAccount}
-                  >
-                    Напред
-                  </Button>
+                  {checkoutError ? <CheckoutErrorAlert message={checkoutError} /> : null}
+                  <div className="space-y-4 rounded-xl border border-border bg-card p-4 shadow-sm">
+                    <CheckoutLegalConsent
+                      checkboxId="checkout-terms-guest"
+                      checked={acceptedCheckoutTerms}
+                      onCheckedChange={(isAccepted) => {
+                        setAcceptedCheckoutTerms(isAccepted);
+                        if (isAccepted) setLegalConsentError("");
+                      }}
+                      error={legalConsentError}
+                      variant="plain"
+                    />
+                    <Button
+                      type="button"
+                      size="lg"
+                      className="w-full glow-primary"
+                      onClick={handleContinueFromAccount}
+                    >
+                      Напред
+                    </Button>
+                  </div>
 
                 </>
               ) : null}
@@ -859,10 +947,10 @@ export default function CheckoutPage() {
               {((isLoggedInForCheckout && logicalStep === 1) ||
                 (!isLoggedInForCheckout && logicalStep === 2)) ? (
                 <>
-                  <Card className="bg-card border-border shadow-sm">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Building2 className="h-5 w-5 text-primary shrink-0" />
+                  <Card className={checkoutFormCardClassName}>
+                    <CardHeader className={checkoutFormCardHeaderClassName}>
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <Building2 className="h-5 w-5 shrink-0 text-accent" />
                         Закупуване като фирма
                       </CardTitle>
                       <CardDescription>
@@ -870,7 +958,7 @@ export default function CheckoutPage() {
                         само ако изберете закупуване като фирма.
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-6">
+                    <CardContent className="space-y-6 pt-6">
                       {isLoggedInForCheckout ? (
                         <FieldGroup className="gap-5">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -905,7 +993,7 @@ export default function CheckoutPage() {
                           className={cn(
                             checkoutChoiceLabelClassName,
                             "items-center",
-                            purchaseAsBusiness && "bg-primary/5 hover:bg-primary/8",
+                            purchaseAsBusiness && "bg-accent/5 hover:bg-accent/8",
                           )}
                         >
                           <Checkbox
@@ -926,7 +1014,7 @@ export default function CheckoutPage() {
                         <Field
                           className={cn(
                             "rounded-lg px-3 py-3 transition-colors",
-                            purchaseAsBusiness && "bg-primary/5",
+                            purchaseAsBusiness && "bg-accent/5",
                           )}
                         >
                           <FieldLabel htmlFor="company" className="text-foreground">
@@ -965,15 +1053,16 @@ export default function CheckoutPage() {
 
                     </CardContent>
                   </Card>
-                  {checkoutError ? <p className="text-sm text-red-500">{checkoutError}</p> : null}
+                  {checkoutError ? <CheckoutErrorAlert message={checkoutError} /> : null}
                   <div className="flex gap-3">
                     {!isLoggedInForCheckout ? (
-                      <Button type="button" variant="outline" className="flex-1" onClick={handleBack}>
+                      <Button type="button" variant="outline" size="lg" className="flex-1" onClick={handleBack}>
                         Назад
                       </Button>
                     ) : null}
                     <Button
                       type="button"
+                      size="lg"
                       className="flex-1 glow-primary"
                       onClick={handleContinueFromBusiness}
                     >
@@ -985,16 +1074,19 @@ export default function CheckoutPage() {
 
               {logicalStep === paymentStepIndex ? (
                 <>
-                  <Card className="bg-card border-border">
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <CreditCard className="h-5 w-5 text-primary" />
+                  <Card className={checkoutFormCardClassName}>
+                    <CardHeader className={checkoutFormCardHeaderClassName}>
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <CreditCard className="h-5 w-5 shrink-0 text-accent" />
                         Плащане
                       </CardTitle>
+                      <CardDescription>
+                        Въведете данните на картата си за сигурно завършване на поръчката.
+                      </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 pt-6">
                       {stripeClientSecret ? (
-                        <div className="bg-secondary/30 rounded-lg p-2">
+                        <div className="overflow-hidden rounded-lg border border-border/60 bg-muted/15 p-2">
                           <EmbeddedCheckoutProvider
                             stripe={stripePromise}
                             options={{ clientSecret: stripeClientSecret }}
@@ -1003,7 +1095,7 @@ export default function CheckoutPage() {
                           </EmbeddedCheckoutProvider>
                         </div>
                       ) : !hasPaymentPrepareFailed || isPreparingPayment ? (
-                        <div className="bg-secondary/50 rounded-lg p-6">
+                        <div className="rounded-lg border border-border/60 bg-muted/20 p-6">
                           <div className="space-y-3 animate-pulse">
                             <div className="h-4 w-2/3 rounded bg-muted" />
                             <div className="h-10 w-full rounded bg-muted" />
@@ -1012,7 +1104,7 @@ export default function CheckoutPage() {
                           </div>
                         </div>
                       ) : (
-                        <div className="bg-secondary/50 rounded-lg p-6 text-center">
+                        <div className="rounded-lg border border-border/60 bg-muted/20 p-6 text-center">
                           <p className="text-muted-foreground text-sm mb-2">
                             Нещо се провали при подгодовката за формата за плащане...
                           </p>
@@ -1046,40 +1138,41 @@ export default function CheckoutPage() {
                         </div>
                       )}
 
-                      <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
-                        <Shield className="h-4 w-4" />
+                      <div className="mt-2 flex items-center gap-2 rounded-lg border border-border/60 bg-muted/25 px-3 py-2.5 text-sm text-muted-foreground">
+                        <Shield className="h-4 w-4 shrink-0 text-accent" />
                         <span>Вашите данни са защитени с SSL криптиране</span>
                       </div>
 
                     </CardContent>
                   </Card>
 
-                  <div>
-                    <Button type="button" variant="outline" className="w-full" onClick={handleBack}>
-                      Назад
-                    </Button>
-                  </div>
+                  <Button type="button" variant="outline" size="lg" className="w-full" onClick={handleBack}>
+                    Назад
+                  </Button>
                 </>
               ) : null}
             </div>
           </div>
 
-          <div data-checkout-reveal className="opacity-0 translate-y-10">
-            <Card className="bg-card border-border sticky top-24">
-              <CardHeader>
-                <CardTitle>Вашата поръчка</CardTitle>
+          <div data-checkout-reveal className="opacity-0 translate-y-10 lg:col-span-1">
+            <Card className="sticky top-24 border-border bg-card shadow-sm">
+              <CardHeader className="border-b border-border/60 pb-4">
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5 shrink-0 text-accent" />
+                  Вашата поръчка
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {displayCart.items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-start justify-between gap-4 pb-4 border-b border-border"
+                    className="flex items-start justify-between gap-4 rounded-lg border border-border/60 bg-muted/15 px-3 py-3"
                   >
-                    <div>
-                      <p className="font-medium">{item.serviceName}</p>
+                    <div className="min-w-0">
+                      <p className="font-medium leading-snug">{item.serviceName}</p>
                       <p className="text-sm text-muted-foreground">{item.selectedOptionName}</p>
                       {!isAdminCheckout && item.billingCycle === "annual-prepaid" ? (
-                        <p className="mt-1 text-xs font-medium text-primary">
+                        <p className="mt-1 text-xs font-medium text-accent">
                           Предплатено за 1 година
                           {item.annualDiscountAmount
                             ? ` с ${Math.round((item.annualDiscountRate ?? 0) * 100)}% отстъпка`
@@ -1123,11 +1216,11 @@ export default function CheckoutPage() {
                         </ul>
                       ) : null}
                     </div>
-                    <div className="text-right shrink-0">
+                    <div className="shrink-0 text-right">
                       {isAdminCheckout ? (
-                        <p className="text-sm font-medium text-primary">Включено</p>
+                        <p className="text-sm font-medium text-accent">Включено</p>
                       ) : (
-                        <Price value={item.totalPrice} className="font-semibold" />
+                        <Price value={item.totalPrice} className="font-semibold text-accent" />
                       )}
                       {!isAdminCheckout && item.billingCycle === "annual-prepaid" ? (
                         <div className="text-xs text-muted-foreground">за 1 година</div>
@@ -1138,7 +1231,7 @@ export default function CheckoutPage() {
                   </div>
                 ))}
 
-                <div className="space-y-2 pt-2">
+                <div className="space-y-2 border-t border-border pt-4">
                   {displayCart.totalOneTime > 0 && (
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
@@ -1167,7 +1260,7 @@ export default function CheckoutPage() {
                     <div className="text-right">
                       <Price
                         value={displayCart.totalOneTime + displayCart.totalMonthly}
-                        className="text-2xl gradient-text"
+                        className="text-2xl text-accent"
                       />
                       {!isAdminCheckout &&
                         displayCart.totalMonthly > 0 &&
