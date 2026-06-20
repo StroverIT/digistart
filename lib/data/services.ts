@@ -1,4 +1,6 @@
 import type { Service, ServiceUpsell } from "@/lib/types";
+import { ADS_PRICING } from "@/lib/data/ads-pricing";
+import { READY_STORE_PRICING } from "@/lib/data/ready-store-pricing";
 
 /** Shared checkout/cart upsells: logo design + color palette (per plan). */
 export const brandUpsells: ServiceUpsell[] = [
@@ -23,7 +25,7 @@ export const services: Service[] = [
     description:
       "Абонаментен онлайн магазин с готов темплейт, приемане на поръчки и вграден Meta Pixel. Стандартна настройка за 1 работен ден.",
     icon: "ShoppingCart",
-    basePrice: 20,
+    basePrice: READY_STORE_PRICING.baseMonthly,
     isMonthly: true,
     options: [
       {
@@ -31,7 +33,7 @@ export const services: Service[] = [
         name: "Абонаментен онлайн магазин",
         description:
           "Готов темплейт, поръчки, Meta Pixel и мобилна версия",
-        price: 20,
+        price: READY_STORE_PRICING.baseMonthly,
         isMonthly: true,
       },
     ],
@@ -44,7 +46,7 @@ export const services: Service[] = [
         hideBuySectionDescription: true,
         kind: "toggle",
         isMonthly: true,
-        pricePerUnit: 10,
+        pricePerUnit: READY_STORE_PRICING.cardPaymentMonthly,
         unit: "месец",
         min: 0,
         max: 1,
@@ -64,9 +66,9 @@ export const services: Service[] = [
         max: 1,
         default: 0,
         choices: [
-          { id: "econt", name: "Еконт", pricePerUnit: 5, isMonthly: true },
-          { id: "speedy", name: "Спиди", pricePerUnit: 5, isMonthly: true },
-          { id: "both", name: "Еконт и Спиди", pricePerUnit: 10, isMonthly: true },
+          { id: "econt", name: "Еконт", pricePerUnit: READY_STORE_PRICING.courierMonthly, isMonthly: true },
+          { id: "speedy", name: "Спиди", pricePerUnit: READY_STORE_PRICING.courierMonthly, isMonthly: true },
+          { id: "both", name: "Еконт и Спиди", pricePerUnit: READY_STORE_PRICING.bothCouriersMonthly, isMonthly: true },
         ],
       },
       ...brandUpsells.map((upsell) =>
@@ -295,15 +297,15 @@ export const services: Service[] = [
     description:
       "Google Ads и Meta реклами за онлайн магазини - повече хора към продуктите, количките и поръчките.",
     icon: "Megaphone",
-    basePrice: 150,
+    basePrice: ADS_PRICING.channelManagementMonthly,
     isMonthly: true,
     options: [
       {
         id: "default",
         name: "Управление на реклами",
         description:
-          "€150/месец на канал. Минимален рекламен бюджет: €50/месец на канал.",
-        price: 150,
+          `€${ADS_PRICING.channelManagementMonthly}/месец на канал. Минимален рекламен бюджет: €${ADS_PRICING.minAdBudgetMonthly}/месец на канал.`,
+        price: ADS_PRICING.channelManagementMonthly,
         isMonthly: true,
       },
     ],
@@ -337,7 +339,7 @@ export const services: Service[] = [
       {
         id: "extra-ad-channels",
         name: "Допълнителен канал",
-        description: "€150/месец за управление на втори рекламен канал.",
+        description: `€${ADS_PRICING.channelManagementMonthly}/месец за управление на втори рекламен канал.`,
         kind: "choice",
         isMonthly: true,
         unit: "канал",
@@ -348,18 +350,18 @@ export const services: Service[] = [
             id: "google-ads",
             name: "Google Ads",
             description: "Търсене, Shopping и YouTube.",
-            pricePerUnit: 150,
+            pricePerUnit: ADS_PRICING.channelManagementMonthly,
             isMonthly: true,
           },
           {
             id: "meta-ads",
             name: "Meta Ads",
             description: "Facebook, Instagram, Reels и Stories.",
-            pricePerUnit: 150,
+            pricePerUnit: ADS_PRICING.channelManagementMonthly,
             isMonthly: true,
           },
         ],
-        helperText: "Минималният рекламен бюджет е €50/месец за всеки канал.",
+        helperText: `Минималният рекламен бюджет е €${ADS_PRICING.minAdBudgetMonthly}/месец за всеки канал.`,
       },
     ],
     features: [

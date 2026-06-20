@@ -1,5 +1,10 @@
 import type { FaqItem } from "@/components/ui/faq";
 import { Rocket, ShoppingCart, Zap } from "lucide-react";
+import { formatEuroPrice, READY_STORE_PRICING } from "@/lib/data/ready-store-pricing";
+
+const basePriceLabel = formatEuroPrice(READY_STORE_PRICING.baseMonthly);
+const cardPaymentLabel = formatEuroPrice(READY_STORE_PRICING.cardPaymentMonthly);
+const courierLabel = formatEuroPrice(READY_STORE_PRICING.courierMonthly);
 
 export const SERVICE_ID = "ready-store";
 export const OPTION_ID = "subscription";
@@ -11,7 +16,7 @@ export const HERO_DESCRIPTION_DETAIL_P1 =
 export const HERO_DESCRIPTION_DETAIL_P2 =
   "Без да плащаш хиляди евро за агенции, без да учиш програмиране и без да чакаш с месеци. Старт ДО 48 часа с 14-дневна гаранция за връщане на средствата.";
 export const HERO_DETAIL_HIGHLIGHTS = [
-  "(от €20/месец)",
+  `(от ${basePriceLabel}/месец)`,
   "Старт след 24-48 часа",
   "14-дневна гаранция за връщане на средствата",
   "в цяла България",
@@ -61,7 +66,7 @@ export const RESTYLED_CASE = {
 export const STEPS = [
   {
     title: "Избираш абонаментен пакет или конфигурираш сам",
-    body: "Срещу €20/месец получаваш онлайн платформата си. Никакви хиляди евро инвестиция. Ние подготвяме темплейта и основата.",
+    body: `Срещу ${basePriceLabel}/месец получаваш онлайн платформата си. Никакви хиляди евро инвестиция. Ние подготвяме темплейта и основата.`,
     icon: ShoppingCart,
   },
   {
@@ -80,7 +85,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Трябва ли ми голям бюджет, за да започна?",
     answer:
-      "Не! Нашият MVP (Minimum Viable Product) модел ти позволява да стартираш онлайн магазин за едва €20 на месец. Не инвестираш хиляди евро предварително и ако решиш, че идеята ти не работи, просто спираш абонамента без загуби.",
+      `Не! Нашият MVP (Minimum Viable Product) модел ти позволява да стартираш онлайн магазин за едва ${basePriceLabel} на месец. Не инвестираш хиляди евро предварително и ако решиш, че идеята ти не работи, просто спираш абонамента без загуби.`,
   },
   {
     question: "Колко време отнема настройката на онлайн магазина?",
@@ -105,12 +110,12 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Как клиентите ще плащат за поръчките си?",
     answer:
-      "Магазинът ти може да приема класическия Наложен платеж, както и сигурни плащания с дебитни/кредитни карти чрез интеграция със Stripe срещу минимална добавка от €10/месец.",
+      `Магазинът ти може да приема класическия Наложен платеж, както и сигурни плащания с дебитни/кредитни карти чрез интеграция със Stripe срещу минимална добавка от ${cardPaymentLabel}/месец.`,
   },
   {
     question: "Трябва ли ръчно да пиша товарителници за Еконт и Спиди?",
     answer:
-      "Край на ръчното писане! При добавяне на интеграция с куриер (+ €5/месец) системата ни автоматично генерира товарителници с 1 клик, което ще ти спести безброй часове.",
+      `Край на ръчното писане! При добавяне на интеграция с куриер (+ ${courierLabel}/месец) системата ни автоматично генерира товарителници с 1 клик, което ще ти спести безброй часове.`,
   },
   {
     question: "Магазинът ми готов ли е за реклама във Facebook и Instagram?",

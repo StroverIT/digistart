@@ -1,9 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { useAdsServiceUpsells } from "@/components/services/use-ads-service-upsells";
+import {
+  getAdsBaseChannelChoiceId,
+  getAdsBuySectionFeatures,
+  getAdsChannelPickerValue,
+  getDefaultAdsChannelUpsells,
+  normalizeAdsChannelUpsells,
+} from "@/lib/data/ads-channels";
 import { getServiceById, getServicePlanPrice } from "@/lib/data/services";
 import { ADS_LANDING } from "@/config/service-landing/ads";
 import type { CartBillingCycle, CartItemUpsell, ServiceSlotAvailability } from "@/lib/types";
@@ -29,16 +36,28 @@ function AdsBuySectionContent({
   const sectionRef = useRef<HTMLElement>(null);
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
-  const [upsells, setUpsells] = useState<CartItemUpsell[]>([]);
+  const [upsells, setUpsells] = useState<CartItemUpsell[]>(() => getDefaultAdsChannelUpsells());
   useLandingScrollAnimations(sectionRef, { staggerReveal: 0.1 });
+
+  const handleUpsellsChange = useCallback((nextUpsells: CartItemUpsell[]) => {
+    const resolved = getAdsBaseChannelChoiceId(nextUpsells)
+      ? nextUpsells
+      : getDefaultAdsChannelUpsells();
+    setUpsells(normalizeAdsChannelUpsells(resolved));
+  }, []);
 
   const adsUpsells = useAdsServiceUpsells({
     service,
     upsells,
-    onUpsellsChange: setUpsells,
+    onUpsellsChange: handleUpsellsChange,
   });
 
   const planPrice = getServicePlanPrice(service, ADS_OPTION_ID);
+  const selectedChannel = getAdsChannelPickerValue(upsells);
+  const features = useMemo(
+    () => getAdsBuySectionFeatures(service.features, selectedChannel),
+    [service.features, selectedChannel],
+  );
 
   const handleCheckout = (options?: { billingCycle?: CartBillingCycle }) => {
     setIsAdding(true);
@@ -92,6 +111,7 @@ function AdsBuySectionContent({
           hiddenUpsellIds={adsUpsells.hiddenUpsellIds}
           validateBeforeAdd={adsUpsells.validateBeforeAdd}
           basePackageExtra={adsUpsells.basePackageExtra}
+          features={features}
           hideAdditionalServices
         />
       </div>

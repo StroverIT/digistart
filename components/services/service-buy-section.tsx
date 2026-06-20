@@ -97,6 +97,8 @@ interface ServiceBuySectionProps {
   customUpsellsContent?: ReactNode;
   /** Hides upsells and companion blocks (e.g. minimal buy UI). */
   hideAdditionalServices?: boolean;
+  /** Overrides `service.features` in the base package list. */
+  features?: string[];
 }
 
 export { ServiceUpsellsSection } from "@/components/services/service-upsells-section";
@@ -124,6 +126,7 @@ export function ServiceBuySection({
   validateBeforeAdd,
   customUpsellsContent,
   hideAdditionalServices = false,
+  features: featuresOverride,
 }: ServiceBuySectionProps) {
   const { data: session } = useSession();
   const isAdminCheckout = isAdminCheckoutRole(session?.user?.role);
@@ -155,6 +158,7 @@ export function ServiceBuySection({
     () => service.options.find((option) => option.id === cartSelectedOptionId) ?? service.options[0],
     [cartSelectedOptionId, service.options],
   );
+  const displayFeatures = featuresOverride ?? service.features;
 
   const ctaText =
     ctaLabel ?? (serviceInCart ? "Промени в кошницата" : "Добави в кошницата");
@@ -536,9 +540,9 @@ export function ServiceBuySection({
               <p className="text-xs font-semibold uppercase tracking-widest text-accent">
                 Базов пакет
               </p>
-              {service.features.length ? (
+              {displayFeatures.length ? (
                 <ul className="mt-5 grid gap-x-6 gap-y-2.5 text-sm sm:grid-cols-2">
-                  {service.features.map((feature) => (
+                  {displayFeatures.map((feature) => (
                     <li key={feature} className="flex items-start gap-2.5 text-foreground/80">
                       <Check
                         className="mt-0.5 size-4 shrink-0 text-accent"

@@ -1,5 +1,9 @@
 import { Megaphone, Rocket, ShoppingCart, Target } from "lucide-react";
 import type { ServicePasLandingContent } from "@/components/services/service-pas-landing/types";
+import { ADS_PRICING, formatEuroPrice } from "@/lib/data/ads-pricing";
+
+const channelPriceLabel = formatEuroPrice(ADS_PRICING.channelManagementMonthly);
+const minBudgetLabel = formatEuroPrice(ADS_PRICING.minAdBudgetMonthly);
 
 export const ADS_LANDING: ServicePasLandingContent = {
   pagePath: "/services/ads",
@@ -17,12 +21,12 @@ export const ADS_LANDING: ServicePasLandingContent = {
       "Продаваш вече - но рекламата изяжда бюджет без поръчки, а Ads Manager те парализира",
     bullets: [
       "Настройка, пускане и месечна оптимизация - ти не влизаш всеки ден в Ads Manager",
-      "Ясно разделение: €150/мес управление на канал · мин. €50/мес бюджет към Google или Meta (отделно)",
+      `Ясно разделение: ${channelPriceLabel}/мес управление на канал · мин. ${minBudgetLabel}/мес бюджет към Google или Meta (отделно)`,
       "Рекламите достигат до хора, които вече купуват подобни продукти",
       "Магазинът или профилът ти е готов да приеме клика - без да губиш купувача",
       "Месечен отчет - какво работи, какво спираме, колко е разхода и колко е на плюс",
     ],
-    socialProof: "+ мин. €50/мес рекламен бюджет към платформата · без скрити такси",
+    socialProof: `+ мин. ${minBudgetLabel}/мес рекламен бюджет към платформата · без скрити такси`,
   },
   benefits: {
     eyebrow: "Защо boost не е стратегия",
@@ -126,8 +130,8 @@ export const ADS_LANDING: ServicePasLandingContent = {
     eyebrow: "Прозрачност",
     title: "Плащаш за мозък и време, не за „boost и молитви“",
     stats: [
-      { value: "€150", label: "управление / канал / мес" },
-      { value: "€50", label: "мин. рекламен бюджет / канал / мес" },
+      { value: channelPriceLabel, label: "управление / канал / мес" },
+      { value: minBudgetLabel, label: "мин. рекламен бюджет / канал / мес" },
       { value: "Винаги до теб", label: "Всеки ден на линия (9:00-22:00)" },
       { value: "1×", label: "месечен отчет с препоръки" },
     ],
@@ -139,7 +143,7 @@ export const ADS_LANDING: ServicePasLandingContent = {
     items: [
       {
         title: "Избираш канали и бюджет",
-        body: "€150/месец управление + минимум €50 рекламен бюджет към Google или Meta на канал. Ти определяш колко да инвестираш.",
+        body: `${channelPriceLabel}/месец управление + минимум ${minBudgetLabel} рекламен бюджет към Google или Meta на канал. Ти определяш колко да инвестираш.`,
         icon: ShoppingCart,
       },
       {
@@ -171,14 +175,14 @@ export const ADS_LANDING: ServicePasLandingContent = {
           "Можеш. Но при магазин лесно се харчи за кликове без поръчки. Ние следим продуктите, количките и продажбите, и местим бюджета към работещото.",
       },
       {
-        question: "Какво включва €150/месец?",
+        question: `Какво включва ${channelPriceLabel}/месец?`,
         answer:
           "Стратегия, настройка, управление, оптимизация и месечен отчет за 1 рекламен канал. Това е постоянна грижа за продажбите, не еднократно пускане.",
       },
       {
         question: "Рекламният бюджет включен ли е?",
         answer:
-          "Не. Бюджетът се плаща директно към Google или Meta. Минимумът е €50/месец на канал, за да има данни за тест и оптимизация.",
+          `Не. Бюджетът се плаща директно към Google или Meta. Минимумът е ${minBudgetLabel}/месец на канал, за да има данни за тест и оптимизация.`,
       },
       {
         question: "Google или Meta да избера?",
@@ -213,7 +217,7 @@ export const ADS_LANDING: ServicePasLandingContent = {
       {
         question: "Може ли само с Google или само с Meta?",
         answer:
-          "Да. Започваш с 1 канал за €150/мес управление. Втори канал можеш да добавиш по-късно, ако има смисъл.",
+          `Да. Започваш с 1 канал за ${channelPriceLabel}/мес управление. Втори канал можеш да добавиш по-късно, ако има смисъл.`,
       },
       {
         question: "Има ли дългосрочен договор?",
@@ -222,7 +226,7 @@ export const ADS_LANDING: ServicePasLandingContent = {
       {
         question: "Колко струва допълнителен канал?",
         answer:
-          "Всеки допълнителен канал е +€150/месец за управление. Рекламният бюджет към платформата е отделно.",
+          `Всеки допълнителен канал е +${channelPriceLabel}/месец за управление. Рекламният бюджет към платформата е отделно.`,
       },
       {
         question: "Как мога да се запиша по-рано?",

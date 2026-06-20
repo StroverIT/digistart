@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import HeroSection from "@/components/services/service-detail-ads-v2/HeroSection";
 import { ADS_LANDING } from "@/config/service-landing/ads";
+import { ADS_PRICING, formatEuroPrice } from "@/lib/data/ads-pricing";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
 const InnerNavigation = dynamic(
@@ -37,7 +38,7 @@ const BuySection = dynamic(() => import("@/components/services/service-detail-ad
 export const metadata: Metadata = {
   title: "Реклами за онлайн магазини · Google Ads и Meta",
   description:
-    "Google и Meta реклами за e-commerce: повече хора към продуктите, повече колички и повече онлайн поръчки. Управление от €150/мес на канал.",
+    `Google и Meta реклами за e-commerce: повече хора към продуктите, повече колички и повече онлайн поръчки. Управление от ${formatEuroPrice(ADS_PRICING.channelManagementMonthly)}/мес на канал.`,
 };
 
 export default async function AdsPage() {

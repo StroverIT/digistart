@@ -1,5 +1,10 @@
 import { Rocket, ShoppingCart, Zap } from "lucide-react";
 import type { ServicePasLandingContent } from "@/components/services/service-pas-landing/types";
+import { formatEuroPrice, READY_STORE_PRICING } from "@/lib/data/ready-store-pricing";
+
+const basePriceLabel = formatEuroPrice(READY_STORE_PRICING.baseMonthly);
+const cardPaymentLabel = formatEuroPrice(READY_STORE_PRICING.cardPaymentMonthly);
+const courierLabel = formatEuroPrice(READY_STORE_PRICING.courierMonthly);
 
 export const ONLINE_STORE_LANDING: ServicePasLandingContent = {
   pagePath: "/services/online-store",
@@ -114,7 +119,7 @@ export const ONLINE_STORE_LANDING: ServicePasLandingContent = {
       { value: "Винаги до теб", label: "Всеки ден на линия (9:00-22:00)" },
       { value: "48 ч.", label: "до завършен и адаптиран магазин" },
       { value: "14 дни", label: "безплатен тестов период с гаранция" },
-      { value: "€20", label: "на месец, без скрити такси за старт" },
+      { value: basePriceLabel, label: "на месец, без скрити такси за старт" },
     ],
   },
   steps: {
@@ -124,7 +129,7 @@ export const ONLINE_STORE_LANDING: ServicePasLandingContent = {
     items: [
       {
         title: "Поръчваш своя план",
-        body: "€20/мес абонамент + добавки само ако са ти нужни. Ясно и прозрачно.",
+        body: `${basePriceLabel}/мес абонамент + добавки само ако са ти нужни. Ясно и прозрачно.`,
         icon: ShoppingCart,
       },
       {
@@ -141,8 +146,8 @@ export const ONLINE_STORE_LANDING: ServicePasLandingContent = {
   },
   valueProp: {
     paragraphs: [
-      "Един абонамент от €20/мес ти осигурява адаптиран магазин, хостинг, защита, Meta Pixel и ежедневна чат поддръжка от реален човек.",
-      "Добавките са изцяло по твой избор: плащане с карти (+€10/мес), куриерска интеграция (+€5/мес). Никакви скрити условия.",
+      `Един абонамент от ${basePriceLabel}/мес ти осигурява адаптиран магазин, хостинг, защита, Meta Pixel и ежедневна чат поддръжка от реален човек.`,
+      `Добавките са изцяло по твой избор: плащане с карти (+${cardPaymentLabel}/мес), куриерска интеграция (+${courierLabel}/мес). Никакви скрити условия.`,
       "Най-важното: 14 дни безплатен тест. Качваме реалните ти продукти. Посрещаш реални клиенти. Ако не си доволен – получаваш си парите обратно.",
     ],
     highlights: [

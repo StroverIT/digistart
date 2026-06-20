@@ -4,8 +4,56 @@ export const ADS_EXTRA_CHANNEL_UPSELL_ID = "extra-ad-channels";
 export const ADS_CHANNEL_CHOICE_IDS = ["google-ads", "meta-ads"] as const;
 export type AdsChannelChoiceId = (typeof ADS_CHANNEL_CHOICE_IDS)[number];
 
+export const DEFAULT_ADS_CHANNEL: AdsChannelChoiceId = "google-ads";
+
+export function getDefaultAdsChannelUpsells(): {
+  upsellId: string;
+  quantity: number;
+  choiceId: AdsChannelChoiceId;
+}[] {
+  return [
+    {
+      upsellId: ADS_BASE_CHANNEL_UPSELL_ID,
+      quantity: 1,
+      choiceId: DEFAULT_ADS_CHANNEL,
+    },
+  ];
+}
+
 export const ADS_BOTH_CHANNELS_SELECTION = "both-channels" as const;
 export type AdsChannelPickerValue = AdsChannelChoiceId | typeof ADS_BOTH_CHANNELS_SELECTION;
+
+export const ADS_GOOGLE_CHANNEL_FEATURES = [
+  "Ние намираме правилните думи и ги създаваме.",
+  "Ние следим печелившите и губещите реклами",
+] as const;
+
+export const ADS_META_CHANNEL_FEATURES = [
+  "Ние създаваме клиповете, снимките, колекции и т.н.",
+] as const;
+
+export function getAdsBuySectionFeatures(
+  baseFeatures: readonly string[],
+  channel?: AdsChannelPickerValue,
+): string[] {
+  if (channel === "google-ads") {
+    return [...baseFeatures, ...ADS_GOOGLE_CHANNEL_FEATURES];
+  }
+
+  if (channel === "meta-ads") {
+    return [...baseFeatures, ...ADS_META_CHANNEL_FEATURES];
+  }
+
+  if (channel === ADS_BOTH_CHANNELS_SELECTION) {
+    return [
+      ...baseFeatures,
+      ...ADS_GOOGLE_CHANNEL_FEATURES,
+      ...ADS_META_CHANNEL_FEATURES,
+    ];
+  }
+
+  return [...baseFeatures];
+}
 
 export function isAdsChannelChoiceId(value: string): value is AdsChannelChoiceId {
   return ADS_CHANNEL_CHOICE_IDS.includes(value as AdsChannelChoiceId);
