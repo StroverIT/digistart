@@ -75,7 +75,7 @@ export function validateAdsChannelUpsells(
 ): string | null {
   const baseChoiceId = getAdsBaseChannelChoiceId(upsells);
   if (!baseChoiceId) {
-    return "Избери рекламен канал — Google Ads, Meta Ads или и двете.";
+    return "Избери рекламен канал - Google Ads, Meta Ads или и двете.";
   }
 
   if (!isAdsExtraChannelEnabled(upsells)) return null;

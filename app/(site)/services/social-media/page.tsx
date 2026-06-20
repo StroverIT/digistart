@@ -1,21 +1,66 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { ServiceDetailSocialMedia } from "@/components/services/service-detail-social-media";
-import { getServiceById } from "@/lib/data/services";
+import dynamic from "next/dynamic";
+import HeroSection from "@/components/services/service-detail-social-media-v2/HeroSection";
+import { SOCIAL_MEDIA_LANDING } from "@/config/service-landing/social-media";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
+
+const InnerNavigation = dynamic(
+  () => import("@/components/services/service-detail-social-media-v2/InnerNavigation"),
+);
+
+const PasFaqSection = dynamic(() =>
+  import("@/components/services/service-pas-landing/faq-section").then((mod) => ({
+    default: mod.PasFaqSection,
+  })),
+);
+
+const PasSection = dynamic(
+  () => import("@/components/services/service-detail-social-media-v2/PasSection"),
+);
+
+const Benefits = dynamic(
+  () => import("@/components/services/service-detail-social-media-v2/Benefits"),
+);
+
+const BuiltInChat = dynamic(
+  () => import("@/components/services/service-detail-ready-store-v2/BuiltInChat"),
+);
+
+const ContentIncludes = dynamic(
+  () => import("@/components/services/service-detail-social-media-v2/ContentIncludes"),
+);
+
+const CaseStudy = dynamic(
+  () => import("@/components/services/service-detail-social-media-v2/CaseStudy"),
+);
+
+const BuySection = dynamic(
+  () => import("@/components/services/service-detail-social-media-v2/BuySection"),
+);
 
 export const metadata: Metadata = {
   title: "Социални мрежи · съдържание и стратегия",
   description:
-    "Професионални публикации за продавачи в Instagram и Facebook - от €200/месец, 2 поста седмично, желязна гаранция за 1 месец.",
+    "Професионална витрина във Facebook и Instagram: текстове, визии и редовни публикации. Ти обслужваш поръчките - ние поемаме профила.",
 };
 
 export default async function SocialMediaPage() {
-  const service = getServiceById("social-media");
-  if (!service) {
-    notFound();
-  }
-
   const availability = await getServiceSlotAvailability("social-media");
-  return <ServiceDetailSocialMedia service={service} availability={availability} />;
+
+  return (
+    <section>
+      <HeroSection />
+      <div className="bg-white pt-10 md:rounded-t-4xl md:-mt-10">
+        <InnerNavigation />
+        <PasSection />
+        <Benefits />
+        <BuiltInChat />
+        <ContentIncludes />
+        <CaseStudy />
+      </div>
+
+      <BuySection availability={availability} />
+      <PasFaqSection {...SOCIAL_MEDIA_LANDING.faq} />
+    </section>
+  );
 }

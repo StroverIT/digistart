@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
   LANDING_BODY_CLASS,
@@ -67,41 +68,52 @@ const Creatives = () => {
         </p>
       </div>
 
-      <div
-        data-animate-grid
-        className="mt-10 grid grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-12 md:mt-14 lg:gap-x-10 lg:gap-y-14"
-      >
-        {FEATURED_CREATIVES.map((creative) => (
-          <article
-            key={creative.label}
-            data-animate-card
-            className={`group flex flex-col ${LANDING_CARD_CLASS}`}
-          >
-            <div
-              data-animate-card-image
-              className="relative aspect-square w-full overflow-hidden rounded-2xl will-change-transform"
+      <div data-animate-grid className="mt-10 flex flex-col gap-14 md:mt-14 lg:gap-20">
+        {FEATURED_CREATIVES.map((creative, index) => {
+          const imageFirst = index % 2 === 1;
+
+          return (
+            <article
+              key={creative.label}
+              data-animate-card
+              className={cn(
+                "group grid items-center gap-8 lg:grid-cols-2 lg:gap-16",
+                LANDING_CARD_CLASS,
+              )}
             >
-              <Image
-                src={creative.src}
-                alt={creative.alt}
-                fill
-                className="object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.02]"
-                sizes="(max-width: 640px) 100vw, 50vw"
-              />
-            </div>
-            <div
-              data-animate-card-copy
-              className="mt-4 space-y-1.5 opacity-0 sm:mt-5"
-            >
-              <h3 className="font-heading text-base font-semibold leading-snug text-foreground sm:text-lg">
-                {creative.label}
-              </h3>
-              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                {creative.description}
-              </p>
-            </div>
-          </article>
-        ))}
+              <div
+                data-animate-card-copy
+                className={cn(
+                  "space-y-3 opacity-0 lg:py-4",
+                  imageFirst ? "order-2 lg:order-2" : "order-1 lg:order-1",
+                )}
+              >
+                <h3 className="font-heading text-xl font-semibold leading-snug text-foreground sm:text-2xl">
+                  {creative.label}
+                </h3>
+                <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  {creative.description}
+                </p>
+              </div>
+
+              <div
+                data-animate-card-image
+                className={cn(
+                  "relative aspect-square w-full overflow-hidden rounded-2xl will-change-transform",
+                  imageFirst ? "order-1 lg:order-1" : "order-2 lg:order-2",
+                )}
+              >
+                <Image
+                  src={creative.src}
+                  alt={creative.alt}
+                  fill
+                  className="object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
+            </article>
+          );
+        })}
       </div>
     </LandingSection>
   );

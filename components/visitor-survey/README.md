@@ -55,7 +55,7 @@ Use the **ID** in URLs (`?chosenService=…`), `localStorage` (`primaryService`,
 
 ## URL query parameters
 
-### `chosenService` — service-specific ads
+### `chosenService` - service-specific ads
 
 Use when the ad already targets one service. The visitor does not see step 4; after step 3 the survey finishes and redirects to that service.
 
@@ -71,7 +71,7 @@ Invalid or missing values → full survey including the services step.
 
 Service interest is still sent to analytics when the survey completes via this param.
 
-### `edit=1` — change answers
+### `edit=1` - change answers
 
 Shows the survey starting at **channels** (step 2), with previous answers pre-filled from storage. The services step is always shown; `chosenService` is ignored in edit mode.
 
@@ -115,9 +115,9 @@ Service pages read this via `VisitorPreferencesProvider` and `useVisitorPreferen
 
 ## Related code
 
-- `lib/visitor-preferences/` — types, constants, paths, analytics, personalization
-- `components/visitor-preferences/` — React context for the rest of the site
-- `e2e/visitor-survey.spec.ts` — Playwright flows
+- `lib/visitor-preferences/` - types, constants, paths, analytics, personalization
+- `components/visitor-preferences/` - React context for the rest of the site
+- `e2e/visitor-survey.spec.ts` - Playwright flows
 
 ## E2E testing
 
@@ -132,4 +132,4 @@ Helpers: `e2e/helpers/survey.ts` (`completeVisitorSurvey`, `seedCompletedSurveyP
 
 1. Pick the correct `chosenService` id from [Service IDs](#service-ids).
 2. Point the ad to `/?chosenService=<id>` on your production domain.
-3. Do not rely on `chosenService` for users who already completed the survey—they will go straight to their saved service.
+3. Do not rely on `chosenService` for users who already completed the survey-they will go straight to their saved service.

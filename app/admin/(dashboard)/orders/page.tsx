@@ -437,10 +437,10 @@ export default function OrdersPage() {
                   </p>
                   <p>
                     <span className="text-muted-foreground">Фирма (поръчка):</span>{" "}
-                    {selectedOrder.customer.company ?? "—"}
+                    {selectedOrder.customer.company ?? "-"}
                   </p>
                   {orderDetails?.user?.company &&
-                  orderDetails.user.company !== selectedOrder.customer.company ? (
+                    orderDetails.user.company !== selectedOrder.customer.company ? (
                     <p>
                       <span className="text-muted-foreground">Фирма (акаунт):</span>{" "}
                       {orderDetails.user.company}
@@ -550,7 +550,7 @@ export default function OrdersPage() {
                     )}
 
                     {orderDetails.project?.businessSettings &&
-                    Object.keys(orderDetails.project.businessSettings).length > 0 ? (
+                      Object.keys(orderDetails.project.businessSettings).length > 0 ? (
                       <div>
                         <p className="text-sm font-medium mb-2">Данни за бизнеса</p>
                         <div className="space-y-1 text-sm">
@@ -583,20 +583,20 @@ export default function OrdersPage() {
                     ) : null}
 
                     {orderDetails.project?.socialSettings &&
-                    (Array.isArray(orderDetails.project.socialSettings.channels) ||
-                      orderDetails.project.socialSettings.googleBusinessUrl) ? (
+                      (Array.isArray(orderDetails.project.socialSettings.channels) ||
+                        orderDetails.project.socialSettings.googleBusinessUrl) ? (
                       <div>
                         <p className="text-sm font-medium mb-2">Социални мрежи</p>
                         {typeof orderDetails.project.socialSettings.googleBusinessUrl ===
                           "string" &&
-                        orderDetails.project.socialSettings.googleBusinessUrl ? (
+                          orderDetails.project.socialSettings.googleBusinessUrl ? (
                           <p className="text-sm break-all mb-2">
                             <span className="text-muted-foreground">Google Business: </span>
                             {orderDetails.project.socialSettings.googleBusinessUrl}
                           </p>
                         ) : null}
                         {Array.isArray(orderDetails.project.socialSettings.channels) &&
-                        orderDetails.project.socialSettings.channels.length > 0 ? (
+                          orderDetails.project.socialSettings.channels.length > 0 ? (
                           <ul className="space-y-1 text-sm">
                             {(
                               orderDetails.project.socialSettings.channels as Array<
@@ -678,7 +678,7 @@ export default function OrdersPage() {
                                   {!item.ok ? (
                                     <span className="text-muted-foreground">
                                       {" "}
-                                      — {item.description}
+                                      - {item.description}
                                     </span>
                                   ) : null}
                                 </span>

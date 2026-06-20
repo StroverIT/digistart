@@ -502,10 +502,15 @@ export function ServiceBuySection({
               </div>
             ) : null}
 
-            {service.slug !== "online-store" && service.slug !== "ads" && (
+            {service.slug !== "online-store" &&
+              service.slug !== "ads" &&
+              service.slug !== "social-media" &&
+              title ? (
               <h2 className="text-2xl font-bold mb-2">{title}</h2>
-            )}
-            {service.slug !== "online-store" && service.slug !== "ads" && (
+            ) : null}
+            {service.slug !== "online-store" &&
+              service.slug !== "ads" &&
+              service.slug !== "social-media" && (
               <p className="mb-6 text-sm text-pretty text-muted-foreground">
                 Избери сам <span className="font-semibold text-foreground">ИЛИ</span>{" "}
                 <Link
@@ -520,7 +525,7 @@ export function ServiceBuySection({
               <p className="text-xs font-semibold uppercase tracking-widest text-accent">
                 Базов пакет
               </p>
-              {service.slug === "ads" && header ? (
+              {header ? (
                 <h3 className="mt-2 font-heading text-xl font-bold text-foreground sm:text-2xl">
                   {header}
                 </h3>

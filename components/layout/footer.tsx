@@ -21,7 +21,6 @@ import {
 import { cn } from "@/lib/utils";
 
 const services = [
-  { href: "/services/ai-automation", label: "AI Automation" },
   { href: "/services/online-store", label: "Онлайн магазин" },
   { href: "/services/google-business", label: "Google Business" },
   { href: "/services/social-media", label: "Социални мрежи" },

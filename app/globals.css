@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* DigiStart — soft lilac bg, #ADEEC5 primary, #480058 accent */
+/* DigiStart - soft lilac bg, #ADEEC5 primary, #480058 accent */
 :root {
   --background: oklch(0.952 0.015 330);
   --foreground: oklch(0.22 0.13 320);

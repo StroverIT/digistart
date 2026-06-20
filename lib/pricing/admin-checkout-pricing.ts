@@ -46,7 +46,7 @@ export function applyAdminPricingToCart(cart: Cart): Cart {
   };
 }
 
-/** Preview total on a service buy panel — always the flat admin total. */
+/** Preview total on a service buy panel - always the flat admin total. */
 export function adminPreviewTotalPrice(): number {
   return ADMIN_CHECKOUT_TOTAL_EUR;
 }

@@ -32,7 +32,7 @@ export default function VideosPage() {
             Видео ръководства за твоя онлайн бизнес
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground max-w-3xl">
-            Гледай кратки и ясни видеа с практични стъпки — без сложни термини и
+            Гледай кратки и ясни видеа с практични стъпки - без сложни термини и
             излишна бюрокрация.
           </p>
         </section>

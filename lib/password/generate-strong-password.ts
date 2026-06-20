@@ -36,7 +36,7 @@ export function generateStrongPassword(length = 16): string {
 
 export function downloadPasswordBackup(password: string): void {
   const body = [
-    "DigiStart — генерирана парола",
+    "DigiStart - генерирана парола",
     "",
     password,
     "",

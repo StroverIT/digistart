@@ -13,7 +13,7 @@ function formatEuro(value: number) {
   return `€${formatAmount(value)}`
 }
 
-/** @deprecated Use formatEuro — kept for existing chart formatters */
+/** @deprecated Use formatEuro - kept for existing chart formatters */
 function formatPriceWithBgn(value: number) {
   return formatEuro(value)
 }
