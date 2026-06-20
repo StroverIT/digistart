@@ -103,7 +103,7 @@ const InnerNavigation = () => {
             onClick={() => setActiveId(item.id)}
             aria-current={activeId === item.id ? "true" : undefined}
             className={cn(
-              "shrink-0 rounded-full px-4 py-2 text-sm font-medium capitalize text-accent-foreground transition-colors",
+              "shrink-0 rounded-full px-4 py-2 text-sm font-medium text-accent-foreground transition-colors",
               activeId === item.id
                 ? "bg-primary text-primary-foreground"
                 : "text-accent-foreground/90 hover:bg-accent-foreground/10 hover:text-accent-foreground",

@@ -1,8 +1,8 @@
 export const ADS_SECTION_NAV = [
-  { id: "creatives", label: "поръчки" },
-  { id: "benefits", label: "ползи" },
-  { id: "support", label: "магазин" },
-  { id: "marketing", label: "Не сам" },
-  { id: "reports", label: "продажби" },
-  { id: "case-study", label: "кейс" },
+  { id: "creatives", label: "Онлайн поръчки" },
+  { id: "benefits", label: "Как помагат" },
+  { id: "support", label: "Чат" },
+  { id: "marketing", label: "Защо не сам" },
+  { id: "reports", label: "Резултати" },
+  { id: "case-study", label: "Реален пример" },
 ] as const;

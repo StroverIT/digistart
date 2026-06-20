@@ -18,7 +18,9 @@ const Creatives = dynamic(() => import("@/components/services/service-detail-ads
 
 const Benefits = dynamic(() => import("@/components/services/service-detail-ads-v2/Benefits"));
 
-const BuiltInChat = dynamic(() => import("@/components/services/service-detail-ads-v2/BuiltInChat"));
+const BuiltInChat = dynamic(
+  () => import("@/components/services/service-detail-ready-store-v2/BuiltInChat"),
+);
 
 const MarketingTools = dynamic(
   () => import("@/components/services/service-detail-ads-v2/MarketingTools"),
