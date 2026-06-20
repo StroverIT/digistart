@@ -454,17 +454,18 @@ export function Header() {
 
               <div className="flex items-center gap-2 z-60 relative">
                 <AnalyticsToolbar />
+                <div className="flex items-center gap-4">
                 {isCartPage ? (
                   <Button
                     variant="ghost"
-                    size="icon"
-                    className="relative bg-primary/10 ring-2 ring-primary/25 pointer-events-none"
+                    size="icon-xl"
+                    className="relative rounded-xl bg-primary/10 ring-2 ring-primary/25 pointer-events-none"
                     tabIndex={-1}
                     aria-current="page"
                   >
-                    <ShoppingCart className="h-5 w-5" />
+                    <ShoppingCart className="size-6" />
                     {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                         {cartCount}
                       </span>
                     )}
@@ -474,7 +475,7 @@ export function Header() {
                   <TransitionLink href="/cart">
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size="icon-xl"
                       className={cn(
                         "relative group rounded-xl transition-all duration-200 ease-out",
                         "text-muted-foreground hover:text-primary",
@@ -483,9 +484,9 @@ export function Header() {
                         "active:scale-[0.96] motion-reduce:active:scale-100"
                       )}
                     >
-                      <ShoppingCart className="h-5 w-5 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:scale-100" />
+                      <ShoppingCart className="size-6 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:scale-100" />
                       {cartCount > 0 && (
-                        <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                        <span className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                           {cartCount}
                         </span>
                       )}
@@ -502,6 +503,7 @@ export function Header() {
                     rounded
                     label={isOpen ? "Затвори менюто" : "Отвори менюто"}
                   />
+                </div>
                 </div>
               </div>
             </div>

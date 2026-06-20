@@ -18,8 +18,6 @@ type PageTransitionProviderProps = {
   children: ReactNode;
 };
 
-const OVERLAY_BG = "#050505";
-
 const TRANSITION_LOGO_SRC = SITE_LOGO_SRC;
 const BOLT_STRIKE_FILL = "#ffffff";
 const BOLT_CHARGE_FILL = "#3b82f6";
@@ -82,6 +80,7 @@ function PageTransitionProviderContent({
   children,
 }: PageTransitionProviderProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const flashRef = useRef<HTMLDivElement>(null);
   const lightningLeftRef = useRef<HTMLDivElement>(null);
   const lightningRightRef = useRef<HTMLDivElement>(null);
   const boltLeftPathRef = useRef<SVGPathElement>(null);
@@ -131,13 +130,16 @@ function PageTransitionProviderContent({
     const boltLeft = boltLeftPathRef.current;
     const boltRight = boltRightPathRef.current;
     const logo = logoRef.current;
+    const flash = flashRef.current;
 
-    gsap.killTweensOf([overlay, lightningLeft, lightningRight, boltLeft, boltRight, logo]);
+    gsap.killTweensOf([overlay, flash, lightningLeft, lightningRight, boltLeft, boltRight, logo]);
     gsap.set(overlay, {
       yPercent: 100,
       visibility: "visible",
-      backgroundColor: OVERLAY_BG,
     });
+    if (flash) {
+      gsap.set(flash, { opacity: 0 });
+    }
 
     resetLightning(lightningLeft, lightningRight, boltLeft, boltRight);
     resetLogo(logo);
@@ -166,7 +168,7 @@ function PageTransitionProviderContent({
       ease: "power3.inOut",
     });
 
-    if (lightningLeft && lightningRight && boltLeft && boltRight && logo) {
+    if (lightningLeft && lightningRight && boltLeft && boltRight && logo && flash) {
       const lightnings = [lightningLeft, lightningRight];
       const bolts = [boltLeft, boltRight];
 
@@ -193,9 +195,9 @@ function PageTransitionProviderContent({
 
       // Background flash
       strikeTl.to(
-        overlay,
+        flash,
         {
-          backgroundColor: "#0f172a",
+          opacity: 0.65,
           duration: 0.05,
           yoyo: true,
           repeat: 1,
@@ -245,16 +247,19 @@ function PageTransitionProviderContent({
     const boltLeft = boltLeftPathRef.current;
     const boltRight = boltRightPathRef.current;
     const logo = logoRef.current;
+    const flash = flashRef.current;
 
     // This successfully intercepts and kills all infinite timelines automatically
-    gsap.killTweensOf([overlay, lightningLeft, lightningRight, boltLeft, boltRight, logo]);
+    gsap.killTweensOf([overlay, flash, lightningLeft, lightningRight, boltLeft, boltRight, logo]);
 
     if (overlay) {
       gsap.set(overlay, {
         yPercent: 100,
         visibility: "hidden",
-        backgroundColor: OVERLAY_BG,
       });
+    }
+    if (flash) {
+      gsap.set(flash, { opacity: 0 });
     }
 
     resetLightning(lightningLeft, lightningRight, boltLeft, boltRight);
@@ -333,11 +338,23 @@ function PageTransitionProviderContent({
       {children}
       <div
         ref={overlayRef}
-        className="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center"
-        style={{ backgroundColor: OVERLAY_BG }}
+        className="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center overflow-hidden bg-foreground"
         aria-hidden="true"
       >
-        <div className="relative flex items-center justify-center">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
+        />
+        <div
+          ref={flashRef}
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-primary/30 opacity-0"
+        />
+        <div className="relative z-10 flex items-center justify-center">
           <img
             ref={logoRef}
             src={TRANSITION_LOGO_SRC}
