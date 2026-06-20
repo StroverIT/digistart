@@ -85,7 +85,7 @@ const InnerNavigation = () => {
     <nav
       ref={sectionRef}
       aria-label="Навигация по секции"
-      className="sticky top-24 sm:top-28 z-30 -mt-14 w-full rounded-none border border-x-0 border-white/10 bg-black text-white sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)] sm:rounded-full sm:border-x"
+      className="sticky top-24 sm:top-28 z-30 -mt-14 w-full rounded-none border border-x-0 border-accent-foreground/15 bg-accent text-accent-foreground sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)] sm:rounded-full sm:border-x"
     >
       <div
         ref={scrollContainerRef}
@@ -105,10 +105,10 @@ const InnerNavigation = () => {
             onClick={() => setActiveId(item.id)}
             aria-current={activeId === item.id ? "true" : undefined}
             className={cn(
-              "shrink-0 rounded-full px-4 py-2 text-sm font-medium capitalize text-white transition-colors",
+              "shrink-0 rounded-full px-4 py-2 text-sm font-medium capitalize text-accent-foreground transition-colors",
               activeId === item.id
-                ? "bg-zinc-600 text-white"
-                : "text-white/90 hover:bg-white/10 hover:text-white",
+                ? "bg-primary text-primary-foreground"
+                : "text-accent-foreground/90 hover:bg-accent-foreground/10 hover:text-accent-foreground",
             )}
           >
             {item.label}

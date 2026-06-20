@@ -43,7 +43,7 @@ export function ServiceSlotsBanner({ className }: ServiceSlotsBannerProps) {
   return (
     <div
       className={cn(
-        "bg-black text-white text-center text-sm font-medium py-2 px-4",
+        "bg-accent text-accent-foreground text-center text-sm font-medium py-2 px-4",
         className,
       )}
       role="status"

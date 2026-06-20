@@ -76,7 +76,7 @@ export function PathContent({ path }: { path: PathContentType }) {
                 className={cn(
                   "relative p-8 md:p-10",
                   isHighlight &&
-                    "bg-gradient-to-br from-primary/20 via-primary/10 to-accent/[0.08] lg:shadow-[-12px_0_32px_-20px_oklch(0.32_0.16_320_/_0.18)]",
+                  "bg-gradient-to-br from-primary/20 via-primary/10 to-accent/[0.08] lg:shadow-[-12px_0_32px_-20px_oklch(0.32_0.16_320_/_0.18)]",
                 )}
               >
                 <span
@@ -132,30 +132,30 @@ export function PathContent({ path }: { path: PathContentType }) {
           </h3>
         </div>
 
-        <div className="relative mt-8 grid gap-4 sm:grid-cols-2">
+        <div className="relative mt-8 grid gap-4 pt-4 pr-4 sm:grid-cols-2">
           {path.fits.map((fit, index) => {
             const Icon = FIT_ICONS[index % FIT_ICONS.length];
 
             return (
               <article
                 key={fit.title}
-                className="group relative overflow-hidden rounded-2xl bg-card p-6 shadow-[var(--shadow-soft)] ring-1 ring-foreground/[0.04] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-glow)] md:p-7"
+                className="group relative overflow-visible rounded-2xl bg-card p-6 shadow-[var(--shadow-soft)] ring-1 ring-foreground/[0.04] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-glow)] md:p-7"
               >
                 <div
                   aria-hidden
-                  className="absolute inset-y-0 left-0 w-1 bg-accent"
+                  className="absolute inset-y-0 left-0 w-1 rounded-l-2xl bg-accent"
                 />
                 <div
                   aria-hidden
                   className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-primary/15 blur-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 />
 
-                <div className="relative flex gap-4 pl-2">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/15 to-primary/25 text-accent shadow-sm ring-4 ring-card transition-transform duration-300 group-hover:scale-105">
-                    <Icon className="h-5 w-5" strokeWidth={2.2} />
-                  </div>
+                <div className="absolute right-0 top-0 z-10 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/15 to-primary/25 text-accent shadow-sm ring-4 ring-card transition-transform duration-300 group-hover:scale-105">
+                  <Icon className="h-5 w-5" strokeWidth={2.2} />
+                </div>
 
-                  <div className="min-w-0 flex-1">
+                <div className="relative pl-2">
+                  <div className="min-w-0">
                     <div className="flex items-center justify-between gap-3">
                       <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-accent">
                         Критерий 0{index + 1}

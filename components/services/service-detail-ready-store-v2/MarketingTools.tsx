@@ -137,7 +137,8 @@ const MarketingTools = () => {
       ref={sectionRef}
       id="marketing"
       data-nav-theme="dark"
-      className="bg-[#111111] text-white"
+      withGradients
+      className="bg-foreground text-background"
     >
       <h1
         data-animate-reveal

@@ -457,14 +457,14 @@ export function ServiceBuySection({
                   type="button"
                   onClick={() => setBillingCycle("monthly")}
                   className={cn(
-                    "w-full rounded-xl border border-primary/20 bg-primary/5 p-3 text-left transition-colors",
+                    "w-full rounded-xl border bg-card p-3 text-left transition-colors",
                     effectiveBillingCycle === "monthly"
-                      ? "border-primary ring-1 ring-primary"
-                      : "hover:border-primary/40",
+                      ? "border-accent ring-1 ring-accent shadow-sm"
+                      : "border-border hover:border-accent/40",
                   )}
                 >
-                  <span className="block text-sm font-semibold">Месечно</span>
-                  <span className="mt-1 block text-xs text-muted-foreground">
+                  <span className="block text-sm font-semibold text-foreground">Месечно</span>
+                  <span className="mt-1 block text-xs text-foreground/70">
                     Може по всяко време да се откажеш
                   </span>
                 </button>
@@ -472,17 +472,17 @@ export function ServiceBuySection({
                   type="button"
                   onClick={() => setBillingCycle("annual-prepaid")}
                   className={cn(
-                    "relative w-full overflow-hidden rounded-xl border border-primary/20 bg-primary/5 p-3 pr-14 pt-3 text-left transition-colors",
+                    "relative w-full overflow-hidden rounded-xl border bg-card p-3 pr-14 pt-3 text-left transition-colors",
                     effectiveBillingCycle === "annual-prepaid"
-                      ? "border-primary ring-1 ring-primary"
-                      : "hover:border-primary/40",
+                      ? "border-accent ring-1 ring-accent shadow-sm"
+                      : "border-border hover:border-accent/40",
                   )}
                 >
-                  <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground shadow-sm">
+                  <span className="absolute right-2 top-2 rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-accent-foreground shadow-sm">
                     -{annualDiscountPercent}%
                   </span>
-                  <span className="block text-sm font-semibold">За година</span>
-                  <span className="mt-1 block text-xs text-muted-foreground">
+                  <span className="block text-sm font-semibold text-foreground">За година</span>
+                  <span className="mt-1 block text-xs text-foreground/70">
                     {annualSavingsDescription}
                   </span>
                 </button>

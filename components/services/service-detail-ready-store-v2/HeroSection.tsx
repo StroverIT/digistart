@@ -40,7 +40,7 @@ const HeroVideo = dynamic(() => import("./HeroVideo"), {
 
 const HeroSection = () => {
   return (
-    <LandingSection className="border-b-0 bg-linear-to-b from-white to-primary md:pt-10">
+    <LandingSection className="border-b-0 bg-linear-to-b from-white to-primary/50 md:pt-10">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 lg:items-center lg:gap-16">
         <div className="flex w-full flex-col items-center text-center">
           <p className="text-sm font-semibold uppercase tracking-widest text-accent">

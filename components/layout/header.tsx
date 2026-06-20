@@ -426,10 +426,9 @@ export function Header() {
     <>
       <div className="fixed top-0 left-0 right-0 z-50">
         <header
-          className={`transition-all duration-300 ${isScrolled
-            ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg"
-            : "bg-transparent"
-            }`}
+          className={`transition-all duration-300 border-b border-white/50 bg-white/55 backdrop-blur-xl backdrop-saturate-150 supports-backdrop-filter:bg-white/40 ${
+            isScrolled ? "shadow-[var(--shadow-soft)]" : "shadow-sm shadow-black/5"
+          }`}
         >
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between h-16 md:h-20">

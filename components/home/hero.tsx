@@ -8,13 +8,9 @@ export function HomeHero() {
         className="absolute inset-0 -z-10"
         style={{ background: "var(--gradient-soft)" }}
       />
-      <div className="container mx-auto grid gap-12 px-4 py-20 md:px-8 md:py-28 lg:grid-cols-2 lg:items-center">
+      <div className="container mx-auto grid gap-12 px-4 pt-28 pb-24 md:px-8 md:pt-36 md:pb-32 lg:grid-cols-2 lg:items-center lg:pt-40 lg:pb-36">
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-            Дигитална екосистема за бизнес
-          </span>
-          <h1 className="mt-6 font-heading text-4xl font-bold leading-[1.05] tracking-tight text-foreground md:text-6xl lg:text-7xl">
+          <h1 className="font-heading text-4xl font-bold leading-[1.05] tracking-tight text-foreground md:text-6xl lg:text-7xl">
             НЕ услуги.
             <span className="block">
               Ние създаваме твоето{" "}
