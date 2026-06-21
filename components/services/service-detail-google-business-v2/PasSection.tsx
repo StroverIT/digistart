@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
@@ -11,31 +12,27 @@ import {
   LANDING_SECTION_TITLE_LEFT_CLASS,
 } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useCreativesAnimations } from "@/components/services/service-detail-ads-v2/use-creatives-animations";
-import { ImagePlaceholder } from "./ImagePlaceholder";
 
 const PAS_ITEMS = [
   {
     title: "Разчиташ на минувачи и препоръки",
     description:
       "Имаш страхотен продукт или услуга, но когато някой чуе за теб и те потърси в Google или на картата, не намира нищо, или по-лошо – попада на объркваща и стара информация.",
-    width: 800,
-    height: 800,
+    image: "/services/google-business/pas/recomendations.png",
     imageFirst: false,
   },
   {
     title: "Губиш сигурни клиенти, защото си невидим",
     description:
       "Добрият продукт и локацията вече не са достатъчни. 78% от локалните мобилни търсения водят до действие в рамките на същия ден. Ако нямаш официален профил със снимки, работно време и отзиви, клиентът приема покупката за рискова. Докато ти разчиташ на случайни минувачи, конкурентите ти с по-добра дигитална следа обират хората, които активно търсят точно това, което ти предлагаш.",
-    width: 800,
-    height: 800,
+    image: "/services/google-business/pas/invisible.png",
     imageFirst: true,
   },
   {
     title: "Дигитализираме твоята витрина и доверието",
     description:
       "Създаваме безупречен Google Business профил, който излиза първи при локално търсене. Ние поемаме черната работа онлайн, за да можеш ти да обслужваш хората в обекта си.",
-    width: 800,
-    height: 800,
+    image: "/services/google-business/pas/trust.png",
     imageFirst: false,
   },
 ] as const;
@@ -106,15 +103,16 @@ const PasSection = () => {
             <div
               data-animate-card-image
               className={cn(
-                "relative order-2 w-full overflow-hidden rounded-2xl md:will-change-transform",
+                "relative order-2 aspect-square w-full overflow-hidden rounded-2xl md:will-change-transform",
                 item.imageFirst ? "lg:order-1" : "lg:order-2",
               )}
             >
-              <ImagePlaceholder
-                width={item.width}
-                height={item.height}
-                label={item.title}
-                className="rounded-2xl"
+              <Image
+                src={item.image}
+                alt={item.title}
+                fill
+                className="pointer-events-none object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </div>
           </article>
