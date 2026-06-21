@@ -25,7 +25,7 @@ export default function SiteLayout({
   return (
     <PageTransitionProvider>
       <Header />
-      <div className="flex min-h-screen min-w-0 flex-col overflow-x-hidden">
+      <div className="flex min-h-screen min-w-0 flex-col">
         <main className="min-w-0 flex-auto">{children}</main>
         <Footer />
       </div>
