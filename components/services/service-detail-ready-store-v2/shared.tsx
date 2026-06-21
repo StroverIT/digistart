@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { LANDING_HEADING_CLASS } from "./landing-animation-classes";
 
 export const landingSectionClass =
-  "scroll-mt-28 overflow-x-hidden py-14 md:py-20 lg:py-24 border-b border-border/60 last:border-b-0";
+  "scroll-mt-28 overflow-hidden py-14 md:py-20 lg:py-24 border-b border-border/60 last:border-b-0";
 
 export const landingContainerClass = "mx-auto w-full max-w-6xl px-4 sm:px-6";
 

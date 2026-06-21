@@ -79,10 +79,12 @@ const ContentIncludes = () => {
 
       <div
         data-animate-card
-        className={`relative mx-auto w-full max-w-6xl ${LANDING_CARD_CLASS}`}
+        className={`relative mx-auto w-full ${LANDING_CARD_CLASS}`}
       >
-        <div className="glow-blob blob-left"></div>
-        <div className="glow-blob blob-right"></div>
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="glow-blob blob-left" />
+          <div className="glow-blob blob-right" />
+        </div>
 
         <div className="relative z-10 w-full rounded-3xl md:-mt-22 lg:-mt-38">
           <ImagePlaceholder
