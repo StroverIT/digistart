@@ -85,7 +85,7 @@ const ReportsPanel = () => {
 
         <div className="relative z-10 h-full w-full rounded-3xl md:-mt-22 lg:-mt-38">
           <Image
-            src="/dashboard.png"
+            src="/dashboard-ads.png"
             alt="Отчети за Google и Meta реклами"
             fill
             className="object-contain object-bottom"
