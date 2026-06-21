@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { Camera, MapPin, Route, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
@@ -9,7 +10,6 @@ import {
   LANDING_CARD_CLASS,
 } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useLandingScrollAnimations } from "@/components/services/service-detail-ready-store-v2/use-landing-scroll-animations";
-import { ImagePlaceholder } from "./ImagePlaceholder";
 
 const packageFeatures = [
   {
@@ -79,17 +79,19 @@ const ContentIncludes = () => {
 
       <div
         data-animate-card
-        className={`relative mx-auto w-full max-w-6xl ${LANDING_CARD_CLASS}`}
+        className={`relative mx-auto aspect-16/10 w-full max-w-6xl ${LANDING_CARD_CLASS}`}
       >
         <div className="glow-blob blob-left"></div>
         <div className="glow-blob blob-right"></div>
 
-        <div className="relative z-10 w-full rounded-3xl md:-mt-22 lg:-mt-38">
-          <ImagePlaceholder
-            width={1920}
-            height={1200}
-            label="Визуализация на Google Business настройката"
-            className="rounded-3xl"
+        <div className="relative z-10 h-full w-full rounded-3xl md:-mt-22 lg:-mt-38">
+          <Image
+            src="/dashboard-google-business.png"
+            alt="Визуализация на Google Business настройката"
+            fill
+            className="object-contain object-bottom"
+            sizes="(max-width: 1280px) 100vw, 1152px"
+            loading="lazy"
           />
         </div>
       </div>
