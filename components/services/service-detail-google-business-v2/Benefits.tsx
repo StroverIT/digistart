@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef } from "react";
 import {
   Clock,
@@ -19,8 +20,6 @@ import {
   LANDING_SECTION_TITLE_CENTER_CLASS,
 } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useLandingScrollAnimations } from "@/components/services/service-detail-ready-store-v2/use-landing-scroll-animations";
-import { ImagePlaceholder } from "./ImagePlaceholder";
-
 const cardClassName =
   "flex flex-col rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 h-full";
 
@@ -50,6 +49,7 @@ const HOW_WE_HELP_BLOCKS = [
     description:
       "Настройваме процеси за лесно събиране на ревюта. Когато новите клиенти видят висок рейтинг и доволни мнения, те избират теб пред конкуренцията, без да се замислят.",
     layout: "image-bottom" as const,
+    image: "/services/google-business/benefits/trust.png",
     imageWidth: 640,
     imageHeight: 480,
     gridArea: "reviews",
@@ -70,6 +70,7 @@ const HOW_WE_HELP_BLOCKS = [
     description:
       "Слагаме край на изгубените клиенти, които идват пред затворена врата. Въвеждаме точно работно време, почивни дни за празниците, точен адрес и телефон за резервации или въпроси.",
     layout: "image-right" as const,
+    image: "/services/google-business/benefits/latest-information.png",
     imageWidth: 800,
     imageHeight: 640,
     gridArea: "info",
@@ -81,6 +82,7 @@ const HOW_WE_HELP_BLOCKS = [
     description:
       "Ти си експерт в твоята сфера, а ние в нашата. Поемаме целия процес по изграждането на профила, за да можеш ти да вложиш енергията си в посрещането на новите клиенти в обекта.",
     layout: "image-left" as const,
+    image: "/services/google-business/benefits/time.png",
     imageWidth: 960,
     imageHeight: 540,
     gridArea: "time",
@@ -120,12 +122,14 @@ function ImageBottomBlock({
   number,
   title,
   description,
+  image,
   width,
   height,
 }: {
   number: string;
   title: string;
   description: string;
+  image: string;
   width: number;
   height: number;
 }) {
@@ -138,8 +142,17 @@ function ImageBottomBlock({
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
         {description}
       </p>
-      <div className="relative mt-6 w-full overflow-hidden rounded-xl">
-        <ImagePlaceholder width={width} height={height} label={title} />
+      <div
+        className="relative mt-6 w-full overflow-hidden rounded-xl"
+        style={{ aspectRatio: `${width} / ${height}` }}
+      >
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-contain object-center"
+          sizes="(max-width: 1024px) 100vw, 33vw"
+        />
       </div>
     </>
   );
@@ -149,12 +162,14 @@ function ImageRightBlock({
   number,
   title,
   description,
+  image,
   width,
   height,
 }: {
   number: string;
   title: string;
   description: string;
+  image: string;
   width: number;
   height: number;
 }) {
@@ -169,8 +184,17 @@ function ImageRightBlock({
           {description}
         </p>
       </div>
-      <div className="flex min-h-52 w-full min-w-0 flex-1 items-center justify-center overflow-hidden rounded-xl sm:min-h-48">
-        <ImagePlaceholder width={width} height={height} label={title} className="w-full" />
+      <div
+        className="relative min-h-52 w-full min-w-0 flex-1 overflow-hidden rounded-xl sm:min-h-48"
+        style={{ aspectRatio: `${width} / ${height}` }}
+      >
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-contain object-center"
+          sizes="(max-width: 1024px) 100vw, 50vw"
+        />
       </div>
     </div>
   );
@@ -180,19 +204,30 @@ function ImageLeftBlock({
   number,
   title,
   description,
+  image,
   width,
   height,
 }: {
   number: string;
   title: string;
   description: string;
+  image: string;
   width: number;
   height: number;
 }) {
   return (
     <div className="flex h-full min-h-0 flex-col gap-6 sm:flex-row sm:items-stretch sm:gap-8 lg:gap-10">
-      <div className="relative min-h-52 w-full min-w-0 flex-1 overflow-hidden rounded-xl sm:min-h-48">
-        <ImagePlaceholder width={width} height={height} label={title} />
+      <div
+        className="relative min-h-52 w-full min-w-0 flex-1 overflow-hidden rounded-xl sm:min-h-48"
+        style={{ aspectRatio: `${width} / ${height}` }}
+      >
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-contain object-center"
+          sizes="(max-width: 1024px) 100vw, 66vw"
+        />
       </div>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col sm:justify-center">
         <span className="mb-3 block text-4xl font-bold leading-none text-muted-foreground/20 tabular-nums select-none">
@@ -266,6 +301,7 @@ const Benefits = () => {
             number={block3.number}
             title={block3.title}
             description={block3.description}
+            image={block3.image}
             width={block3.imageWidth}
             height={block3.imageHeight}
           />
@@ -296,6 +332,7 @@ const Benefits = () => {
             number={block5.number}
             title={block5.title}
             description={block5.description}
+            image={block5.image}
             width={block5.imageWidth}
             height={block5.imageHeight}
           />
@@ -314,6 +351,7 @@ const Benefits = () => {
             number={block6.number}
             title={block6.title}
             description={block6.description}
+            image={block6.image}
             width={block6.imageWidth}
             height={block6.imageHeight}
           />
