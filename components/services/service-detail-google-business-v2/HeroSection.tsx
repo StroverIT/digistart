@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import { LANDING_BODY_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
-import { ImagePlaceholder } from "./ImagePlaceholder";
+// import { ImagePlaceholder } from "./ImagePlaceholder";
 
 const heroFeatures = [
   {
@@ -83,7 +83,7 @@ const HeroSection = () => {
           </div>
         </div>
 
-        <article className="w-full max-w-4xl flex-1">
+        {/* <article className="w-full max-w-4xl flex-1">
           <div className="overflow-hidden rounded-2xl border border-border/80 bg-muted/40 p-2 shadow-xl shadow-primary/5 sm:p-3">
             <ImagePlaceholder
               width={1280}
@@ -92,7 +92,7 @@ const HeroSection = () => {
               className="rounded-xl"
             />
           </div>
-        </article>
+        </article> */}
       </div>
       <GoogleReviewsSection />
     </LandingSection>

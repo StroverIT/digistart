@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { CalendarDays, MessageSquare, PenLine, Sparkles } from "lucide-react";
+import { CalendarDays, MessageCircleReply, PenLine, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
@@ -28,9 +28,10 @@ const packageFeatures = [
     description: "Copywriting с ясна цел и призив за действие във всеки пост.",
   },
   {
-    icon: MessageSquare,
-    title: "Вграден чат с нас",
-    description: "Комуникация директно с екипа (9:00 – 22:00) за въпроси и одобрения.",
+    icon: MessageCircleReply,
+    title: "Разговорите са наша работа",
+    description:
+      'Когато клиент пише „Интересувам се" или пита за наличност, отговаряме ние от твоето име – ти не прекъсваш деня си със съобщения.',
   },
 ] as const;
 

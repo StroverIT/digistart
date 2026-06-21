@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
@@ -11,31 +12,27 @@ import {
   LANDING_SECTION_TITLE_LEFT_CLASS,
 } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useCreativesAnimations } from "@/components/services/service-detail-ads-v2/use-creatives-animations";
-import { ImagePlaceholder } from "./ImagePlaceholder";
 
 const PAS_ITEMS = [
   {
     title: "Пускаш по нещо от време на време, колкото да има",
     description:
       "Имаш страхотен продукт, но профилът ти в Instagram или Facebook изглежда като на любител. Нямаш време да мислиш текстове, да обработваш снимки, да правиш видеа и да следиш какво работи в момента.",
-    width: 800,
-    height: 800,
+    image: "/services/social-media/benefits/time-to-time.png",
     imageFirst: false,
   },
   {
     title: "Хората виждат хаос или последен пост от преди 3 месеца",
     description:
       "Влизат в профила ти, виждат неактивност и си тръгват, приемайки, че бизнесът не е сериозен. „Boost“-ваш постове на сляпо, плащаш на Meta, събираш лайкове, но съобщения за реални поръчки няма. Конкуренцията обира потенциалните ти клиенти.",
-    width: 800,
-    height: 800,
+    image: "/services/social-media/benefits/boosting.png",
     imageFirst: true,
   },
   {
     title: "Професионална дигитална витрина, която вдъхва доверие",
     description:
       "Изграждаме стратегия, оформяме визиите, пишем грабващи текстове и публикуваме регулярно вместо теб. Ние поемаме черната работа онлайн, за да можеш ти да ръководиш бизнеса си и да пакетираш поръчките спокойно.",
-    width: 800,
-    height: 800,
+    image: "/services/social-media/benefits/professional.png",
     imageFirst: false,
   },
 ] as const;
@@ -106,15 +103,16 @@ const PasSection = () => {
             <div
               data-animate-card-image
               className={cn(
-                "relative order-2 w-full overflow-hidden rounded-2xl will-change-transform",
+                "relative order-2 aspect-square w-full overflow-hidden rounded-2xl will-change-transform",
                 item.imageFirst ? "lg:order-1" : "lg:order-2",
               )}
             >
-              <ImagePlaceholder
-                width={item.width}
-                height={item.height}
-                label={item.title}
-                className="rounded-2xl"
+              <Image
+                src={item.image}
+                alt={item.title}
+                fill
+                className="object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </div>
           </article>

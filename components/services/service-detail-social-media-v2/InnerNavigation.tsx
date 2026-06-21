@@ -83,11 +83,11 @@ const InnerNavigation = () => {
     <nav
       ref={sectionRef}
       aria-label="Навигация по секции"
-      className="sticky top-24 sm:top-28 z-30 -mt-14 w-full rounded-none border border-x-0 border-accent-foreground/15 bg-accent text-accent-foreground sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)] sm:rounded-full sm:border-x"
+      className="sticky top-24 sm:top-28 z-30 -mt-14 w-full max-w-full overflow-hidden rounded-none border border-x-0 border-accent-foreground/15 bg-accent text-accent-foreground sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)] sm:rounded-full sm:border-x"
     >
       <div
         ref={scrollContainerRef}
-        className="scrollbar-none flex gap-1 overflow-x-auto px-3 py-2 sm:px-4 sm:py-2.5"
+        className="scrollbar-none flex w-full min-w-0 touch-pan-x gap-1 overflow-x-auto overscroll-x-contain px-3 py-2 sm:px-4 sm:py-2.5"
       >
         {SOCIAL_MEDIA_SECTION_NAV.map((item) => (
           <a

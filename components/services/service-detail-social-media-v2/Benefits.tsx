@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef } from "react";
 import {
   CalendarCheck,
@@ -19,8 +20,6 @@ import {
   LANDING_SECTION_TITLE_CENTER_CLASS,
 } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useLandingScrollAnimations } from "@/components/services/service-detail-ready-store-v2/use-landing-scroll-animations";
-import { ImagePlaceholder } from "./ImagePlaceholder";
-
 const cardClassName =
   "flex flex-col rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 h-full";
 
@@ -50,8 +49,9 @@ const HOW_WE_HELP_BLOCKS = [
     description:
       "Осигуряваме пълно постоянство и пазим профила ти в движение. Витрината ти се обновява редовно, което показва на клиентите, че бизнесът ти е жив, активен и могат да ти се доверят.",
     layout: "image-bottom" as const,
-    imageWidth: 640,
-    imageHeight: 480,
+    image: "/services/social-media/business/active.png",
+    imageWidth: 938,
+    imageHeight: 938,
     gridArea: "consistency",
   },
   {
@@ -70,8 +70,9 @@ const HOW_WE_HELP_BLOCKS = [
     description:
       "Спираш да се чудиш какво да напишеш под снимката. Създаваме ангажиращи описания, които винаги завършват с ясно упътване къде клиентът да кликне, за да разгледа или да поръча.",
     layout: "image-right" as const,
-    imageWidth: 800,
-    imageHeight: 640,
+    image: "/services/social-media/business/cta.png",
+    imageWidth: 938,
+    imageHeight: 938,
     gridArea: "cta",
   },
   {
@@ -81,8 +82,9 @@ const HOW_WE_HELP_BLOCKS = [
     description:
       "Зад всеки проект в DigiStart стои реален човек, когото го е грижа за твоя бизнес, а не безличен AI. Не използваме роботизиран език и изтъркани шаблони, а говорим на клиентите ти по човешки, градейки реално доверие.",
     layout: "image-left" as const,
-    imageWidth: 960,
-    imageHeight: 540,
+    image: "/services/social-media/business/ai.png",
+    imageWidth: 1250,
+    imageHeight: 625,
     gridArea: "human",
   },
 ] as const;
@@ -120,12 +122,14 @@ function ImageBottomBlock({
   number,
   title,
   description,
+  image,
   width,
   height,
 }: {
   number: string;
   title: string;
   description: string;
+  image: string;
   width: number;
   height: number;
 }) {
@@ -138,8 +142,17 @@ function ImageBottomBlock({
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
         {description}
       </p>
-      <div className="relative mt-6 w-full overflow-hidden rounded-xl">
-        <ImagePlaceholder width={width} height={height} label={title} />
+      <div
+        className="relative mt-6 w-full overflow-hidden rounded-xl"
+        style={{ aspectRatio: `${width} / ${height}` }}
+      >
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-contain object-center"
+          sizes="(max-width: 1024px) 100vw, 33vw"
+        />
       </div>
     </>
   );
@@ -149,12 +162,14 @@ function ImageRightBlock({
   number,
   title,
   description,
+  image,
   width,
   height,
 }: {
   number: string;
   title: string;
   description: string;
+  image: string;
   width: number;
   height: number;
 }) {
@@ -169,8 +184,17 @@ function ImageRightBlock({
           {description}
         </p>
       </div>
-      <div className="flex min-h-0 min-w-0 flex-1 items-center justify-center">
-        <ImagePlaceholder width={width} height={height} label={title} className="w-full" />
+      <div
+        className="relative min-h-0 min-w-0 flex-1 overflow-hidden rounded-xl"
+        style={{ aspectRatio: `${width} / ${height}` }}
+      >
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-contain object-center"
+          sizes="(max-width: 1024px) 100vw, 50vw"
+        />
       </div>
     </div>
   );
@@ -180,19 +204,30 @@ function ImageLeftBlock({
   number,
   title,
   description,
+  image,
   width,
   height,
 }: {
   number: string;
   title: string;
   description: string;
+  image: string;
   width: number;
   height: number;
 }) {
   return (
     <div className="flex h-full min-h-0 flex-col gap-6 sm:flex-row sm:items-stretch sm:gap-8 lg:gap-10">
-      <div className="relative min-h-52 w-full min-w-0 flex-1 overflow-hidden rounded-xl sm:min-h-48">
-        <ImagePlaceholder width={width} height={height} label={title} />
+      <div
+        className="relative min-h-52 w-full min-w-0 flex-1 overflow-hidden rounded-xl sm:min-h-48"
+        style={{ aspectRatio: `${width} / ${height}` }}
+      >
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-contain object-center"
+          sizes="(max-width: 640px) 100vw, 66vw"
+        />
       </div>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col sm:justify-center">
         <span className="mb-3 block text-4xl font-bold leading-none text-muted-foreground/20 tabular-nums select-none">
@@ -266,6 +301,7 @@ const Benefits = () => {
             number={block3.number}
             title={block3.title}
             description={block3.description}
+            image={block3.image}
             width={block3.imageWidth}
             height={block3.imageHeight}
           />
@@ -291,6 +327,7 @@ const Benefits = () => {
             number={block5.number}
             title={block5.title}
             description={block5.description}
+            image={block5.image}
             width={block5.imageWidth}
             height={block5.imageHeight}
           />
@@ -309,6 +346,7 @@ const Benefits = () => {
             number={block6.number}
             title={block6.title}
             description={block6.description}
+            image={block6.image}
             width={block6.imageWidth}
             height={block6.imageHeight}
           />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { Camera, MapPin, MessageSquare, ShieldCheck } from "lucide-react";
+import { Camera, MapPin, Route, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
@@ -28,9 +28,10 @@ const packageFeatures = [
     description: "Работно време, контакти, снимки, линкове и обслужвани зони на едно място.",
   },
   {
-    icon: MessageSquare,
-    title: "Вграден чат с нас",
-    description: "Комуникация директно с екипа (9:00 – 22:00) за въпроси и следващи стъпки.",
+    icon: Route,
+    title: "От търсене до прага",
+    description:
+      "Бутони за обаждане, маршрут и линк към мястото, където клиентът поръчва – Instagram, OLX или онлайн магазин.",
   },
 ] as const;
 
