@@ -1,6 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import { ArrowRight, CreditCard, Settings2, Smartphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LandingSection } from "./shared";
@@ -25,18 +25,18 @@ const heroFeatures = [
   },
 ] as const;
 
-const HeroVideo = dynamic(() => import("./HeroVideo"), {
-  loading: () => (
-    <article className="w-full flex-1">
-      <div
-        className="overflow-hidden rounded-2xl border border-border/80 bg-muted/40 p-2 shadow-xl shadow-primary/5 sm:p-3"
-        aria-hidden
-      >
-        <div className="aspect-video w-full rounded-xl bg-muted/60" />
-      </div>
-    </article>
-  ),
-});
+// const HeroVideo = dynamic(() => import("./HeroVideo"), {
+//   loading: () => (
+//     <article className="w-full flex-1">
+//       <div
+//         className="overflow-hidden rounded-2xl border border-border/80 bg-muted/40 p-2 shadow-xl shadow-primary/5 sm:p-3"
+//         aria-hidden
+//       >
+//         <div className="aspect-video w-full rounded-xl bg-muted/60" />
+//       </div>
+//     </article>
+//   ),
+// });
 
 const HeroSection = () => {
   return (
@@ -95,7 +95,7 @@ const HeroSection = () => {
           </div>
         </div>
 
-        <HeroVideo videoId="mMNGqvyngLE" title="YouTube video player" />
+        {/* <HeroVideo videoId="mMNGqvyngLE" title="YouTube video player" /> */}
       </div>
       <GoogleReviewsSection />
     </LandingSection>

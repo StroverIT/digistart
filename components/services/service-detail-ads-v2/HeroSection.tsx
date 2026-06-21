@@ -1,24 +1,24 @@
 "use client";
 
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import { ArrowRight, BarChart3, Search, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LandingSection } from "@/components/services/service-detail-ready-store-v2/shared";
 import { LANDING_BODY_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
 
-const HeroVideo = dynamic(() => import("./HeroVideo"), {
-  loading: () => (
-    <article className="w-full flex-1">
-      <div
-        className="overflow-hidden rounded-2xl border border-border/80 bg-muted/40 p-2 shadow-xl shadow-primary/5 sm:p-3"
-        aria-hidden
-      >
-        <div className="aspect-video w-full rounded-xl bg-muted/60" />
-      </div>
-    </article>
-  ),
-});
+// const HeroVideo = dynamic(() => import("./HeroVideo"), {
+//   loading: () => (
+//     <article className="w-full flex-1">
+//       <div
+//         className="overflow-hidden rounded-2xl border border-border/80 bg-muted/40 p-2 shadow-xl shadow-primary/5 sm:p-3"
+//         aria-hidden
+//       >
+//         <div className="aspect-video w-full rounded-xl bg-muted/60" />
+//       </div>
+//     </article>
+//   ),
+// });
 
 const heroFeatures = [
   {
@@ -94,7 +94,7 @@ const HeroSection = () => {
           </div>
         </div>
 
-        <HeroVideo videoId="DDY4Ado5BRA" title="DigiStart Google и Meta реклами" />
+        {/* <HeroVideo videoId="DDY4Ado5BRA" title="DigiStart Google и Meta реклами" /> */}
       </div>
       <GoogleReviewsSection />
     </LandingSection>
