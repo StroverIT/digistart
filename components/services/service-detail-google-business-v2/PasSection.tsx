@@ -106,7 +106,7 @@ const PasSection = () => {
             <div
               data-animate-card-image
               className={cn(
-                "relative order-2 w-full overflow-hidden rounded-2xl will-change-transform",
+                "relative order-2 w-full overflow-hidden rounded-2xl md:will-change-transform",
                 item.imageFirst ? "lg:order-1" : "lg:order-2",
               )}
             >

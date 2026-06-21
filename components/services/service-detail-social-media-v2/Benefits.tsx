@@ -21,7 +21,7 @@ import {
 } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useLandingScrollAnimations } from "@/components/services/service-detail-ready-store-v2/use-landing-scroll-animations";
 const cardClassName =
-  "flex flex-col rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 h-full";
+  "flex min-w-0 flex-col rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 h-full";
 
 const HOW_WE_HELP_BLOCKS = [
   {
@@ -174,8 +174,8 @@ function ImageRightBlock({
   height: number;
 }) {
   return (
-    <div className="flex h-full min-h-0 flex-col gap-6 lg:flex-row lg:items-center lg:gap-8">
-      <div className="flex min-h-0 flex-1 flex-col lg:justify-center">
+    <div className="flex h-full min-h-0 flex-col gap-6 sm:flex-row sm:items-center sm:gap-8 lg:gap-10">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col sm:justify-center">
         <span className="mb-3 block text-4xl font-bold leading-none text-muted-foreground/20 tabular-nums select-none">
           {number}
         </span>
@@ -185,7 +185,7 @@ function ImageRightBlock({
         </p>
       </div>
       <div
-        className="relative min-h-0 min-w-0 flex-1 overflow-hidden rounded-xl"
+        className="relative min-h-52 w-full min-w-0 shrink-0 overflow-hidden rounded-xl sm:min-h-48 sm:flex-1 sm:shrink"
         style={{ aspectRatio: `${width} / ${height}` }}
       >
         <Image
@@ -218,7 +218,7 @@ function ImageLeftBlock({
   return (
     <div className="flex h-full min-h-0 flex-col gap-6 sm:flex-row sm:items-stretch sm:gap-8 lg:gap-10">
       <div
-        className="relative min-h-52 w-full min-w-0 flex-1 overflow-hidden rounded-xl sm:min-h-48"
+        className="relative min-h-52 w-full min-w-0 shrink-0 overflow-hidden rounded-xl sm:min-h-48 sm:flex-1 sm:shrink"
         style={{ aspectRatio: `${width} / ${height}` }}
       >
         <Image
@@ -263,7 +263,7 @@ const Benefits = () => {
         Как помагаме на бизнеса ти?
       </h1>
 
-      <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:[grid-template-areas:'time_sales_consistency'_'visual_cta_cta'_'human_human_human']">
+      <ul className="mt-12 grid w-full min-w-0 list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:[grid-template-areas:'time_sales_consistency'_'visual_cta_cta'_'human_human_human']">
         <li
           data-animate-card
           className={cn(cardClassName, "order-1", LANDING_CARD_CLASS, "lg:[grid-area:time]")}
@@ -321,7 +321,12 @@ const Benefits = () => {
 
         <li
           data-animate-card
-          className={cn(cardClassName, "order-5", LANDING_CARD_CLASS, "lg:[grid-area:cta]")}
+          className={cn(
+            cardClassName,
+            "order-5 w-full",
+            LANDING_CARD_CLASS,
+            "sm:col-span-2 lg:[grid-area:cta] lg:min-h-56 xl:min-h-64",
+          )}
         >
           <ImageRightBlock
             number={block5.number}

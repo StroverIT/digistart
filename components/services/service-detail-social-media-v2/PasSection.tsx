@@ -103,7 +103,7 @@ const PasSection = () => {
             <div
               data-animate-card-image
               className={cn(
-                "relative order-2 aspect-square w-full overflow-hidden rounded-2xl will-change-transform",
+                "relative order-2 aspect-square w-full overflow-hidden rounded-2xl md:will-change-transform",
                 item.imageFirst ? "lg:order-1" : "lg:order-2",
               )}
             >
@@ -111,7 +111,7 @@ const PasSection = () => {
                 src={item.image}
                 alt={item.title}
                 fill
-                className="object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                className="pointer-events-none object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.02]"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </div>

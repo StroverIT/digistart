@@ -21,6 +21,7 @@ export function useCreativesAnimations(sectionRef: RefObject<HTMLElement | null>
       gsap.registerPlugin(ScrollTrigger);
 
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
 
       const ctx = gsap.context(() => {
         const root = sectionRef.current;
@@ -57,6 +58,41 @@ export function useCreativesAnimations(sectionRef: RefObject<HTMLElement | null>
           const image = card.querySelector<HTMLElement>("[data-animate-card-image]");
           const copy = card.querySelector<HTMLElement>("[data-animate-card-copy]");
 
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: card,
+              start: "top 88%",
+              toggleActions: "play none none none",
+            },
+          });
+
+          if (isMobile) {
+            gsap.set(card, { opacity: 0, y: 32 });
+            if (copy) gsap.set(copy, { opacity: 0 });
+
+            tl.to(card, {
+              opacity: 1,
+              y: 0,
+              duration: 0.55,
+              ease: "power2.out",
+              clearProps: "transform",
+            });
+
+            if (copy) {
+              tl.to(
+                copy,
+                {
+                  opacity: 1,
+                  duration: 0.45,
+                  ease: "power2.out",
+                },
+                0.2,
+              );
+            }
+
+            return;
+          }
+
           gsap.set(card, {
             opacity: 0,
             y: 64,
@@ -68,14 +104,6 @@ export function useCreativesAnimations(sectionRef: RefObject<HTMLElement | null>
           if (image) gsap.set(image, { scale: 1.14 });
           if (copy) gsap.set(copy, { opacity: 0, y: 24 });
 
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: card,
-              start: "top 88%",
-              toggleActions: "play none none none",
-            },
-          });
-
           tl.to(
             card,
             {
@@ -86,6 +114,7 @@ export function useCreativesAnimations(sectionRef: RefObject<HTMLElement | null>
               rotate: 0,
               duration: 0.7,
               ease: "power3.out",
+              clearProps: "transform",
             },
             0,
           );
@@ -97,6 +126,7 @@ export function useCreativesAnimations(sectionRef: RefObject<HTMLElement | null>
                 scale: 1,
                 duration: 0.85,
                 ease: "power2.out",
+                clearProps: "transform",
               },
               0.08,
             );
@@ -110,6 +140,7 @@ export function useCreativesAnimations(sectionRef: RefObject<HTMLElement | null>
                 y: 0,
                 duration: 0.5,
                 ease: "power2.out",
+                clearProps: "transform",
               },
               0.28,
             );
