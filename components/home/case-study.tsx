@@ -25,7 +25,7 @@ export function CaseStudy() {
             <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
               <li>• Хаос в чата, ръчна комуникация за всеки размер и адрес.</li>
               <li>• Трудно управление на 500+ продукта.</li>
-              <li>• Собственикът – единствено тясно гърло на бизнеса.</li>
+              <li>• Собственикът – единствената движеща сила на бизенса.</li>
             </ul>
           </div>
           <div className="rounded-3xl border border-primary/30 bg-card p-7">

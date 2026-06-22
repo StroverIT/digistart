@@ -210,8 +210,7 @@ const Benefits = () => {
         data-animate-reveal
         className={`mx-auto max-w-4xl text-center ${LANDING_HEADING_CLASS} text-3xl md:text-4xl ${LANDING_REVEAL_CLASS}`}
       >
-        Създай онлайн магазин за рекордно време - от нула до това да продаваш в рамките на
-        часове, не седмици
+        Създай онлайн магазин за рекордно време - от нула до продажби за няколко часа, не седмици
       </h2>
 
       <article className="mt-12 grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
