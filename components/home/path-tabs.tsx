@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Layers2, Smartphone, Store, type LucideIcon } from "lucide-react";
-import { HOME_PATHS, type PathKey } from "@/lib/data/home-paths";
+import {
+  HOME_PATHS,
+  parsePathKey,
+  type PathKey,
+} from "@/lib/data/home-paths";
 import { PathContent } from "@/components/home/path-content";
 import { cn } from "@/lib/utils";
 
@@ -12,9 +17,43 @@ const PATH_ICONS: Record<PathKey, LucideIcon> = {
   hybrid: Layers2,
 };
 
-export function PathTabs() {
-  const [active, setActive] = useState<PathKey>("online");
+const PATH_QUERY_KEY = "path";
+const DEFAULT_PATH: PathKey = "online";
+
+function PathTabsInner() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const pathFromUrl = parsePathKey(searchParams.get(PATH_QUERY_KEY));
+  const [active, setActive] = useState<PathKey>(pathFromUrl ?? DEFAULT_PATH);
   const current = HOME_PATHS.find((p) => p.key === active)!;
+
+  useEffect(() => {
+    const next = parsePathKey(searchParams.get(PATH_QUERY_KEY)) ?? DEFAULT_PATH;
+    setActive(next);
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!pathFromUrl) return;
+    document.getElementById("paths")?.scrollIntoView({ behavior: "smooth" });
+  }, [pathFromUrl]);
+
+  const selectPath = useCallback(
+    (key: PathKey) => {
+      setActive(key);
+
+      const params = new URLSearchParams(searchParams.toString());
+      if (key === DEFAULT_PATH) {
+        params.delete(PATH_QUERY_KEY);
+      } else {
+        params.set(PATH_QUERY_KEY, key);
+      }
+
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
 
   return (
     <section id="paths" className="container mx-auto px-4 py-20 md:px-8 md:py-28">
@@ -36,7 +75,7 @@ export function PathTabs() {
             <button
               key={p.key}
               type="button"
-              onClick={() => setActive(p.key)}
+              onClick={() => selectPath(p.key)}
               className={cn(
                 "group flex items-start gap-3 rounded-2xl border px-5 py-4 text-left transition-all md:px-6",
                 isActive
@@ -77,5 +116,13 @@ export function PathTabs() {
         <PathContent path={current} />
       </div>
     </section>
+  );
+}
+
+export function PathTabs() {
+  return (
+    <Suspense fallback={null}>
+      <PathTabsInner />
+    </Suspense>
   );
 }

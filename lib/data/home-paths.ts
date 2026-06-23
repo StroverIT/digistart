@@ -1,5 +1,14 @@
 export type PathKey = "online" | "physical" | "hybrid";
 
+export const PATH_KEYS: PathKey[] = ["online", "physical", "hybrid"];
+
+export function parsePathKey(value: string | null | undefined): PathKey | null {
+  if (value && PATH_KEYS.includes(value as PathKey)) {
+    return value as PathKey;
+  }
+  return null;
+}
+
 export interface PathContent {
   key: PathKey;
   label: string;
