@@ -8,6 +8,7 @@ import { MetaPixelEvents } from "@/components/analytics/meta-pixel-events";
 import { UtmTracker } from "@/components/analytics/utm-tracker";
 import { Providers } from "@/components/providers";
 import { shouldRenderComingSoonInLayout } from "@/lib/coming-soon";
+import { OG_COVER, SITE_METADATA_BASE } from "@/lib/seo/open-graph";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -33,6 +34,7 @@ const robotoSlab = Roboto_Slab({
 });
 
 export const metadata: Metadata = {
+  metadataBase: SITE_METADATA_BASE,
   title: {
     default: "DigiStart | Дигитална агенция",
     template: "%s | DigiStart",
@@ -57,12 +59,21 @@ export const metadata: Metadata = {
     title: "DigiStart | Дигитална агенция",
     description:
       "Бърз и бюджетен онлайн старт за малки бизнеси, странични проекти и създатели",
+    images: [
+      {
+        url: OG_COVER.generic,
+        width: 2400,
+        height: 1260,
+        alt: "DigiStart | Дигитална агенция",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "DigiStart | Дигитална агенция",
     description:
       "Бърз и бюджетен онлайн старт за малки бизнеси, странични проекти и създатели",
+    images: [OG_COVER.generic],
   },
   robots: {
     index: true,

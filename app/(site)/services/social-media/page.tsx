@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import HeroSection from "@/components/services/service-detail-social-media-v2/HeroSection";
 import { SOCIAL_MEDIA_LANDING } from "@/config/service-landing/social-media";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
+import { ogImageMetadata } from "@/lib/seo/open-graph";
 
 const InnerNavigation = dynamic(
   () => import("@/components/services/service-detail-social-media-v2/InnerNavigation"),
@@ -42,6 +43,7 @@ export const metadata: Metadata = {
   title: "Социални мрежи · съдържание и стратегия",
   description:
     "Професионална витрина във Facebook и Instagram: текстове, визии и редовни публикации. Ти обслужваш поръчките - ние поемаме профила.",
+  ...ogImageMetadata("socialMedia", "DigiStart – Социални мрежи"),
 };
 
 export default async function SocialMediaPage() {

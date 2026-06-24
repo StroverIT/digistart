@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import HeroSection from "@/components/services/service-detail-google-business-v2/HeroSection";
 import { GOOGLE_BUSINESS_LANDING } from "@/config/service-landing/google-business";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
+import { ogImageMetadata } from "@/lib/seo/open-graph";
 
 const InnerNavigation = dynamic(
   () => import("@/components/services/service-detail-google-business-v2/InnerNavigation"),
@@ -42,6 +43,7 @@ export const metadata: Metadata = {
   title: "Google Business · локална видимост",
   description:
     "Стани видим в Google Maps и локалното търсене. Верификация, локално SEO и дигитална витрина – €49 еднократно.",
+  ...ogImageMetadata("googleBusiness", "DigiStart – Google Business"),
 };
 
 export default async function GoogleBusinessPage() {

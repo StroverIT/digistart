@@ -4,6 +4,7 @@ import HeroSection from "@/components/services/service-detail-ads-v2/HeroSection
 import { ADS_LANDING } from "@/config/service-landing/ads";
 import { ADS_PRICING, formatEuroPrice } from "@/lib/data/ads-pricing";
 import { getServiceSlotAvailability } from "@/lib/server/service-slots";
+import { ogImageMetadata } from "@/lib/seo/open-graph";
 
 const InnerNavigation = dynamic(
   () => import("@/components/services/service-detail-ads-v2/InnerNavigation"),
@@ -39,6 +40,7 @@ export const metadata: Metadata = {
   title: "Реклами за онлайн магазини · Google Ads и Meta",
   description:
     `Google и Meta реклами за e-commerce: повече хора към продуктите, повече колички и повече онлайн поръчки. Управление от ${formatEuroPrice(ADS_PRICING.channelManagementMonthly)}/мес на канал.`,
+  ...ogImageMetadata("ads", "DigiStart – Google и Meta реклами"),
 };
 
 export default async function AdsPage() {
