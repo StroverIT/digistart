@@ -81,11 +81,63 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+      {
+        url: "/favicon-light.ico",
+        sizes: "any",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/favicon-dark.ico",
+        sizes: "any",
+        media: "(prefers-color-scheme: dark)",
+      },
+      {
+        url: "/favicon-light-32.png",
+        type: "image/png",
+        sizes: "32x32",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/favicon-dark-32.png",
+        type: "image/png",
+        sizes: "32x32",
+        media: "(prefers-color-scheme: dark)",
+      },
+      {
+        url: "/favicon-light-16.png",
+        type: "image/png",
+        sizes: "16x16",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/favicon-dark-16.png",
+        type: "image/png",
+        sizes: "16x16",
+        media: "(prefers-color-scheme: dark)",
+      },
     ],
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    shortcut: [
+      {
+        url: "/favicon-light.ico",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/favicon-dark.ico",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
+    apple: [
+      {
+        url: "/apple-touch-icon-light.png",
+        sizes: "180x180",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/apple-touch-icon-dark.png",
+        sizes: "180x180",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
   },
 };
 
