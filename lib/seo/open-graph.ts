@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
 import type { PathKey } from "@/lib/data/home-paths";
 
-export const SITE_METADATA_BASE = new URL(
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg",
-);
+function resolveSiteUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (configured) return configured.replace(/\/$/, "");
+  return "https://digistart.bg";
+}
+
+export const SITE_METADATA_BASE = new URL(resolveSiteUrl());
 
 export const OG_COVER = {
-  generic: "/sending-covers/1-generic.png",
-  homePhysical: "/sending-covers/2-home-page-psychical.png",
-  homeOnline: "/sending-covers/3-home-page-online.png",
-  homeHybrid: "/sending-covers/4-home-page-hybrid.png",
-  onlineStore: "/sending-covers/5-online-store.png",
-  googleBusiness: "/sending-covers/6-google-business.png",
-  socialMedia: "/sending-covers/7-social-media.png",
-  ads: "/sending-covers/8-ads.png",
+  generic: "/sending-covers/og-brand.png",
+  homePhysical: "/sending-covers/og-home-physical.png",
+  homeOnline: "/sending-covers/og-home-online.png",
+  homeHybrid: "/sending-covers/og-home-hybrid.png",
+  onlineStore: "/sending-covers/og-online-store.png",
+  googleBusiness: "/sending-covers/og-google-business.png",
+  socialMedia: "/sending-covers/og-social-media.png",
+  ads: "/sending-covers/og-ads.png",
 } as const;
 
 export type OgCoverKey = keyof typeof OG_COVER;
