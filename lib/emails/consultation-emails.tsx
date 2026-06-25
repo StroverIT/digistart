@@ -19,6 +19,7 @@ export type ConsultationEmailBooking = {
   date: string;
   time: string;
   source: "public" | "checkout";
+  sourcePage?: string;
   timezone?: string;
   meetUrl?: string;
   meetingType?: "online" | "in_person";
@@ -85,7 +86,7 @@ function ConsultationAdminEmail({ booking }: { booking: ConsultationEmailBooking
             <Text>Клиент: {booking.name}</Text>
             <Text>Имейл: {booking.email}</Text>
             <Text>Телефон: {booking.phone}</Text>
-            <Text>Източник: {booking.source}</Text>
+            <Text>Източник: {booking.sourcePage ?? booking.source}</Text>
             <Text>Компания: {booking.company ?? "-"}</Text>
             {booking.meetingType === "in_person" ? (
               <>

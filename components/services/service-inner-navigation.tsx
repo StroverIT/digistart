@@ -49,7 +49,7 @@ export function ServiceInnerNavigation({
   items,
   ariaLabel,
   ctaHref = "#buy-now",
-  ctaLabel = "Купи сега",
+  ctaLabel = "Запази час",
   capitalizeLinks = false,
 }: ServiceInnerNavigationProps) {
   const sectionRef = useRef<HTMLElement>(null);
@@ -124,7 +124,7 @@ export function ServiceInnerNavigation({
     <nav
       ref={sectionRef}
       aria-label={ariaLabel}
-      className="sticky top-24 sm:top-28 z-30 -mt-14 w-full max-w-full sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)]"
+      className="sticky top-16 sm:top-20 z-30 -mt-14 w-full max-w-full sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)]"
     >
       <div ref={mobileMenuRef} className="flex justify-center px-4 sm:hidden">
         <div

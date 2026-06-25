@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { BookingForm } from "@/components/home/booking-form";
 import HeroSection from "@/components/services/service-detail-google-business-v2/HeroSection";
 import { GOOGLE_BUSINESS_LANDING } from "@/config/service-landing/google-business";
-import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 import { ogImageMetadata } from "@/lib/seo/open-graph";
 
 const InnerNavigation = dynamic(
@@ -35,9 +35,9 @@ const CaseStudy = dynamic(
   () => import("@/components/services/service-detail-google-business-v2/CaseStudy"),
 );
 
-const BuySection = dynamic(
-  () => import("@/components/services/service-detail-google-business-v2/BuySection"),
-);
+// const BuySection = dynamic(
+//   () => import("@/components/services/service-detail-google-business-v2/BuySection"),
+// );
 
 export const metadata: Metadata = {
   title: "Google Business · локална видимост",
@@ -46,9 +46,7 @@ export const metadata: Metadata = {
   ...ogImageMetadata("googleBusiness", "DigiStart – Google Business"),
 };
 
-export default async function GoogleBusinessPage() {
-  const availability = await getServiceSlotAvailability("google-business");
-
+export default function GoogleBusinessPage() {
   return (
     <section>
       <HeroSection />
@@ -61,7 +59,13 @@ export default async function GoogleBusinessPage() {
         <CaseStudy />
       </div>
 
-      <BuySection availability={availability} />
+      <BookingForm
+        sourcePage="Google Business (/services/google-business)"
+        sectionId="buy-now"
+        analyticsPath="/services/google-business"
+        analyticsCtaId="google_business_booking_submit"
+      />
+      {/* <BuySection availability={availability} /> */}
       <PasFaqSection {...GOOGLE_BUSINESS_LANDING.faq} />
     </section>
   );

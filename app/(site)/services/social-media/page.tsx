@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { BookingForm } from "@/components/home/booking-form";
 import HeroSection from "@/components/services/service-detail-social-media-v2/HeroSection";
 import { SOCIAL_MEDIA_LANDING } from "@/config/service-landing/social-media";
-import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 import { ogImageMetadata } from "@/lib/seo/open-graph";
 
 const InnerNavigation = dynamic(
@@ -35,9 +35,9 @@ const CaseStudy = dynamic(
   () => import("@/components/services/service-detail-social-media-v2/CaseStudy"),
 );
 
-const BuySection = dynamic(
-  () => import("@/components/services/service-detail-social-media-v2/BuySection"),
-);
+// const BuySection = dynamic(
+//   () => import("@/components/services/service-detail-social-media-v2/BuySection"),
+// );
 
 export const metadata: Metadata = {
   title: "Социални мрежи · съдържание и стратегия",
@@ -46,9 +46,7 @@ export const metadata: Metadata = {
   ...ogImageMetadata("socialMedia", "DigiStart – Социални мрежи"),
 };
 
-export default async function SocialMediaPage() {
-  const availability = await getServiceSlotAvailability("social-media");
-
+export default function SocialMediaPage() {
   return (
     <section>
       <HeroSection />
@@ -61,7 +59,13 @@ export default async function SocialMediaPage() {
         <CaseStudy />
       </div>
 
-      <BuySection availability={availability} />
+      <BookingForm
+        sourcePage="Социални мрежи (/services/social-media)"
+        sectionId="buy-now"
+        analyticsPath="/services/social-media"
+        analyticsCtaId="social_media_booking_submit"
+      />
+      {/* <BuySection availability={availability} /> */}
       <PasFaqSection {...SOCIAL_MEDIA_LANDING.faq} />
     </section>
   );

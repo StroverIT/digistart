@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { BookingForm } from "@/components/home/booking-form";
 import { ServiceDetailAiAutomation } from "@/components/services/service-detail-ai-automation";
 import { getServiceById } from "@/lib/data/services";
-import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 
 export const metadata: Metadata = {
   title: "AI Automation · Instagram продажби на автопилот",
@@ -13,6 +13,15 @@ export const metadata: Metadata = {
 export default async function AiAutomationPage() {
   const service = getServiceById("ai-automation");
   if (!service) notFound();
-  const availability = await getServiceSlotAvailability("ai-automation");
-  return <ServiceDetailAiAutomation serviceData={service} availability={availability} />;
+  return (
+    <>
+      <ServiceDetailAiAutomation serviceData={service} />
+      <BookingForm
+        sourcePage="AI Automation (/services/ai-automation)"
+        sectionId="buy-now"
+        analyticsPath="/services/ai-automation"
+        analyticsCtaId="ai_automation_booking_submit"
+      />
+    </>
+  );
 }

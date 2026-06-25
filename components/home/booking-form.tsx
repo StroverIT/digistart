@@ -1,9 +1,21 @@
 import ConsultationBookingForm from "@/components/consultation/consultation-booking-form";
 import { ProcessStepsContent } from "@/components/home/process-steps";
 
-export function BookingForm() {
+type BookingFormProps = {
+  sourcePage?: string;
+  sectionId?: string;
+  analyticsPath?: string;
+  analyticsCtaId?: string;
+};
+
+export function BookingForm({
+  sourcePage,
+  sectionId = "booking",
+  analyticsPath = "/",
+  analyticsCtaId = "home_booking_submit",
+}: BookingFormProps = {}) {
   return (
-    <section id="booking" className="container mx-auto px-4 py-20 md:px-8 md:py-28">
+    <section id={sectionId} className="container mx-auto px-4 py-20 md:px-8 md:py-28">
       <div className="relative overflow-hidden rounded-[2.5rem] bg-card shadow-[var(--shadow-glow)] ring-1 ring-foreground/[0.04]">
         <div className="relative grid gap-10 p-6 md:p-10 lg:grid-cols-[1fr_1.15fr] lg:items-start lg:p-12">
           <div>
@@ -26,13 +38,14 @@ export function BookingForm() {
           <div className="p-2 md:p-4 lg:p-2">
             <ConsultationBookingForm
               source="public"
+              sourcePage={sourcePage}
               variant="embedded"
               showCompanyField={false}
               showNotesField={false}
               showOnSiteOption
               submitLabel="Потвърди консултацията"
-              analyticsPath="/"
-              analyticsCtaId="home_booking_submit"
+              analyticsPath={analyticsPath}
+              analyticsCtaId={analyticsCtaId}
             />
           </div>
         </div>

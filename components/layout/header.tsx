@@ -12,7 +12,7 @@ import Hamburger from "hamburger-react";
 import { useSession, signOut } from "next-auth/react";
 import { AnalyticsToolbar } from "@/components/analytics/analytics-toolbar";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
-import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
+// import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
 import {
   SITE_LOGO_HEIGHT,
   SITE_LOGO_SIZES,
@@ -422,9 +422,8 @@ export function Header() {
     <>
       <div className="fixed top-0 left-0 right-0 z-50">
         <header
-          className={`transition-all duration-300 border-b border-white/50 bg-white/55 backdrop-blur-xl backdrop-saturate-150 supports-backdrop-filter:bg-white/40 ${
-            isScrolled ? "shadow-[var(--shadow-soft)]" : "shadow-sm shadow-black/5"
-          }`}
+          className={`transition-all duration-300 border-b border-white/50 bg-white/55 backdrop-blur-xl backdrop-saturate-150 supports-backdrop-filter:bg-white/40 ${isScrolled ? "shadow-[var(--shadow-soft)]" : "shadow-sm shadow-black/5"
+            }`}
         >
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between h-16 md:h-20">
@@ -451,61 +450,61 @@ export function Header() {
               <div className="flex items-center gap-2 z-60 relative">
                 <AnalyticsToolbar />
                 <div className="flex items-center gap-4">
-                {isCartPage ? (
-                  <Button
-                    variant="ghost"
-                    size="icon-xl"
-                    className="relative rounded-xl bg-primary/10 ring-2 ring-primary/25 pointer-events-none"
-                    tabIndex={-1}
-                    aria-current="page"
-                  >
-                    <ShoppingCart className="size-6" />
-                    {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                        {cartCount}
-                      </span>
-                    )}
-                    <span className="sr-only">Кошница (текуща страница)</span>
-                  </Button>
-                ) : (
-                  <TransitionLink href="/cart">
+                  {isCartPage ? (
                     <Button
                       variant="ghost"
                       size="icon-xl"
-                      className={cn(
-                        "relative group rounded-xl transition-all duration-200 ease-out",
-                        "text-muted-foreground hover:text-primary",
-                        "hover:bg-primary/10 hover:ring-1 hover:ring-primary/20",
-                        "hover:shadow-[0_0_24px_-8px] hover:shadow-primary/30",
-                        "active:scale-[0.96] motion-reduce:active:scale-100"
-                      )}
+                      className="relative rounded-xl bg-primary/10 ring-2 ring-primary/25 pointer-events-none"
+                      tabIndex={-1}
+                      aria-current="page"
                     >
-                      <ShoppingCart className="size-6 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:scale-100" />
+                      <ShoppingCart className="size-6" />
                       {cartCount > 0 && (
                         <span className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                           {cartCount}
                         </span>
                       )}
-                      <span className="sr-only">Кошница</span>
+                      <span className="sr-only">Кошница (текуща страница)</span>
                     </Button>
-                  </TransitionLink>
-                )}
+                  ) : (
+                    <TransitionLink href="/cart">
+                      <Button
+                        variant="ghost"
+                        size="icon-xl"
+                        className={cn(
+                          "relative group rounded-xl transition-all duration-200 ease-out",
+                          "text-muted-foreground hover:text-primary",
+                          "hover:bg-primary/10 hover:ring-1 hover:ring-primary/20",
+                          "hover:shadow-[0_0_24px_-8px] hover:shadow-primary/30",
+                          "active:scale-[0.96] motion-reduce:active:scale-100"
+                        )}
+                      >
+                        <ShoppingCart className="size-6 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:scale-100" />
+                        {cartCount > 0 && (
+                          <span className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                            {cartCount}
+                          </span>
+                        )}
+                        <span className="sr-only">Кошница</span>
+                      </Button>
+                    </TransitionLink>
+                  )}
 
-                <div className="flex items-center justify-center rounded-full bg-card border border-border w-12 h-12">
-                  <Hamburger
-                    toggled={isOpen}
-                    toggle={toggleMenu}
-                    size={18}
-                    rounded
-                    label={isOpen ? "Затвори менюто" : "Отвори менюто"}
-                  />
-                </div>
+                  <div className="flex items-center justify-center rounded-full bg-card border border-border w-12 h-12">
+                    <Hamburger
+                      toggled={isOpen}
+                      toggle={toggleMenu}
+                      size={18}
+                      rounded
+                      label={isOpen ? "Затвори менюто" : "Отвори менюто"}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </header>
-        <ServiceSlotsBanner />
+        {/* <ServiceSlotsBanner /> */}
       </div>
 
       <div

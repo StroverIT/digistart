@@ -23,6 +23,7 @@ export interface ConsultationRecord {
   date: string;
   time: string;
   source: "public" | "checkout";
+  sourcePage?: string;
   status: "scheduled" | "attended" | "absent" | "cancelled";
   orderId?: string;
   meetingType?: "online" | "in_person";
@@ -217,7 +218,7 @@ async function createCalendarEvent(booking: ConsultationRecord) {
       conferenceDataVersion: isInPerson ? undefined : 1,
       requestBody: {
         summary: `DigiStart consultation: ${booking.name}`,
-        description: `Формат: ${meetingLine}\nSource: ${booking.source}\nEmail: ${booking.email}\nPhone: ${booking.phone}${locationLine}`,
+        description: `Формат: ${meetingLine}\nSource: ${booking.sourcePage ?? booking.source}\nEmail: ${booking.email}\nPhone: ${booking.phone}${locationLine}`,
         location: isInPerson ? booking.address : undefined,
         start: { dateTime: startDate.toISOString(), timeZone: timezone },
         end: { dateTime: endDate.toISOString(), timeZone: timezone },
@@ -281,8 +282,8 @@ async function sendConsultationEmails(booking: ConsultationRecord) {
   const adminHtml = await renderConsultationAdminEmailHtml(booking);
   const commonText =
     booking.meetingType === "in_person"
-      ? `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.source}\nФормат: На място в София${booking.address ? ` — ${booking.address}` : ""}\nGoogle Calendar: Поканата е изпратена на имейла на клиента`
-      : `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.source}\nФормат: Онлайн\nGoogle Meet: ${booking.meetUrl ?? "Ще бъде добавен допълнително"}\nGoogle Calendar: Поканата с Google Meet е изпратена на имейла на клиента`;
+      ? `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: На място в София${booking.address ? ` — ${booking.address}` : ""}\nGoogle Calendar: Поканата е изпратена на имейла на клиента`
+      : `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: Онлайн\nGoogle Meet: ${booking.meetUrl ?? "Ще бъде добавен допълнително"}\nGoogle Calendar: Поканата с Google Meet е изпратена на имейла на клиента`;
 
   const delivery = resolveOutboundEmailDelivery({
     customerEmail: booking.email,

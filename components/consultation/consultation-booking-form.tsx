@@ -27,6 +27,7 @@ type BookedPayload = {
 
 type Props = {
   source: "public" | "checkout";
+  sourcePage?: string;
   variant?: "card" | "embedded";
   className?: string;
   title?: string;
@@ -59,6 +60,7 @@ function formatDisplayDate(value: string, variant: "card" | "embedded") {
 
 export default function ConsultationBookingForm({
   source,
+  sourcePage,
   variant = "card",
   className,
   title = "Запазете безплатна консултация",
@@ -230,6 +232,7 @@ export default function ConsultationBookingForm({
           date: selectedDate,
           time: selectedTime,
           source,
+          sourcePage,
           orderId,
           meetingType: showOnSiteOption ? meetingType : "online",
           address: showOnSiteOption && meetingType === "in_person" ? formData.address.trim() : undefined,

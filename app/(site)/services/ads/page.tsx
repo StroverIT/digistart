@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { BookingForm } from "@/components/home/booking-form";
 import HeroSection from "@/components/services/service-detail-ads-v2/HeroSection";
 import { ADS_LANDING } from "@/config/service-landing/ads";
 import { ADS_PRICING, formatEuroPrice } from "@/lib/data/ads-pricing";
-import { getServiceSlotAvailability } from "@/lib/server/service-slots";
 import { ogImageMetadata } from "@/lib/seo/open-graph";
 
 const InnerNavigation = dynamic(
@@ -34,7 +34,7 @@ const ReportsPanel = dynamic(
 
 const CaseStudy = dynamic(() => import("@/components/services/service-detail-ads-v2/CaseStudy"));
 
-const BuySection = dynamic(() => import("@/components/services/service-detail-ads-v2/BuySection"));
+// const BuySection = dynamic(() => import("@/components/services/service-detail-ads-v2/BuySection"));
 
 export const metadata: Metadata = {
   title: "Реклами за онлайн магазини · Google Ads и Meta",
@@ -43,9 +43,7 @@ export const metadata: Metadata = {
   ...ogImageMetadata("ads", "DigiStart – Google и Meta реклами"),
 };
 
-export default async function AdsPage() {
-  const availability = await getServiceSlotAvailability("ads");
-
+export default function AdsPage() {
   return (
     <section>
       <HeroSection />
@@ -59,7 +57,13 @@ export default async function AdsPage() {
         <CaseStudy />
       </div>
 
-      <BuySection availability={availability} />
+      <BookingForm
+        sourcePage="Реклами (/services/ads)"
+        sectionId="buy-now"
+        analyticsPath="/services/ads"
+        analyticsCtaId="ads_booking_submit"
+      />
+      {/* <BuySection availability={availability} /> */}
       <PasFaqSection {...ADS_LANDING.faq} />
     </section>
   );
