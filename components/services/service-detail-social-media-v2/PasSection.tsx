@@ -18,21 +18,21 @@ const PAS_ITEMS = [
     title: "Пускаш по нещо от време на време, колкото да има",
     description:
       "Имаш страхотен продукт, но профилът ти в Instagram или Facebook изглежда като на любител. Нямаш време да мислиш текстове, да обработваш снимки, да правиш видеа и да следиш какво работи в момента.",
-    image: "/services/google-business/benefits/recomendations.png",
+    image: "/services/social-media/benefits/time-to-time.png",
     imageFirst: false,
   },
   {
     title: "Хората виждат хаос или последен пост от преди 3 месеца",
     description:
       "Влизат в профила ти, виждат неактивност и си тръгват, приемайки, че бизнесът не е сериозен. „Boost“-ваш постове на сляпо, плащаш на Meta, събираш лайкове, но съобщения за реални поръчки няма. Конкуренцията обира потенциалните ти клиенти.",
-    image: "/services/google-business/benefits/invisible.png",
+    image: "/services/social-media/benefits/boosting.png",
     imageFirst: true,
   },
   {
     title: "Професионална дигитална витрина, която вдъхва доверие",
     description:
       "Изграждаме стратегия, оформяме визиите, пишем грабващи текстове и публикуваме регулярно вместо теб. Ние поемаме черната работа онлайн, за да можеш ти да ръководиш бизнеса си и да пакетираш поръчките спокойно.",
-    image: "/services/google-business/benefits/trust.png",
+    image: "/services/social-media/benefits/professional.png",
     imageFirst: false,
   },
 ] as const;
