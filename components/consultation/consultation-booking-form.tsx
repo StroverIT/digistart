@@ -319,7 +319,7 @@ export default function ConsultationBookingForm({
           : "border-border hover:border-primary/40",
       !isEmbedded && "border",
       isTimeLocallyDisabled(selectedDate, time) &&
-        "cursor-not-allowed opacity-50 line-through hover:border-border",
+      "cursor-not-allowed opacity-50 line-through hover:border-border",
     );
 
   const embeddedInputClass =
@@ -448,7 +448,7 @@ export default function ConsultationBookingForm({
             name="address"
             value={formData.address}
             onChange={onInputChange}
-            placeholder="ул. Примерна 1, София"
+            placeholder="ул. Примерна 1"
             className={cn(isEmbedded ? embeddedInputClass : undefined, "h-12")}
             required
           />
@@ -534,7 +534,7 @@ export default function ConsultationBookingForm({
             className={cn(
               "w-full",
               isEmbedded &&
-                "h-14 rounded-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90",
+              "h-14 rounded-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90",
             )}
           >
             {isSubmitting ? "Запазване..." : submitLabel}
