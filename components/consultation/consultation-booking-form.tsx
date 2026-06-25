@@ -76,6 +76,7 @@ export default function ConsultationBookingForm({
   onBooked,
 }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const animatedSectionsRef = useRef(new Set<string>());
   const isEmbedded = variant === "embedded";
   const [days, setDays] = useState<SlotDay[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
@@ -194,25 +195,60 @@ export default function ConsultationBookingForm({
   }, [availableTimes, selectedDate, selectedTime, locallyDisabledSlots, isEmbedded]);
 
   useEffect(() => {
+    if (!isContactComplete) {
+      animatedSectionsRef.current.delete("meeting-type");
+      animatedSectionsRef.current.delete("address");
+      animatedSectionsRef.current.delete("day-picker");
+      animatedSectionsRef.current.delete("time-picker");
+      animatedSectionsRef.current.delete("submit");
+    }
+  }, [isContactComplete]);
+
+  useEffect(() => {
+    if (!showTimePicker) {
+      animatedSectionsRef.current.delete("time-picker");
+      animatedSectionsRef.current.delete("submit");
+    }
+  }, [showTimePicker]);
+
+  useEffect(() => {
+    if (!showAddressField) {
+      animatedSectionsRef.current.delete("address");
+    }
+  }, [showAddressField]);
+
+  useEffect(() => {
     if (isLoadingSlots) return;
     const root = rootRef.current;
     if (!root) return;
 
-    const ctx = gsap.context(() => {
-      const els = root.querySelectorAll<HTMLElement>("[data-consult-animate]");
-      if (!els.length) return;
-      gsap.set(els, { opacity: 0, y: 28 });
-      gsap.to(els, {
-        opacity: 1,
-        y: 0,
-        duration: 0.48,
-        stagger: 0.09,
-        ease: "back.out(1.3)",
-      });
-    }, root);
+    const els = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-consult-animate-key]"),
+    ).filter((el) => {
+      const key = el.dataset.consultAnimateKey;
+      return key && !animatedSectionsRef.current.has(key);
+    });
 
-    return () => ctx.revert();
-  }, [isLoadingSlots, isContactComplete, selectedDate, meetingType, showAddressField]);
+    if (!els.length) return;
+
+    els.forEach((el) => {
+      const key = el.dataset.consultAnimateKey;
+      if (key) animatedSectionsRef.current.add(key);
+    });
+
+    gsap.set(els, { opacity: 0, y: 28 });
+    const tween = gsap.to(els, {
+      opacity: 1,
+      y: 0,
+      duration: 0.48,
+      stagger: 0.09,
+      ease: "back.out(1.3)",
+    });
+
+    return () => {
+      tween.kill();
+    };
+  }, [isLoadingSlots, isContactComplete, showMeetingTypePicker, showAddressField, showTimePicker]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -332,7 +368,7 @@ export default function ConsultationBookingForm({
   ) : (
     <div className={cn(isEmbedded ? "grid gap-5" : "space-y-6")}>
       <div
-        data-consult-animate
+        data-consult-animate-key="contact"
         className={cn(
           "opacity-0 translate-y-10",
           isEmbedded ? "grid gap-5" : "grid grid-cols-1 gap-4 sm:grid-cols-2",
@@ -419,7 +455,7 @@ export default function ConsultationBookingForm({
       </div>
 
       {showMeetingTypePicker ? (
-        <div data-consult-animate className="space-y-2 opacity-0 translate-y-10">
+        <div data-consult-animate-key="meeting-type" className="space-y-2 opacity-0 translate-y-10">
           <Label>Формат на срещата</Label>
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -441,7 +477,7 @@ export default function ConsultationBookingForm({
       ) : null}
 
       {showAddressField ? (
-        <div data-consult-animate className="grid gap-2 opacity-0 translate-y-10">
+        <div data-consult-animate-key="address" className="grid gap-2 opacity-0 translate-y-10">
           <Label htmlFor="consult-address">Адрес в София</Label>
           <Input
             id="consult-address"
@@ -456,7 +492,7 @@ export default function ConsultationBookingForm({
       ) : null}
 
       {showDayPicker ? (
-        <div data-consult-animate className="space-y-2 opacity-0 translate-y-10">
+        <div data-consult-animate-key="day-picker" className="space-y-2 opacity-0 translate-y-10">
           {isEmbedded ? (
             <Label>Избери ден</Label>
           ) : (
@@ -479,7 +515,7 @@ export default function ConsultationBookingForm({
       ) : null}
 
       {showTimePicker ? (
-        <div data-consult-animate className="space-y-2 opacity-0 translate-y-10">
+        <div data-consult-animate-key="time-picker" className="space-y-2 opacity-0 translate-y-10">
           {isEmbedded ? (
             <Label>Свободни часове</Label>
           ) : (
@@ -505,7 +541,7 @@ export default function ConsultationBookingForm({
       ) : null}
 
       {!isEmbedded && showNotesField ? (
-        <div data-consult-animate className="opacity-0 translate-y-10">
+        <div data-consult-animate-key="notes" className="opacity-0 translate-y-10">
           <Textarea
             name="notes"
             value={formData.notes}
@@ -519,7 +555,7 @@ export default function ConsultationBookingForm({
       {error ? <p className="text-sm text-red-500">{error}</p> : null}
 
       {showTimePicker ? (
-        <div data-consult-animate className="opacity-0 translate-y-10">
+        <div data-consult-animate-key="submit" className="opacity-0 translate-y-10">
           <Button
             type="button"
             onClick={() => void handleSubmit()}
