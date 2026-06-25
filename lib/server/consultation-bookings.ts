@@ -32,6 +32,7 @@ export interface ConsultationRecord {
   timezone?: string;
   meetUrl?: string;
   googleEventId?: string;
+  calendarUrl?: string;
 }
 
 export type ConsultationStatus = ConsultationRecord["status"];
@@ -182,6 +183,44 @@ function buildDateInTimezone(date: string, time: string, timezone: string): Date
   return new Date(utcMillis);
 }
 
+function formatGoogleCalendarLocalDate(date: Date, timezone: string): string {
+  const formatter = new Intl.DateTimeFormat("en-GB", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  const parts = formatter.formatToParts(date);
+  const get = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? "00";
+
+  return `${get("year")}${get("month")}${get("day")}T${get("hour")}${get("minute")}${get("second")}`;
+}
+
+function buildGoogleCalendarUrl(params: {
+  title: string;
+  startDate: Date;
+  endDate: Date;
+  timezone: string;
+  description?: string;
+  location?: string;
+}): string {
+  const searchParams = new URLSearchParams({
+    action: "TEMPLATE",
+    text: params.title,
+    dates: `${formatGoogleCalendarLocalDate(params.startDate, params.timezone)}/${formatGoogleCalendarLocalDate(params.endDate, params.timezone)}`,
+    ctz: params.timezone,
+  });
+  if (params.description) searchParams.set("details", params.description);
+  if (params.location) searchParams.set("location", params.location);
+
+  return `https://calendar.google.com/calendar/render?${searchParams.toString()}`;
+}
+
 async function createCalendarEvent(booking: ConsultationRecord) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -252,9 +291,21 @@ async function createCalendarEvent(booking: ConsultationRecord) {
     throw new GoogleMeetCreationError("Google Meet URL was not returned.");
   }
 
+  const calendarUrl =
+    response.data.htmlLink ??
+    buildGoogleCalendarUrl({
+      title: `DigiStart consultation: ${booking.name}`,
+      startDate,
+      endDate,
+      timezone,
+      description: `Формат: ${meetingLine}\nSource: ${booking.sourcePage ?? booking.source}\nEmail: ${booking.email}\nPhone: ${booking.phone}${locationLine}`,
+      location: isInPerson ? booking.address : undefined,
+    });
+
   return {
     eventId: response.data.id ?? undefined,
     meetUrl,
+    calendarUrl,
     startsAt: startDate.toISOString(),
     endsAt: endDate.toISOString(),
   };
@@ -280,10 +331,13 @@ async function sendConsultationEmails(booking: ConsultationRecord) {
   if (!mailer) return;
   const customerHtml = await renderConsultationCustomerEmailHtml(booking);
   const adminHtml = await renderConsultationAdminEmailHtml(booking);
+  const calendarLine = booking.calendarUrl
+    ? `Google Calendar (${booking.date} ${booking.time}): ${booking.calendarUrl}`
+    : `Google Calendar: ${booking.date} ${booking.time}`;
   const commonText =
     booking.meetingType === "in_person"
-      ? `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: На място в София${booking.address ? ` — ${booking.address}` : ""}\nGoogle Calendar: Поканата е изпратена на имейла на клиента`
-      : `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: Онлайн\nGoogle Meet: ${booking.meetUrl ?? "Ще бъде добавен допълнително"}\nGoogle Calendar: Поканата с Google Meet е изпратена на имейла на клиента`;
+      ? `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: На място в София${booking.address ? ` — ${booking.address}` : ""}\n${calendarLine}`
+      : `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: Онлайн\nGoogle Meet: ${booking.meetUrl ?? "Ще бъде добавен допълнително"}\n${calendarLine}`;
 
   const delivery = resolveOutboundEmailDelivery({
     customerEmail: booking.email,
@@ -341,6 +395,7 @@ export async function saveConsultationBooking(
     timezone: "Europe/Sofia",
     meetUrl: calendarData.meetUrl ?? undefined,
     googleEventId: calendarData.eventId,
+    calendarUrl: calendarData.calendarUrl,
   };
 
   await prisma.consultationBooking.upsert({

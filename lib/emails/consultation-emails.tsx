@@ -5,6 +5,7 @@ import {
   Heading,
   Hr,
   Html,
+  Link,
   Preview,
   Section,
   Text,
@@ -24,6 +25,7 @@ export type ConsultationEmailBooking = {
   meetUrl?: string;
   meetingType?: "online" | "in_person";
   address?: string;
+  calendarUrl?: string;
 };
 
 const bodyStyle = {
@@ -38,6 +40,30 @@ const containerStyle = {
   backgroundColor: "#ffffff",
   borderRadius: "8px",
 };
+
+const linkStyle = {
+  color: "#2563eb",
+  textDecoration: "underline",
+};
+
+function CalendarLink({ booking }: { booking: ConsultationEmailBooking }) {
+  if (!booking.calendarUrl) {
+    return (
+      <Text>
+        Google Calendar: {booking.date} {booking.time} ({booking.timezone ?? "Europe/Sofia"})
+      </Text>
+    );
+  }
+
+  return (
+    <Text>
+      Google Calendar ({booking.date} {booking.time}):{" "}
+      <Link href={booking.calendarUrl} style={linkStyle}>
+        Добави в Google Calendar
+      </Link>
+    </Text>
+  );
+}
 
 function ConsultationCustomerEmail({ booking }: { booking: ConsultationEmailBooking }) {
   return (
@@ -61,6 +87,7 @@ function ConsultationCustomerEmail({ booking }: { booking: ConsultationEmailBook
               <Text>Google Meet: {booking.meetUrl ?? "Ще бъде добавен допълнително"}</Text>
             </>
           )}
+          <CalendarLink booking={booking} />
           <Hr />
           <Text style={{ color: "#6b7280", fontSize: "12px" }}>Поздрави,</Text>
           <Text style={{ marginTop: 0 }}>DigiStart</Text>
@@ -91,14 +118,13 @@ function ConsultationAdminEmail({ booking }: { booking: ConsultationEmailBooking
             {booking.meetingType === "in_person" ? (
               <>
                 <Text>Формат: На място в София — {booking.address ?? "-"}</Text>
-                <Text>Google Calendar: Покана изпратена на клиента</Text>
               </>
             ) : (
               <>
                 <Text>Google Meet: {booking.meetUrl ?? "Ще бъде добавен допълнително"}</Text>
-                <Text>Google Calendar: Покана с Google Meet изпратена на клиента</Text>
               </>
             )}
+            <CalendarLink booking={booking} />
           </Section>
         </Container>
       </Body>
