@@ -29,6 +29,7 @@ export function BookingForm() {
               variant="embedded"
               showCompanyField={false}
               showNotesField={false}
+              showOnSiteOption
               submitLabel="Потвърди консултацията"
               analyticsPath="/"
               analyticsCtaId="home_booking_submit"

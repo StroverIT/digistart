@@ -21,6 +21,8 @@ export type ConsultationEmailBooking = {
   source: "public" | "checkout";
   timezone?: string;
   meetUrl?: string;
+  meetingType?: "online" | "in_person";
+  address?: string;
 };
 
 const bodyStyle = {
@@ -49,7 +51,15 @@ function ConsultationCustomerEmail({ booking }: { booking: ConsultationEmailBook
             Вашата консултация е записана за {booking.date} {booking.time} (
             {booking.timezone ?? "Europe/Sofia"}).
           </Text>
-          <Text>Google Meet: {booking.meetUrl ?? "Ще бъде добавен допълнително"}</Text>
+          {booking.meetingType === "in_person" ? (
+            <>
+              <Text>На място в София: {booking.address ? ` — ${booking.address}` : ""}</Text>
+            </>
+          ) : (
+            <>
+              <Text>Google Meet: {booking.meetUrl ?? "Ще бъде добавен допълнително"}</Text>
+            </>
+          )}
           <Hr />
           <Text style={{ color: "#6b7280", fontSize: "12px" }}>Поздрави,</Text>
           <Text style={{ marginTop: 0 }}>DigiStart</Text>
@@ -77,7 +87,17 @@ function ConsultationAdminEmail({ booking }: { booking: ConsultationEmailBooking
             <Text>Телефон: {booking.phone}</Text>
             <Text>Източник: {booking.source}</Text>
             <Text>Компания: {booking.company ?? "-"}</Text>
-            <Text>Google Meet: {booking.meetUrl ?? "Ще бъде добавен допълнително"}</Text>
+            {booking.meetingType === "in_person" ? (
+              <>
+                <Text>Формат: На място в София — {booking.address ?? "-"}</Text>
+                <Text>Google Calendar: Покана изпратена на клиента</Text>
+              </>
+            ) : (
+              <>
+                <Text>Google Meet: {booking.meetUrl ?? "Ще бъде добавен допълнително"}</Text>
+                <Text>Google Calendar: Покана с Google Meet изпратена на клиента</Text>
+              </>
+            )}
           </Section>
         </Container>
       </Body>

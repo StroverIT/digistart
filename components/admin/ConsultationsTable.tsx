@@ -31,6 +31,8 @@ type ConsultationItem = {
   timezone?: string;
   meetUrl?: string;
   googleEventId?: string;
+  meetingType?: "online" | "in_person";
+  address?: string;
 };
 
 const statusLabel: Record<VisibleStatus, string> = {
@@ -219,7 +221,12 @@ export default function ConsultationsTable({
                     </Select>
                   </td>
                   <td className="py-3 px-4 text-sm">
-                    {consultation.meetUrl ? (
+                    {consultation.meetingType === "in_person" ? (
+                      <span title={consultation.address}>
+                        На място
+                        {consultation.address ? ` — ${consultation.address}` : ""}
+                      </span>
+                    ) : consultation.meetUrl ? (
                       <a
                         href={consultation.meetUrl}
                         target="_blank"

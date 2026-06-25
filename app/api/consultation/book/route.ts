@@ -8,17 +8,29 @@ import {
 
 const SLOT_BLOCKING_STATUSES = new Set(["scheduled", "attended", "absent"]);
 
-const bookingSchema = z.object({
-  name: z.string().trim().min(2),
-  email: z.string().email(),
-  phone: z.string().trim().min(6),
-  company: z.string().trim().optional(),
-  notes: z.string().trim().optional(),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  time: z.string().regex(/^\d{2}:\d{2}$/),
-  source: z.enum(["public", "checkout"]).default("public"),
-  orderId: z.string().trim().optional(),
-});
+const bookingSchema = z
+  .object({
+    name: z.string().trim().min(2),
+    email: z.string().email(),
+    phone: z.string().trim().min(6),
+    company: z.string().trim().optional(),
+    notes: z.string().trim().optional(),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    time: z.string().regex(/^\d{2}:\d{2}$/),
+    source: z.enum(["public", "checkout"]).default("public"),
+    orderId: z.string().trim().optional(),
+    meetingType: z.enum(["online", "in_person"]).default("online"),
+    address: z.string().trim().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.meetingType === "in_person" && (!data.address || data.address.length < 5)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Address is required for on-site consultations in Sofia.",
+        path: ["address"],
+      });
+    }
+  });
 
 function formatDate(date: Date) {
   return date.toISOString().split("T")[0];
@@ -72,6 +84,8 @@ export async function POST(req: Request) {
       source: data.source,
       status: "scheduled" as const,
       orderId: data.orderId,
+      meetingType: data.meetingType,
+      address: data.meetingType === "in_person" ? data.address : undefined,
       createdAt: new Date().toISOString(),
     };
 

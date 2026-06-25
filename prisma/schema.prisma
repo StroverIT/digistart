@@ -216,6 +216,8 @@ model ConsultationBooking {
   source        String
   status        String
   orderId       String?
+  meetingType   String    @default("online")
+  address       String?
   timezone      String    @default("Europe/Sofia")
   startsAt      DateTime?
   endsAt        DateTime?

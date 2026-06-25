@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { flushAnalyticsEventsAsync, trackAnalyticsEvent } from "@/lib/analytics/tracker";
+import { toast } from "sonner";
 
 type SlotDay = {
   date: string;
@@ -33,6 +34,7 @@ type Props = {
   submitLabel?: string;
   showCompanyField?: boolean;
   showNotesField?: boolean;
+  showOnSiteOption?: boolean;
   analyticsPath?: string;
   analyticsCtaId?: string;
   initialValues?: {
@@ -64,6 +66,7 @@ export default function ConsultationBookingForm({
   submitLabel = "Запази консултация",
   showCompanyField = true,
   showNotesField = true,
+  showOnSiteOption = false,
   analyticsPath = "/consultation",
   analyticsCtaId,
   initialValues,
@@ -78,7 +81,6 @@ export default function ConsultationBookingForm({
   const [isLoadingSlots, setIsLoadingSlots] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [locallyDisabledSlots, setLocallyDisabledSlots] = useState<Record<string, Set<string>>>({});
 
   const [formData, setFormData] = useState({
@@ -87,7 +89,9 @@ export default function ConsultationBookingForm({
     phone: initialValues?.phone ?? "",
     company: initialValues?.company ?? "",
     notes: initialValues?.notes ?? "",
+    address: "",
   });
+  const [meetingType, setMeetingType] = useState<"online" | "in_person">("online");
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -140,7 +144,11 @@ export default function ConsultationBookingForm({
   }, [formData.name, formData.phone, formData.email]);
 
   const showDayPicker = isContactComplete;
+  const showMeetingTypePicker = isContactComplete && showOnSiteOption;
+  const showAddressField = showMeetingTypePicker && meetingType === "in_person";
   const showTimePicker = isContactComplete && Boolean(selectedDate);
+  const isAddressValid =
+    meetingType !== "in_person" || formData.address.trim().length >= 5;
 
   useEffect(() => {
     if (!isContactComplete) {
@@ -148,6 +156,12 @@ export default function ConsultationBookingForm({
       setSelectedTime("");
     }
   }, [isContactComplete]);
+
+  useEffect(() => {
+    if (meetingType === "online") {
+      setFormData((prev) => ({ ...prev, address: "" }));
+    }
+  }, [meetingType]);
 
   useEffect(() => {
     if (!selectedDate) {
@@ -196,16 +210,7 @@ export default function ConsultationBookingForm({
     }, root);
 
     return () => ctx.revert();
-  }, [isLoadingSlots, isContactComplete, selectedDate]);
-
-  useEffect(() => {
-    if (!success) return;
-    const root = rootRef.current;
-    if (!root) return;
-    const msg = root.querySelector<HTMLElement>("[data-consult-success]");
-    if (!msg) return;
-    gsap.fromTo(msg, { opacity: 0, y: 12, scale: 0.98 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.4)" });
-  }, [success]);
+  }, [isLoadingSlots, isContactComplete, selectedDate, meetingType, showAddressField]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -215,7 +220,6 @@ export default function ConsultationBookingForm({
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setError("");
-    setSuccess("");
 
     try {
       const res = await fetch("/api/consultation/book", {
@@ -227,6 +231,8 @@ export default function ConsultationBookingForm({
           time: selectedTime,
           source,
           orderId,
+          meetingType: showOnSiteOption ? meetingType : "online",
+          address: showOnSiteOption && meetingType === "in_person" ? formData.address.trim() : undefined,
         }),
       });
 
@@ -242,7 +248,7 @@ export default function ConsultationBookingForm({
           (source === "checkout" ? "checkout_consultation_submit" : "consultation_submit"),
       });
       await flushAnalyticsEventsAsync();
-      setSuccess("Консултацията е запазена успешно.");
+      toast.success("Консултацията е запазена успешно.");
       setLocallyDisabledSlots((prev) => {
         const next = { ...prev };
         const dateSlots = new Set(next[booking.date] ?? []);
@@ -256,7 +262,9 @@ export default function ConsultationBookingForm({
         phone: "",
         company: "",
         notes: "",
+        address: "",
       });
+      setMeetingType("online");
       onBooked?.(booking);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Неуспешно запазване.";
@@ -265,6 +273,20 @@ export default function ConsultationBookingForm({
       setIsSubmitting(false);
     }
   };
+
+  const meetingTypeButtonClass = (type: "online" | "in_person") =>
+    cn(
+      "text-sm font-semibold transition-all",
+      isEmbedded ? "h-11 rounded-xl px-3" : "rounded-md border px-3 py-2",
+      isEmbedded
+        ? meetingType === type
+          ? "bg-accent text-accent-foreground shadow-md"
+          : "bg-background/80 text-foreground hover:bg-background"
+        : meetingType === type
+          ? "border-primary bg-primary/10 text-primary"
+          : "border-border hover:border-primary/40",
+      !isEmbedded && "border",
+    );
 
   const dayButtonClass = (day: SlotDay) =>
     cn(
@@ -393,6 +415,43 @@ export default function ConsultationBookingForm({
         )}
       </div>
 
+      {showMeetingTypePicker ? (
+        <div data-consult-animate className="space-y-2 opacity-0 translate-y-10">
+          <Label>Формат на срещата</Label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setMeetingType("online")}
+              className={meetingTypeButtonClass("online")}
+            >
+              Онлайн
+            </button>
+            <button
+              type="button"
+              onClick={() => setMeetingType("in_person")}
+              className={meetingTypeButtonClass("in_person")}
+            >
+              На място в София
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {showAddressField ? (
+        <div data-consult-animate className="grid gap-2 opacity-0 translate-y-10">
+          <Label htmlFor="consult-address">Адрес в София</Label>
+          <Input
+            id="consult-address"
+            name="address"
+            value={formData.address}
+            onChange={onInputChange}
+            placeholder="ул. Примерна 1, София"
+            className={cn(isEmbedded ? embeddedInputClass : undefined, "h-12")}
+            required
+          />
+        </div>
+      ) : null}
+
       {showDayPicker ? (
         <div data-consult-animate className="space-y-2 opacity-0 translate-y-10">
           {isEmbedded ? (
@@ -455,11 +514,6 @@ export default function ConsultationBookingForm({
       ) : null}
 
       {error ? <p className="text-sm text-red-500">{error}</p> : null}
-      {success ? (
-        <p data-consult-success className="text-sm text-green-600">
-          {success}
-        </p>
-      ) : null}
 
       {showTimePicker ? (
         <div data-consult-animate className="opacity-0 translate-y-10">
@@ -470,6 +524,7 @@ export default function ConsultationBookingForm({
               isSubmitting ||
               !selectedDate ||
               !selectedTime ||
+              !isAddressValid ||
               availableTimes.length === 0 ||
               isTimeLocallyDisabled(selectedDate, selectedTime)
             }
