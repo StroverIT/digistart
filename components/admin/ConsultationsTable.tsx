@@ -181,6 +181,9 @@ export default function ConsultationsTable({
                   Дата и час
                 </th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                  Бележки
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
                   Източник
                 </th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
@@ -200,6 +203,15 @@ export default function ConsultationsTable({
                   </td>
                   <td className="py-3 px-4 text-sm">
                     {consultation.date} {consultation.time} ({consultation.timezone ?? "Europe/Sofia"})
+                  </td>
+                  <td className="py-3 px-4 text-sm max-w-[220px]">
+                    {consultation.notes ? (
+                      <span className="line-clamp-2" title={consultation.notes}>
+                        {consultation.notes}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
                   </td>
                   <td className="py-3 px-4 text-sm">{consultation.source}</td>
                   <td className="py-3 px-4 text-sm">

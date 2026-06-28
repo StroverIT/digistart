@@ -248,6 +248,7 @@ async function createCalendarEvent(booking: ConsultationRecord) {
     .map((email) => ({ email }));
 
   const locationLine = isInPerson && booking.address ? `\nАдрес: ${booking.address}` : "";
+  const notesLine = booking.notes?.trim() ? `\nБележки: ${booking.notes.trim()}` : "";
   const meetingLine = isInPerson ? "На място в София" : "Онлайн (Google Meet)";
 
   const response = await calendar.events
@@ -257,7 +258,7 @@ async function createCalendarEvent(booking: ConsultationRecord) {
       conferenceDataVersion: isInPerson ? undefined : 1,
       requestBody: {
         summary: `DigiStart consultation: ${booking.name}`,
-        description: `Формат: ${meetingLine}\nSource: ${booking.sourcePage ?? booking.source}\nEmail: ${booking.email}\nPhone: ${booking.phone}${locationLine}`,
+        description: `Формат: ${meetingLine}\nSource: ${booking.sourcePage ?? booking.source}\nEmail: ${booking.email}\nPhone: ${booking.phone}${locationLine}${notesLine}`,
         location: isInPerson ? booking.address : undefined,
         start: { dateTime: startDate.toISOString(), timeZone: timezone },
         end: { dateTime: endDate.toISOString(), timeZone: timezone },
@@ -298,7 +299,7 @@ async function createCalendarEvent(booking: ConsultationRecord) {
       startDate,
       endDate,
       timezone,
-      description: `Формат: ${meetingLine}\nSource: ${booking.sourcePage ?? booking.source}\nEmail: ${booking.email}\nPhone: ${booking.phone}${locationLine}`,
+      description: `Формат: ${meetingLine}\nSource: ${booking.sourcePage ?? booking.source}\nEmail: ${booking.email}\nPhone: ${booking.phone}${locationLine}${notesLine}`,
       location: isInPerson ? booking.address : undefined,
     });
 
@@ -323,9 +324,11 @@ async function sendConsultationEmails(booking: ConsultationRecord) {
   if (!from) return;
 
   const notifyEmail =
-    process.env.NEXT_PUBLIC_GOOGLE_EMAIL_USER ||
-    process.env.GOOGLE_EMAIL_USER ||
-    process.env.CONSULTATION_NOTIFY_EMAIL ||
+    process.env.ADMIN_EMAIL ??
+    process.env.admin_email ??
+    process.env.CONSULTATION_NOTIFY_EMAIL ??
+    process.env.NEXT_PUBLIC_GOOGLE_EMAIL_USER ??
+    process.env.GOOGLE_EMAIL_USER ??
     "digistartbg@gmail.com";
   const mailer = await transporter();
   if (!mailer) return;
@@ -334,10 +337,11 @@ async function sendConsultationEmails(booking: ConsultationRecord) {
   const calendarLine = booking.calendarUrl
     ? `Google Calendar (${booking.date} ${booking.time}): ${booking.calendarUrl}`
     : `Google Calendar: ${booking.date} ${booking.time}`;
+  const notesLine = booking.notes?.trim() ? `\nБележки: ${booking.notes.trim()}` : "";
   const commonText =
     booking.meetingType === "in_person"
-      ? `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: На място в София${booking.address ? ` — ${booking.address}` : ""}\n${calendarLine}`
-      : `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: Онлайн\nGoogle Meet: ${booking.meetUrl ?? "Ще бъде добавен допълнително"}\n${calendarLine}`;
+      ? `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: На място в София${booking.address ? ` — ${booking.address}` : ""}${notesLine}\n${calendarLine}`
+      : `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: Онлайн\nGoogle Meet: ${booking.meetUrl ?? "Ще бъде добавен допълнително"}${notesLine}\n${calendarLine}`;
 
   const delivery = resolveOutboundEmailDelivery({
     customerEmail: booking.email,

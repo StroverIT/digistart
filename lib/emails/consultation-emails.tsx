@@ -17,6 +17,7 @@ export type ConsultationEmailBooking = {
   email: string;
   phone: string;
   company?: string;
+  notes?: string;
   date: string;
   time: string;
   source: "public" | "checkout";
@@ -115,6 +116,7 @@ function ConsultationAdminEmail({ booking }: { booking: ConsultationEmailBooking
             <Text>Телефон: {booking.phone}</Text>
             <Text>Източник: {booking.sourcePage ?? booking.source}</Text>
             <Text>Компания: {booking.company ?? "-"}</Text>
+            {booking.notes ? <Text>Бележки: {booking.notes}</Text> : null}
             {booking.meetingType === "in_person" ? (
               <>
                 <Text>Формат: На място в София — {booking.address ?? "-"}</Text>

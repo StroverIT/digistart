@@ -291,7 +291,11 @@ export default function ConsultationBookingForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...formData,
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          company: formData.company.trim() || undefined,
+          notes: formData.notes.trim() || undefined,
           date: selectedDate,
           time: selectedTime,
           source,
