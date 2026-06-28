@@ -48,7 +48,7 @@ function centerActiveLink(container: HTMLElement, link: HTMLElement) {
 export function ServiceInnerNavigation({
   items,
   ariaLabel,
-  ctaHref = "#buy-now",
+  ctaHref = "#booking",
   ctaLabel = "Запази час",
   capitalizeLinks = false,
 }: ServiceInnerNavigationProps) {

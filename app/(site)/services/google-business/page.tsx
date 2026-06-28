@@ -61,7 +61,6 @@ export default function GoogleBusinessPage() {
 
       <BookingForm
         sourcePage="Google Business (/services/google-business)"
-        sectionId="buy-now"
         analyticsPath="/services/google-business"
         analyticsCtaId="google_business_booking_submit"
       />

@@ -59,7 +59,6 @@ export default function AdsPage() {
 
       <BookingForm
         sourcePage="Реклами (/services/ads)"
-        sectionId="buy-now"
         analyticsPath="/services/ads"
         analyticsCtaId="ads_booking_submit"
       />

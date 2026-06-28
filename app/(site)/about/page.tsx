@@ -155,7 +155,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-start">
+        <section id="booking" className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-start">
           <div className="rounded-2xl border border-border bg-card p-6 md:p-8 space-y-6">
             <div className="space-y-3">
               <p className="text-sm font-medium tracking-wide uppercase text-primary">

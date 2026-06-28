@@ -56,7 +56,7 @@ export function AdditionalServicesGrid({
           return (
             <div key={service.id} className="[&>span]:flex [&>span]:w-full">
               <TrackedCtaLink
-                href={`/services/${service.slug}#buy-now`}
+                href={`/services/${service.slug}#booking`}
                 ctaId={`${ctaIdPrefix}_${service.slug}`}
                 className="flex flex-col  w-full items-center gap-2 xl:gap-4 rounded-xl border border-border bg-background/60 p-5 text-left transition-all duration-300 hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >

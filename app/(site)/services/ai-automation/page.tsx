@@ -18,7 +18,6 @@ export default async function AiAutomationPage() {
       <ServiceDetailAiAutomation serviceData={service} />
       <BookingForm
         sourcePage="AI Automation (/services/ai-automation)"
-        sectionId="buy-now"
         analyticsPath="/services/ai-automation"
         analyticsCtaId="ai_automation_booking_submit"
       />

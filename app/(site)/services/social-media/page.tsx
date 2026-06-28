@@ -61,7 +61,6 @@ export default function SocialMediaPage() {
 
       <BookingForm
         sourcePage="Социални мрежи (/services/social-media)"
-        sectionId="buy-now"
         analyticsPath="/services/social-media"
         analyticsCtaId="social_media_booking_submit"
       />

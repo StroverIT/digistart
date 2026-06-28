@@ -62,7 +62,7 @@ export function ServiceDetailReadyStore({
   const planPrice = getServicePlanPrice(service, ONLINE_STORE_OPTION_ID);
 
   const scrollToBuySection = () => {
-    document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("booking")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const handleCheckout = (options?: { billingCycle?: CartBillingCycle }) => {

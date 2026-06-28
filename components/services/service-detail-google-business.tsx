@@ -51,7 +51,7 @@ export function ServiceDetailGoogleBusiness({
   );
 
   const scrollToBuySection = () => {
-    document.getElementById("buy-now")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("booking")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const handleGoogleCheckout = (options?: { billingCycle?: CartBillingCycle }) => {

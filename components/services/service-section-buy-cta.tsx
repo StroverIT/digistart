@@ -15,7 +15,7 @@ export type ServiceSectionBuyCtaConfig = {
 
 export function scrollServiceBuySectionIntoView() {
   document
-    .getElementById("buy-now")
+    .getElementById("booking")
     ?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 

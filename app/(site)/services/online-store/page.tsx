@@ -62,7 +62,6 @@ export default function OnlineStorePage() {
 
       <BookingForm
         sourcePage="Онлайн магазин (/services/online-store)"
-        sectionId="buy-now"
         analyticsPath="/services/online-store"
         analyticsCtaId="online_store_booking_submit"
       />

@@ -53,7 +53,7 @@ const ReportsPanel = () => {
             size="sm"
             className="shrink-0 self-center rounded-full px-8 text-sm font-semibold shadow-lg shadow-primary/20"
           >
-            <a href="#buy-now">Стартирай сега</a>
+            <a href="#booking">Стартирай сега</a>
           </Button>
         </div>
       </div>

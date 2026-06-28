@@ -80,7 +80,7 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
 
           <div className="flex flex-wrap gap-3">
             <TrackedCtaLink
-              href="/services/online-store#buy-now"
+              href="/services/online-store#booking"
               ctaId={`templates_detail_start_${template.category}_${template.id}`}
               onClick={() => {
                 setCheckoutTemplateSelection({
@@ -137,7 +137,7 @@ export function TemplateDetailView({ template }: TemplateDetailViewProps) {
         title={nicheTitle}
         cta={
           <TrackedCtaLink
-            href="/services/online-store#buy-now"
+            href="/services/online-store#booking"
             ctaId={`templates_preview_choose_${template.category}_${template.id}`}
             onClick={() => {
               setCheckoutTemplateSelection({

@@ -29,7 +29,7 @@ const services = [
 
 const quickLinks = [
   { href: "/", label: "Начало" },
-  { href: "/#booking", label: "Безплатна консултация" },
+  { href: "#booking", label: "Безплатна консултация" },
   { href: "/#paths", label: "Как работим" },
   { href: "/about", label: "За нас" },
   { href: "/templates", label: "Шаблони" },

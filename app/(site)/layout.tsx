@@ -1,4 +1,5 @@
 import nextDynamic from "next/dynamic";
+import { SiteBookingSection } from "@/components/layout/site-booking-section";
 import PageTransitionProvider from "@/components/transitions/PageTransitionProvider";
 
 const Header = nextDynamic(
@@ -26,7 +27,10 @@ export default function SiteLayout({
     <PageTransitionProvider>
       <Header />
       <div className="flex min-h-screen min-w-0 flex-col">
-        <main className="min-w-0 flex-auto">{children}</main>
+        <main className="min-w-0 flex-auto">
+          {children}
+          <SiteBookingSection />
+        </main>
         <Footer />
       </div>
     </PageTransitionProvider>
