@@ -1,7 +1,13 @@
-import { FileCheck, MessageCircle, Rocket } from "lucide-react";
+import { FileCheck, MessageCircle, Rocket, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const steps = [
+export type ProcessStep = {
+  icon?: LucideIcon;
+  title: string;
+  description: string;
+};
+
+const defaultSteps: ProcessStep[] = [
   {
     icon: MessageCircle,
     title: "Безплатна консултация",
@@ -18,15 +24,23 @@ const steps = [
     icon: Rocket,
     title: "Старт спрямо бюджета",
     description:
-      "Избираш конфигурацията, която работи за теб, и я поръчваш директно през сайта.",
+      "Даваш ни служебен имейл и започваме",
   },
 ];
 
 type ProcessStepsContentProps = {
   variant?: "section" | "embedded";
+  steps?: ProcessStep[];
+  title?: string;
+  subtitle?: string;
 };
 
-export function ProcessStepsContent({ variant = "section" }: ProcessStepsContentProps) {
+export function ProcessStepsContent({
+  variant = "section",
+  steps = defaultSteps,
+  title = "Какъв е процеса",
+  subtitle = "Три ясни стъпки – без сложни термини, без скрити такси.",
+}: ProcessStepsContentProps) {
   const isEmbedded = variant === "embedded";
 
   return (
@@ -34,15 +48,15 @@ export function ProcessStepsContent({ variant = "section" }: ProcessStepsContent
       <div className={cn(isEmbedded ? "text-left" : "mx-auto max-w-2xl text-center")}>
         {isEmbedded ? (
           <h3 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-            Какъв е процеса
+            {title}
           </h3>
         ) : (
           <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-5xl">
-            Какъв е процеса
+            {title}
           </h2>
         )}
         <p className={cn("mt-3 text-muted-foreground", isEmbedded ? "text-sm md:text-base" : "md:text-lg")}>
-          Три ясни стъпки – без сложни термини, без скрити такси.
+          {subtitle}
         </p>
       </div>
 
@@ -62,7 +76,7 @@ export function ProcessStepsContent({ variant = "section" }: ProcessStepsContent
         <ol className={cn("grid gap-0", isEmbedded ? "gap-0" : "md:grid-cols-3 md:gap-6")}>
           {steps.map((step, index) => {
             const isLast = index === steps.length - 1;
-            const Icon = step.icon;
+            const Icon = step.icon ?? MessageCircle;
 
             return (
               <li

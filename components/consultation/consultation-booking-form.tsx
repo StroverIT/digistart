@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { flushAnalyticsEventsAsync, trackAnalyticsEvent } from "@/lib/analytics/tracker";
+import { trackMetaLead } from "@/lib/analytics/meta-pixel";
 import { toast } from "sonner";
 
 type SlotDay = {
@@ -35,9 +37,17 @@ type Props = {
   submitLabel?: string;
   showCompanyField?: boolean;
   showNotesField?: boolean;
+  showSocialProfileToggle?: boolean;
+  socialProfileToggleLabel?: string;
   showOnSiteOption?: boolean;
   analyticsPath?: string;
   analyticsCtaId?: string;
+  notesLabel?: string;
+  notesPlaceholder?: string;
+  metaLead?: {
+    contentName: string;
+    leadSource?: string;
+  };
   initialValues?: {
     name?: string;
     email?: string;
@@ -68,9 +78,14 @@ export default function ConsultationBookingForm({
   submitLabel = "Запази консултация",
   showCompanyField = true,
   showNotesField = true,
+  showSocialProfileToggle = false,
+  socialProfileToggleLabel = "Имаш ли социални мрежи?",
   showOnSiteOption = false,
   analyticsPath = "/consultation",
   analyticsCtaId,
+  notesLabel = "Допълнителни бележки (по избор)",
+  notesPlaceholder = "Допълнителни бележки (по избор)",
+  metaLead,
   initialValues,
   orderId,
   onBooked,
@@ -95,6 +110,7 @@ export default function ConsultationBookingForm({
     address: "",
   });
   const [meetingType, setMeetingType] = useState<"online" | "in_person">("online");
+  const [hasSocialProfiles, setHasSocialProfiles] = useState(false);
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -152,6 +168,11 @@ export default function ConsultationBookingForm({
   const showTimePicker = isContactComplete && Boolean(selectedDate);
   const isAddressValid =
     meetingType !== "in_person" || formData.address.trim().length >= 5;
+
+  const showSocialProfileLinkField =
+    isEmbedded &&
+    ((showSocialProfileToggle && hasSocialProfiles) ||
+      (showNotesField && !showSocialProfileToggle));
 
   useEffect(() => {
     if (!isContactComplete) {
@@ -218,6 +239,12 @@ export default function ConsultationBookingForm({
   }, [showAddressField]);
 
   useEffect(() => {
+    if (!showSocialProfileToggle || hasSocialProfiles) return;
+    animatedSectionsRef.current.delete("notes");
+    setFormData((prev) => ({ ...prev, notes: "" }));
+  }, [hasSocialProfiles, showSocialProfileToggle]);
+
+  useEffect(() => {
     if (isLoadingSlots) return;
     const root = rootRef.current;
     if (!root) return;
@@ -248,7 +275,7 @@ export default function ConsultationBookingForm({
     return () => {
       tween.kill();
     };
-  }, [isLoadingSlots, isContactComplete, showMeetingTypePicker, showAddressField, showTimePicker]);
+  }, [isLoadingSlots, isContactComplete, showMeetingTypePicker, showAddressField, showTimePicker, hasSocialProfiles, showSocialProfileToggle]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -286,6 +313,22 @@ export default function ConsultationBookingForm({
           analyticsCtaId ??
           (source === "checkout" ? "checkout_consultation_submit" : "consultation_submit"),
       });
+
+      if (metaLead) {
+        const nameParts = formData.name.trim().split(/\s+/);
+        trackMetaLead({
+          content_name: metaLead.contentName,
+          page_path: analyticsPath,
+          lead_source: metaLead.leadSource,
+          user: {
+            email: formData.email,
+            phone: formData.phone,
+            firstName: nameParts[0],
+            lastName: nameParts.length > 1 ? nameParts.slice(1).join(" ") : undefined,
+          },
+        });
+      }
+
       await flushAnalyticsEventsAsync();
       toast.success("Консултацията е запазена успешно.");
       setLocallyDisabledSlots((prev) => {
@@ -454,6 +497,36 @@ export default function ConsultationBookingForm({
         )}
       </div>
 
+      {isEmbedded && showSocialProfileToggle ? (
+        <div
+          data-consult-animate-key="social-toggle"
+          className="flex items-center gap-3 opacity-0 translate-y-10"
+        >
+          <Checkbox
+            id="consult-has-social"
+            checked={hasSocialProfiles}
+            onCheckedChange={(checked) => setHasSocialProfiles(checked === true)}
+          />
+          <Label htmlFor="consult-has-social" className="cursor-pointer font-normal">
+            {socialProfileToggleLabel}
+          </Label>
+        </div>
+      ) : null}
+
+      {showSocialProfileLinkField ? (
+        <div data-consult-animate-key="notes" className="grid gap-2 opacity-0 translate-y-10">
+          <Label htmlFor="consult-notes">{notesLabel}</Label>
+          <Input
+            id="consult-notes"
+            name="notes"
+            value={formData.notes}
+            onChange={onInputChange}
+            placeholder={notesPlaceholder}
+            className={cn(embeddedInputClass, "h-12")}
+          />
+        </div>
+      ) : null}
+
       {showMeetingTypePicker ? (
         <div data-consult-animate-key="meeting-type" className="space-y-2 opacity-0 translate-y-10">
           <Label>Формат на срещата</Label>
@@ -546,7 +619,7 @@ export default function ConsultationBookingForm({
             name="notes"
             value={formData.notes}
             onChange={onInputChange}
-            placeholder="Допълнителни бележки (по избор)"
+            placeholder={notesPlaceholder}
             rows={3}
           />
         </div>
