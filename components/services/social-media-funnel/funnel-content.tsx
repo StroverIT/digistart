@@ -19,7 +19,7 @@ const { doneForYou } = SOCIAL_MEDIA_FUNNEL;
 export function FunnelContentSections() {
   return (
     <>
-      <section className="bg-[#F8F7FF] pt-10 pb-8 md:pt-12 md:pb-10">
+      <section className="bg-[#F8F7FF] pb-8 md:pb-10">
         <div className="container mx-auto px-4 md:px-8 pb-16">
           <div className="mx-auto max-w-3xl">
             <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
