@@ -216,6 +216,49 @@ export function clearCart(): Cart {
   return emptyCart;
 }
 
+/** Replaces the cart with a single service line and returns the add result. */
+export function setCartForDirectCheckout(
+  serviceId: string,
+  optionId: string,
+  upsells: CartItemUpsell[] = [],
+  billingCycle: CartBillingCycle = "monthly",
+): AddToCartResult {
+  clearCart();
+  return addToCart(serviceId, optionId, upsells, billingCycle);
+}
+
+/** Replaces the cart with multiple service lines (e.g. bundle funnel checkout). */
+export function setCartForDirectCheckoutItems(
+  items: Array<{
+    serviceId: string;
+    optionId: string;
+    upsells?: CartItemUpsell[];
+    billingCycle?: CartBillingCycle;
+  }>,
+): AddToCartResult {
+  clearCart();
+
+  if (items.length === 0) {
+    return { cart: getCart(), added: false, reason: "invalid" };
+  }
+
+  let lastResult: AddToCartResult = { cart: getCart(), added: false, reason: "invalid" };
+  for (const item of items) {
+    lastResult = addToCart(
+      item.serviceId,
+      item.optionId,
+      item.upsells ?? [],
+      item.billingCycle ?? "monthly",
+    );
+    if (!lastResult.added) {
+      clearCart();
+      return lastResult;
+    }
+  }
+
+  return lastResult;
+}
+
 function recalculateTotals(cart: Cart): void {
   const totals = recalculateCartTotals(cart.items);
   cart.totalOneTime = totals.totalOneTime;

@@ -1,7 +1,19 @@
-export const SOCIAL_MEDIA_FUNNEL = {
-  pagePath: "/services/social-media/funnel",
-  sourcePage: "Социални мрежи funnel (/services/social-media/funnel)",
+import type { ServiceFunnelDefinition } from "@/config/service-funnels/types";
+
+export const SOCIAL_MEDIA_DONT_LOSE_TURNOVER_FUNNEL: ServiceFunnelDefinition = {
+  id: "social-media-dont-lose-turnover",
+  serviceId: "social-media",
+  funnelSlug: "dont-lose-turnover",
+  adminLabel: "Не искаш да губиш оборот?",
+  sourcePage: "Социални мрежи funnel (/services/social-media/dont-lose-turnover)",
   analyticsCtaId: "social_media_funnel_booking_submit",
+  meta: {
+    title: "Спрете да губите клиенти заради социални мрежи",
+    description:
+      "Запазете безплатна консултация. Ще прегледаме Instagram и Facebook профила ви и ще ви покажем как да изглеждате активни и надеждни пред конкурентите.",
+    ogCoverKey: "socialMedia",
+    ogAlt: "DigiStart – Безплатна консултация за социални мрежи",
+  },
   metaLead: {
     contentName: "DigiStart - Безплатна консултация (социални мрежи funnel)",
     leadSource: "social_media_funnel",
@@ -13,20 +25,6 @@ export const SOCIAL_MEDIA_FUNNEL = {
       "Запази безплатна консултация и ще прегледаме Facebook и Instagram профила ти. Ще ти покажем какво те кара да изглеждаш неактивен и как да изпревариш конкурентите.",
     ctaLabel: "Запази безплатна консултация",
   },
-  painPoints: [
-    {
-      title: "Първо те проверяват",
-      text: "Преди да купят, влизат в профила ти. Гледат дали си активен, дали си сериозен и чак тогава решават дали да купят от теб.",
-    },
-    {
-      title: "Празен профил = загубен клиент",
-      text: "Последен пост от преди 3 месеца, стари снимки или хаос в профила – клиентът си тръгва. Не защото продуктът ти е лош, а защото не изглеждаш надежден.",
-    },
-    {
-      title: "Другите публикуват, а ти – когато имаш време",
-      text: "Докато отлагаш, конкурентите качват редовно. Не защото са по-добри, а защото изглеждат по-активни и по-доверени.",
-    },
-  ],
   whoIsItFor: {
     title: "За кого е?",
     subtitle: "Партньорство за дългосрочен растеж — не еднократна услуга",
@@ -99,4 +97,10 @@ export const SOCIAL_MEDIA_FUNNEL = {
       },
     ],
   },
-} as const;
+  booking: {
+    showSocialProfileToggle: true,
+    notesLabel: "Линк към Instagram/Facebook профила",
+    notesPlaceholder: "https://instagram.com/твоят_профил",
+    showOnSiteOption: true,
+  },
+};

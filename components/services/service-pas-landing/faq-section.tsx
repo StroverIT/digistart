@@ -8,6 +8,7 @@ import {
 } from "@/components/services/service-section-buy-cta";
 import { PasSectionIntro } from "./section-intro";
 import { useSectionScrollAnimations } from "./use-section-scroll-animations";
+import { cn } from "@/lib/utils";
 
 export interface PasFaqSectionProps {
   title: string;
@@ -15,6 +16,7 @@ export interface PasFaqSectionProps {
   items: readonly FaqItem[];
   headingFontClass?: string;
   buyCta?: ServiceSectionBuyCtaConfig;
+  className?: string;
 }
 
 export function PasFaqSection({
@@ -23,12 +25,13 @@ export function PasFaqSection({
   items,
   headingFontClass,
   buyCta,
+  className,
 }: PasFaqSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   useSectionScrollAnimations(sectionRef, { staggerReveal: 0.08 });
 
   return (
-    <section ref={sectionRef} id="faq" className="bg-card/40 py-8 md:py-14">
+    <section ref={sectionRef} id="faq" className={cn("bg-card/40 py-8 md:py-14", className)}>
       <div className="container mx-auto px-4">
         <PasSectionIntro
           title={title}

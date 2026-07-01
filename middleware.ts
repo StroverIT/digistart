@@ -37,6 +37,20 @@ export default async function middleware(req: NextRequest, event: NextFetchEvent
     );
   }
 
+  if (path === "/services/funnels") {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    if (!token) {
+      const url = new URL("/admin/login", req.url);
+      url.searchParams.set("callbackUrl", path);
+      return NextResponse.redirect(url);
+    }
+    const role = (token as { role?: string }).role;
+    if (role !== "admin") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
+
   if (path.startsWith("/user")) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     if (!token) {

@@ -101,6 +101,14 @@ interface ServiceBuySectionProps {
   features?: string[];
   /** Shown under the base package heading (e.g. channel scope). */
   basePackageSubtitle?: string;
+  /** Label above the features list (default: „Базов пакет“). */
+  basePackageLabel?: string;
+  /** Fixed total shown in the summary (e.g. funnel bundle pricing). */
+  priceSummary?: {
+    total: number;
+    frequencyLabel?: string | null;
+    footnote?: string;
+  };
 }
 
 export { ServiceUpsellsSection } from "@/components/services/service-upsells-section";
@@ -130,6 +138,8 @@ export function ServiceBuySection({
   hideAdditionalServices = false,
   features: featuresOverride,
   basePackageSubtitle,
+  basePackageLabel = "Базов пакет",
+  priceSummary,
 }: ServiceBuySectionProps) {
   const { data: session } = useSession();
   const isAdminCheckout = isAdminCheckoutRole(session?.user?.role);
@@ -251,10 +261,16 @@ export function ServiceBuySection({
     annualDiscountAmount /
     (serviceMonthlyTotals.monthlyTotal + companionMonthlyTotals.monthlyTotal);
   const annualSavingsDescription = formatSavedMonths(annualSavingsMonths);
-  const totalFrequencyLabel =
-    effectiveBillingCycle === "annual-prepaid"
+  const displayTotalPrice = priceSummary?.total ?? totalPrice;
+  const totalFrequencyLabel = priceSummary
+    ? (priceSummary.frequencyLabel ?? null)
+    : effectiveBillingCycle === "annual-prepaid"
       ? "за 1 година"
       : monthlyLabel ?? (serviceMonthlyTotals.monthlyTotal > 0 ? "/месец" : null);
+  const totalFootnote = priceSummary?.footnote
+    ?? (effectiveBillingCycle === "annual-prepaid"
+      ? `Включва 12 месеца, еднократните суми и ${annualDiscountPercent}% отстъпка`
+      : "Включва избраните допълнителни услуги");
 
   useEffect(() => {
     if (!canPrepayAnnually && billingCycle === "annual-prepaid") {
@@ -380,7 +396,7 @@ export function ServiceBuySection({
       { scale: 1.05 },
       { scale: 1, duration: 0.25, ease: "power2.out" },
     );
-  }, [totalPrice]);
+  }, [displayTotalPrice]);
 
   // Ensure only one mobile sticky footer is visible at a time, even during route transition overlaps.
   useEffect(() => {
@@ -464,7 +480,7 @@ export function ServiceBuySection({
               isSoldOut && "pointer-events-none select-none blur-[2px] opacity-80",
             )}
           >
-            {canPrepayAnnually ? (
+            {canPrepayAnnually && !priceSummary ? (
               <div
                 className={cn(
                   "mb-8 rounded-2xl bg-muted/40 p-1.5",
@@ -541,7 +557,7 @@ export function ServiceBuySection({
               )}
             <div ref={basicPackageRef}>
               <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-                Базов пакет
+                {basePackageLabel}
               </p>
               {basePackageSubtitle ? (
                 <p className="mt-1 text-sm text-muted-foreground">{basePackageSubtitle}</p>
@@ -607,15 +623,13 @@ export function ServiceBuySection({
             <div className="rounded-[2rem] bg-card p-6 shadow-[var(--shadow-soft)] ring-1 ring-foreground/[0.04]">
               <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">Общо</p>
               <div data-total-pulse className="mb-1 flex items-end gap-2">
-                <Price value={totalPrice} layout="vertical" className="text-3xl text-accent" />
+                <Price value={displayTotalPrice} layout="vertical" className="text-3xl text-accent" />
                 {totalFrequencyLabel ? (
                   <span className="pb-1 text-muted-foreground">{totalFrequencyLabel}</span>
                 ) : null}
               </div>
               <p className="mb-6 text-xs leading-relaxed text-muted-foreground">
-                {effectiveBillingCycle === "annual-prepaid"
-                  ? `Включва 12 месеца, еднократните суми и ${annualDiscountPercent}% отстъпка`
-                  : "Включва избраните допълнителни услуги"}
+                {totalFootnote}
               </p>
               <Button
                 onClick={handleAddClick}
@@ -642,7 +656,7 @@ export function ServiceBuySection({
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Общо</p>
             <div data-total-pulse className="flex items-end gap-2">
               <Price
-                value={totalPrice}
+                value={displayTotalPrice}
                 layout="vertical"
                 className="text-base sm:text-lg text-accent leading-none"
               />

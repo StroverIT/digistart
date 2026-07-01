@@ -20,6 +20,7 @@ import {
   Menu,
   Newspaper,
   FlaskConical,
+  Megaphone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,6 +50,7 @@ const navItems = [
   { href: "/admin/businesses", label: "Бизнеси", icon: MapPin },
   { href: "/admin/projects", label: "Проекти", icon: FolderKanban },
   { href: "/admin/testing", label: "Тестване", icon: FlaskConical },
+  { href: "/services/funnels", label: "Фунии", icon: Megaphone },
 ] as const;
 
 export function AdminSidebar({ user }: AdminSidebarProps) {
@@ -96,7 +98,8 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
         {navItems.map((item) => {
           const isActive =
             pathname === item.href ||
-            (item.href === "/admin/support" && pathname.startsWith("/admin/support"));
+            (item.href === "/admin/support" && pathname.startsWith("/admin/support")) ||
+            (item.href === "/services/funnels" && pathname.startsWith("/services/funnels"));
           return (
             <Link
               key={item.href}

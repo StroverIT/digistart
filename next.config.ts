@@ -32,6 +32,11 @@ const nextConfig: NextConfig = {
         destination: "/templates/:category/:id",
         permanent: true,
       },
+      {
+        source: "/services/social-media/funnel",
+        destination: "/services/social-media/dont-lose-turnover",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {
