@@ -8,6 +8,7 @@ import type { ServiceFunnelDefinition } from "@/config/service-funnels/types";
 const STORE_MONTHLY = READY_STORE_PRICING.baseMonthly;
 const META_ADS_BUDGET = 100;
 const PACKAGE_TOTAL = 300;
+const AD_SETUP_FEE = PACKAGE_TOTAL - STORE_MONTHLY - META_ADS_BUDGET;
 
 export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
   id: "online-store-start-selling",
@@ -100,7 +101,7 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
     basePackageLabel: "Какво включва?",
     pricing: {
       total: PACKAGE_TOTAL,
-      breakdownNote: `€${STORE_MONTHLY}/месец за онлайн магазина + €${META_ADS_BUDGET} за Meta реклами`,
+      breakdownNote: `€${STORE_MONTHLY}/месец за онлайн магазина + €${META_ADS_BUDGET} бюджет за реклами + €${AD_SETUP_FEE} за създаването им`,
       frequencyLabel: null,
     },
     ctaLabel: "Започни сега",
@@ -143,22 +144,22 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
     description: "Кратки отговори, преди да започнеш.",
     items: [
       {
-        question: `Колко струва пакетът общо?`,
-        answer: `Общата цена е €${PACKAGE_TOTAL} – €${STORE_MONTHLY}/месец за онлайн магазина и €${META_ADS_BUDGET} за Meta реклами (Facebook и Instagram). Включени са хостинг, поддръжка, плащане с карта и интеграция със Спиди и Еконт.`,
+        question: "За какво плащам?",
+        answer: `Общата цена е €${PACKAGE_TOTAL}: €${STORE_MONTHLY}/месец за онлайн магазина, €${META_ADS_BUDGET} бюджет за Meta реклами (Facebook и Instagram) и €${AD_SETUP_FEE} за създаването на рекламите. Включени са хостинг, поддръжка, плащане с карта и интеграция със Спиди и Еконт.`,
       },
       {
-        question: `Какво значи €${META_ADS_BUDGET} за Meta реклами?`,
-        answer: `В пакета е включен рекламен бюджет от €${META_ADS_BUDGET} за Facebook и Instagram кампании. Ние подготвяме съдържанието и пускаме рекламите – ти не се занимаваш с Ads Manager.`,
+        question: "Мога ли да вдигна бюджета за реклами?",
+        answer: `Да, може да вдигнем бюджета за реклами, но най-често €${META_ADS_BUDGET} са напълно достатъчни, за да проверим продукта на пазара. Ако искаш да тестваш повече от 30 продукта, хубаво е да се вдигне бюджетът – но най-добре е да се тестват най-печелившите продукти с най-голяма разлика в печалбата.`,
       },
       {
         question: "Какво трябва да направя аз?",
         answer:
-          "Да поръчаш пакета, да качиш продуктите в магазина и при поръчка да опаковаш и изпратиш. Останалото – магазин, техника, реклами – е наша работа.",
+          "Само се настройва магазинът (5–10 минути), след което трябва да добавиш продуктите през админ панела. Изпращането на продуктите все пак остава твоя отговорност.",
       },
       {
         question: "Колко време отнема стартът?",
         answer:
-          "След поръчката магазинът се настройва до 48 часа. След това качваш продуктите и пускаме рекламите.",
+          "След настройването на магазина (5–10 минути) започваме разработката и отнема до 48 часа. След като качиш нужните продукти за продажба, създаваме рекламите и ги пускаме.",
       },
     ],
   },

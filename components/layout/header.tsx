@@ -3,7 +3,6 @@
 import TransitionLink from "@/components/transitions/TransitionLink";
 import { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
 import { ChevronDown, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCartItemCount } from "@/lib/store/cart";
@@ -13,12 +12,8 @@ import { useSession, signOut } from "next-auth/react";
 import { AnalyticsToolbar } from "@/components/analytics/analytics-toolbar";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 // import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
-import {
-  SITE_LOGO_HEIGHT,
-  SITE_LOGO_SIZES,
-  SITE_LOGO_SRC,
-  SITE_LOGO_WIDTH,
-} from "@/lib/site-brand";
+import { SiteLogo } from "@/components/layout/site-logo";
+import { isServiceFunnelPath } from "@/lib/service-funnels/path";
 
 let gsapModule: Promise<typeof import("gsap")> | null = null;
 function loadGsap() {
@@ -311,6 +306,7 @@ export function Header() {
     }
   })();
   const isCartPage = pathname === "/cart" || pathnameDecoded === "/cart";
+  const isFunnelPage = isServiceFunnelPath(pathname);
 
   useEffect(() => {
     setCartCount(getCartItemCount());
@@ -426,28 +422,15 @@ export function Header() {
             }`}
         >
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between h-16 md:h-20">
-              <TransitionLink href="/" className="flex items-center gap-2 group rounded-lg z-60 relative">
-                <Image
-                  src={SITE_LOGO_SRC}
-                  alt="DigiStart logo"
-                  width={SITE_LOGO_WIDTH}
-                  height={SITE_LOGO_HEIGHT}
-                  sizes={SITE_LOGO_SIZES}
-                  className="h-8 w-auto transition-transform group-hover:scale-110"
-                />
-                <span className="flex flex-col leading-tight">
-                  <span className="text-xl font-bold tracking-tight">
-                    <span className="text-accent">Digi</span>
-                    <span className="text-accent">Start</span>
-                  </span>
-                  <span className="text-[10px] sm:text-xs text-muted-foreground font-medium tracking-widest uppercase">
-                    Easy Start
-                  </span>
-                </span>
-              </TransitionLink>
+            <div
+              className={cn(
+                "flex h-16 items-center md:h-20",
+                isFunnelPage ? "justify-end" : "justify-between",
+              )}
+            >
+              {!isFunnelPage ? <SiteLogo className="relative z-60" /> : null}
 
-              <div className="flex items-center gap-2 z-60 relative">
+              <div className="relative z-60 flex items-center gap-2">
                 <AnalyticsToolbar />
                 <div className="flex items-center gap-4">
                   {isCartPage ? (
@@ -490,15 +473,17 @@ export function Header() {
                     </TransitionLink>
                   )}
 
-                  <div className="flex items-center justify-center rounded-full bg-card border border-border w-12 h-12">
-                    <Hamburger
-                      toggled={isOpen}
-                      toggle={toggleMenu}
-                      size={18}
-                      rounded
-                      label={isOpen ? "Затвори менюто" : "Отвори менюто"}
-                    />
-                  </div>
+                  {!isFunnelPage ? (
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card">
+                      <Hamburger
+                        toggled={isOpen}
+                        toggle={toggleMenu}
+                        size={18}
+                        rounded
+                        label={isOpen ? "Затвори менюто" : "Отвори менюто"}
+                      />
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -507,26 +492,29 @@ export function Header() {
         {/* <ServiceSlotsBanner /> */}
       </div>
 
-      <div
-        ref={backdropRef}
-        className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-45 hidden"
-        aria-hidden
-        onClick={() => void closeMenu()}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") void closeMenu();
-        }}
-        role="button"
-        tabIndex={0}
-      />
+      {!isFunnelPage ? (
+        <div
+          ref={backdropRef}
+          className="fixed inset-0 z-45 hidden bg-black/30 backdrop-blur-[2px]"
+          aria-hidden
+          onClick={() => void closeMenu()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") void closeMenu();
+          }}
+          role="button"
+          tabIndex={0}
+        />
+      ) : null}
 
-      <div
-        ref={menuRef}
-        className="fixed top-0 right-0 z-55 h-dvh w-screen translate-x-full overflow-y-auto overflow-x-hidden bg-foreground text-background shadow-xl will-change-transform sm:w-[min(100%,28rem)] md:w-[40%]"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Главно меню"
-        aria-hidden={!isOpen}
-      >
+      {!isFunnelPage ? (
+        <div
+          ref={menuRef}
+          className="fixed top-0 right-0 z-55 h-dvh w-screen translate-x-full overflow-y-auto overflow-x-hidden bg-foreground text-background shadow-xl will-change-transform sm:w-[min(100%,28rem)] md:w-[40%]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Главно меню"
+          aria-hidden={!isOpen}
+        >
         <div
           aria-hidden
           className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl"
@@ -650,7 +638,8 @@ export function Header() {
             )}
           </div>
         </div>
-      </div>
+        </div>
+      ) : null}
     </>
   );
 }

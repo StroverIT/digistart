@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, Handshake, Moon, Package, ShoppingBag, Store, type LucideIcon } from "lucide-react";
+import { SiteLogo } from "@/components/layout/site-logo";
 import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
 import { landingContainerClass } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
@@ -36,6 +37,7 @@ export function FunnelHero({ config }: FunnelHeroProps) {
       <section className="scroll-mt-28 overflow-visible border-b-0 bg-linear-to-b from-white to-primary/50 pt-0 pb-0">
         <div className={cn(landingContainerClass, "pt-site-header pb-8 md:pb-10 lg:pb-12")}>
           <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 text-center sm:gap-6 md:gap-8">
+            <SiteLogo className="justify-center" />
             <h1 className="font-heading max-w-3xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
               {hero.title}
             </h1>
