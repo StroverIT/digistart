@@ -3,6 +3,7 @@
 import { ArrowRight, Handshake, Moon, Package, ShoppingBag, Store, type LucideIcon } from "lucide-react";
 import { SiteLogo } from "@/components/layout/site-logo";
 import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
+import { GoogleDriveEmbed } from "@/components/videos/google-drive-embed";
 import { YoutubeEmbed } from "@/components/videos/youtube-embed";
 import { landingContainerClass } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
@@ -54,16 +55,30 @@ export function FunnelHero({ config }: FunnelHeroProps) {
 
           {hero.video ? (
             <div className="mx-auto mt-8 w-full sm:mt-10 md:mt-12">
-              <YoutubeEmbed
-                youtubeId={hero.video.youtubeId}
-                title={hero.video.title}
-                className={cn(
-                  "mx-auto shadow-lg",
-                  hero.video.format === "short"
-                    ? "aspect-[9/16] w-full max-w-[min(100%,360px)] sm:max-w-[min(100%,400px)]"
-                    : "max-w-2xl",
-                )}
-              />
+              {hero.video.provider === "google-drive" ? (
+                <GoogleDriveEmbed
+                  fileId={hero.video.fileId}
+                  title={hero.video.title}
+                  thumbnailSrc={hero.video.thumbnailSrc}
+                  className={cn(
+                    "mx-auto shadow-lg",
+                    hero.video.format === "short"
+                      ? "aspect-[9/16] w-full max-w-[min(100%,360px)] sm:max-w-[min(100%,400px)]"
+                      : "max-w-2xl",
+                  )}
+                />
+              ) : (
+                <YoutubeEmbed
+                  youtubeId={hero.video.youtubeId}
+                  title={hero.video.title}
+                  className={cn(
+                    "mx-auto shadow-lg",
+                    hero.video.format === "short"
+                      ? "aspect-[9/16] w-full max-w-[min(100%,360px)] sm:max-w-[min(100%,400px)]"
+                      : "max-w-2xl",
+                  )}
+                />
+              )}
             </div>
           ) : null}
 

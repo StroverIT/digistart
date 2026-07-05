@@ -37,6 +37,11 @@ export function getYoutubeEmbedUrl(id: string) {
   return `https://www.youtube-nocookie.com/embed/${id}`;
 }
 
+export function getGoogleDriveEmbedUrl(fileId: string, options?: { autoplay?: boolean }) {
+  const url = `https://drive.google.com/file/d/${fileId}/preview`;
+  return options?.autoplay ? `${url}?autoplay=1` : url;
+}
+
 export function getYoutubeThumbnailUrl(id: string) {
   return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
 }

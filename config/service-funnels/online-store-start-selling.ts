@@ -33,8 +33,10 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
     subtitle: "Най-евтиният и най-лесният начин да пуснеш продажбите си в интернет.",
     ctaLabel: "Започни сега",
     video: {
-      youtubeId: "Dhr_4Rn3hDs",
+      provider: "google-drive",
+      fileId: "1VeV2RJqhtWhxzY7iOZc6RGY9big9aflY",
       title: "DigiStart – Започни да продаваш онлайн",
+      thumbnailSrc: "/dont-read-thumbnail.png",
       format: "short",
     },
   },

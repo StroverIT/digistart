@@ -28,11 +28,20 @@ export type ServiceFunnelDefinition = {
     subtitle: string;
     description?: string;
     ctaLabel: string;
-    video?: {
-      youtubeId: string;
-      title: string;
-      format?: "short" | "standard";
-    };
+    video?:
+      | {
+          provider: "youtube";
+          youtubeId: string;
+          title: string;
+          format?: "short" | "standard";
+        }
+      | {
+          provider: "google-drive";
+          fileId: string;
+          title: string;
+          thumbnailSrc?: string;
+          format?: "short" | "standard";
+        };
   };
   whoIsItFor: {
     title: string;
