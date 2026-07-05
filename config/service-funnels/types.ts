@@ -23,6 +23,10 @@ export type ServiceFunnelDefinition = {
     contentName: string;
     leadSource: string;
   };
+  metaPageView: {
+    contentName: string;
+    viewSource: string;
+  };
   hero: {
     title: string;
     subtitle: string;

@@ -28,6 +28,10 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
     contentName: "DigiStart - Старт онлайн магазин (funnel)",
     leadSource: "online_store_funnel",
   },
+  metaPageView: {
+    contentName: "DigiStart - Старт онлайн магазин (funnel)",
+    viewSource: "online_store_funnel",
+  },
   hero: {
     title: "Искаш да продаваш онлайн? Супер.",
     subtitle: "Най-евтиният и най-лесният начин да пуснеш продажбите си в интернет.",

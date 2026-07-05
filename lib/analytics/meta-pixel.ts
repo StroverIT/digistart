@@ -257,27 +257,47 @@ function fbqTrack(
   window.fbq("track", eventName, params, options);
 }
 
+export type MetaPageViewParams = {
+  page_path?: string;
+  content_name?: string;
+  content_ids?: string[];
+  view_source?: string;
+};
+
 /**
  * PageView with unique event_id (deduped against the server-side CAPI mirror).
  */
-export function trackMetaPageView(pagePath?: string): string {
+export function trackMetaPageView(pagePathOrParams?: string | MetaPageViewParams): string {
+  const params: MetaPageViewParams =
+    typeof pagePathOrParams === "string"
+      ? { page_path: pagePathOrParams }
+      : (pagePathOrParams ?? {});
+
+  const content_ids = params.content_ids ?? [];
   const event_id = generateMetaEventId("PageView");
   const items: MetaPixelLineItem[] = [];
   const payload: MetaPixelEventPayload = {
     event_id,
     event_name: "PageView",
     currency: META_CURRENCY,
-    content_ids: [],
+    content_ids,
     content_type: "product",
     contents: [],
     items,
-    page_path: pagePath,
+    page_path: params.page_path,
+    ...(params.content_name ? { content_name: params.content_name } : {}),
+    ...(params.view_source ? { lead_source: params.view_source } : {}),
   };
+
+  const fbqParams: Record<string, unknown> = {};
+  if (params.content_name) fbqParams.content_name = params.content_name;
+  if (params.view_source) fbqParams.content_category = params.view_source;
+  if (content_ids.length > 0) fbqParams.content_ids = content_ids;
 
   ensureMetaPixelInitialized();
   pushDataLayer(payload);
   mirrorEventToServer(payload);
-  fbqTrack("PageView", {}, event_id);
+  fbqTrack("PageView", fbqParams, event_id);
   return event_id;
 }
 

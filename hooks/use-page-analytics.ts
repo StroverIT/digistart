@@ -5,7 +5,7 @@ import { flushAnalyticsEvents, trackAnalyticsEvent } from "@/lib/analytics/track
 
 const SCROLL_MILESTONES = [25, 50, 75, 100];
 
-export function usePageAnalytics(page: string) {
+export function usePageAnalytics(page: string, metadata?: Record<string, unknown>) {
   const trackedRef = useRef(false);
   const maxScrollRef = useRef(0);
   const startedAtRef = useRef(0);
@@ -16,7 +16,7 @@ export function usePageAnalytics(page: string) {
 
     trackedRef.current = true;
     startedAtRef.current = Date.now();
-    trackAnalyticsEvent("page_view", page);
+    trackAnalyticsEvent("page_view", page, metadata);
 
     const onScroll = () => {
       const doc = document.documentElement;

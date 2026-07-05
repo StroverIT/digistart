@@ -18,6 +18,10 @@ export const SOCIAL_MEDIA_DONT_LOSE_TURNOVER_FUNNEL: ServiceFunnelDefinition = {
     contentName: "DigiStart - Безплатна консултация (социални мрежи funnel)",
     leadSource: "social_media_funnel",
   },
+  metaPageView: {
+    contentName: "DigiStart - Безплатна консултация (социални мрежи funnel)",
+    viewSource: "social_media_funnel",
+  },
   hero: {
     title: "Не искаш да губиш оборот? Супер.",
     subtitle: "Нека превърнем профилите ти в магнит за клиенти",
