@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cartItemToMetaLineItem, trackMetaAddToCart } from "@/lib/analytics/meta-pixel";
+import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
+import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
 import {
   funnelWaveFills,
   SectionWave,
@@ -27,6 +29,9 @@ export function FunnelCheckoutSection({ config }: FunnelCheckoutSectionProps) {
 
   const primaryItem = checkout?.items[0];
   const service = primaryItem ? getServiceById(primaryItem.serviceId) : undefined;
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useSectionScrollAnimations(sectionRef, { staggerReveal: 0.1 });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -93,10 +98,16 @@ export function FunnelCheckoutSection({ config }: FunnelCheckoutSectionProps) {
   };
 
   return (
-    <section id="checkout" className="scroll-mt-28 bg-white">
+    <section ref={sectionRef} id="checkout" className="scroll-mt-28 bg-white">
       <div className={cn(landingContainerClass, "pt-10 pb-16 md:pt-12 md:pb-20")}>
         {checkout.header ? (
-          <h2 className="mb-6 text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+          <h2
+            data-animate-reveal
+            className={cn(
+              "mb-6 text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl",
+              LANDING_REVEAL_CLASS,
+            )}
+          >
             {checkout.header}
           </h2>
         ) : null}
@@ -122,7 +133,10 @@ export function FunnelCheckoutSection({ config }: FunnelCheckoutSectionProps) {
           features={checkout.planFeatures}
         />
         {consultation ? (
-          <div className="mx-auto mt-10 max-w-3xl text-center md:mt-12">
+          <div
+            data-animate-reveal
+            className={cn("mx-auto mt-10 max-w-3xl text-center md:mt-12", LANDING_REVEAL_CLASS)}
+          >
             <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
               {consultation.promptTitle}
             </h2>

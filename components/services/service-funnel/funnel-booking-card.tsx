@@ -1,8 +1,12 @@
 "use client";
 
+import { useRef } from "react";
 import ConsultationBookingForm from "@/components/consultation/consultation-booking-form";
 import { ProcessStepsContent } from "@/components/home/process-steps";
+import { LANDING_CARD_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
+import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
 import type { ServiceFunnelConfig } from "@/config/service-funnels/types";
+import { cn } from "@/lib/utils";
 
 type FunnelBookingCardProps = {
   config: ServiceFunnelConfig;
@@ -12,11 +16,20 @@ export function FunnelBookingCard({ config }: FunnelBookingCardProps) {
   const { hero, pagePath, sourcePage, analyticsCtaId, metaLead, processSteps, booking, features } =
     config;
   const showProcessStepsInBooking = features?.showProcessStepsInBooking ?? true;
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useSectionScrollAnimations(sectionRef, { staggerCard: 0.15 });
 
   return (
-    <section id="booking" className="bg-white pt-10 pb-16 md:pt-12 md:pb-20">
+    <section ref={sectionRef} id="booking" className="bg-white pt-10 pb-16 md:pt-12 md:pb-20">
       <div className="container mx-auto px-4 md:px-8">
-        <div className="mx-auto w-full max-w-5xl overflow-hidden rounded-2xl border border-primary/20 bg-card shadow-[var(--shadow-soft)]">
+        <div
+          data-animate-card
+          className={cn(
+            "mx-auto w-full max-w-5xl overflow-hidden rounded-2xl border border-primary/20 bg-card shadow-[var(--shadow-soft)]",
+            LANDING_CARD_CLASS,
+          )}
+        >
           <div
             className={
               showProcessStepsInBooking

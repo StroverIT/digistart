@@ -1,10 +1,13 @@
 "use client";
 
+import { useRef } from "react";
 import { ArrowRight, Handshake, Moon, Package, ShoppingBag, Store, type LucideIcon } from "lucide-react";
 import { SiteLogo } from "@/components/layout/site-logo";
 import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
+import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { GoogleDriveEmbed } from "@/components/videos/google-drive-embed";
 import { YoutubeEmbed } from "@/components/videos/youtube-embed";
+import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
 import { landingContainerClass } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
   funnelWaveFills,
@@ -33,28 +36,59 @@ export function FunnelHero({ config }: FunnelHeroProps) {
   const showHeroDescription = features?.showHeroDescription ?? false;
   const showProcessStepsSection = features?.showProcessStepsSection ?? false;
   const ctaHref = checkout ? "#checkout" : "#booking";
+  const heroSectionRef = useRef<HTMLElement>(null);
+  const whoSectionRef = useRef<HTMLElement>(null);
+
+  useSectionScrollAnimations(heroSectionRef, { staggerReveal: 0.1 });
+  useSectionScrollAnimations(whoSectionRef, { staggerReveal: 0.08, staggerCard: 0.12 });
 
   return (
     <>
-      <section className="scroll-mt-28 overflow-visible border-b-0 bg-linear-to-b from-white to-primary/50 pt-0 pb-0">
+      <section
+        ref={heroSectionRef}
+        className="scroll-mt-28 overflow-visible border-b-0 bg-linear-to-b from-white to-primary/50 pt-0 pb-0"
+      >
         <div className={cn(landingContainerClass, "pt-funnel-top pb-8 md:pb-10 lg:pb-12")}>
           <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 text-center sm:gap-6 md:gap-8">
-            <SiteLogo className="justify-center" />
-            <h1 className="font-heading max-w-3xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
+            <div data-animate-reveal className={LANDING_REVEAL_CLASS}>
+              <SiteLogo className="justify-center" />
+            </div>
+            <h1
+              data-animate-reveal
+              className={cn(
+                "font-heading max-w-3xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]",
+                LANDING_REVEAL_CLASS,
+              )}
+            >
               {hero.title}
             </h1>
-            <p className="font-heading max-w-2xl text-xl font-semibold text-foreground sm:text-2xl">
+            <p
+              data-animate-reveal
+              className={cn(
+                "font-heading max-w-2xl text-xl font-semibold text-foreground sm:text-2xl",
+                LANDING_REVEAL_CLASS,
+              )}
+            >
               {hero.subtitle}
             </p>
             {showHeroDescription && hero.description ? (
-              <p className="max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
+              <p
+                data-animate-reveal
+                className={cn(
+                  "max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg",
+                  LANDING_REVEAL_CLASS,
+                )}
+              >
                 {hero.description}
               </p>
             ) : null}
           </div>
 
           {hero.video ? (
-            <div className="mx-auto mt-8 w-full sm:mt-10 md:mt-12">
+            <div
+              data-animate-reveal
+              className={cn("mx-auto mt-8 w-full sm:mt-10 md:mt-12", LANDING_REVEAL_CLASS)}
+            >
               {hero.video.provider === "google-drive" ? (
                 <GoogleDriveEmbed
                   fileId={hero.video.fileId}
@@ -82,7 +116,13 @@ export function FunnelHero({ config }: FunnelHeroProps) {
             </div>
           ) : null}
 
-          <div className="mx-auto mt-8 flex max-w-6xl justify-center sm:mt-10 md:mt-12">
+          <div
+            data-animate-reveal
+            className={cn(
+              "mx-auto mt-8 flex max-w-6xl justify-center sm:mt-10 md:mt-12",
+              LANDING_REVEAL_CLASS,
+            )}
+          >
             <a
               href={ctaHref}
               className="group inline-flex h-14 w-full max-w-md items-center justify-center gap-2.5 rounded-full bg-accent px-10 text-lg font-semibold text-accent-foreground shadow-[var(--shadow-glow)] transition-transform hover:scale-[1.02] motion-reduce:hover:scale-100 sm:w-auto md:h-16 md:px-12 md:text-xl"
@@ -92,7 +132,10 @@ export function FunnelHero({ config }: FunnelHeroProps) {
             </a>
           </div>
 
-          <div className="mt-12 md:mt-16 lg:mt-20">
+          <div
+            data-animate-reveal
+            className={cn("mt-12 md:mt-16 lg:mt-20", LANDING_REVEAL_CLASS)}
+          >
             <GoogleReviewsSection />
           </div>
         </div>
@@ -100,13 +143,14 @@ export function FunnelHero({ config }: FunnelHeroProps) {
       </section>
 
       <section
+        ref={whoSectionRef}
         id="who-is-it-for"
         aria-labelledby="who-is-it-for-heading"
         className="bg-[#F8F7FF] pt-10 pb-10 md:pt-12 md:pb-12"
       >
         <div className="container mx-auto px-4 md:px-8">
           <div className="mx-auto max-w-5xl">
-            <header className="mx-auto max-w-2xl text-center">
+            <header data-animate-reveal className={cn("mx-auto max-w-2xl text-center", LANDING_REVEAL_CLASS)}>
               <h2
                 id="who-is-it-for-heading"
                 className="mt-3 font-heading text-3xl font-bold tracking-tight text-balance text-foreground md:text-4xl"
@@ -129,8 +173,10 @@ export function FunnelHero({ config }: FunnelHeroProps) {
                 return (
                   <article
                     key={item.title}
+                    data-animate-card
                     className={cn(
                       "group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.05)] ring-1 ring-border/50 transition-all duration-300",
+                      LANDING_REVEAL_CLASS,
                       "hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(15,23,42,0.08)] hover:ring-[#A8E6CF]/60 motion-reduce:transition-none motion-reduce:hover:translate-y-0",
                       "md:p-8",
                       isLastOdd && "md:col-span-2 md:mx-auto md:max-w-xl",
