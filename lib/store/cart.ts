@@ -235,6 +235,7 @@ export function setCartForDirectCheckoutItems(
     upsells?: CartItemUpsell[];
     billingCycle?: CartBillingCycle;
   }>,
+  options?: { funnelId?: string },
 ): AddToCartResult {
   clearCart();
 
@@ -254,6 +255,13 @@ export function setCartForDirectCheckoutItems(
       clearCart();
       return lastResult;
     }
+  }
+
+  if (options?.funnelId && lastResult.added) {
+    const cart = getCart();
+    cart.funnelId = options.funnelId;
+    saveCart(cart);
+    return { cart, added: true };
   }
 
   return lastResult;

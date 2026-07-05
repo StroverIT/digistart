@@ -7,7 +7,7 @@ import type { ServiceFunnelDefinition } from "@/config/service-funnels/types";
 
 const STORE_MONTHLY = READY_STORE_PRICING.baseMonthly;
 const META_ADS_BUDGET = 100;
-const PACKAGE_TOTAL = 300;
+const PACKAGE_TOTAL = 400;
 const AD_SETUP_FEE = PACKAGE_TOTAL - STORE_MONTHLY - META_ADS_BUDGET;
 
 export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
@@ -31,9 +31,12 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
   hero: {
     title: "Искаш да продаваш онлайн? Супер.",
     subtitle: "Най-евтиният и най-лесният начин да пуснеш продажбите си в интернет.",
-    description:
-      "Без програмисти, без скъпи агенции – готов магазин, плащания и реклами. Ти се грижиш само за продуктите и изпращането.",
     ctaLabel: "Започни сега",
+    video: {
+      youtubeId: "Dhr_4Rn3hDs",
+      title: "DigiStart – Започни да продаваш онлайн",
+      format: "short",
+    },
   },
   whoIsItFor: {
     title: "Животът, който искаш",
@@ -90,6 +93,7 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
       "Безплатно плащане с карта (Apple Pay и Google Pay)",
       "Безплатна интеграция със Спиди и Еконт",
       `€${META_ADS_BUDGET} бюджет за Meta реклами (Facebook и Instagram)`,
+      "Ние създаваме кампанията",
       "Безплатен хостинг и SSL сертификат",
       "Интегриран чат – винаги сме до теб при въпроси",
       "Ние създаваме съдържанието за рекламите – ти само качваш продуктите и ги изпращаш",
@@ -101,7 +105,7 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
     basePackageLabel: "Какво включва?",
     pricing: {
       total: PACKAGE_TOTAL,
-      breakdownNote: `€${STORE_MONTHLY}/месец за онлайн магазина + €${META_ADS_BUDGET} бюджет за реклами + €${AD_SETUP_FEE} за създаването им`,
+      breakdownNote: `€${STORE_MONTHLY}/месец за онлайн магазина + €${META_ADS_BUDGET} бюджет за реклами + €${AD_SETUP_FEE} за реклами`,
       frequencyLabel: null,
     },
     ctaLabel: "Започни сега",
@@ -110,6 +114,7 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
       "Безплатно плащане с карта (Apple Pay и Google Pay)",
       "Безплатна интеграция със Спиди и Еконт",
       `€${META_ADS_BUDGET} бюджет за Meta реклами (Facebook и Instagram)`,
+      "Ние създаваме кампанията",
       "Безплатен хостинг и SSL сертификат",
       "Интегриран чат – винаги сме до теб при въпроси",
       "Ние създаваме съдържанието за рекламите",
@@ -145,7 +150,7 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
     items: [
       {
         question: "За какво плащам?",
-        answer: `Общата цена е €${PACKAGE_TOTAL}: €${STORE_MONTHLY}/месец за онлайн магазина, €${META_ADS_BUDGET} бюджет за Meta реклами (Facebook и Instagram) и €${AD_SETUP_FEE} за създаването на рекламите. Включени са хостинг, поддръжка, плащане с карта и интеграция със Спиди и Еконт.`,
+        answer: `Общата цена е €${PACKAGE_TOTAL}: €${STORE_MONTHLY}/месец за онлайн магазина, €${META_ADS_BUDGET} бюджет за Meta реклами (Facebook и Instagram) и €${AD_SETUP_FEE} за реклами. Включени са хостинг, поддръжка, плащане с карта и интеграция със Спиди и Еконт.`,
       },
       {
         question: "Мога ли да вдигна бюджета за реклами?",
@@ -167,6 +172,5 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
     showCaseStudy: false,
     showProcessStepsSection: true,
     showProcessStepsInBooking: false,
-    showHeroDescription: true,
   },
 };

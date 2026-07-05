@@ -176,6 +176,22 @@
       );
     }
   }
+
+  .pt-funnel-top {
+    padding-top: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .pt-funnel-top {
+      padding-top: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .pt-funnel-top {
+      padding-top: 3rem;
+    }
+  }
 }
 
 /* Custom scrollbar for light theme */

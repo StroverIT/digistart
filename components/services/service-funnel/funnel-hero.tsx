@@ -3,6 +3,7 @@
 import { ArrowRight, Handshake, Moon, Package, ShoppingBag, Store, type LucideIcon } from "lucide-react";
 import { SiteLogo } from "@/components/layout/site-logo";
 import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
+import { YoutubeEmbed } from "@/components/videos/youtube-embed";
 import { landingContainerClass } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
   funnelWaveFills,
@@ -35,7 +36,7 @@ export function FunnelHero({ config }: FunnelHeroProps) {
   return (
     <>
       <section className="scroll-mt-28 overflow-visible border-b-0 bg-linear-to-b from-white to-primary/50 pt-0 pb-0">
-        <div className={cn(landingContainerClass, "pt-site-header pb-8 md:pb-10 lg:pb-12")}>
+        <div className={cn(landingContainerClass, "pt-funnel-top pb-8 md:pb-10 lg:pb-12")}>
           <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 text-center sm:gap-6 md:gap-8">
             <SiteLogo className="justify-center" />
             <h1 className="font-heading max-w-3xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
@@ -49,13 +50,30 @@ export function FunnelHero({ config }: FunnelHeroProps) {
                 {hero.description}
               </p>
             ) : null}
+          </div>
 
+          {hero.video ? (
+            <div className="mx-auto mt-8 w-full sm:mt-10 md:mt-12">
+              <YoutubeEmbed
+                youtubeId={hero.video.youtubeId}
+                title={hero.video.title}
+                className={cn(
+                  "mx-auto shadow-lg",
+                  hero.video.format === "short"
+                    ? "aspect-[9/16] w-full max-w-[min(100%,360px)] sm:max-w-[min(100%,400px)]"
+                    : "max-w-2xl",
+                )}
+              />
+            </div>
+          ) : null}
+
+          <div className="mx-auto mt-8 flex max-w-6xl justify-center sm:mt-10 md:mt-12">
             <a
               href={ctaHref}
-              className="group inline-flex h-12 w-full max-w-sm items-center justify-center gap-2 rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition-transform hover:scale-[1.02] motion-reduce:hover:scale-100 sm:w-auto"
+              className="group inline-flex h-14 w-full max-w-md items-center justify-center gap-2.5 rounded-full bg-accent px-10 text-lg font-semibold text-accent-foreground shadow-[var(--shadow-glow)] transition-transform hover:scale-[1.02] motion-reduce:hover:scale-100 sm:w-auto md:h-16 md:px-12 md:text-xl"
             >
               {hero.ctaLabel}
-              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+              <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5 md:size-6" />
             </a>
           </div>
 

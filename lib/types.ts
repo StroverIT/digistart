@@ -103,6 +103,8 @@ export interface Cart {
   items: CartItem[];
   totalOneTime: number;
   totalMonthly: number;
+  /** Set when checkout originates from a service funnel landing page. */
+  funnelId?: string;
 }
 
 // Order types
@@ -189,6 +191,18 @@ export interface ServiceWaitlistEntryRow {
   serviceId: string;
   serviceName: string;
   createdAt: string;
+}
+
+export interface FunnelSlotAvailability {
+  funnelId: string;
+  adminLabel: string;
+  pagePath: string;
+  serviceId: string;
+  serviceName: string;
+  capacity: number;
+  paidCount: number;
+  remaining: number;
+  isSoldOut: boolean;
 }
 
 export interface DigitalRoadmapLeadRow {

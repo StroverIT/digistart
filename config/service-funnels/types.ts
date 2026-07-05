@@ -26,8 +26,13 @@ export type ServiceFunnelDefinition = {
   hero: {
     title: string;
     subtitle: string;
-    description: string;
+    description?: string;
     ctaLabel: string;
+    video?: {
+      youtubeId: string;
+      title: string;
+      format?: "short" | "standard";
+    };
   };
   whoIsItFor: {
     title: string;

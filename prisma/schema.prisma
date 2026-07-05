@@ -145,9 +145,19 @@ model ServiceUpsell {
   @@unique([serviceId, upsellKey])
 }
 
+model ServiceFunnelSlot {
+  funnelId     String   @id @map("funnel_id")
+  slotCapacity Int      @default(20) @map("slot_capacity")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("service_funnel_slots")
+}
+
 model Order {
   id                           String               @id @default(cuid())
   userId                       String?
+  funnelId                     String?              @map("funnel_id")
   customerName                 String
   customerEmail                String
   customerPhone                String
@@ -185,6 +195,8 @@ model Order {
   consultation                 ConsultationBooking? @relation("OrderConsultation", fields: [consultationId], references: [id])
   user                         User?                @relation(fields: [userId], references: [id])
   items                        OrderItem[]
+
+  @@index([funnelId])
 }
 
 model OrderItem {

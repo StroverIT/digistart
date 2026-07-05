@@ -33,6 +33,10 @@ export function getFunnelBySlugs(
   );
 }
 
+export function getFunnelById(funnelId: string): ServiceFunnelConfig | undefined {
+  return SERVICE_FUNNELS.find((funnel) => funnel.id === funnelId);
+}
+
 export function getFunnelsByServiceId(serviceId: string): ServiceFunnelConfig[] {
   return SERVICE_FUNNELS.filter((funnel) => funnel.serviceId === serviceId);
 }

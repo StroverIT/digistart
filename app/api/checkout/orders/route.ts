@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createOrderInDb, listOrdersFromDb, updateOrderStatusInDb } from "@/lib/server/orders";
 import type { CartItemUpsell, Order } from "@/lib/types";
-import { isBundlePlanServiceId } from "@/lib/server/bundle-plans";
-import { getServiceSlotAvailability } from "@/lib/server/service-slots";
+import { getCheckoutSlotBlockReason } from "@/lib/server/checkout-slot-guard";
 import { resolveCheckoutCart } from "@/lib/server/resolve-checkout-cart";
 
 const upsellSchema: z.ZodType<CartItemUpsell> = z.object({
@@ -36,6 +35,7 @@ const payloadSchema = z.object({
     ),
     totalOneTime: z.number(),
     totalMonthly: z.number(),
+    funnelId: z.string().optional(),
   }),
   customer: z.object({
     name: z.string().min(2),
@@ -69,23 +69,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: resolvedCart.error }, { status: resolvedCart.status });
     }
 
-    for (const item of resolvedCart.cart.items) {
-      if (isBundlePlanServiceId(item.serviceId)) continue;
+    const checkoutCart: typeof resolvedCart.cart = {
+      ...resolvedCart.cart,
+      funnelId: parsed.data.cart.funnelId,
+    };
 
-      const availability = await getServiceSlotAvailability(item.serviceId);
-      if (availability?.isSoldOut) {
-        return NextResponse.json(
-          {
-            error: `Няма свободни места за ${availability.serviceName}. Запишете се в waitlist.`,
-          },
-          { status: 409 },
-        );
-      }
+    const slotBlockReason = await getCheckoutSlotBlockReason(checkoutCart);
+    if (slotBlockReason) {
+      return NextResponse.json({ error: slotBlockReason }, { status: 409 });
     }
 
     const order = await createOrderInDb({
       ...parsed.data,
-      cart: resolvedCart.cart,
+      cart: checkoutCart,
     });
     return NextResponse.json({ order });
   } catch {

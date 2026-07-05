@@ -12,8 +12,7 @@ import {
   type PendingCheckoutUser,
 } from "@/lib/server/orders";
 import type { CartItemUpsell } from "@/lib/types";
-import { isBundlePlanServiceId } from "@/lib/server/bundle-plans";
-import { getServiceSlotAvailability } from "@/lib/server/service-slots";
+import { getCheckoutSlotBlockReason } from "@/lib/server/checkout-slot-guard";
 import { getStripeServerClient } from "@/lib/server/stripe";
 import {
   cartQualifiesForOnlineStoreTrial,
@@ -77,6 +76,7 @@ const payloadSchema = z.object({
     ),
     totalOneTime: z.number(),
     totalMonthly: z.number(),
+    funnelId: z.string().optional(),
   }),
   customer: z.object({
     name: z.string().min(2),
@@ -183,19 +183,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: resolvedCart.error }, { status: resolvedCart.status });
     }
     const checkoutCart = resolvedCart.cart;
+    checkoutCart.funnelId = parsed.data.cart.funnelId;
 
-    for (const item of checkoutCart.items) {
-      if (isBundlePlanServiceId(item.serviceId)) continue;
-
-      const availability = await getServiceSlotAvailability(item.serviceId);
-      if (availability?.isSoldOut) {
-        return NextResponse.json(
-          {
-            error: `Няма свободни места за ${availability.serviceName}. Запишете се в waitlist.`,
-          },
-          { status: 409 },
-        );
-      }
+    const slotBlockReason = await getCheckoutSlotBlockReason(checkoutCart);
+    if (slotBlockReason) {
+      return NextResponse.json({ error: slotBlockReason }, { status: 409 });
     }
 
     const lineItems = await buildLineItems(checkoutCart.items);

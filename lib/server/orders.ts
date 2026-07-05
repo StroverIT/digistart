@@ -124,6 +124,7 @@ export async function createOrderInDb(params: {
   pendingUser?: PendingCheckoutUser | null;
   postCheckoutToken?: string | null;
   brandAssets?: { logoUrl?: string | null; paletteUrl?: string | null } | null;
+  funnelId?: string | null;
 }) {
   const {
     cart,
@@ -133,6 +134,7 @@ export async function createOrderInDb(params: {
     pendingUser,
     postCheckoutToken,
     brandAssets,
+    funnelId,
   } = params;
   const uniqueServiceIds = Array.from(new Set(cart.items.map((item) => item.serviceId)));
 
@@ -172,6 +174,7 @@ export async function createOrderInDb(params: {
   const order = await prisma.order.create({
     data: {
       userId: verifiedUserId,
+      funnelId: funnelId ?? cart.funnelId ?? undefined,
       customerName: customer.name,
       customerEmail: customer.email,
       customerPhone: customer.phone,

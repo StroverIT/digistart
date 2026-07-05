@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { ArrowLeft } from "lucide-react";
 import { FunnelUrlActions } from "@/components/admin/funnel-url-actions";
+import { FunnelSlotsEditor } from "@/components/admin/funnel-slots-editor";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getFunnelsGroupedByService } from "@/config/service-funnels";
@@ -77,6 +78,7 @@ export default async function ServiceFunnelsAdminPage() {
                         absoluteUrl={`${siteOrigin}${funnel.pagePath}`}
                       />
                     </div>
+                    <FunnelSlotsEditor funnelId={funnel.id} adminLabel={funnel.adminLabel} />
                   </div>
                 ))}
               </CardContent>

@@ -12,6 +12,7 @@ import { useSession, signOut } from "next-auth/react";
 import { AnalyticsToolbar } from "@/components/analytics/analytics-toolbar";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 // import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
+import { FunnelSlotsBanner } from "@/components/layout/funnel-slots-banner";
 import { SiteLogo } from "@/components/layout/site-logo";
 import { isServiceFunnelPath } from "@/lib/service-funnels/path";
 
@@ -414,6 +415,14 @@ export function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, closeMenu]);
 
+  if (isFunnelPage) {
+    return (
+      <div className="sticky top-0 z-50">
+        <FunnelSlotsBanner />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="fixed top-0 left-0 right-0 z-50">
@@ -422,13 +431,8 @@ export function Header() {
             }`}
         >
           <div className="container mx-auto px-4">
-            <div
-              className={cn(
-                "flex h-16 items-center md:h-20",
-                isFunnelPage ? "justify-end" : "justify-between",
-              )}
-            >
-              {!isFunnelPage ? <SiteLogo className="relative z-60" /> : null}
+            <div className="flex h-16 items-center justify-between md:h-20">
+              <SiteLogo className="relative z-60" />
 
               <div className="relative z-60 flex items-center gap-2">
                 <AnalyticsToolbar />
@@ -473,17 +477,15 @@ export function Header() {
                     </TransitionLink>
                   )}
 
-                  {!isFunnelPage ? (
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card">
-                      <Hamburger
-                        toggled={isOpen}
-                        toggle={toggleMenu}
-                        size={18}
-                        rounded
-                        label={isOpen ? "Затвори менюто" : "Отвори менюто"}
-                      />
-                    </div>
-                  ) : null}
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card">
+                    <Hamburger
+                      toggled={isOpen}
+                      toggle={toggleMenu}
+                      size={18}
+                      rounded
+                      label={isOpen ? "Затвори менюто" : "Отвори менюто"}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -492,29 +494,26 @@ export function Header() {
         {/* <ServiceSlotsBanner /> */}
       </div>
 
-      {!isFunnelPage ? (
-        <div
-          ref={backdropRef}
-          className="fixed inset-0 z-45 hidden bg-black/30 backdrop-blur-[2px]"
-          aria-hidden
-          onClick={() => void closeMenu()}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") void closeMenu();
-          }}
-          role="button"
-          tabIndex={0}
-        />
-      ) : null}
+      <div
+        ref={backdropRef}
+        className="fixed inset-0 z-45 hidden bg-black/30 backdrop-blur-[2px]"
+        aria-hidden
+        onClick={() => void closeMenu()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") void closeMenu();
+        }}
+        role="button"
+        tabIndex={0}
+      />
 
-      {!isFunnelPage ? (
-        <div
-          ref={menuRef}
-          className="fixed top-0 right-0 z-55 h-dvh w-screen translate-x-full overflow-y-auto overflow-x-hidden bg-foreground text-background shadow-xl will-change-transform sm:w-[min(100%,28rem)] md:w-[40%]"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Главно меню"
-          aria-hidden={!isOpen}
-        >
+      <div
+        ref={menuRef}
+        className="fixed top-0 right-0 z-55 h-dvh w-screen translate-x-full overflow-y-auto overflow-x-hidden bg-foreground text-background shadow-xl will-change-transform sm:w-[min(100%,28rem)] md:w-[40%]"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Главно меню"
+        aria-hidden={!isOpen}
+      >
         <div
           aria-hidden
           className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl"
@@ -638,8 +637,7 @@ export function Header() {
             )}
           </div>
         </div>
-        </div>
-      ) : null}
+      </div>
     </>
   );
 }

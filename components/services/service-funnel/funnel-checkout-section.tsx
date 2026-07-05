@@ -10,7 +10,7 @@ import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { landingContainerClass } from "@/components/services/service-detail-ready-store-v2/shared";
 import type { ServiceFunnelConfig } from "@/config/service-funnels/types";
 import { getServiceById } from "@/lib/data/services";
-import type { ServiceSlotAvailability } from "@/lib/types";
+import type { FunnelSlotAvailability, ServiceSlotAvailability } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { setCartForDirectCheckoutItems } from "@/lib/store/cart";
@@ -20,7 +20,7 @@ type FunnelCheckoutSectionProps = {
 };
 
 export function FunnelCheckoutSection({ config }: FunnelCheckoutSectionProps) {
-  const { checkout, consultation, pagePath, analyticsCtaId } = config;
+  const { checkout, consultation, pagePath, analyticsCtaId, id: funnelId } = config;
   const { push } = useTransitionRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [availability, setAvailability] = useState<ServiceSlotAvailability | null>(null);
@@ -29,22 +29,33 @@ export function FunnelCheckoutSection({ config }: FunnelCheckoutSectionProps) {
   const service = primaryItem ? getServiceById(primaryItem.serviceId) : undefined;
 
   useEffect(() => {
-    if (!primaryItem) return;
-
     const controller = new AbortController();
-    fetch(`/api/service-slots?serviceId=${encodeURIComponent(primaryItem.serviceId)}`, {
+    fetch(`/api/funnel-slots?funnelId=${encodeURIComponent(funnelId)}`, {
       signal: controller.signal,
     })
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error("slots"))))
-      .then((data: { availability?: ServiceSlotAvailability }) => {
-        setAvailability(data.availability ?? null);
+      .then((data: { availability?: FunnelSlotAvailability }) => {
+        const row = data.availability;
+        if (!row) {
+          setAvailability(null);
+          return;
+        }
+        setAvailability({
+          serviceId: row.serviceId,
+          serviceName: row.serviceName,
+          slug: row.pagePath.split("/")[2] ?? "",
+          capacity: row.capacity,
+          paidCount: row.paidCount,
+          remaining: row.remaining,
+          isSoldOut: row.isSoldOut,
+        });
       })
       .catch(() => {
         if (!controller.signal.aborted) setAvailability(null);
       });
 
     return () => controller.abort();
-  }, [primaryItem]);
+  }, [funnelId]);
 
   if (!checkout || !service || !primaryItem) {
     return null;
@@ -54,7 +65,7 @@ export function FunnelCheckoutSection({ config }: FunnelCheckoutSectionProps) {
 
   const handleCheckout = () => {
     setIsAdding(true);
-    const result = setCartForDirectCheckoutItems(checkout.items);
+    const result = setCartForDirectCheckoutItems(checkout.items, { funnelId });
 
     if (!result.added) {
       setIsAdding(false);
