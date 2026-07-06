@@ -262,6 +262,13 @@ export function ServiceBuySection({
     (serviceMonthlyTotals.monthlyTotal + companionMonthlyTotals.monthlyTotal);
   const annualSavingsDescription = formatSavedMonths(annualSavingsMonths);
   const displayTotalPrice = priceSummary?.total ?? totalPrice;
+  const displayOriginalTotalPrice =
+    !priceSummary &&
+    !isAdminCheckout &&
+    effectiveBillingCycle === "annual-prepaid" &&
+    annualPrepaySubtotal > displayTotalPrice
+      ? annualPrepaySubtotal
+      : null;
   const totalFrequencyLabel = priceSummary
     ? (priceSummary.frequencyLabel ?? null)
     : effectiveBillingCycle === "annual-prepaid"
@@ -622,6 +629,15 @@ export function ServiceBuySection({
           >
             <div className="rounded-[2rem] bg-card p-6 shadow-[var(--shadow-soft)] ring-1 ring-foreground/[0.04]">
               <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">Общо</p>
+              {displayOriginalTotalPrice ? (
+                <div className="mb-1 opacity-60">
+                  <Price
+                    value={displayOriginalTotalPrice}
+                    layout="vertical"
+                    className="text-2xl text-destructive line-through decoration-destructive decoration-2"
+                  />
+                </div>
+              ) : null}
               <div data-total-pulse className="mb-1 flex items-end gap-2">
                 <Price value={displayTotalPrice} layout="vertical" className="text-3xl text-accent" />
                 {totalFrequencyLabel ? (
@@ -654,6 +670,15 @@ export function ServiceBuySection({
         <div className="container mx-auto flex items-center justify-between gap-3 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <div className="min-w-0">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Общо</p>
+            {displayOriginalTotalPrice ? (
+              <div className="opacity-60">
+                <Price
+                  value={displayOriginalTotalPrice}
+                  layout="vertical"
+                  className="text-base text-destructive line-through decoration-destructive decoration-2 leading-none"
+                />
+              </div>
+            ) : null}
             <div data-total-pulse className="flex items-end gap-2">
               <Price
                 value={displayTotalPrice}
