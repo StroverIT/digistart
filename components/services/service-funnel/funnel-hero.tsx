@@ -1,12 +1,25 @@
 "use client";
 
 import { useRef } from "react";
-import { ArrowRight, Handshake, Moon, Package, ShoppingBag, Store, type LucideIcon } from "lucide-react";
+import Image from "next/image";
+import {
+  ArrowRight,
+  Clock,
+  Handshake,
+  Puzzle,
+  ShieldCheck,
+  Store,
+  type LucideIcon,
+} from "lucide-react";
 import { SiteLogo } from "@/components/layout/site-logo";
 import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
-import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
+import {
+  LANDING_CARD_CLASS,
+  LANDING_REVEAL_CLASS,
+} from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { GoogleDriveEmbed } from "@/components/videos/google-drive-embed";
 import { YoutubeEmbed } from "@/components/videos/youtube-embed";
+import { useCreativesAnimations } from "@/components/services/service-detail-ads-v2/use-creatives-animations";
 import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
 import { landingContainerClass } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
@@ -17,13 +30,63 @@ import type { ServiceFunnelConfig } from "@/config/service-funnels/types";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_WHO_IS_IT_FOR_ICONS: LucideIcon[] = [Handshake, Store];
-const ONLINE_STORE_DREAM_ICONS: LucideIcon[] = [Moon, ShoppingBag, Package];
+const ONLINE_STORE_PAS_ICONS: LucideIcon[] = [Puzzle, Clock, ShieldCheck];
+
+const PAS_BADGE_STYLES: Record<string, { icon: string; accent: string }> = {
+  Проблем: {
+    icon: "bg-destructive/10 text-destructive ring-destructive/20 group-hover:bg-destructive/15",
+    accent: "from-destructive/70 via-destructive/50 to-destructive/20",
+  },
+  Натиск: {
+    icon: "bg-amber-100 text-amber-800 ring-amber-200/80 group-hover:bg-amber-200/80",
+    accent: "from-amber-500/80 via-amber-400/60 to-amber-300/30",
+  },
+  Решение: {
+    icon: "bg-[#A8E6CF]/25 text-[#2D5C4A] ring-[#A8E6CF]/35 group-hover:bg-[#A8E6CF]/35",
+    accent: "from-[#A8E6CF] via-[#A8E6CF]/80 to-primary/30",
+  },
+};
 
 function resolveWhoIsItForIcons(config: ServiceFunnelConfig): LucideIcon[] {
   if (config.serviceId === "ready-store") {
-    return ONLINE_STORE_DREAM_ICONS;
+    return ONLINE_STORE_PAS_ICONS;
   }
   return DEFAULT_WHO_IS_IT_FOR_ICONS;
+}
+
+function resolvePasBadgeStyles(badge?: string) {
+  if (!badge) return null;
+  return PAS_BADGE_STYLES[badge] ?? null;
+}
+
+function DescriptionParagraphs({
+  text,
+  className,
+}: {
+  text: string;
+  className?: string;
+}) {
+  const paragraphs = text
+    .split(/\n+/)
+    .flatMap((block) =>
+      block
+        .split(/(?<=\.)\s+/)
+        .map((sentence) => sentence.trim())
+        .filter(Boolean),
+    );
+
+  return (
+    <div
+      className={cn(
+        "space-y-3 text-base leading-relaxed text-foreground/90 md:text-lg",
+        className,
+      )}
+    >
+      {paragraphs.map((paragraph) => (
+        <p key={paragraph}>{paragraph}</p>
+      ))}
+    </div>
+  );
 }
 
 type FunnelHeroProps = {
@@ -33,6 +96,7 @@ type FunnelHeroProps = {
 export function FunnelHero({ config }: FunnelHeroProps) {
   const { hero, whoIsItFor, features, checkout } = config;
   const whoIsItForIcons = resolveWhoIsItForIcons(config);
+  const hasPasImages = whoIsItFor.items.some((item) => item.image);
   const showHeroDescription = features?.showHeroDescription ?? false;
   const showProcessStepsSection = features?.showProcessStepsSection ?? false;
   const ctaHref = checkout ? "#checkout" : "#booking";
@@ -40,7 +104,7 @@ export function FunnelHero({ config }: FunnelHeroProps) {
   const whoSectionRef = useRef<HTMLElement>(null);
 
   useSectionScrollAnimations(heroSectionRef, { staggerReveal: 0.1 });
-  useSectionScrollAnimations(whoSectionRef, { staggerReveal: 0.08, staggerCard: 0.12 });
+  useCreativesAnimations(whoSectionRef, { disableHorizontalOffset: hasPasImages });
 
   return (
     <>
@@ -146,10 +210,10 @@ export function FunnelHero({ config }: FunnelHeroProps) {
         ref={whoSectionRef}
         id="who-is-it-for"
         aria-labelledby="who-is-it-for-heading"
-        className="bg-[#F8F7FF] pt-10 pb-10 md:pt-12 md:pb-12"
+        className="overflow-hidden bg-[#F8F7FF] pt-10 pb-10 md:pt-12 md:pb-12"
       >
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="mx-auto max-w-5xl">
+        <div className="container mx-auto min-w-0 px-4 md:px-8">
+          <div className={cn("mx-auto min-w-0", hasPasImages ? "max-w-6xl" : "max-w-5xl")}>
             <header data-animate-reveal className={cn("mx-auto max-w-2xl text-center", LANDING_REVEAL_CLASS)}>
               <h2
                 id="who-is-it-for-heading"
@@ -164,9 +228,62 @@ export function FunnelHero({ config }: FunnelHeroProps) {
               ) : null}
             </header>
 
-            <div className="mt-10 grid gap-5 sm:gap-6 md:mt-12 md:grid-cols-2 md:gap-8">
+            <div
+              data-animate-grid
+              className={cn(
+                "mt-10 min-w-0 md:mt-12",
+                hasPasImages
+                  ? "flex flex-col gap-14 lg:gap-20"
+                  : "grid gap-5 sm:gap-6 md:grid-cols-2 md:gap-8",
+              )}
+            >
               {whoIsItFor.items.map((item, index) => {
+                if (item.image) {
+                  const imageFirst = item.imageFirst ?? false;
+
+                  return (
+                    <article
+                      key={item.title}
+                      data-animate-card
+                      className={cn(
+                        "group grid min-w-0 items-center gap-8 overflow-hidden lg:grid-cols-2 lg:gap-16",
+                        LANDING_CARD_CLASS,
+                      )}
+                    >
+                      <div
+                        data-animate-card-copy
+                        className={cn(
+                          "order-1 min-w-0 space-y-3 opacity-0 lg:py-4",
+                          imageFirst ? "lg:order-2" : "lg:order-1",
+                        )}
+                      >
+                        <h3 className="font-heading text-xl font-semibold leading-snug text-foreground sm:text-2xl">
+                          {item.title}
+                        </h3>
+                        <DescriptionParagraphs text={item.description} />
+                      </div>
+
+                      <div
+                        data-animate-card-image
+                        className={cn(
+                          "relative order-2 aspect-square w-full min-w-0 max-w-full overflow-hidden rounded-2xl md:will-change-transform",
+                          imageFirst ? "lg:order-1" : "lg:order-2",
+                        )}
+                      >
+                        <Image
+                          src={item.image}
+                          alt={item.title}
+                          fill
+                          className="pointer-events-none object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                        />
+                      </div>
+                    </article>
+                  );
+                }
+
                 const Icon = whoIsItForIcons[index] ?? Handshake;
+                const pasStyles = resolvePasBadgeStyles(item.badge);
                 const isLastOdd =
                   whoIsItFor.items.length % 2 === 1 && index === whoIsItFor.items.length - 1;
 
@@ -177,26 +294,35 @@ export function FunnelHero({ config }: FunnelHeroProps) {
                     className={cn(
                       "group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.05)] ring-1 ring-border/50 transition-all duration-300",
                       LANDING_REVEAL_CLASS,
-                      "hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(15,23,42,0.08)] hover:ring-[#A8E6CF]/60 motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+                      "hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(15,23,42,0.08)] motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+                      pasStyles ? "hover:ring-border/80" : "hover:ring-[#A8E6CF]/60",
                       "md:p-8",
                       isLastOdd && "md:col-span-2 md:mx-auto md:max-w-xl",
                     )}
                   >
                     <div
                       aria-hidden
-                      className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#A8E6CF] via-[#A8E6CF]/80 to-primary/30"
+                      className={cn(
+                        "absolute inset-x-0 top-0 h-1 bg-linear-to-r",
+                        pasStyles?.accent ??
+                          "from-[#A8E6CF] via-[#A8E6CF]/80 to-primary/30",
+                      )}
                     />
 
-                    <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-[#A8E6CF]/25 text-[#2D5C4A] ring-1 ring-[#A8E6CF]/35 transition-colors group-hover:bg-[#A8E6CF]/35">
+                    <span
+                      className={cn(
+                        "inline-flex size-12 items-center justify-center rounded-2xl ring-1 transition-colors",
+                        pasStyles?.icon ??
+                          "bg-[#A8E6CF]/25 text-[#2D5C4A] ring-[#A8E6CF]/35 group-hover:bg-[#A8E6CF]/35",
+                      )}
+                    >
                       <Icon className="size-5" strokeWidth={2.25} aria-hidden />
                     </span>
 
                     <h3 className="mt-5 font-heading text-lg font-bold leading-snug text-foreground md:text-xl">
                       {item.title}
                     </h3>
-                    <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground md:text-base">
-                      {item.description}
-                    </p>
+                    <DescriptionParagraphs text={item.description} className="mt-3 flex-1" />
                   </article>
                 );
               })}

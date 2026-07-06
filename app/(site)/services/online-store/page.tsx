@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { BookingForm } from "@/components/home/booking-form";
 import HeroSection from "@/components/services/service-detail-ready-store-v2/HeroSection";
 import { ONLINE_STORE_LANDING } from "@/config/service-landing/online-store";
 import { formatEuroPrice, READY_STORE_PRICING } from "@/lib/data/ready-store-pricing";
@@ -35,9 +34,9 @@ const AdminPanel = dynamic(
 const RealShop = dynamic(
   () => import("@/components/services/service-detail-ready-store-v2/RealShop"),
 );
-// const BuySection = dynamic(
-//   () => import("@/components/services/service-detail-ready-store-v2/BuySection"),
-// );
+const BuySection = dynamic(
+  () => import("@/components/services/service-detail-ready-store-v2/BuySection"),
+);
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
@@ -60,12 +59,7 @@ export default function OnlineStorePage() {
         <RealShop />
       </div>
 
-      <BookingForm
-        sourcePage="Онлайн магазин (/services/online-store)"
-        analyticsPath="/services/online-store"
-        analyticsCtaId="online_store_booking_submit"
-      />
-      {/* <BuySection /> */}
+      <BuySection />
       <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
     </section>
   );

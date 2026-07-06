@@ -53,6 +53,9 @@ export type ServiceFunnelDefinition = {
     items: Array<{
       title: string;
       description: string;
+      badge?: string;
+      image?: string;
+      imageFirst?: boolean;
     }>;
   };
   doneForYou: {

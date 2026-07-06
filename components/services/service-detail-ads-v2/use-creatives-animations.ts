@@ -2,7 +2,15 @@
 
 import { type RefObject, useEffect } from "react";
 
-export function useCreativesAnimations(sectionRef: RefObject<HTMLElement | null>) {
+export type CreativesAnimationOptions = {
+  /** Skip horizontal slide/rotate on desktop cards (avoids overflow with wide illustrations). */
+  disableHorizontalOffset?: boolean;
+};
+
+export function useCreativesAnimations(
+  sectionRef: RefObject<HTMLElement | null>,
+  options?: CreativesAnimationOptions,
+) {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
@@ -96,9 +104,13 @@ export function useCreativesAnimations(sectionRef: RefObject<HTMLElement | null>
           gsap.set(card, {
             opacity: 0,
             y: 64,
-            x: index % 2 === 0 ? -56 : 56,
+            ...(options?.disableHorizontalOffset
+              ? {}
+              : {
+                  x: index % 2 === 0 ? -56 : 56,
+                  rotate: index % 2 === 0 ? -1.5 : 1.5,
+                }),
             scale: 0.92,
-            rotate: index % 2 === 0 ? -1.5 : 1.5,
           });
 
           if (image) gsap.set(image, { scale: 1.14 });

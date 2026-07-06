@@ -54,7 +54,7 @@ const AdminPanel = () => {
             size="sm"
             className="shrink-0 self-center rounded-full px-8 text-sm font-semibold shadow-lg shadow-primary/20"
           >
-            <a href="#booking">Започни сега</a>
+            <a href="#buy-section">Започни сега</a>
           </Button>
         </div>
       </div>
