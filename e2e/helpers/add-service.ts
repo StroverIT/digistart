@@ -35,9 +35,10 @@ export async function addServiceFromPage(
       .click({ timeout: 30_000 });
   }
 
+  const addButtonLabel = slug === "online-store" ? "Купи сега" : "Добави в кошницата";
   const addButton = page
     .locator("#buy-now")
-    .getByRole("button", { name: "Добави в кошницата" });
+    .getByRole("button", { name: addButtonLabel });
   await expect(addButton).toBeVisible({ timeout: 30_000 });
   await addButton.click({ timeout: 30_000 });
 
@@ -84,9 +85,10 @@ export async function addServiceFromCartUpsell(page: Page, slug: ServiceSlug) {
       .click({ timeout: 30_000 });
   }
 
+  const addButtonLabel = slug === "online-store" ? "Купи сега" : "Добави в кошницата";
   const addButton = page
     .locator("#buy-now")
-    .getByRole("button", { name: "Добави в кошницата" });
+    .getByRole("button", { name: addButtonLabel });
   await expect(addButton).toBeVisible({ timeout: 30_000 });
   await addButton.click({ timeout: 30_000 });
 

@@ -22,9 +22,9 @@ const CORE_PAGES: { menuLabel?: string; path: string; heading: RegExp | string }
   { path: "/consultation", heading: "Безплатна консултация" },
 ];
 
-async function expectServiceBuySection(page: Page) {
+async function expectServiceBuySection(page: Page, buttonLabel = "Купи сега") {
   await expect(
-    page.locator("#buy-now").getByRole("button", { name: "Добави в кошницата" }),
+    page.locator("#buy-now").getByRole("button", { name: buttonLabel }),
   ).toBeVisible({ timeout: 30_000 });
 }
 

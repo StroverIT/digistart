@@ -109,6 +109,7 @@ const BuySection = ({ availability: initialAvailability }: BuySectionProps) => {
           cartSelectedOptionId={ONLINE_STORE_OPTION_ID}
           ctaId={`${ONLINE_STORE_LANDING.ctaIdPrefix}_buy_section_add_to_cart`}
           ctaPage={ONLINE_STORE_LANDING.pagePath}
+          ctaLabel="Купи сега"
           availability={availability}
         />
       </div>

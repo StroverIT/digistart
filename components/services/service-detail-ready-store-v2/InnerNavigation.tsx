@@ -8,6 +8,8 @@ const InnerNavigation = () => (
     items={READY_STORE_SECTION_NAV}
     ariaLabel="Навигация по секции"
     capitalizeLinks
+    ctaHref="#buy-section"
+    ctaLabel="Купи сега"
   />
 );
 
