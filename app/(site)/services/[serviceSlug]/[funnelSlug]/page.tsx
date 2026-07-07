@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: ServiceFunnelPageProps): Prom
   return {
     title: funnel.meta.title,
     description: funnel.meta.description,
-    robots: { index: false, follow: true },
+    robots: funnel.meta.robots ?? { index: false, follow: true },
     ...ogImageMetadata(funnel.meta.ogCoverKey, funnel.meta.ogAlt),
   };
 }

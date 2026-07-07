@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { OgCoverKey } from "@/lib/seo/open-graph";
 import type { CartItemUpsell } from "@/lib/types";
 
@@ -42,6 +43,7 @@ type ServiceFunnelSharedFields = {
     description: string;
     ogCoverKey: OgCoverKey;
     ogAlt: string;
+    robots?: NonNullable<Metadata["robots"]>;
   };
   metaLead: {
     contentName: string;

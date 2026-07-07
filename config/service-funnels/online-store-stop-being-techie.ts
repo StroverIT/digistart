@@ -22,6 +22,15 @@ export const ONLINE_STORE_STOP_BEING_TECHIE_FUNNEL: ServiceFunnelDefinition = {
     description: `Онлайн магазин за продавачи в Instagram, Facebook и OLX – от ${basePriceLabel}/мес. Безплатна миграция, човешка поддръжка 9:00–22:00 и 14 дни безплатен тест.`,
     ogCoverKey: "onlineStore",
     ogAlt: "DigiStart – Спри да бъдеш техничар",
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+        noimageindex: true,
+      },
+    },
   },
   metaLead: {
     contentName: "DigiStart - Спри да бъдеш техничар (funnel)",
