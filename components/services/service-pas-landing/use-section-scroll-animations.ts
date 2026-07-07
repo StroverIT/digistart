@@ -12,11 +12,25 @@ export type SectionScrollAnimationOptions = {
   start?: string;
 };
 
+function completeIfAlreadyInView(tween: gsap.core.Tween) {
+  requestAnimationFrame(() => {
+    ScrollTrigger.refresh();
+    const progress = tween.scrollTrigger?.progress ?? 0;
+    if (progress > 0) {
+      tween.progress(1);
+    }
+  });
+}
+
 export function useSectionScrollAnimations(
   sectionRef: RefObject<HTMLElement | null>,
   options?: SectionScrollAnimationOptions,
+  enabled = true,
+  deps: unknown[] = [],
 ) {
   useEffect(() => {
+    if (!enabled) return;
+
     const section = sectionRef.current;
     if (!section) return;
 
@@ -36,7 +50,7 @@ export function useSectionScrollAnimations(
 
       if (reveals.length) {
         gsap.set(reveals, { opacity: 0, y: 40 });
-        gsap.to(reveals, {
+        const revealTween = gsap.to(reveals, {
           opacity: 1,
           y: 0,
           duration: 0.55,
@@ -48,11 +62,12 @@ export function useSectionScrollAnimations(
             toggleActions: "play none none none",
           },
         });
+        completeIfAlreadyInView(revealTween);
       }
 
       if (cards.length) {
         gsap.set(cards, { opacity: 0, y: 50, scale: 0.95 });
-        gsap.to(cards, {
+        const cardTween = gsap.to(cards, {
           opacity: 1,
           y: 0,
           scale: 1,
@@ -65,10 +80,11 @@ export function useSectionScrollAnimations(
             toggleActions: "play none none none",
           },
         });
+        completeIfAlreadyInView(cardTween);
       }
     }, section);
 
     return () => ctx.revert();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- sectionRef is stable
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sectionRef is stable; deps are caller-controlled
+  }, [enabled, ...deps]);
 }

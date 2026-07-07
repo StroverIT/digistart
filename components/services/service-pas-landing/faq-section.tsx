@@ -36,7 +36,8 @@ export function PasFaqSection({
   funnelId,
 }: PasFaqSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
-  const { answer } = useCompetitorPlatformSelection(funnelId);
+  const { answer, hydrated } = useCompetitorPlatformSelection(funnelId);
+  const contentReady = !funnelId || hydrated;
   const faqItems = useMemo(() => {
     const personalizedItems = items.map((item) => {
       if (!funnelId) return item;
@@ -59,7 +60,22 @@ export function PasFaqSection({
 
     return [platformFaq, ...withoutDuplicate];
   }, [answer, funnelId, items]);
-  useSectionScrollAnimations(sectionRef, { staggerReveal: 0.08 });
+  useSectionScrollAnimations(
+    sectionRef,
+    { staggerReveal: 0.08 },
+    contentReady,
+    [faqItems.length],
+  );
+
+  if (!contentReady) {
+    return (
+      <section id="faq" className={cn("bg-card/40 py-8 md:py-14", className)}>
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-4xl min-h-48" aria-busy="true" />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section ref={sectionRef} id="faq" className={cn("bg-card/40 py-8 md:py-14", className)}>
