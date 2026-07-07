@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import HeroSection from "@/components/services/service-detail-ready-store-v2/HeroSection";
 import { CompetitorPlatformPicker } from "@/components/services/funnel/competitor-platform-picker";
+import { CompetitorPlatformAdminToolbar } from "@/components/services/funnel/competitor-platform-admin-toolbar";
 import { FunnelWhoIsItForSection } from "@/components/services/service-funnel/funnel-who-is-it-for-section";
 import type { ServiceFunnelReadyStoreV2Config } from "@/config/service-funnels/types";
 import type { ServiceBuyConsultationConfig } from "@/components/services/service-buy-consultation-section";
@@ -74,12 +75,15 @@ export function ReadyStoreV2FunnelLayout({ config }: ReadyStoreV2FunnelLayoutPro
   return (
     <section>
       {competitorPicker?.enabled ? (
-        <CompetitorPlatformPicker
-          funnelId={config.id}
-          pagePath={config.pagePath}
-          title={competitorPicker.title}
-          subtitle={competitorPicker.subtitle}
-        />
+        <>
+          <CompetitorPlatformPicker
+            funnelId={config.id}
+            pagePath={config.pagePath}
+            title={competitorPicker.title}
+            subtitle={competitorPicker.subtitle}
+          />
+          <CompetitorPlatformAdminToolbar funnelId={config.id} />
+        </>
       ) : null}
       <HeroSection
         hero={hero}

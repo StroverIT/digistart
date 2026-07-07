@@ -1,5 +1,6 @@
 export const FUNNEL_COMPETITOR_STORAGE_KEY = "digistart-funnel-competitor-v1";
 export const COMPETITOR_PLATFORM_UPDATED_EVENT = "competitor-platform-updated";
+export const COMPETITOR_PLATFORM_REOPEN_EVENT = "competitor-platform-reopen";
 
 export const COMPETITOR_PLATFORMS = [
   "shopify",
@@ -129,4 +130,31 @@ export function saveCompetitorPlatformAnswer(
   }
 
   return stored;
+}
+
+export function clearCompetitorPlatformAnswer(funnelId: string): void {
+  if (typeof window === "undefined") return;
+
+  const storage = readStorage();
+  if (!storage.answers[funnelId]) return;
+
+  delete storage.answers[funnelId];
+  writeStorage(storage);
+
+  window.dispatchEvent(
+    new CustomEvent(COMPETITOR_PLATFORM_UPDATED_EVENT, {
+      detail: { funnelId },
+    }),
+  );
+}
+
+export function requestCompetitorPlatformPickerReopen(funnelId: string): void {
+  if (typeof window === "undefined") return;
+
+  clearCompetitorPlatformAnswer(funnelId);
+  window.dispatchEvent(
+    new CustomEvent(COMPETITOR_PLATFORM_REOPEN_EVENT, {
+      detail: { funnelId },
+    }),
+  );
 }

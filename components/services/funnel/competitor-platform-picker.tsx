@@ -7,9 +7,11 @@ import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
 import { trackFunnelCompetitorSelection } from "@/lib/funnel/competitor-platform-analytics";
 import {
   COMPETITOR_PLATFORM_OPTIONS,
+  COMPETITOR_PLATFORM_REOPEN_EVENT,
   hasCompetitorPlatformAnswer,
   saveCompetitorPlatformAnswer,
   type CompetitorPlatform,
@@ -30,6 +32,8 @@ export function CompetitorPlatformPicker({
   title,
   subtitle,
 }: CompetitorPlatformPickerProps) {
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "admin";
   const [visible, setVisible] = useState(false);
   const [otherStep, setOtherStep] = useState(false);
   const [otherLabel, setOtherLabel] = useState("");
@@ -48,6 +52,25 @@ export function CompetitorPlatformPicker({
       setVisible(true);
     }
   }, [funnelId]);
+
+  const resetPickerState = useCallback(() => {
+    setOtherStep(false);
+    setOtherLabel("");
+    setIsClosing(false);
+  }, []);
+
+  useEffect(() => {
+    const onReopen = (event: Event) => {
+      const detail = (event as CustomEvent<{ funnelId?: string }>).detail;
+      if (detail?.funnelId !== funnelId) return;
+
+      resetPickerState();
+      setVisible(true);
+    };
+
+    window.addEventListener(COMPETITOR_PLATFORM_REOPEN_EVENT, onReopen);
+    return () => window.removeEventListener(COMPETITOR_PLATFORM_REOPEN_EVENT, onReopen);
+  }, [funnelId, resetPickerState]);
 
   const runEnterAnimation = useCallback(() => {
     if (prefersReducedMotion.current) return;
@@ -91,12 +114,14 @@ export function CompetitorPlatformPicker({
           ? { platform, otherLabel: trimmedOther }
           : { platform };
 
-      trackFunnelCompetitorSelection({
-        funnelId,
-        platform,
-        page: pagePath,
-        otherLabel: trimmedOther,
-      });
+      if (!isAdmin) {
+        trackFunnelCompetitorSelection({
+          funnelId,
+          platform,
+          page: pagePath,
+          otherLabel: trimmedOther,
+        });
+      }
 
       const complete = () => {
         saveCompetitorPlatformAnswer(funnelId, answer);
@@ -144,7 +169,7 @@ export function CompetitorPlatformPicker({
         tl.to(backdrop, { opacity: 0, duration: 0.25, ease: "power2.in" }, "-=0.15");
       }
     },
-    [funnelId, isClosing, pagePath],
+    [funnelId, isAdmin, isClosing, pagePath],
   );
 
   const handlePlatformSelect = (platform: CompetitorPlatform) => {
