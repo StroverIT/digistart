@@ -13,7 +13,7 @@ import {
   funnelWaveFills,
   SectionWave,
 } from "@/components/services/service-funnel/section-wave";
-import type { ServiceFunnelConfig } from "@/config/service-funnels/types";
+import type { ServiceFunnelPasConfig } from "@/config/service-funnels/types";
 import { cn } from "@/lib/utils";
 
 const CaseStudy = dynamic(
@@ -27,7 +27,7 @@ const PasFaqSection = dynamic(() =>
 );
 
 type FunnelContentSectionsProps = {
-  config: ServiceFunnelConfig;
+  config: ServiceFunnelPasConfig;
 };
 
 export function FunnelContentSections({ config }: FunnelContentSectionsProps) {

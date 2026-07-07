@@ -18,6 +18,7 @@ type ServiceInnerNavigationProps = {
   ctaHref?: string;
   ctaLabel?: string;
   capitalizeLinks?: boolean;
+  stickyOffset?: "site-header" | "funnel-banner";
 };
 
 function getActiveSectionId(items: readonly ServiceSectionNavItem[]): string {
@@ -51,6 +52,7 @@ export function ServiceInnerNavigation({
   ctaHref = "#booking",
   ctaLabel = "Запази час",
   capitalizeLinks = false,
+  stickyOffset = "site-header",
 }: ServiceInnerNavigationProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -120,11 +122,18 @@ export function ServiceInnerNavigation({
     setIsMobileMenuOpen(false);
   };
 
+  const isFunnelBannerOffset = stickyOffset === "funnel-banner";
+
   return (
     <nav
       ref={sectionRef}
       aria-label={ariaLabel}
-      className="sticky top-16 sm:top-20 z-30 -mt-14 w-full max-w-full sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)]"
+      className={cn(
+        "sticky z-40 w-full max-w-full sm:mx-auto sm:w-fit sm:max-w-[calc(100%-2rem)]",
+        isFunnelBannerOffset
+          ? "top-(--site-slots-banner-height) -mt-14"
+          : "top-[calc(var(--site-header-height)+var(--site-slots-banner-height))] md:top-[calc(var(--site-header-height-md)+var(--site-slots-banner-height))] -mt-14",
+      )}
     >
       <div ref={mobileMenuRef} className="flex justify-center px-4 sm:hidden">
         <div

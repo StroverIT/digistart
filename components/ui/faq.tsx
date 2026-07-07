@@ -55,7 +55,7 @@ export function Faq({
           <AccordionTrigger className={cn("text-base sm:text-lg hover:no-underline", questionClassName)}>
             {item.question}
           </AccordionTrigger>
-          <AccordionContent className={cn("text-muted-foreground leading-relaxed", answerClassName)}>
+          <AccordionContent className={cn("text-muted-foreground leading-relaxed whitespace-pre-line", answerClassName)}>
             {item.answer}
           </AccordionContent>
         </AccordionItem>

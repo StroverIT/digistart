@@ -6,11 +6,11 @@ import {
   funnelWaveFills,
   SectionWave,
 } from "@/components/services/service-funnel/section-wave";
-import type { ServiceFunnelConfig } from "@/config/service-funnels/types";
+import type { ServiceFunnelPasConfig } from "@/config/service-funnels/types";
 import { cn } from "@/lib/utils";
 
 type FunnelProcessStepsSectionProps = {
-  config: ServiceFunnelConfig;
+  config: ServiceFunnelPasConfig;
 };
 
 export function FunnelProcessStepsSection({ config }: FunnelProcessStepsSectionProps) {

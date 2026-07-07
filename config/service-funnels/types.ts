@@ -6,7 +6,31 @@ export type ServiceFunnelFaqItem = {
   answer: string;
 };
 
-export type ServiceFunnelDefinition = {
+export type ServiceFunnelLayout = "pas" | "ready-store-v2";
+
+export type ReadyStoreV2HeroConfig = {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  includedLabel: string;
+  includedItems: Array<{ title: string; hint?: string }>;
+  ctaLabel: string;
+  ctaHint: string;
+};
+
+export type ServiceFunnelWhoIsItFor = {
+  title: string;
+  subtitle: string;
+  items: Array<{
+    title: string;
+    description: string;
+    badge?: string;
+    image?: string;
+    imageFirst?: boolean;
+  }>;
+};
+
+type ServiceFunnelSharedFields = {
   id: string;
   serviceId: string;
   funnelSlug: string;
@@ -26,51 +50,6 @@ export type ServiceFunnelDefinition = {
   metaPageView: {
     contentName: string;
     viewSource: string;
-  };
-  hero: {
-    title: string;
-    subtitle: string;
-    description?: string;
-    ctaLabel: string;
-    video?:
-      | {
-          provider: "youtube";
-          youtubeId: string;
-          title: string;
-          format?: "short" | "standard";
-        }
-      | {
-          provider: "google-drive";
-          fileId: string;
-          title: string;
-          thumbnailSrc?: string;
-          format?: "short" | "standard";
-        };
-  };
-  whoIsItFor: {
-    title: string;
-    subtitle: string;
-    items: Array<{
-      title: string;
-      description: string;
-      badge?: string;
-      image?: string;
-      imageFirst?: boolean;
-    }>;
-  };
-  doneForYou: {
-    title: string;
-    description: string;
-    items: string[];
-    priceHighlight?: string;
-  };
-  processSteps: {
-    title: string;
-    subtitle: string;
-    steps: Array<{
-      title: string;
-      description: string;
-    }>;
   };
   faq: {
     title: string;
@@ -129,7 +108,83 @@ export type ServiceFunnelDefinition = {
   };
 };
 
-export type ServiceFunnelConfig = ServiceFunnelDefinition & {
+export type ServiceFunnelPasDefinition = ServiceFunnelSharedFields & {
+  layout?: "pas";
+  hero: {
+    title: string;
+    subtitle: string;
+    description?: string;
+    ctaLabel: string;
+    video?:
+      | {
+          provider: "youtube";
+          youtubeId: string;
+          title: string;
+          format?: "short" | "standard";
+        }
+      | {
+          provider: "google-drive";
+          fileId: string;
+          title: string;
+          thumbnailSrc?: string;
+          format?: "short" | "standard";
+        };
+  };
+  whoIsItFor: ServiceFunnelWhoIsItFor;
+  doneForYou: {
+    title: string;
+    description: string;
+    items: string[];
+    priceHighlight?: string;
+  };
+  processSteps: {
+    title: string;
+    subtitle: string;
+    steps: Array<{
+      title: string;
+      description: string;
+    }>;
+  };
+};
+
+export type ReadyStoreV2CompetitorPickerConfig = {
+  enabled: boolean;
+  title: string;
+  subtitle?: string;
+};
+
+export type ServiceFunnelReadyStoreV2Definition = ServiceFunnelSharedFields & {
+  layout: "ready-store-v2";
+  defaultSlotCapacity?: number;
+  readyStoreV2: {
+    hero: ReadyStoreV2HeroConfig;
+    whoIsItFor: ServiceFunnelWhoIsItFor;
+    competitorPicker?: ReadyStoreV2CompetitorPickerConfig;
+  };
+};
+
+export type ServiceFunnelDefinition =
+  | ServiceFunnelPasDefinition
+  | ServiceFunnelReadyStoreV2Definition;
+
+export type ServiceFunnelPasConfig = ServiceFunnelPasDefinition & {
   serviceSlug: string;
   pagePath: string;
 };
+
+export type ServiceFunnelReadyStoreV2Config = ServiceFunnelReadyStoreV2Definition & {
+  serviceSlug: string;
+  pagePath: string;
+};
+
+export type ServiceFunnelConfig = ServiceFunnelPasConfig | ServiceFunnelReadyStoreV2Config;
+
+export function isReadyStoreV2Funnel(
+  funnel: ServiceFunnelConfig,
+): funnel is ServiceFunnelReadyStoreV2Config {
+  return funnel.layout === "ready-store-v2";
+}
+
+export function isPasFunnel(funnel: ServiceFunnelConfig): funnel is ServiceFunnelPasConfig {
+  return funnel.layout !== "ready-store-v2";
+}

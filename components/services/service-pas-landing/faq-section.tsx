@@ -1,7 +1,13 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Faq, type FaqItem } from "@/components/ui/faq";
+import { useCompetitorPlatformSelection } from "@/components/services/funnel/use-competitor-platform-selection";
+import {
+  applyCompetitorPlatformPlaceholder,
+  personalizeCompetitorCopy,
+} from "@/lib/funnel/competitor-platform-personalization";
+import { getCompetitorPlatformFaqItem } from "@/lib/funnel/competitor-platform-pas";
 import {
   ServiceSectionBuyCta,
   type ServiceSectionBuyCtaConfig,
@@ -17,6 +23,7 @@ export interface PasFaqSectionProps {
   headingFontClass?: string;
   buyCta?: ServiceSectionBuyCtaConfig;
   className?: string;
+  funnelId?: string;
 }
 
 export function PasFaqSection({
@@ -26,8 +33,32 @@ export function PasFaqSection({
   headingFontClass,
   buyCta,
   className,
+  funnelId,
 }: PasFaqSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
+  const { answer } = useCompetitorPlatformSelection(funnelId);
+  const faqItems = useMemo(() => {
+    const personalizedItems = items.map((item) => {
+      if (!funnelId) return item;
+
+      const answerText = answer
+        ? personalizeCompetitorCopy(item.answer, answer)
+        : applyCompetitorPlatformPlaceholder(item.answer, null);
+
+      return { ...item, answer: answerText };
+    });
+
+    if (!funnelId || !answer) return personalizedItems;
+
+    const platformFaq = getCompetitorPlatformFaqItem(answer);
+    if (!platformFaq) return personalizedItems;
+
+    const withoutDuplicate = personalizedItems.filter(
+      (item) => item.question !== platformFaq.question,
+    );
+
+    return [platformFaq, ...withoutDuplicate];
+  }, [answer, funnelId, items]);
   useSectionScrollAnimations(sectionRef, { staggerReveal: 0.08 });
 
   return (
@@ -40,7 +71,7 @@ export function PasFaqSection({
           titleClassName="mb-3"
         />
         <div className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 shadow-sm sm:px-8 sm:py-4">
-          <Faq items={[...items]} staggerItems />
+          <Faq items={faqItems} staggerItems />
         </div>
         {buyCta ? (
           <div data-animate-reveal className="mt-8 opacity-0 translate-y-10 md:mt-10">

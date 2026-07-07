@@ -7,6 +7,10 @@ import {
   type CheckoutFunnelStage,
 } from "@/lib/analytics/checkout-funnel";
 import {
+  COMPETITOR_PLATFORM_LABELS,
+  type CompetitorPlatform,
+} from "@/lib/funnel/competitor-platform";
+import {
   ANALYTICS_EVENT_TYPES,
   type AnalyticsAdminResponse,
   type AnalyticsEventPayload,
@@ -17,6 +21,7 @@ import {
   type UtmDimensionStats,
   type UtmDailyStats,
   type SurveyAnalyticsStat,
+  type FunnelCompetitorStat,
   type SurveyCombinationsAggregate,
   type UtmLandingEventPayload,
   type UtmMonthlyStats,
@@ -402,6 +407,43 @@ function buildSurveyStats(rows: AnalyticsRow[]): SurveyAnalyticsStat[] {
   return Array.from(byKey.values()).sort((a, b) => b.count - a.count);
 }
 
+function buildFunnelCompetitorStats(rows: AnalyticsRow[]): FunnelCompetitorStat[] {
+  const byKey = new Map<string, FunnelCompetitorStat>();
+
+  for (const row of rows) {
+    if (row.eventType !== "funnel_competitor_selection") continue;
+    const metadata = (row.metadata ?? {}) as Record<string, unknown>;
+    const funnelId = String(metadata.funnel_id ?? "").trim();
+    const platform = String(metadata.platform ?? "").trim();
+    const otherLabel =
+      typeof metadata.other_label === "string" && metadata.other_label.trim().length > 0
+        ? metadata.other_label.trim()
+        : undefined;
+
+    if (!funnelId || !platform) continue;
+
+    const platformLabel =
+      platform in COMPETITOR_PLATFORM_LABELS
+        ? COMPETITOR_PLATFORM_LABELS[platform as CompetitorPlatform]
+        : platform;
+    const label =
+      platform === "other" && otherLabel ? `Друго: ${otherLabel}` : platformLabel;
+
+    const key = `${funnelId}::${platform}::${otherLabel ?? ""}`;
+    const existing = byKey.get(key) ?? {
+      funnelId,
+      platform,
+      label,
+      otherLabel,
+      count: 0,
+    };
+    existing.count += 1;
+    byKey.set(key, existing);
+  }
+
+  return Array.from(byKey.values()).sort((a, b) => b.count - a.count);
+}
+
 const EMPTY_SURVEY_COMBINATIONS: SurveyCombinationsAggregate = {
   byCombo: [],
   dailyTotals: [],
@@ -653,6 +695,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
   const utmLandingUrls = buildUtmDimensionStats(utmRows, "landingUrl");
   const cartAdditions = buildCartAdditionStats(rows, 30);
   const surveyStats = buildSurveyStats(rows);
+  const funnelCompetitorStats = buildFunnelCompetitorStats(rows);
   const surveyCombinations = buildSurveyCombinationStats(rows);
   const checkoutFunnel = buildCheckoutFunnelStats(rows, 30);
 
@@ -669,6 +712,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     utmLandingUrls,
     cartAdditions,
     surveyStats,
+    funnelCompetitorStats,
     surveyCombinations,
     checkoutFunnel,
   };

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import HeroSection from "@/components/services/service-detail-ready-store-v2/HeroSection";
-import { ONLINE_STORE_LANDING } from "@/config/service-landing/online-store";
+import {
+  ONLINE_STORE_CONSULTATION,
+  ONLINE_STORE_LANDING,
+} from "@/config/service-landing/online-store";
 import { formatEuroPrice, READY_STORE_PRICING } from "@/lib/data/ready-store-pricing";
 import { ogImageMetadata } from "@/lib/seo/open-graph";
 
@@ -38,6 +41,12 @@ const BuySection = dynamic(
   () => import("@/components/services/service-detail-ready-store-v2/BuySection"),
 );
 
+const ServiceBuyConsultationFormSection = dynamic(() =>
+  import("@/components/services/service-buy-consultation-section").then((mod) => ({
+    default: mod.ServiceBuyConsultationFormSection,
+  })),
+);
+
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
   description:
@@ -61,6 +70,7 @@ export default function OnlineStorePage() {
 
       <BuySection />
       <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
+      <ServiceBuyConsultationFormSection consultation={ONLINE_STORE_CONSULTATION} />
     </section>
   );
 }

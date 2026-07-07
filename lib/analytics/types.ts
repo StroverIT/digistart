@@ -67,6 +67,7 @@ export type AnalyticsAdminResponse = {
     }[];
   };
   surveyStats: SurveyAnalyticsStat[];
+  funnelCompetitorStats: FunnelCompetitorStat[];
   surveyCombinations: SurveyCombinationsAggregate;
   checkoutFunnel: CheckoutFunnelAggregate;
 };
@@ -114,6 +115,14 @@ export type UtmDimensionStats = {
 export type SurveyAnalyticsStat = {
   question: string;
   answer: string;
+  otherLabel?: string;
+  count: number;
+};
+
+export type FunnelCompetitorStat = {
+  funnelId: string;
+  platform: string;
+  label: string;
   otherLabel?: string;
   count: number;
 };

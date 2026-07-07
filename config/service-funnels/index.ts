@@ -1,11 +1,17 @@
 import { ONLINE_STORE_START_SELLING_FUNNEL } from "@/config/service-funnels/online-store-start-selling";
+import { ONLINE_STORE_STOP_BEING_TECHIE_FUNNEL } from "@/config/service-funnels/online-store-stop-being-techie";
 import { SOCIAL_MEDIA_DONT_LOSE_TURNOVER_FUNNEL } from "@/config/service-funnels/social-media-dont-lose-turnover";
-import type { ServiceFunnelConfig, ServiceFunnelDefinition } from "@/config/service-funnels/types";
+import type {
+  ServiceFunnelConfig,
+  ServiceFunnelDefinition,
+  ServiceFunnelPasConfig,
+} from "@/config/service-funnels/types";
 import { getServiceById, resolveServiceSlug } from "@/lib/data/services";
 
 const FUNNEL_DEFINITIONS = [
   SOCIAL_MEDIA_DONT_LOSE_TURNOVER_FUNNEL,
   ONLINE_STORE_START_SELLING_FUNNEL,
+  ONLINE_STORE_STOP_BEING_TECHIE_FUNNEL,
 ] as const;
 
 function resolveFunnelConfig(definition: ServiceFunnelDefinition): ServiceFunnelConfig {
@@ -14,11 +20,16 @@ function resolveFunnelConfig(definition: ServiceFunnelDefinition): ServiceFunnel
     throw new Error(`Unknown serviceId in funnel config: ${definition.serviceId}`);
   }
 
-  return {
-    ...definition,
+  const shared = {
     serviceSlug: service.slug,
     pagePath: `/services/${service.slug}/${definition.funnelSlug}`,
   };
+
+  if (definition.layout === "ready-store-v2") {
+    return { ...definition, ...shared };
+  }
+
+  return { ...definition, ...shared } as ServiceFunnelPasConfig;
 }
 
 export const SERVICE_FUNNELS: ServiceFunnelConfig[] = FUNNEL_DEFINITIONS.map(resolveFunnelConfig);
@@ -40,6 +51,8 @@ export function getFunnelById(funnelId: string): ServiceFunnelConfig | undefined
 export function getFunnelsByServiceId(serviceId: string): ServiceFunnelConfig[] {
   return SERVICE_FUNNELS.filter((funnel) => funnel.serviceId === serviceId);
 }
+
+export { isPasFunnel, isReadyStoreV2Funnel } from "@/config/service-funnels/types";
 
 export type ServiceFunnelsGroup = {
   serviceId: string;

@@ -11,7 +11,7 @@ import Hamburger from "hamburger-react";
 import { useSession, signOut } from "next-auth/react";
 import { AnalyticsToolbar } from "@/components/analytics/analytics-toolbar";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
-// import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
+import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
 import { FunnelSlotsBanner } from "@/components/layout/funnel-slots-banner";
 import { SiteLogo } from "@/components/layout/site-logo";
 import { isServiceFunnelPath } from "@/lib/service-funnels/path";
@@ -491,7 +491,7 @@ export function Header() {
             </div>
           </div>
         </header>
-        {/* <ServiceSlotsBanner /> */}
+        <ServiceSlotsBanner />
       </div>
 
       <div

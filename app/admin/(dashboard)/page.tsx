@@ -86,6 +86,7 @@ export default function AdminDashboard() {
       byCombo: [],
     },
     surveyStats: [],
+    funnelCompetitorStats: [],
     surveyCombinations: {
       byCombo: [],
       dailyTotals: [],
@@ -141,6 +142,7 @@ export default function AdminDashboard() {
               byCombo: [],
             },
             surveyStats: [],
+            funnelCompetitorStats: [],
             surveyCombinations: {
               byCombo: [],
               dailyTotals: [],
@@ -795,6 +797,42 @@ export default function AdminDashboard() {
             ) : null}
           </CardContent>
         </Card>
+
+        {analytics.funnelCompetitorStats.length > 0 ? (
+          <Card
+            data-admin-animate
+            className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
+          >
+            <CardHeader>
+              <CardTitle>Платформа преди DigiStart</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Избори от funnel въпроса „От коя платформа идваш?“ — по брой отговори.
+              </p>
+              <div className="space-y-2">
+                {analytics.funnelCompetitorStats.map((entry, index) => (
+                  <div
+                    key={`${entry.funnelId}-${entry.platform}-${entry.otherLabel ?? ""}`}
+                    className="flex items-center justify-between rounded-md border border-border p-3"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      {index === 0 ? (
+                        <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                          Най-често
+                        </span>
+                      ) : null}
+                      <p className="font-medium text-sm truncate">{entry.label}</p>
+                    </div>
+                    <p className="text-primary font-semibold tabular-nums shrink-0 ml-3">
+                      {entry.count}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
 
         <Card
           data-admin-animate

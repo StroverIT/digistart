@@ -41,7 +41,14 @@ export function useCreativesAnimations(
         if (reducedMotion) {
           const images = root.querySelectorAll<HTMLElement>("[data-animate-card-image]");
           const copies = root.querySelectorAll<HTMLElement>("[data-animate-card-copy]");
-          gsap.set([...reveals, ...cards, ...copies], { opacity: 1, y: 0, x: 0, scale: 1, rotate: 0 });
+          const inViewReveals = root.querySelectorAll<HTMLElement>("[data-animate-in-view]");
+          gsap.set([...reveals, ...cards, ...copies, ...inViewReveals], {
+            opacity: 1,
+            y: 0,
+            x: 0,
+            scale: 1,
+            rotate: 0,
+          });
           gsap.set(images, { scale: 1 });
           return;
         }
@@ -61,6 +68,22 @@ export function useCreativesAnimations(
             },
           });
         }
+
+        const inViewReveals = root.querySelectorAll<HTMLElement>("[data-animate-in-view]");
+        inViewReveals.forEach((element) => {
+          gsap.set(element, { opacity: 0, y: 40 });
+          gsap.to(element, {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            ease: "back.out(1.6)",
+            scrollTrigger: {
+              trigger: element,
+              start: "top 88%",
+              toggleActions: "play none none none",
+            },
+          });
+        });
 
         cards.forEach((card, index) => {
           const image = card.querySelector<HTMLElement>("[data-animate-card-image]");

@@ -1,4 +1,4 @@
-import { getFunnelById, SERVICE_FUNNELS } from "@/config/service-funnels";
+import { getFunnelById, SERVICE_FUNNELS, isReadyStoreV2Funnel } from "@/config/service-funnels";
 import { getServiceById } from "@/lib/data/services";
 import { prisma } from "@/lib/prisma";
 import { computeRemainingSlots, paidOrderWhere } from "@/lib/server/service-slots";
@@ -26,11 +26,16 @@ export async function ensureFunnelSlotRow(funnelId: string) {
     throw new Error(`Unknown funnel id: ${funnelId}`);
   }
 
+  const funnel = getFunnelById(funnelId);
+  const defaultCapacity =
+    (funnel && isReadyStoreV2Funnel(funnel) ? funnel.defaultSlotCapacity : undefined) ??
+    DEFAULT_FUNNEL_SLOT_CAPACITY;
+
   return prisma.serviceFunnelSlot.upsert({
     where: { funnelId },
     create: {
       funnelId,
-      slotCapacity: DEFAULT_FUNNEL_SLOT_CAPACITY,
+      slotCapacity: defaultCapacity,
     },
     update: {},
   });
@@ -51,14 +56,25 @@ export async function getFunnelSlotAvailability(
   const funnel = getFunnelById(funnelId);
   if (!funnel) return null;
 
-  const row = await prisma.serviceFunnelSlot.findUnique({
+  let row = await prisma.serviceFunnelSlot.findUnique({
     where: { funnelId },
     select: { slotCapacity: true },
   });
 
+  if (!row) {
+    await ensureFunnelSlotRow(funnelId);
+    row = await prisma.serviceFunnelSlot.findUnique({
+      where: { funnelId },
+      select: { slotCapacity: true },
+    });
+  }
+
   const service = getServiceById(funnel.serviceId);
   const paidCount = await countPaidPurchasesForFunnel(funnelId);
-  const capacity = row?.slotCapacity ?? DEFAULT_FUNNEL_SLOT_CAPACITY;
+  const capacity =
+    row?.slotCapacity ??
+    (isReadyStoreV2Funnel(funnel) ? funnel.defaultSlotCapacity : undefined) ??
+    DEFAULT_FUNNEL_SLOT_CAPACITY;
   const remaining = computeRemainingSlots({ capacity, paidCount });
 
   return {

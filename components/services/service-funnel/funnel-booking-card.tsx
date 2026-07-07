@@ -5,11 +5,11 @@ import ConsultationBookingForm from "@/components/consultation/consultation-book
 import { ProcessStepsContent } from "@/components/home/process-steps";
 import { LANDING_CARD_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
-import type { ServiceFunnelConfig } from "@/config/service-funnels/types";
+import type { ServiceFunnelPasConfig } from "@/config/service-funnels/types";
 import { cn } from "@/lib/utils";
 
 type FunnelBookingCardProps = {
-  config: ServiceFunnelConfig;
+  config: ServiceFunnelPasConfig;
 };
 
 export function FunnelBookingCard({ config }: FunnelBookingCardProps) {

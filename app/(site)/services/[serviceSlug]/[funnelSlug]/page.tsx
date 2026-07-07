@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ReadyStoreV2FunnelLayout } from "@/components/services/service-detail-ready-store-v2/ReadyStoreV2FunnelLayout";
 import { FunnelContentSections } from "@/components/services/service-funnel/funnel-content";
 import { FunnelHero } from "@/components/services/service-funnel/funnel-hero";
-import { getFunnelBySlugs, SERVICE_FUNNELS } from "@/config/service-funnels";
+import { getFunnelBySlugs, isReadyStoreV2Funnel, SERVICE_FUNNELS } from "@/config/service-funnels";
 import { ogImageMetadata } from "@/lib/seo/open-graph";
 
 type ServiceFunnelPageProps = {
@@ -41,6 +42,10 @@ export default async function ServiceFunnelPage({ params }: ServiceFunnelPagePro
 
   if (!funnel) {
     notFound();
+  }
+
+  if (isReadyStoreV2Funnel(funnel)) {
+    return <ReadyStoreV2FunnelLayout config={funnel} />;
   }
 
   return (

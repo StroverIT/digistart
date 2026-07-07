@@ -4,11 +4,11 @@ import { useRef } from "react";
 import { BookingForm } from "@/components/home/booking-form";
 import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
-import type { ServiceFunnelConfig } from "@/config/service-funnels/types";
+import type { ServiceFunnelPasConfig } from "@/config/service-funnels/types";
 import { cn } from "@/lib/utils";
 
 type FunnelConsultationSectionProps = {
-  config: ServiceFunnelConfig;
+  config: ServiceFunnelPasConfig;
   className?: string;
 };
 

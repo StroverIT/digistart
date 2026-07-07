@@ -10,7 +10,7 @@ import {
 } from "@/components/services/service-funnel/section-wave";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { landingContainerClass } from "@/components/services/service-detail-ready-store-v2/shared";
-import type { ServiceFunnelConfig } from "@/config/service-funnels/types";
+import type { ServiceFunnelPasConfig } from "@/config/service-funnels/types";
 import { getServiceById } from "@/lib/data/services";
 import type { FunnelSlotAvailability, ServiceSlotAvailability } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,7 @@ import { useTransitionRouter } from "@/components/transitions/useTransitionRoute
 import { setCartForDirectCheckoutItems } from "@/lib/store/cart";
 
 type FunnelCheckoutSectionProps = {
-  config: ServiceFunnelConfig;
+  config: ServiceFunnelPasConfig;
 };
 
 export function FunnelCheckoutSection({ config }: FunnelCheckoutSectionProps) {
