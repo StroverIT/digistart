@@ -239,6 +239,7 @@ async function createCalendarEvent(booking: ConsultationRecord) {
   const calendar = google.calendar({ version: "v3", auth: oAuth2Client });
   const attendees = [
     booking.email,
+    process.env.ADMIN_EMAIL,
     process.env.NEXT_PUBLIC_GOOGLE_EMAIL_USER,
     process.env.GOOGLE_EMAIL_USER,
     process.env.CONSULTATION_NOTIFY_EMAIL,
@@ -266,10 +267,10 @@ async function createCalendarEvent(booking: ConsultationRecord) {
         conferenceData: isInPerson
           ? undefined
           : {
-              createRequest: {
-                requestId: `digistart-${booking.id}`,
-              },
+            createRequest: {
+              requestId: `digistart-${booking.id}`,
             },
+          },
       },
     })
     .catch((error) => {
@@ -285,8 +286,8 @@ async function createCalendarEvent(booking: ConsultationRecord) {
   const meetUrl = isInPerson
     ? undefined
     : response.data.hangoutLink ??
-      response.data.conferenceData?.entryPoints?.find((item) => item.entryPointType === "video")
-        ?.uri;
+    response.data.conferenceData?.entryPoints?.find((item) => item.entryPointType === "video")
+      ?.uri;
 
   if (!isInPerson && !meetUrl) {
     throw new GoogleMeetCreationError("Google Meet URL was not returned.");

@@ -95,7 +95,7 @@ export function ServiceSlotsPanel() {
 
   return (
     <div className="space-y-6">
-      <Card data-admin-animate className="bg-card border-border opacity-0 translate-y-10">
+      <Card data-admin-animate className="bg-card border-border">
         <CardHeader>
           <CardTitle>Свободни места по услуга</CardTitle>
           <p className="text-sm text-muted-foreground">
@@ -160,7 +160,7 @@ export function ServiceSlotsPanel() {
         </CardContent>
       </Card>
 
-      <Card data-admin-animate className="bg-card border-border opacity-0 translate-y-10">
+      <Card data-admin-animate className="bg-card border-border">
         <CardHeader>
           <CardTitle>Waitlist</CardTitle>
           <p className="text-sm text-muted-foreground">

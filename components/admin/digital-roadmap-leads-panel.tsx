@@ -38,10 +38,7 @@ export function DigitalRoadmapLeadsPanel() {
   }, [load]);
 
   return (
-    <Card
-      data-admin-animate
-      className="bg-card border-border opacity-0 translate-y-10 [transform:translateZ(0)]"
-    >
+    <Card data-admin-animate className="bg-card border-border">
       <CardHeader>
         <CardTitle>Дигитална пътна карта (PDF)</CardTitle>
         <p className="text-sm text-muted-foreground">
