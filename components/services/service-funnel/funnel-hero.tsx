@@ -14,6 +14,7 @@ import {
   SectionWave,
 } from "@/components/services/service-funnel/section-wave";
 import type { ServiceFunnelPasConfig } from "@/config/service-funnels/types";
+import { CaseStudy } from "@/components/home/case-study";
 import { FunnelWhoIsItForSection } from "@/components/services/service-funnel/funnel-who-is-it-for-section";
 import { cn } from "@/lib/utils";
 
@@ -25,12 +26,15 @@ export function FunnelHero({ config }: FunnelHeroProps) {
   const { hero, whoIsItFor, features, checkout, serviceId } = config;
   const showHeroDescription = features?.showHeroDescription ?? false;
   const showProcessStepsSection = features?.showProcessStepsSection ?? false;
+  const showResultsSection = features?.showResultsSection ?? false;
   const ctaHref = checkout ? "#checkout" : "#booking";
   const heroSectionRef = useRef<HTMLElement>(null);
 
   useSectionScrollAnimations(heroSectionRef, { staggerReveal: 0.1 });
 
-  const whoIsItForFooter: ReactNode = showProcessStepsSection ? (
+  const whoIsItForFooter: ReactNode = showResultsSection ? (
+    <SectionWave fillClassName={funnelWaveFills.white} />
+  ) : showProcessStepsSection ? (
     <SectionWave fillClassName={funnelWaveFills.process} />
   ) : null;
 
@@ -139,6 +143,15 @@ export function FunnelHero({ config }: FunnelHeroProps) {
         serviceId={serviceId}
         footer={whoIsItForFooter}
       />
+
+      {showResultsSection ? (
+        <div className="-mt-10 bg-white sm:-mt-12 md:-mt-16">
+          <CaseStudy className="pt-12 pb-20 md:pt-16 md:pb-28" />
+          {showProcessStepsSection ? (
+            <SectionWave fillClassName={funnelWaveFills.process} />
+          ) : null}
+        </div>
+      ) : null}
     </>
   );
 }

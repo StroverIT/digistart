@@ -101,6 +101,8 @@ type ServiceFunnelSharedFields = {
   features?: {
     /** Renders Google/social case study block (default: true). */
     showCaseStudy?: boolean;
+    /** Renders homepage Restyled results block after who-is-it-for (default: false). */
+    showResultsSection?: boolean;
     /** Renders process steps as a standalone section before the offer (default: false). */
     showProcessStepsSection?: boolean;
     /** Renders process steps inside the booking card (default: true). */

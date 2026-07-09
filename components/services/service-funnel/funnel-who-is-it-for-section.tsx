@@ -125,7 +125,8 @@ export function FunnelWhoIsItForSection({
       id={sectionId}
       aria-labelledby={`${sectionId}-heading`}
       className={cn(
-        "scroll-mt-28 overflow-hidden pt-10 pb-10 md:pt-12 md:pb-12",
+        "scroll-mt-28 overflow-hidden pt-10 md:pt-12",
+        footer ? "pb-0" : "pb-10 md:pb-12",
         className ?? "bg-[#F8F7FF]",
       )}
     >

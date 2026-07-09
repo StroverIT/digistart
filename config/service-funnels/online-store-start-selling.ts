@@ -8,7 +8,7 @@ import type { ServiceFunnelDefinition } from "@/config/service-funnels/types";
 const STORE_MONTHLY = READY_STORE_PRICING.baseMonthly;
 const META_ADS_BUDGET = 100;
 const PACKAGE_TOTAL = 400;
-const AD_SETUP_FEE = PACKAGE_TOTAL - STORE_MONTHLY - META_ADS_BUDGET;
+const AD_SETUP_FEE = PACKAGE_TOTAL - STORE_MONTHLY;
 
 export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
   id: "online-store-start-selling",
@@ -18,7 +18,7 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
   sourcePage: "Онлайн магазин funnel (/services/online-store/start-selling-online)",
   analyticsCtaId: "online_store_funnel_checkout_submit",
   meta: {
-    title: `Започни да продаваш онлайн – пакет от €${PACKAGE_TOTAL}`,
+    title: `Започни да продаваш онлайн – от €${PACKAGE_TOTAL}/месец`,
     description:
       "Най-евтиният и най-лесният старт за онлайн продажби. Готов магазин, плащания, куриери и Meta реклами – ти само качваш продуктите.",
     ogCoverKey: "onlineStore",
@@ -91,7 +91,8 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
       },
       {
         title: "Пускаме Meta рекламите",
-        description: `Подготвяме рекламното съдържание за Facebook и Instagram и пускаме кампаниите с включения бюджет от €${META_ADS_BUDGET}.`,
+        description:
+          "Подготвяме рекламното съдържание за Facebook и Instagram и пускаме кампаниите. Бюджетът за реклами се плаща отделно директно на Meta.",
       },
       {
         title: "Ти качваш и изпращаш",
@@ -108,7 +109,7 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
       `Онлайн магазин за €${STORE_MONTHLY}/месец – създаваме го и го поддържаме всеки месец`,
       "Безплатно плащане с карта (Apple Pay и Google Pay)",
       "Безплатна интеграция със Спиди и Еконт",
-      `€${META_ADS_BUDGET} бюджет за Meta реклами (Facebook и Instagram)`,
+      "Създаване и пускане на Meta реклами (Facebook и Instagram)",
       "Ние създаваме кампанията",
       "Безплатен хостинг и SSL сертификат",
       "Безплатно създаване на общи условия, политика за лични данни и политика за бисквитки",
@@ -122,15 +123,15 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
     basePackageLabel: "Какво включва?",
     pricing: {
       total: PACKAGE_TOTAL,
-      breakdownNote: `€${STORE_MONTHLY}/месец за онлайн магазина + €${META_ADS_BUDGET} бюджет за реклами + €${AD_SETUP_FEE} за реклами`,
-      frequencyLabel: null,
+      breakdownNote: `€${STORE_MONTHLY}/месец за онлайн магазина + €${AD_SETUP_FEE}/месец за реклами`,
+      frequencyLabel: "/месец",
     },
     ctaLabel: "Започни сега",
     planFeatures: [
       `Онлайн магазин за €${STORE_MONTHLY}/месец – създаваме и поддържаме всеки месец`,
       "Безплатно плащане с карта (Apple Pay и Google Pay)",
       "Безплатна интеграция със Спиди и Еконт",
-      `€${META_ADS_BUDGET} бюджет за Meta реклами (Facebook и Instagram)`,
+      "Създаване и пускане на Meta реклами (Facebook и Instagram)",
       "Ние създаваме кампанията",
       "Безплатен хостинг и SSL сертификат",
       "Безплатно създаване на общи условия, политика за лични данни и политика за бисквитки",
@@ -168,11 +169,11 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
     items: [
       {
         question: "За какво плащам?",
-        answer: `Общата цена е €${PACKAGE_TOTAL}: €${STORE_MONTHLY}/месец за онлайн магазина, €${META_ADS_BUDGET} бюджет за Meta реклами (Facebook и Instagram) и €${AD_SETUP_FEE} за реклами. Включени са хостинг, поддръжка, плащане с карта и интеграция със Спиди и Еконт.`,
+        answer: `Месечният абонамент е €${PACKAGE_TOTAL}: €${STORE_MONTHLY} за онлайн магазина и €${AD_SETUP_FEE} за създаване и управление на реклами. Включени са хостинг, поддръжка, плащане с карта и интеграция със Спиди и Еконт. Бюджетът за реклами не е включен – плащаш го отделно директно на Meta.`,
       },
       {
-        question: "Мога ли да вдигна бюджета за реклами?",
-        answer: `Да, може да вдигнем бюджета за реклами, но най-често €${META_ADS_BUDGET} са напълно достатъчни, за да проверим продукта на пазара. Ако искаш да тестваш повече от 30 продукта, хубаво е да се вдигне бюджетът – но най-добре е да се тестват най-печелившите продукти с най-голяма разлика в печалбата.`,
+        question: "Бюджета за реклами включен ли е в цената?",
+        answer: `Не, бюджетът за реклами не е включен в цената – плащаш го директно на Meta (Facebook и Instagram). Препоръчваме старт от €${META_ADS_BUDGET}, което обикновено е достатъчно за първоначален тест на пазара. Ако искаш да тестваш повече продукти, може да вдигнеш бюджета – но най-добре е да се фокусираш върху най-печелившите.`,
       },
       {
         question: "Какво трябва да направя аз?",
@@ -188,6 +189,7 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
   },
   features: {
     showCaseStudy: false,
+    showResultsSection: true,
     showProcessStepsSection: true,
     showProcessStepsInBooking: false,
   },

@@ -1,8 +1,18 @@
-import Image from "next/image";
+"use client";
 
-export function CaseStudy() {
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+
+type CaseStudyProps = {
+  className?: string;
+};
+
+export function CaseStudy({ className }: CaseStudyProps) {
   return (
-    <section id="results" className="container mx-auto px-4 py-20 md:px-8 md:py-28">
+    <section
+      id="results"
+      className={cn("container mx-auto px-4 py-20 md:px-8 md:py-28", className)}
+    >
       <div className="mx-auto max-w-2xl text-center">
         <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent">
           <span className="h-1.5 w-1.5 rounded-full bg-accent" />
