@@ -5,8 +5,8 @@ import { ArrowRight } from "lucide-react";
 import { SiteLogo } from "@/components/layout/site-logo";
 import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
 import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
-import { GoogleDriveEmbed } from "@/components/videos/google-drive-embed";
-import { YoutubeEmbed } from "@/components/videos/youtube-embed";
+// import { GoogleDriveEmbed } from "@/components/videos/google-drive-embed";
+// import { YoutubeEmbed } from "@/components/videos/youtube-embed";
 import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
 import { landingContainerClass } from "@/components/services/service-detail-ready-store-v2/shared";
 import {
@@ -76,7 +76,7 @@ export function FunnelHero({ config }: FunnelHeroProps) {
             ) : null}
           </div>
 
-          {hero.video ? (
+          {/* {hero.video ? (
             <div
               data-animate-reveal
               className={cn("mx-auto mt-8 w-full sm:mt-10 md:mt-12", LANDING_REVEAL_CLASS)}
@@ -106,7 +106,7 @@ export function FunnelHero({ config }: FunnelHeroProps) {
                 />
               )}
             </div>
-          ) : null}
+          ) : null} */}
 
           <div
             data-animate-reveal
