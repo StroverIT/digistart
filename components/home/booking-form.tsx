@@ -1,5 +1,6 @@
 import ConsultationBookingForm from "@/components/consultation/consultation-booking-form";
 import { ProcessStepsContent } from "@/components/home/process-steps";
+import { Price } from "@/components/ui/price";
 import { cn } from "@/lib/utils";
 
 type BookingFormProps = {
@@ -21,6 +22,10 @@ type BookingFormProps = {
   notesPlaceholder?: string;
   showOnSiteOption?: boolean;
   showBadge?: boolean;
+  pricing?: {
+    originalPrice: number;
+    priceLabel: string;
+  };
 };
 
 export function BookingForm({
@@ -38,6 +43,7 @@ export function BookingForm({
   notesPlaceholder,
   showOnSiteOption = true,
   showBadge = true,
+  pricing,
   className,
 }: BookingFormProps = {}) {
   const showNotesField = Boolean(notesLabel);
@@ -69,6 +75,17 @@ export function BookingForm({
             >
               {title}
             </h2>
+            {pricing ? (
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <Price
+                  value={pricing.originalPrice}
+                  className="text-2xl text-destructive line-through decoration-destructive decoration-2 md:text-3xl"
+                />
+                <span className="font-heading text-2xl font-bold text-accent md:text-3xl">
+                  {pricing.priceLabel}
+                </span>
+              </div>
+            ) : null}
             <p className="mt-4 max-w-md text-muted-foreground md:text-lg">{description}</p>
 
             {showProcessSteps ? (

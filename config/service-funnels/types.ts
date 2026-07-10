@@ -19,6 +19,25 @@ export type ReadyStoreV2HeroConfig = {
   ctaHint: string;
 };
 
+export type SalesStagePathId = "starting" | "selling";
+
+export type SalesStagePasBlock = {
+  title: string;
+  description: string;
+};
+
+export type SalesStagePickerConfig = {
+  title: string;
+  options: Array<{ id: SalesStagePathId; label: string }>;
+  paths: Record<
+    SalesStagePathId,
+    {
+      problem: SalesStagePasBlock;
+      agitate: SalesStagePasBlock;
+    }
+  >;
+};
+
 export type ServiceFunnelWhoIsItFor = {
   title: string;
   subtitle: string;
@@ -97,26 +116,44 @@ type ServiceFunnelSharedFields = {
       notesPlaceholder?: string;
       showOnSiteOption?: boolean;
     };
+    pricing?: {
+      originalPrice: number;
+      priceLabel: string;
+    };
   };
   features?: {
     /** Renders Google/social case study block (default: true). */
     showCaseStudy?: boolean;
     /** Renders homepage Restyled results block after who-is-it-for (default: false). */
     showResultsSection?: boolean;
+    /** Renders Restyled results block immediately after hero, before who-is-it-for (default: false). */
+    showResultsAfterHero?: boolean;
+    /** Renders Restyled results block after the process steps section (default: false). */
+    showResultsAfterProcess?: boolean;
     /** Renders process steps as a standalone section before the offer (default: false). */
     showProcessStepsSection?: boolean;
     /** Renders process steps inside the booking card (default: true). */
     showProcessStepsInBooking?: boolean;
     /** Renders hero.description below subtitle (default: false). */
     showHeroDescription?: boolean;
+    /** Renders Google reviews card below hero CTA (default: true). */
+    showHeroGoogleReviews?: boolean;
+    /** Skips the mid-page booking card; CTAs point to #consultation (default: false). */
+    consultationOnlyEnd?: boolean;
+    /** Hides the doneForYou section (default: false). */
+    hideDoneForYouSection?: boolean;
   };
 };
 
 export type ServiceFunnelPasDefinition = ServiceFunnelSharedFields & {
   layout?: "pas";
+  salesStagePicker?: SalesStagePickerConfig;
   hero: {
+    eyebrow?: string;
     title: string;
-    subtitle: string;
+    /** When set, styles the matching title prefix (uppercase + underline). */
+    titleLead?: string;
+    subtitle?: string;
     description?: string;
     ctaLabel: string;
     video?:
@@ -135,7 +172,7 @@ export type ServiceFunnelPasDefinition = ServiceFunnelSharedFields & {
         };
   };
   whoIsItFor: ServiceFunnelWhoIsItFor;
-  doneForYou: {
+  doneForYou?: {
     title: string;
     description: string;
     items: string[];

@@ -11,13 +11,31 @@ import { cn } from "@/lib/utils";
 type SiteLogoProps = {
   className?: string;
   href?: string;
+  size?: "default" | "lg";
 };
 
-export function SiteLogo({ className, href = "/" }: SiteLogoProps) {
+const siteLogoSizes = {
+  default: {
+    image: "h-8",
+    title: "text-xl",
+    tagline: "text-[10px] tracking-[0.2em] sm:text-xs sm:tracking-[0.22em]",
+    gap: "gap-2",
+  },
+  lg: {
+    image: "h-12 w-auto sm:h-14",
+    title: "text-3xl sm:text-4xl",
+    tagline: "text-xs tracking-[0.32em] sm:text-sm sm:tracking-[0.36em]",
+    gap: "gap-3",
+  },
+} as const;
+
+export function SiteLogo({ className, href = "/", size = "default" }: SiteLogoProps) {
+  const styles = siteLogoSizes[size];
+
   return (
     <TransitionLink
       href={href}
-      className={cn("group flex items-center gap-2 rounded-lg", className)}
+      className={cn("group flex items-center rounded-lg", styles.gap, className)}
     >
       <Image
         src={SITE_LOGO_SRC}
@@ -25,14 +43,19 @@ export function SiteLogo({ className, href = "/" }: SiteLogoProps) {
         width={SITE_LOGO_WIDTH}
         height={SITE_LOGO_HEIGHT}
         sizes={SITE_LOGO_SIZES}
-        className="h-8 w-auto transition-transform group-hover:scale-110"
+        className={cn(styles.image, "w-auto transition-transform group-hover:scale-110")}
       />
       <span className="flex flex-col leading-tight">
-        <span className="text-xl font-bold tracking-tight">
+        <span className={cn(styles.title, "font-bold tracking-tight")}>
           <span className="text-accent">Digi</span>
           <span className="text-accent">Start</span>
         </span>
-        <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground sm:text-xs">
+        <span
+          className={cn(
+            styles.tagline,
+            "font-medium uppercase text-muted-foreground",
+          )}
+        >
           Easy Start
         </span>
       </span>

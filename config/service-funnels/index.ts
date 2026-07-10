@@ -1,3 +1,4 @@
+import { ONLINE_STORE_MASHINA_ZA_PRODAZHBI_FUNNEL } from "@/config/service-funnels/online-store-mashina-za-prodazhbi";
 import { ONLINE_STORE_START_SELLING_FUNNEL } from "@/config/service-funnels/online-store-start-selling";
 import { ONLINE_STORE_STOP_BEING_TECHIE_FUNNEL } from "@/config/service-funnels/online-store-stop-being-techie";
 import { SOCIAL_MEDIA_DONT_LOSE_TURNOVER_FUNNEL } from "@/config/service-funnels/social-media-dont-lose-turnover";
@@ -11,6 +12,7 @@ import { getServiceById, resolveServiceSlug } from "@/lib/data/services";
 const FUNNEL_DEFINITIONS = [
   SOCIAL_MEDIA_DONT_LOSE_TURNOVER_FUNNEL,
   ONLINE_STORE_START_SELLING_FUNNEL,
+  ONLINE_STORE_MASHINA_ZA_PRODAZHBI_FUNNEL,
   ONLINE_STORE_STOP_BEING_TECHIE_FUNNEL,
 ] as const;
 

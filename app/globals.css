@@ -64,6 +64,13 @@
     oklch(0.952 0.015 330) 0%, /* #F5ECF4 */
     oklch(0.925 0.042 155 / 0.4) 100% /* #D1EFDA66 */
   );
+  --funnel-lavender: #f8f7ff;
+  --gradient-funnel-hero: linear-gradient(
+    180deg,
+    var(--background) 0%,
+    oklch(1 0 0) 38%,
+    var(--funnel-lavender) 100%
+  );
   --shadow-soft: 0 4px 24px -8px oklch(0.32 0.16 320 / 0.15); /* #53006326 */
   --shadow-glow: 0 20px 60px -20px oklch(0.32 0.16 320 / 0.35); /* #53006359 */
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import Image from "next/image";
 import {
@@ -18,6 +19,7 @@ import {
   SITE_LOGO_SRC,
   SITE_LOGO_WIDTH,
 } from "@/lib/site-brand";
+import { isServiceFunnelPath } from "@/lib/service-funnels/path";
 import { cn } from "@/lib/utils";
 
 const services = [
@@ -81,9 +83,12 @@ function FooterNavLink({
 }
 
 export function Footer() {
+  const pathname = usePathname();
   const footerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    if (isServiceFunnelPath(pathname)) return;
+
     const root = footerRef.current;
     if (!root) return;
 
@@ -132,7 +137,11 @@ export function Footer() {
       cancelled = true;
       revert?.();
     };
-  }, []);
+  }, [pathname]);
+
+  if (isServiceFunnelPath(pathname)) {
+    return null;
+  }
 
   return (
     <footer ref={footerRef} className="relative border-t border-border/80">

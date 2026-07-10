@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 export const sectionWaveSvgClass = "block h-10 w-full sm:h-12 md:h-16";
 
 export const funnelWaveFills = {
-  lavender: "text-[#F8F7FF]",
+  lavender: "text-[var(--funnel-lavender)]",
   process: "text-[color-mix(in_oklch,var(--muted)_30%,var(--background))]",
   white: "text-white",
   faq: "text-[color-mix(in_oklch,var(--card)_40%,var(--background))]",

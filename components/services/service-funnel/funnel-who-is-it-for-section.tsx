@@ -90,6 +90,7 @@ type FunnelWhoIsItForSectionProps = {
   className?: string;
   funnelId?: string;
   endCta?: FunnelWhoIsItForEndCta;
+  compactPasImages?: boolean;
 };
 
 export function FunnelWhoIsItForSection({
@@ -100,6 +101,7 @@ export function FunnelWhoIsItForSection({
   className,
   funnelId,
   endCta,
+  compactPasImages = false,
 }: FunnelWhoIsItForSectionProps) {
   const { answer } = useCompetitorPlatformSelection(funnelId);
   const resolvedWhoIsItFor = useMemo(
@@ -126,33 +128,42 @@ export function FunnelWhoIsItForSection({
       aria-labelledby={`${sectionId}-heading`}
       className={cn(
         "scroll-mt-28 overflow-hidden pt-10 md:pt-12",
-        footer ? "pb-0" : "pb-10 md:pb-12",
-        className ?? "bg-[#F8F7FF]",
+        footer ? "pb-0" : compactPasImages ? "pb-12 md:pb-16 lg:pb-20" : "pb-10 md:pb-12",
+        className ?? "bg-[var(--funnel-lavender)]",
       )}
     >
       <div className="container mx-auto min-w-0 px-4 md:px-8">
         <div className={cn("mx-auto min-w-0", hasPasImages ? "max-w-6xl" : "max-w-5xl")}>
           <header data-animate-reveal className={cn("mx-auto max-w-2xl text-center", LANDING_REVEAL_CLASS)}>
-            <h2
-              id={`${sectionId}-heading`}
-              className="mt-3 font-heading text-3xl font-bold tracking-tight text-balance text-foreground md:text-4xl"
-            >
-              {title}
-            </h2>
-            {subtitle ? (
-              <p className="mt-3 text-base leading-relaxed text-muted-foreground md:text-lg">
-                {subtitle}
-              </p>
+            {title || subtitle ? (
+              <>
+                <h2
+                  id={`${sectionId}-heading`}
+                  className="mt-3 font-heading text-3xl font-bold tracking-tight text-balance text-foreground md:text-4xl"
+                >
+                  {title}
+                </h2>
+                {subtitle ? (
+                  <p className="mt-4 text-base leading-relaxed text-muted-foreground md:mt-5 md:text-lg">
+                    {subtitle}
+                  </p>
+                ) : null}
+              </>
             ) : null}
           </header>
 
           <div
             data-animate-grid
             className={cn(
-              "mt-10 min-w-0 md:mt-12",
+              "min-w-0",
               hasPasImages
-                ? "flex flex-col gap-14 lg:gap-20"
-                : "grid gap-5 sm:gap-6 md:grid-cols-2 md:gap-8",
+                ? cn(
+                    title || subtitle ? "mt-10 md:mt-12" : compactPasImages ? "mt-2 md:mt-4" : "mt-10 md:mt-12",
+                    compactPasImages
+                      ? "flex flex-col gap-16 lg:gap-24 xl:gap-28"
+                      : "flex flex-col gap-14 lg:gap-20",
+                  )
+                : "mt-10 grid gap-5 sm:gap-6 md:mt-12 md:grid-cols-2 md:gap-8 lg:gap-10",
             )}
           >
             {resolvedWhoIsItFor.items.map((item, index) => {
@@ -167,15 +178,19 @@ export function FunnelWhoIsItForSection({
                     key={`${item.badge ?? "item"}-${index}`}
                     data-animate-card
                     className={cn(
-                      "group grid min-w-0 items-center gap-8 overflow-hidden lg:grid-cols-2 lg:gap-16",
+                      "group grid min-w-0 items-center gap-8 overflow-hidden lg:grid-cols-2",
+                      compactPasImages ? "lg:gap-20 xl:gap-24" : "lg:gap-16",
                       LANDING_CARD_CLASS,
                     )}
                   >
                     <div
                       data-animate-card-copy
                       className={cn(
-                        "order-1 min-w-0 space-y-3 opacity-0 lg:py-4",
+                        "order-1 min-w-0 opacity-0 lg:py-4",
+                        compactPasImages ? "space-y-4 lg:space-y-5" : "space-y-3",
                         imageFirst ? "lg:order-2" : "lg:order-1",
+                        compactPasImages && !imageFirst && "lg:pl-10 xl:pl-16",
+                        compactPasImages && imageFirst && "lg:pr-10 xl:pr-16",
                       )}
                     >
                       <h3 className="font-heading text-xl font-semibold leading-snug text-foreground sm:text-2xl">
@@ -187,7 +202,10 @@ export function FunnelWhoIsItForSection({
                     <div
                       data-animate-card-image
                       className={cn(
-                        "relative order-2 aspect-square w-full min-w-0 max-w-full overflow-hidden rounded-2xl md:will-change-transform",
+                        "relative order-2 aspect-square w-full min-w-0 overflow-hidden rounded-2xl md:will-change-transform",
+                        compactPasImages
+                          ? "mx-auto max-w-[19rem] sm:max-w-[21rem] lg:max-w-[24rem]"
+                          : "max-w-full",
                         imageFirst ? "lg:order-1" : "lg:order-2",
                       )}
                     >
@@ -196,7 +214,11 @@ export function FunnelWhoIsItForSection({
                         alt={item.title}
                         fill
                         className="pointer-events-none object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.02]"
-                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        sizes={
+                          compactPasImages
+                            ? "(max-width: 1024px) 80vw, 384px"
+                            : "(max-width: 1024px) 100vw, 50vw"
+                        }
                       />
                     </div>
                   </article>
