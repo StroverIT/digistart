@@ -5,6 +5,8 @@ import { type RefObject, useEffect } from "react";
 export type CreativesAnimationOptions = {
   /** Skip horizontal slide/rotate on desktop cards (avoids overflow with wide illustrations). */
   disableHorizontalOffset?: boolean;
+  /** When false, the hook is a no-op (avoids conflicting with section-level card stagger). */
+  enabled?: boolean;
 };
 
 export function useCreativesAnimations(
@@ -12,6 +14,8 @@ export function useCreativesAnimations(
   options?: CreativesAnimationOptions,
 ) {
   useEffect(() => {
+    if (options?.enabled === false) return;
+
     const section = sectionRef.current;
     if (!section) return;
 

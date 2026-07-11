@@ -1,6 +1,7 @@
 import ConsultationBookingForm from "@/components/consultation/consultation-booking-form";
 import { ProcessStepsContent } from "@/components/home/process-steps";
 import { Price } from "@/components/ui/price";
+import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { cn } from "@/lib/utils";
 
 type BookingFormProps = {
@@ -26,6 +27,8 @@ type BookingFormProps = {
     originalPrice: number;
     priceLabel: string;
   };
+  /** Stagger title, pricing, description, and form when parent section scrolls into view. */
+  animateReveals?: boolean;
 };
 
 export function BookingForm({
@@ -45,8 +48,10 @@ export function BookingForm({
   showBadge = true,
   pricing,
   className,
+  animateReveals = false,
 }: BookingFormProps = {}) {
   const showNotesField = Boolean(notesLabel);
+  const revealClass = animateReveals ? LANDING_REVEAL_CLASS : undefined;
 
   return (
     <section
@@ -62,21 +67,32 @@ export function BookingForm({
         <div className="relative grid gap-10 p-6 md:p-10 lg:grid-cols-[1fr_1.15fr] lg:items-start lg:p-12">
           <div>
             {showBadge ? (
-              <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent">
+              <span
+                data-animate-reveal={animateReveals ? "" : undefined}
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent",
+                  revealClass,
+                )}
+              >
                 <span className="h-1.5 w-1.5 rounded-full bg-accent" />
                 Безплатна консултация
               </span>
             ) : null}
             <h2
+              data-animate-reveal={animateReveals ? "" : undefined}
               className={cn(
                 "font-heading text-3xl font-bold tracking-tight text-foreground md:text-5xl",
                 showBadge ? "mt-5" : undefined,
+                revealClass,
               )}
             >
               {title}
             </h2>
             {pricing ? (
-              <div className="mt-4 flex flex-wrap items-center gap-3">
+              <div
+                data-animate-reveal={animateReveals ? "" : undefined}
+                className={cn("mt-4 flex flex-wrap items-center gap-3", revealClass)}
+              >
                 <Price
                   value={pricing.originalPrice}
                   className="text-2xl text-destructive line-through decoration-destructive decoration-2 md:text-3xl"
@@ -86,7 +102,12 @@ export function BookingForm({
                 </span>
               </div>
             ) : null}
-            <p className="mt-4 max-w-md text-muted-foreground md:text-lg">{description}</p>
+            <p
+              data-animate-reveal={animateReveals ? "" : undefined}
+              className={cn("mt-4 max-w-md text-muted-foreground md:text-lg", revealClass)}
+            >
+              {description}
+            </p>
 
             {showProcessSteps ? (
               <div className="mt-10 border-t border-border/60 pt-10">
@@ -95,7 +116,10 @@ export function BookingForm({
             ) : null}
           </div>
 
-          <div className="p-2 md:p-4 lg:p-2">
+          <div
+            data-animate-reveal={animateReveals ? "" : undefined}
+            className={cn("p-2 md:p-4 lg:p-2", revealClass)}
+          >
             <ConsultationBookingForm
               source="public"
               sourcePage={sourcePage}

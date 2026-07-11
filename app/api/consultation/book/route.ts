@@ -91,20 +91,20 @@ export async function POST(req: Request) {
       createdAt: new Date().toISOString(),
     };
 
-    await saveConsultationBooking(bookingRecord);
-    const refreshed = await getConsultationBookings();
-    const saved = refreshed.find((booking) => booking.id === bookingRecord.id);
+    const saved = await saveConsultationBooking(bookingRecord);
 
     return NextResponse.json({
       booking: {
-        id: bookingRecord.id,
-        date: bookingRecord.date,
-        time: bookingRecord.time,
-        source: bookingRecord.source,
-        status: bookingRecord.status,
-        orderId: bookingRecord.orderId,
-        timezone: saved?.timezone ?? "Europe/Sofia",
-        meetUrl: saved?.meetUrl,
+        id: saved.id,
+        date: saved.date,
+        time: saved.time,
+        source: saved.source,
+        status: saved.status,
+        orderId: saved.orderId,
+        timezone: saved.timezone ?? "Europe/Sofia",
+        meetUrl: saved.meetUrl,
+        calendarUrl: saved.calendarUrl,
+        meetingType: saved.meetingType ?? "online",
       },
     });
   } catch (error) {

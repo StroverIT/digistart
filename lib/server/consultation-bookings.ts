@@ -387,7 +387,7 @@ async function sendConsultationEmails(booking: ConsultationRecord) {
 
 export async function saveConsultationBooking(
   booking: ConsultationRecord
-): Promise<void> {
+): Promise<ConsultationRecord> {
   const meetingType = booking.meetingType ?? "online";
   const calendarData = await createCalendarEvent({
     ...booking,
@@ -441,4 +441,6 @@ export async function saveConsultationBooking(
   await sendConsultationEmails({
     ...bookingWithMeet,
   }).catch(() => undefined);
+
+  return bookingWithMeet;
 }

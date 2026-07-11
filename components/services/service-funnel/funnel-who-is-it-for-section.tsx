@@ -122,8 +122,17 @@ export function FunnelWhoIsItForSection({
   const hasPasImages = resolvedWhoIsItFor.items.some((item) => item.image);
   const sectionRef = useRef<HTMLElement>(null);
 
-  useSectionScrollAnimations(sectionRef, { staggerReveal: 0.1 });
-  useCreativesAnimations(sectionRef, { disableHorizontalOffset: hasPasImages });
+  useSectionScrollAnimations(sectionRef, {
+    staggerReveal: 0.1,
+    staggerCard: 0.12,
+    skipCards: hasPasImages,
+    cardsOnViewIndividually: !hasPasImages,
+    itemStart: "top 85%",
+  });
+  useCreativesAnimations(sectionRef, {
+    disableHorizontalOffset: hasPasImages,
+    enabled: hasPasImages,
+  });
 
   return (
     <section

@@ -101,8 +101,9 @@ function VerticalProcessSteps({
         return (
           <li key={step.title}>
             <article
+              data-animate-step
               className={cn(
-                "group relative overflow-hidden rounded-2xl transition-shadow duration-300 md:rounded-3xl",
+                "group relative overflow-hidden rounded-2xl opacity-0 translate-y-10 transition-shadow duration-300 md:rounded-3xl",
                 dark
                   ? "border border-primary/30 bg-background/5 p-5 backdrop-blur-sm hover:border-primary/45 md:p-7"
                   : "border border-border/70 bg-card shadow-[var(--shadow-soft)] ring-1 ring-foreground/[0.03] hover:shadow-[var(--shadow-glow)]",
@@ -214,8 +215,9 @@ function GridProcessSteps({
           return (
             <li key={step.title}>
               <article
+                data-animate-step
                 className={cn(
-                  "relative h-full p-8 md:p-10",
+                  "relative h-full p-8 opacity-0 translate-y-10 md:p-10",
                   dark
                     ? isLast && "bg-primary/15"
                     : isLast &&
@@ -265,7 +267,11 @@ export function FunnelProcessStepsSection({ config, ctaHref }: FunnelProcessStep
   const stepCount = processSteps.steps.length;
   const useVerticalLayout = stepCount >= 5;
 
-  useSectionScrollAnimations(sectionRef, { staggerReveal: 0.08 });
+  useSectionScrollAnimations(sectionRef, {
+    staggerReveal: 0.08,
+    stepsOnViewIndividually: true,
+    itemStart: "top 85%",
+  });
 
   return (
     <section
@@ -302,9 +308,8 @@ export function FunnelProcessStepsSection({ config, ctaHref }: FunnelProcessStep
         </header>
 
         <div
-          data-animate-reveal
           className={cn(
-            "mx-auto opacity-0 translate-y-10",
+            "mx-auto",
             useVerticalLayout ? "mt-10 max-w-3xl md:mt-12" : "mt-10 max-w-6xl md:mt-12",
           )}
         >

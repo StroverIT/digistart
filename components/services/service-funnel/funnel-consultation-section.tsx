@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { BookingForm } from "@/components/home/booking-form";
-import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
 import type { ServiceFunnelPasConfig } from "@/config/service-funnels/types";
 import { cn } from "@/lib/utils";
@@ -27,11 +26,11 @@ export function FunnelConsultationSection({ config, className }: FunnelConsultat
       ref={sectionRef}
       className="relative z-20 -mt-10 bg-background pt-14 sm:-mt-12 sm:pt-16 md:-mt-16 md:pt-24"
     >
-      <div data-animate-reveal className={LANDING_REVEAL_CLASS}>
-        <BookingForm
-          sectionId="consultation"
-          showBadge={false}
-          title={consultation.formTitle}
+      <BookingForm
+        sectionId="consultation"
+        showBadge={false}
+        animateReveals
+        title={consultation.formTitle}
           description={
             consultation.description ??
             "Нека обсъдим всичко което те притеснява за да имаш плавен старт"
@@ -47,8 +46,7 @@ export function FunnelConsultationSection({ config, className }: FunnelConsultat
           showOnSiteOption={consultation.booking?.showOnSiteOption ?? true}
           pricing={consultation.pricing}
           className={cn("pt-0 md:pt-0", className)}
-        />
-      </div>
+      />
     </div>
   );
 }

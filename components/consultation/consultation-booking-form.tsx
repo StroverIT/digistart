@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { flushAnalyticsEventsAsync, trackAnalyticsEvent } from "@/lib/analytics/tracker";
 import { trackMetaLead } from "@/lib/analytics/meta-pixel";
 import { toast } from "sonner";
+import { writeConsultationLeadSuccess } from "@/lib/consultation/lead-success";
 
 type SlotDay = {
   date: string;
@@ -25,6 +27,10 @@ type BookedPayload = {
   source: "public" | "checkout";
   status: "scheduled";
   orderId?: string;
+  timezone?: string;
+  meetUrl?: string;
+  calendarUrl?: string;
+  meetingType?: "online" | "in_person";
 };
 
 type Props = {
@@ -57,6 +63,7 @@ type Props = {
   };
   orderId?: string;
   onBooked?: (booking: BookedPayload) => void;
+  successRedirectPath?: string;
 };
 
 function formatDisplayDate(value: string, variant: "card" | "embedded") {
@@ -89,7 +96,9 @@ export default function ConsultationBookingForm({
   initialValues,
   orderId,
   onBooked,
+  successRedirectPath = source === "public" ? "/thank-you-lead" : undefined,
 }: Props) {
+  const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const animatedSectionsRef = useRef(new Set<string>());
   const isEmbedded = variant === "embedded";
@@ -334,6 +343,22 @@ export default function ConsultationBookingForm({
       }
 
       await flushAnalyticsEventsAsync();
+      onBooked?.(booking);
+
+      if (successRedirectPath) {
+        writeConsultationLeadSuccess({
+          id: booking.id,
+          date: booking.date,
+          time: booking.time,
+          timezone: booking.timezone ?? "Europe/Sofia",
+          calendarUrl: booking.calendarUrl,
+          meetUrl: booking.meetUrl,
+          meetingType: booking.meetingType,
+        });
+        router.push(successRedirectPath);
+        return;
+      }
+
       toast.success("Консултацията е запазена успешно.");
       setLocallyDisabledSlots((prev) => {
         const next = { ...prev };
@@ -351,7 +376,6 @@ export default function ConsultationBookingForm({
         address: "",
       });
       setMeetingType("online");
-      onBooked?.(booking);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Неуспешно запазване.";
       setError(message);

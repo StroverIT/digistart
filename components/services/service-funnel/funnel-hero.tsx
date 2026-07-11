@@ -78,7 +78,7 @@ export function FunnelHero({ config }: FunnelHeroProps) {
     [answer, salesStagePicker],
   );
 
-  useSectionScrollAnimations(heroSectionRef, { staggerReveal: 0.1 });
+  useSectionScrollAnimations(heroSectionRef, { staggerReveal: 0.1, animateOnMount: true });
 
   const whoIsItForFooter: ReactNode =
     showResultsSection && !showResultsAfterProcess ? (
