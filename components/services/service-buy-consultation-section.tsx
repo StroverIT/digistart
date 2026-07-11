@@ -79,6 +79,7 @@ export function ServiceBuyConsultationFormSection({
           }
           showProcessSteps={false}
           sourcePage={consultation.sourcePage}
+          pagePath={consultation.analyticsPath}
           analyticsPath={consultation.analyticsPath}
           analyticsCtaId={consultation.analyticsCtaId}
           metaLead={consultation.metaLead}

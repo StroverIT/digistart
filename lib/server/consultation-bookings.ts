@@ -24,6 +24,7 @@ export interface ConsultationRecord {
   time: string;
   source: "public" | "checkout";
   sourcePage?: string;
+  pagePath?: string;
   status: "scheduled" | "attended" | "absent" | "cancelled";
   orderId?: string;
   meetingType?: "online" | "in_person";
@@ -109,6 +110,8 @@ export async function getConsultationBookings(): Promise<ConsultationRecord[]> {
       date: row.date,
       time: row.time,
       source: row.source as ConsultationRecord["source"],
+      sourcePage: row.sourcePage ?? undefined,
+      pagePath: row.pagePath ?? undefined,
       status: normalizeConsultationStatus(row.status),
       orderId: row.orderId ?? undefined,
       meetingType: (row.meetingType as ConsultationRecord["meetingType"]) ?? "online",
@@ -142,6 +145,8 @@ export async function updateConsultationBookingStatus(
     date: updated.date,
     time: updated.time,
     source: updated.source as ConsultationRecord["source"],
+    sourcePage: updated.sourcePage ?? undefined,
+    pagePath: updated.pagePath ?? undefined,
     status: normalizeConsultationStatus(updated.status),
     orderId: updated.orderId ?? undefined,
     meetingType: (updated.meetingType as ConsultationRecord["meetingType"]) ?? "online",
@@ -415,6 +420,8 @@ export async function saveConsultationBooking(
       date: bookingWithMeet.date,
       time: bookingWithMeet.time,
       source: bookingWithMeet.source,
+      sourcePage: bookingWithMeet.sourcePage,
+      pagePath: bookingWithMeet.pagePath,
       status: bookingWithMeet.status,
       orderId: bookingWithMeet.orderId,
       meetingType: bookingWithMeet.meetingType ?? "online",

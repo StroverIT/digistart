@@ -69,6 +69,7 @@ export type AnalyticsAdminResponse = {
   surveyStats: SurveyAnalyticsStat[];
   funnelCompetitorStats: FunnelCompetitorStat[];
   funnelAudienceViews: FunnelAudienceViewsAggregate;
+  consultationSources: ConsultationSourceAggregate;
   surveyCombinations: SurveyCombinationsAggregate;
   checkoutFunnel: CheckoutFunnelAggregate;
 };
@@ -143,6 +144,23 @@ export type FunnelAudienceViewsAggregate = {
   byFunnel: FunnelAudienceViewsStat[];
   dailyTotals: { date: string; totalViews: number }[];
   dailyBySegment: { date: string; segment: string; views: number }[];
+};
+
+export type ConsultationSourceStat = {
+  key: string;
+  label: string;
+  pagePath?: string;
+  segment?: string;
+  bookings: number;
+};
+
+export type ConsultationSourceAggregate = {
+  allTimeTotal: number;
+  lastDaysTotal: number;
+  bySegment: { segment: string; label: string; bookings: number }[];
+  byPage: ConsultationSourceStat[];
+  dailyTotals: { date: string; totalBookings: number }[];
+  dailyBySegment: { date: string; segment: string; bookings: number }[];
 };
 
 export type SurveyComboStat = {

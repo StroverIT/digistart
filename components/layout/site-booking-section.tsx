@@ -19,6 +19,7 @@ export function SiteBookingSection() {
   return (
     <BookingForm
       sourcePage={config.sourcePage}
+      pagePath={config.pagePath}
       analyticsPath={config.analyticsPath}
       analyticsCtaId={config.analyticsCtaId}
     />

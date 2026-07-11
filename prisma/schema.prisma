@@ -226,6 +226,8 @@ model ConsultationBooking {
   date          String
   time          String
   source        String
+  sourcePage    String?
+  pagePath      String?
   status        String
   orderId       String?
   meetingType   String    @default("online")

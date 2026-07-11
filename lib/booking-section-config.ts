@@ -1,5 +1,6 @@
 export type BookingSectionConfig = {
   sourcePage?: string;
+  pagePath: string;
   analyticsPath: string;
   analyticsCtaId: string;
 };
@@ -7,26 +8,31 @@ export type BookingSectionConfig = {
 const SERVICE_BOOKING_CONFIG: Record<string, BookingSectionConfig> = {
   "/services/social-media": {
     sourcePage: "Социални мрежи (/services/social-media)",
+    pagePath: "/services/social-media",
     analyticsPath: "/services/social-media",
     analyticsCtaId: "social_media_booking_submit",
   },
   "/services/online-store": {
     sourcePage: "Онлайн магазин (/services/online-store)",
+    pagePath: "/services/online-store",
     analyticsPath: "/services/online-store",
     analyticsCtaId: "online_store_booking_submit",
   },
   "/services/google-business": {
     sourcePage: "Google Business (/services/google-business)",
+    pagePath: "/services/google-business",
     analyticsPath: "/services/google-business",
     analyticsCtaId: "google_business_booking_submit",
   },
   "/services/ads": {
     sourcePage: "Реклами (/services/ads)",
+    pagePath: "/services/ads",
     analyticsPath: "/services/ads",
     analyticsCtaId: "ads_booking_submit",
   },
   "/services/ai-automation": {
     sourcePage: "AI Automation (/services/ai-automation)",
+    pagePath: "/services/ai-automation",
     analyticsPath: "/services/ai-automation",
     analyticsCtaId: "ai_automation_booking_submit",
   },
@@ -42,6 +48,7 @@ export function getBookingSectionConfig(pathname: string): BookingSectionConfig 
 
   return {
     sourcePage: pathname === "/" ? undefined : `Страница (${pathname})`,
+    pagePath: pathname || "/",
     analyticsPath: pathname || "/",
     analyticsCtaId: `${slugifyPath(pathname)}_booking_submit`,
   };

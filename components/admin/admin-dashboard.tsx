@@ -29,6 +29,7 @@ import { DashboardSectionHeading } from "@/components/admin/dashboard-section-he
 import { UserDecisionsPanel } from "@/components/admin/user-decisions-panel";
 import { CtaClicksPanel } from "@/components/admin/cta-clicks-panel";
 import { FunnelAudienceViewsPanel } from "@/components/admin/funnel-audience-views-panel";
+import { ConsultationSourcesPanel } from "@/components/admin/consultation-sources-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const DASHBOARD_TABS = [
@@ -110,6 +111,14 @@ export function AdminDashboard() {
       dailyTotals: [],
       dailyBySegment: [],
     },
+    consultationSources: {
+      allTimeTotal: 0,
+      lastDaysTotal: 0,
+      bySegment: [],
+      byPage: [],
+      dailyTotals: [],
+      dailyBySegment: [],
+    },
     surveyCombinations: {
       byCombo: [],
       dailyTotals: [],
@@ -171,6 +180,14 @@ export function AdminDashboard() {
               lastDaysTotal: 0,
               bySegment: [],
               byFunnel: [],
+              dailyTotals: [],
+              dailyBySegment: [],
+            },
+            consultationSources: {
+              allTimeTotal: 0,
+              lastDaysTotal: 0,
+              bySegment: [],
+              byPage: [],
               dailyTotals: [],
               dailyBySegment: [],
             },
@@ -695,8 +712,9 @@ export function AdminDashboard() {
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <FunnelAudienceViewsPanel stats={analytics.funnelAudienceViews} />
-        <UserDecisionsPanel funnelCompetitorStats={analytics.funnelCompetitorStats} />
+        <ConsultationSourcesPanel stats={analytics.consultationSources} />
       </div>
+      <UserDecisionsPanel funnelCompetitorStats={analytics.funnelCompetitorStats} />
 
         </TabsContent>
 

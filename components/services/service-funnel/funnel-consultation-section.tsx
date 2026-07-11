@@ -37,6 +37,7 @@ export function FunnelConsultationSection({ config, className }: FunnelConsultat
           }
           showProcessSteps={false}
           sourcePage={sourcePage}
+          pagePath={pagePath}
           analyticsPath={pagePath}
           analyticsCtaId={consultation.analyticsCtaId}
           metaLead={consultation.metaLead ?? metaLead}

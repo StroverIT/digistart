@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 type BookingFormProps = {
   sourcePage?: string;
+  pagePath?: string;
   sectionId?: string;
   analyticsPath?: string;
   analyticsCtaId?: string;
@@ -33,6 +34,7 @@ type BookingFormProps = {
 
 export function BookingForm({
   sourcePage,
+  pagePath,
   sectionId = "booking",
   analyticsPath = "/",
   analyticsCtaId = "home_booking_submit",
@@ -123,6 +125,7 @@ export function BookingForm({
             <ConsultationBookingForm
               source="public"
               sourcePage={sourcePage}
+              pagePath={pagePath}
               variant="embedded"
               showCompanyField={false}
               showNotesField={showNotesField}

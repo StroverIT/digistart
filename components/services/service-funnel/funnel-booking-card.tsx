@@ -69,6 +69,7 @@ export function FunnelBookingCard({ config }: FunnelBookingCardProps) {
               <ConsultationBookingForm
                 source="public"
                 sourcePage={sourcePage}
+                pagePath={pagePath}
                 variant="embedded"
                 showCompanyField={false}
                 showSocialProfileToggle={booking?.showSocialProfileToggle}

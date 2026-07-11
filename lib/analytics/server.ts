@@ -11,12 +11,15 @@ import {
   type CompetitorPlatform,
 } from "@/lib/funnel/competitor-platform";
 import { SERVICE_FUNNELS } from "@/config/service-funnels";
+import { getFunnelByPathname } from "@/lib/service-funnels/path";
 import type { FunnelAudienceSegment } from "@/config/service-funnels/types";
 import {
   ANALYTICS_EVENT_TYPES,
   type AnalyticsAdminResponse,
   type AnalyticsEventPayload,
   type CheckoutFunnelAggregate,
+  type ConsultationSourceAggregate,
+  type ConsultationSourceStat,
   type CtaAnalyticsStats,
   type DailyAnalyticsStats,
   type PageAnalyticsStats,
@@ -553,6 +556,129 @@ function buildFunnelAudienceViewStats(rows: AnalyticsRow[], lastDays = 30): Funn
   };
 }
 
+const CONSULTATION_SOURCE_LABELS: Record<string, string> = {
+  checkout: "Checkout",
+  public: "Публична форма",
+};
+
+function resolveConsultationSourceLabel(
+  pagePath?: string | null,
+  sourcePage?: string | null,
+  source?: string,
+): string {
+  if (pagePath) {
+    const funnel = getFunnelByPathname(pagePath);
+    if (funnel) return funnel.adminLabel;
+  }
+
+  if (sourcePage) return sourcePage;
+  if (pagePath) return pagePath;
+  if (source && source in CONSULTATION_SOURCE_LABELS) {
+    return CONSULTATION_SOURCE_LABELS[source];
+  }
+
+  return source ?? "Неизвестен източник";
+}
+
+function resolveConsultationSegment(pagePath?: string | null): string | undefined {
+  if (!pagePath) return undefined;
+  const funnel = getFunnelByPathname(pagePath);
+  return funnel?.audienceSegment;
+}
+
+const EMPTY_CONSULTATION_SOURCES: ConsultationSourceAggregate = {
+  allTimeTotal: 0,
+  lastDaysTotal: 0,
+  bySegment: [],
+  byPage: [],
+  dailyTotals: [],
+  dailyBySegment: [],
+};
+
+async function buildConsultationSourceStats(lastDays = 30): Promise<ConsultationSourceAggregate> {
+  const rows = await prisma.consultationBooking.findMany({
+    where: { status: { not: "cancelled" } },
+    select: {
+      createdAt: true,
+      source: true,
+      sourcePage: true,
+      pagePath: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (rows.length === 0) return EMPTY_CONSULTATION_SOURCES;
+
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - lastDays);
+  cutoff.setHours(0, 0, 0, 0);
+
+  const byPageKey = new Map<string, ConsultationSourceStat>();
+  const bySegmentKey = new Map<string, { segment: string; label: string; bookings: number }>();
+  const dailyTotals = new Map<string, number>();
+  const dailyBySegment = new Map<string, number>();
+
+  let allTimeTotal = 0;
+  let lastDaysTotal = 0;
+
+  for (const row of rows) {
+    const pagePath = row.pagePath ?? undefined;
+    const sourcePage = row.sourcePage ?? undefined;
+    const segment = resolveConsultationSegment(pagePath);
+    const label = resolveConsultationSourceLabel(pagePath, sourcePage, row.source);
+    const key = pagePath ?? sourcePage ?? row.source;
+    const date = row.createdAt.toISOString().split("T")[0];
+
+    allTimeTotal += 1;
+    if (row.createdAt >= cutoff) lastDaysTotal += 1;
+
+    dailyTotals.set(date, (dailyTotals.get(date) ?? 0) + 1);
+    if (segment) {
+      const dailySegmentKey = `${date}::${segment}`;
+      dailyBySegment.set(dailySegmentKey, (dailyBySegment.get(dailySegmentKey) ?? 0) + 1);
+
+      const segmentLabel = AUDIENCE_SEGMENT_LABELS[segment as FunnelAudienceSegment] ?? segment;
+      const existingSegment = bySegmentKey.get(segment) ?? {
+        segment,
+        label: segmentLabel,
+        bookings: 0,
+      };
+      existingSegment.bookings += 1;
+      bySegmentKey.set(segment, existingSegment);
+    }
+
+    const existingPage = byPageKey.get(key) ?? {
+      key,
+      label,
+      pagePath,
+      segment,
+      bookings: 0,
+    };
+    existingPage.bookings += 1;
+    byPageKey.set(key, existingPage);
+  }
+
+  return {
+    allTimeTotal,
+    lastDaysTotal,
+    bySegment: Array.from(bySegmentKey.values()).sort((a, b) => b.bookings - a.bookings),
+    byPage: Array.from(byPageKey.values()).sort((a, b) => b.bookings - a.bookings),
+    dailyTotals: Array.from(dailyTotals.entries())
+      .map(([date, totalBookings]) => ({ date, totalBookings }))
+      .sort((a, b) => a.date.localeCompare(b.date)),
+    dailyBySegment: Array.from(dailyBySegment.entries())
+      .map(([key, bookings]) => {
+        const sep = key.indexOf("::");
+        return {
+          date: key.slice(0, sep),
+          segment: key.slice(sep + 2),
+          bookings,
+        };
+      })
+      .sort((a, b) => a.date.localeCompare(b.date) || a.segment.localeCompare(b.segment)),
+  };
+}
+
 const EMPTY_SURVEY_COMBINATIONS: SurveyCombinationsAggregate = {
   byCombo: [],
   dailyTotals: [],
@@ -806,6 +932,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
   const surveyStats = buildSurveyStats(rows);
   const funnelCompetitorStats = buildFunnelCompetitorStats(rows);
   const funnelAudienceViews = buildFunnelAudienceViewStats(rows, 30);
+  const consultationSources = await buildConsultationSourceStats(30);
   const surveyCombinations = buildSurveyCombinationStats(rows);
   const checkoutFunnel = buildCheckoutFunnelStats(rows, 30);
 
@@ -824,6 +951,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     surveyStats,
     funnelCompetitorStats,
     funnelAudienceViews,
+    consultationSources,
     surveyCombinations,
     checkoutFunnel,
   };

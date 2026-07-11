@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { formatConsultationSourceLabel } from "@/lib/consultation/source-label";
+
 type ConsultationStatus = "scheduled" | "attended" | "absent" | "cancelled";
 type VisibleStatus = "scheduled" | "attended" | "absent";
 
@@ -25,6 +27,8 @@ type ConsultationItem = {
   date: string;
   time: string;
   source: "public" | "checkout";
+  sourcePage?: string;
+  pagePath?: string;
   status: ConsultationStatus;
   orderId?: string;
   createdAt: string;
@@ -213,7 +217,12 @@ export default function ConsultationsTable({
                       <span className="text-muted-foreground">—</span>
                     )}
                   </td>
-                  <td className="py-3 px-4 text-sm">{consultation.source}</td>
+                  <td className="py-3 px-4 text-sm">
+                    <div>{formatConsultationSourceLabel(consultation.sourcePage, consultation.pagePath, consultation.source)}</div>
+                    {consultation.pagePath ? (
+                      <div className="text-xs text-muted-foreground">{consultation.pagePath}</div>
+                    ) : null}
+                  </td>
                   <td className="py-3 px-4 text-sm">
                     <Select
                       value={consultation.status as VisibleStatus}
