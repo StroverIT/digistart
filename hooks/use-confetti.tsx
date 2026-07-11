@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { cn } from "@/lib/utils";
 
 const CONFETTI_COUNT = 50;
 const CONFETTI_COLORS = [
@@ -17,10 +18,17 @@ const CONFETTI_COLORS = [
   "#fdcb6e",
 ];
 
-export function useConfetti() {
+type ConfettiLayerProps = {
+  active?: boolean;
+  className?: string;
+};
+
+export function ConfettiLayer({ active = true, className }: ConfettiLayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!active) return;
+
     const container = containerRef.current;
     if (!container) return;
 
@@ -33,8 +41,9 @@ export function useConfetti() {
       el.style.height = `${size * 0.6}px`;
       el.style.backgroundColor =
         CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
-      el.style.left = `${Math.random() * 100}%`;
-      el.style.top = "-20px";
+      el.style.left = `${Math.random() * 100}vw`;
+      el.style.top = "-24px";
+      el.style.zIndex = "1";
       container.appendChild(el);
 
       return {
@@ -46,7 +55,7 @@ export function useConfetti() {
 
     pieces.forEach(({ el, delay, rotation }) => {
       gsap.to(el, {
-        y: window.innerHeight + 100,
+        y: window.innerHeight + 120,
         x: `+=${Math.random() * 200 - 100}`,
         rotation: rotation + Math.random() * 720 - 360,
         duration: 3 + Math.random() * 5,
@@ -62,17 +71,20 @@ export function useConfetti() {
 
     return () => {
       window.clearTimeout(timeoutId);
+      pieces.forEach(({ el }) => gsap.killTweensOf(el));
       pieces.forEach(({ el }) => el.remove());
     };
-  }, []);
+  }, [active]);
 
-  const ConfettiRenderer = () => (
+  return (
     <div
       ref={containerRef}
-      className="pointer-events-none absolute inset-0 overflow-hidden"
+      className={cn("pointer-events-none fixed inset-0 overflow-hidden", className)}
       aria-hidden
     />
   );
+}
 
-  return { ConfettiRenderer };
+export function useConfetti() {
+  return { ConfettiRenderer: ConfettiLayer };
 }

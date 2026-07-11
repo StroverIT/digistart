@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import gsap from "gsap";
+import { useTransitionRouter } from "@/components/transitions/useTransitionRouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -98,7 +98,7 @@ export default function ConsultationBookingForm({
   onBooked,
   successRedirectPath = source === "public" ? "/thank-you-lead" : undefined,
 }: Props) {
-  const router = useRouter();
+  const { router, startLoadingOverlay, cancelLoadingOverlay } = useTransitionRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const animatedSectionsRef = useRef(new Set<string>());
   const isEmbedded = variant === "embedded";
@@ -292,6 +292,11 @@ export default function ConsultationBookingForm({
   };
 
   const handleSubmit = async () => {
+    const willRedirect = Boolean(successRedirectPath);
+    if (willRedirect) {
+      startLoadingOverlay();
+    }
+
     setIsSubmitting(true);
     setError("");
 
@@ -377,6 +382,9 @@ export default function ConsultationBookingForm({
       });
       setMeetingType("online");
     } catch (err) {
+      if (willRedirect) {
+        cancelLoadingOverlay();
+      }
       const message = err instanceof Error ? err.message : "Неуспешно запазване.";
       setError(message);
     } finally {

@@ -5,8 +5,12 @@ import { useCallback } from "react";
 
 export const useTransitionRouter = () => {
   const router = useRouter();
-  const { playExit, setPendingNavigation, isNavigationLocked } =
-    usePageTransition();
+  const {
+    playExit,
+    playEnter,
+    setPendingNavigation,
+    isNavigationLocked,
+  } = usePageTransition();
 
   const push = useCallback(
     (href: string) => {
@@ -20,5 +24,24 @@ export const useTransitionRouter = () => {
     [router, playExit, setPendingNavigation, isNavigationLocked],
   );
 
-  return { push, router };
+  const startLoadingOverlay = useCallback(() => {
+    if (isNavigationLocked()) return false;
+
+    setPendingNavigation(true);
+    playExit(() => {});
+    return true;
+  }, [playExit, setPendingNavigation, isNavigationLocked]);
+
+  const cancelLoadingOverlay = useCallback(() => {
+    setPendingNavigation(false);
+    playEnter();
+  }, [playEnter, setPendingNavigation]);
+
+  return {
+    push,
+    router,
+    startLoadingOverlay,
+    cancelLoadingOverlay,
+    isNavigationLocked,
+  };
 };
