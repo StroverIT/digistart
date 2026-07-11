@@ -5,6 +5,11 @@ export const SALES_STAGE_PATHS = ["starting", "selling"] as const;
 
 export type SalesStagePathId = (typeof SALES_STAGE_PATHS)[number];
 
+export const SALES_STAGE_PATH_LABELS: Record<SalesStagePathId, string> = {
+  starting: "Искам да продавам",
+  selling: "Вече продавам",
+};
+
 export type SalesStageAnswer = {
   pathId: SalesStagePathId;
   answeredAt: string;

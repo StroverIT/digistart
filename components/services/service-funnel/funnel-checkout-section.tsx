@@ -8,6 +8,7 @@ import {
   funnelWaveFills,
   SectionWave,
 } from "@/components/services/service-funnel/section-wave";
+import { FunnelScrollCtaLink } from "@/components/services/service-funnel/funnel-scroll-cta-link";
 import { ServiceBuySection } from "@/components/services/service-buy-section";
 import { landingContainerClass } from "@/components/services/service-detail-ready-store-v2/shared";
 import type { ServiceFunnelPasConfig } from "@/config/service-funnels/types";
@@ -140,12 +141,14 @@ export function FunnelCheckoutSection({ config }: FunnelCheckoutSectionProps) {
             <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
               {consultation.promptTitle}
             </h2>
-            <a
+            <FunnelScrollCtaLink
+              config={config}
+              section="checkout_consultation_prompt"
               href="#consultation"
               className="mt-4 inline-flex h-12 items-center justify-center rounded-full border border-border bg-card px-8 text-base font-semibold text-foreground shadow-sm transition-transform hover:scale-[1.02] motion-reduce:hover:scale-100"
             >
               {consultation.promptCtaLabel}
-            </a>
+            </FunnelScrollCtaLink>
           </div>
         ) : null}
       </div>

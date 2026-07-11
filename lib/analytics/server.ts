@@ -11,6 +11,11 @@ import {
   type CompetitorPlatform,
 } from "@/lib/funnel/competitor-platform";
 import {
+  SALES_STAGE_PATH_LABELS,
+  type SalesStagePathId,
+} from "@/lib/funnel/sales-stage";
+import { getFunnelById } from "@/config/service-funnels";
+import {
   ANALYTICS_EVENT_TYPES,
   type AnalyticsAdminResponse,
   type AnalyticsEventPayload,
@@ -22,6 +27,8 @@ import {
   type UtmDailyStats,
   type SurveyAnalyticsStat,
   type FunnelCompetitorStat,
+  type FunnelSalesStageAggregate,
+  type FunnelSalesStageStat,
   type SurveyCombinationsAggregate,
   type UtmLandingEventPayload,
   type UtmMonthlyStats,
@@ -444,6 +451,98 @@ function buildFunnelCompetitorStats(rows: AnalyticsRow[]): FunnelCompetitorStat[
   return Array.from(byKey.values()).sort((a, b) => b.count - a.count);
 }
 
+function resolveSalesStageLabel(funnelId: string, pathId: string): string {
+  const funnel = getFunnelById(funnelId);
+  const option = funnel && "salesStagePicker" in funnel
+    ? funnel.salesStagePicker?.options.find((entry) => entry.id === pathId)
+    : undefined;
+
+  if (option) return option.label;
+
+  if (pathId in SALES_STAGE_PATH_LABELS) {
+    return SALES_STAGE_PATH_LABELS[pathId as SalesStagePathId];
+  }
+
+  return pathId;
+}
+
+const EMPTY_FUNNEL_SALES_STAGE: FunnelSalesStageAggregate = {
+  allTimeTotal: 0,
+  lastDaysTotal: 0,
+  byPath: [],
+  byFunnel: [],
+  dailyTotals: [],
+  dailyByPath: [],
+};
+
+function buildFunnelSalesStageStats(rows: AnalyticsRow[], lastDays = 30): FunnelSalesStageAggregate {
+  const selectionRows = rows.filter((row) => row.eventType === "funnel_sales_stage_selection");
+  if (selectionRows.length === 0) return EMPTY_FUNNEL_SALES_STAGE;
+
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - lastDays);
+  cutoff.setHours(0, 0, 0, 0);
+
+  const byFunnelKey = new Map<string, FunnelSalesStageStat>();
+  const byPathKey = new Map<string, { pathId: string; label: string; count: number }>();
+  const dailyTotals = new Map<string, number>();
+  const dailyByPath = new Map<string, number>();
+
+  let allTimeTotal = 0;
+  let lastDaysTotal = 0;
+
+  for (const row of selectionRows) {
+    const metadata = (row.metadata ?? {}) as Record<string, unknown>;
+    const funnelId = String(metadata.funnel_id ?? "").trim();
+    const pathId = String(metadata.path_id ?? "").trim();
+    if (!funnelId || !pathId) continue;
+
+    const label = resolveSalesStageLabel(funnelId, pathId);
+    const date = row.createdAt.toISOString().split("T")[0];
+
+    allTimeTotal += 1;
+    if (row.createdAt >= cutoff) lastDaysTotal += 1;
+
+    dailyTotals.set(date, (dailyTotals.get(date) ?? 0) + 1);
+    const dailyPathKey = `${date}::${pathId}`;
+    dailyByPath.set(dailyPathKey, (dailyByPath.get(dailyPathKey) ?? 0) + 1);
+
+    const funnelStatKey = `${funnelId}::${pathId}`;
+    const existingFunnel = byFunnelKey.get(funnelStatKey) ?? {
+      funnelId,
+      pathId,
+      label,
+      count: 0,
+    };
+    existingFunnel.count += 1;
+    byFunnelKey.set(funnelStatKey, existingFunnel);
+
+    const existingPath = byPathKey.get(pathId) ?? { pathId, label, count: 0 };
+    existingPath.count += 1;
+    byPathKey.set(pathId, existingPath);
+  }
+
+  return {
+    allTimeTotal,
+    lastDaysTotal,
+    byPath: Array.from(byPathKey.values()).sort((a, b) => b.count - a.count),
+    byFunnel: Array.from(byFunnelKey.values()).sort((a, b) => b.count - a.count),
+    dailyTotals: Array.from(dailyTotals.entries())
+      .map(([date, totalSelections]) => ({ date, totalSelections }))
+      .sort((a, b) => a.date.localeCompare(b.date)),
+    dailyByPath: Array.from(dailyByPath.entries())
+      .map(([key, count]) => {
+        const sep = key.indexOf("::");
+        return {
+          date: key.slice(0, sep),
+          pathId: key.slice(sep + 2),
+          count,
+        };
+      })
+      .sort((a, b) => a.date.localeCompare(b.date) || a.pathId.localeCompare(b.pathId)),
+  };
+}
+
 const EMPTY_SURVEY_COMBINATIONS: SurveyCombinationsAggregate = {
   byCombo: [],
   dailyTotals: [],
@@ -696,6 +795,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
   const cartAdditions = buildCartAdditionStats(rows, 30);
   const surveyStats = buildSurveyStats(rows);
   const funnelCompetitorStats = buildFunnelCompetitorStats(rows);
+  const funnelSalesStage = buildFunnelSalesStageStats(rows, 30);
   const surveyCombinations = buildSurveyCombinationStats(rows);
   const checkoutFunnel = buildCheckoutFunnelStats(rows, 30);
 
@@ -713,6 +813,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     cartAdditions,
     surveyStats,
     funnelCompetitorStats,
+    funnelSalesStage,
     surveyCombinations,
     checkoutFunnel,
   };

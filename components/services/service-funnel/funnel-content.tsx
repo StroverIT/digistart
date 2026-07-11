@@ -16,6 +16,7 @@ import {
 } from "@/components/services/service-funnel/section-wave";
 import type { ServiceFunnelPasConfig } from "@/config/service-funnels/types";
 import { CaseStudy as RestyledCaseStudy } from "@/components/home/case-study";
+import { FunnelScrollCtaLink } from "@/components/services/service-funnel/funnel-scroll-cta-link";
 import { cn } from "@/lib/utils";
 
 const CaseStudy = dynamic(
@@ -43,12 +44,14 @@ function resolveCtaHref(config: ServiceFunnelPasConfig): string {
 }
 
 function DoneForYouSection({
+  config,
   doneForYou,
   heroCtaLabel,
   ctaHref,
   waveFillClassName,
   continuesFromWhoIsItFor = false,
 }: {
+  config: ServiceFunnelPasConfig;
   doneForYou: NonNullable<ServiceFunnelPasConfig["doneForYou"]>;
   heroCtaLabel: string;
   ctaHref: string;
@@ -102,16 +105,16 @@ function DoneForYouSection({
             {doneForYou.description}
           </p>
 
-          <a
-            data-animate-reveal
-            href={ctaHref}
-            className={cn(
-              "mt-10 inline-flex h-12 items-center justify-center rounded-full bg-[#A8E6CF] px-8 text-base font-bold text-foreground shadow-md transition-transform hover:scale-[1.02] motion-reduce:hover:scale-100 md:mt-12",
-              LANDING_REVEAL_CLASS,
-            )}
-          >
-            {heroCtaLabel}
-          </a>
+          <div data-animate-reveal className={LANDING_REVEAL_CLASS}>
+            <FunnelScrollCtaLink
+              config={config}
+              section="done_for_you"
+              href={ctaHref}
+              className="mt-10 inline-flex h-12 items-center justify-center rounded-full bg-[#A8E6CF] px-8 text-base font-bold text-foreground shadow-md transition-transform hover:scale-[1.02] motion-reduce:hover:scale-100 md:mt-12"
+            >
+              {heroCtaLabel}
+            </FunnelScrollCtaLink>
+          </div>
         </div>
       </div>
       <SectionWave fillClassName={waveFillClassName} />
@@ -146,6 +149,7 @@ export function FunnelContentSections({ config }: FunnelContentSectionsProps) {
   const doneForYouSection =
     !checkout && !hideDoneForYouSection && config.doneForYou ? (
       <DoneForYouSection
+        config={config}
         doneForYou={config.doneForYou}
         heroCtaLabel={config.hero.ctaLabel}
         ctaHref={ctaHref}
@@ -169,7 +173,7 @@ export function FunnelContentSections({ config }: FunnelContentSectionsProps) {
       )}
 
       {showResultsSection && showResultsAfterProcess && showPostPickerContent ? (
-        <div className="-mt-10 bg-white sm:-mt-12 md:-mt-16">
+        <div className="bg-white">
           <RestyledCaseStudy className="pt-12 pb-20 md:pt-16 md:pb-28" />
           <SectionWave fillClassName={funnelWaveFills.faq} variant="smooth" />
         </div>

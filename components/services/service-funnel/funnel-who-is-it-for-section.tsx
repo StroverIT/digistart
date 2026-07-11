@@ -88,6 +88,8 @@ type FunnelWhoIsItForSectionProps = {
   sectionId?: string;
   footer?: ReactNode;
   className?: string;
+  gridClassName?: string;
+  footerSpacingClassName?: string;
   funnelId?: string;
   endCta?: FunnelWhoIsItForEndCta;
   compactPasImages?: boolean;
@@ -99,6 +101,8 @@ export function FunnelWhoIsItForSection({
   sectionId = "who-is-it-for",
   footer,
   className,
+  gridClassName,
+  footerSpacingClassName,
   funnelId,
   endCta,
   compactPasImages = false,
@@ -133,7 +137,12 @@ export function FunnelWhoIsItForSection({
       )}
     >
       <div className="container mx-auto min-w-0 px-4 md:px-8">
-        <div className={cn("mx-auto min-w-0", hasPasImages ? "max-w-6xl" : "max-w-5xl")}>
+        <div
+          className={cn(
+            "mx-auto min-w-0",
+            hasPasImages ? "max-w-6xl" : "max-w-5xl",
+          )}
+        >
           <header data-animate-reveal className={cn("mx-auto max-w-2xl text-center", LANDING_REVEAL_CLASS)}>
             {title || subtitle ? (
               <>
@@ -158,12 +167,14 @@ export function FunnelWhoIsItForSection({
               "min-w-0",
               hasPasImages
                 ? cn(
-                    title || subtitle ? "mt-10 md:mt-12" : compactPasImages ? "mt-2 md:mt-4" : "mt-10 md:mt-12",
-                    compactPasImages
-                      ? "flex flex-col gap-16 lg:gap-24 xl:gap-28"
-                      : "flex flex-col gap-14 lg:gap-20",
-                  )
+                  title || subtitle ? "mt-10 md:mt-12" : compactPasImages ? "mt-2 md:mt-4" : "mt-10 md:mt-12",
+                  compactPasImages
+                    ? "mx-auto flex w-full max-w-4xl flex-col gap-12 lg:max-w-5xl lg:gap-16 xl:gap-20"
+                    : "flex flex-col gap-14 lg:gap-20",
+                )
                 : "mt-10 grid gap-5 sm:gap-6 md:mt-12 md:grid-cols-2 md:gap-8 lg:gap-10",
+              gridClassName,
+              footerSpacingClassName,
             )}
           >
             {resolvedWhoIsItFor.items.map((item, index) => {
@@ -172,25 +183,33 @@ export function FunnelWhoIsItForSection({
 
               if (item.image) {
                 const imageFirst = item.imageFirst ?? false;
+                const copyOnLeft = compactPasImages ? imageFirst : !imageFirst;
+                const imageOnLeft = compactPasImages ? !imageFirst : imageFirst;
 
                 return (
                   <article
                     key={`${item.badge ?? "item"}-${index}`}
                     data-animate-card
                     className={cn(
-                      "group grid min-w-0 items-center gap-8 overflow-hidden lg:grid-cols-2",
-                      compactPasImages ? "lg:gap-20 xl:gap-24" : "lg:gap-16",
+                      "group grid min-w-0 items-start gap-6 overflow-hidden sm:gap-8",
+                      compactPasImages
+                        ? "lg:grid-cols-2 lg:items-center lg:gap-10 xl:gap-12"
+                        : "items-center lg:grid-cols-2 lg:gap-16",
                       LANDING_CARD_CLASS,
                     )}
                   >
                     <div
                       data-animate-card-copy
                       className={cn(
-                        "order-1 min-w-0 opacity-0 lg:py-4",
-                        compactPasImages ? "space-y-4 lg:space-y-5" : "space-y-3",
-                        imageFirst ? "lg:order-2" : "lg:order-1",
-                        compactPasImages && !imageFirst && "lg:pl-10 xl:pl-16",
-                        compactPasImages && imageFirst && "lg:pr-10 xl:pr-16",
+                        "order-1 min-w-0 opacity-0",
+                        compactPasImages ? "space-y-4 lg:space-y-5" : "space-y-3 lg:py-4",
+                        compactPasImages
+                          ? copyOnLeft
+                            ? "lg:order-1 lg:text-right"
+                            : "lg:order-2 lg:text-left"
+                          : imageFirst
+                            ? "lg:order-2"
+                            : "lg:order-1",
                       )}
                     >
                       <h3 className="font-heading text-xl font-semibold leading-snug text-foreground sm:text-2xl">
@@ -204,9 +223,16 @@ export function FunnelWhoIsItForSection({
                       className={cn(
                         "relative order-2 aspect-square w-full min-w-0 overflow-hidden rounded-2xl md:will-change-transform",
                         compactPasImages
-                          ? "mx-auto max-w-[19rem] sm:max-w-[21rem] lg:max-w-[24rem]"
-                          : "max-w-full",
-                        imageFirst ? "lg:order-1" : "lg:order-2",
+                          ? cn(
+                            "mx-auto w-full max-w-[19rem] sm:max-w-[21rem] lg:mx-0 lg:w-full lg:max-w-[18rem] xl:max-w-[21rem]",
+                            imageOnLeft
+                              ? "lg:order-1 lg:justify-self-end"
+                              : "lg:order-2 lg:justify-self-start",
+                          )
+                          : cn(
+                            "max-w-full",
+                            imageFirst ? "lg:order-1" : "lg:order-2",
+                          ),
                       )}
                     >
                       <Image

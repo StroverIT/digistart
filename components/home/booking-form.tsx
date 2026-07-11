@@ -106,7 +106,7 @@ export function BookingForm({
               notesLabel={notesLabel}
               notesPlaceholder={notesPlaceholder}
               showOnSiteOption={showOnSiteOption}
-              submitLabel="Потвърди консултацията"
+              submitLabel="Потвърдете консултацията"
               analyticsPath={analyticsPath}
               analyticsCtaId={analyticsCtaId}
               metaLead={metaLead}

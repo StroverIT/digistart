@@ -28,11 +28,13 @@ import { DigitalRoadmapLeadsPanel } from "@/components/admin/digital-roadmap-lea
 import { DashboardSectionHeading } from "@/components/admin/dashboard-section-heading";
 import { UserDecisionsPanel } from "@/components/admin/user-decisions-panel";
 import { CtaClicksPanel } from "@/components/admin/cta-clicks-panel";
+import { FunnelSalesStagePanel } from "@/components/admin/funnel-sales-stage-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const DASHBOARD_TABS = [
   { id: "overview", label: "Преглед" },
   { id: "engagement", label: "Ангажираност" },
+  { id: "funnels", label: "Funnels" },
   { id: "revenue", label: "Приходи" },
   { id: "traffic", label: "Трафик" },
   { id: "conversion", label: "Конверсия" },
@@ -100,6 +102,14 @@ export function AdminDashboard() {
     },
     surveyStats: [],
     funnelCompetitorStats: [],
+    funnelSalesStage: {
+      allTimeTotal: 0,
+      lastDaysTotal: 0,
+      byPath: [],
+      byFunnel: [],
+      dailyTotals: [],
+      dailyByPath: [],
+    },
     surveyCombinations: {
       byCombo: [],
       dailyTotals: [],
@@ -156,6 +166,14 @@ export function AdminDashboard() {
             },
             surveyStats: [],
             funnelCompetitorStats: [],
+            funnelSalesStage: {
+              allTimeTotal: 0,
+              lastDaysTotal: 0,
+              byPath: [],
+              byFunnel: [],
+              dailyTotals: [],
+              dailyByPath: [],
+            },
             surveyCombinations: {
               byCombo: [],
               dailyTotals: [],
@@ -468,24 +486,13 @@ export function AdminDashboard() {
           icon={<TrendingUp className="h-6 w-6" />}
         />
         <StatCard
-          title="Избор на платформа"
-          value={analytics.funnelCompetitorStats
-            .reduce((sum, entry) => sum + entry.count, 0)
-            .toString()}
-          description="Отговори в funnel въпросника"
-          icon={<Users className="h-6 w-6" />}
-        />
-        <StatCard
           title="Общо посещения"
           value={analytics.dailyStats.reduce((sum, row) => sum + row.visits, 0).toString()}
           description="Реални page views"
           icon={<Users className="h-6 w-6" />}
         />
       </div>
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <UserDecisionsPanel funnelCompetitorStats={analytics.funnelCompetitorStats} />
-        <CtaClicksPanel ctaStats={analytics.ctaStats} totalClicks={analytics.totalClicks} />
-      </div>
+      <CtaClicksPanel ctaStats={analytics.ctaStats} totalClicks={analytics.totalClicks} />
 
       <Card
         data-admin-animate
@@ -654,6 +661,42 @@ export function AdminDashboard() {
           ) : null}
         </CardContent>
       </Card>
+
+        </TabsContent>
+
+        <TabsContent value="funnels" className="space-y-6 mt-0">
+      <DashboardSectionHeading
+        title="Funnels"
+        description="Избори в sales stage picker и платформени въпросници"
+      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <StatCard
+          title="Етап на продажби"
+          value={analytics.funnelSalesStage.allTimeTotal.toString()}
+          description={`${analytics.funnelSalesStage.lastDaysTotal} за 30 дни`}
+          icon={<Users className="h-6 w-6" />}
+        />
+        <StatCard
+          title="Искам да продавам"
+          value={(
+            analytics.funnelSalesStage.byPath.find((entry) => entry.pathId === "starting")?.count ?? 0
+          ).toString()}
+          description="Общо избора"
+          icon={<TrendingUp className="h-6 w-6" />}
+        />
+        <StatCard
+          title="Вече продавам"
+          value={(
+            analytics.funnelSalesStage.byPath.find((entry) => entry.pathId === "selling")?.count ?? 0
+          ).toString()}
+          description="Общо избора"
+          icon={<ShoppingBag className="h-6 w-6" />}
+        />
+      </div>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <FunnelSalesStagePanel stats={analytics.funnelSalesStage} />
+        <UserDecisionsPanel funnelCompetitorStats={analytics.funnelCompetitorStats} />
+      </div>
 
         </TabsContent>
 

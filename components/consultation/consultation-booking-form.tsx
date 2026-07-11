@@ -571,7 +571,7 @@ export default function ConsultationBookingForm({
       {showDayPicker ? (
         <div data-consult-animate-key="day-picker" className="space-y-2 opacity-0 translate-y-10">
           {isEmbedded ? (
-            <Label>Избери ден</Label>
+            <Label>Изберете ден</Label>
           ) : (
             <p className="text-sm font-medium">Изберете ден</p>
           )}

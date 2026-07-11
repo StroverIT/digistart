@@ -19,6 +19,7 @@ import { FunnelWhoIsItForSection } from "@/components/services/service-funnel/fu
 import { FunnelSalesStagePicker } from "@/components/services/service-funnel/funnel-sales-stage-picker";
 import { useSalesStageSelection } from "@/components/services/funnel/use-sales-stage-selection";
 import { resolveSalesStagePasSection } from "@/lib/funnel/sales-stage-pas";
+import { FunnelScrollCtaLink } from "@/components/services/service-funnel/funnel-scroll-cta-link";
 import { cn } from "@/lib/utils";
 
 const funnelVideoFrameClass =
@@ -63,8 +64,6 @@ export function FunnelHero({ config }: FunnelHeroProps) {
   const showProcessStepsSection = features?.showProcessStepsSection ?? false;
   const showResultsSection = features?.showResultsSection ?? false;
   const showResultsAfterProcess = features?.showResultsAfterProcess ?? false;
-  const consultationOnlyEnd = features?.consultationOnlyEnd ?? false;
-  const hideDoneForYouSection = features?.hideDoneForYouSection ?? false;
   const ctaHref = resolveCtaHref(config);
   const heroSectionRef = useRef<HTMLElement>(null);
   const { answer, hasAnswer } = useSalesStageSelection(
@@ -84,12 +83,8 @@ export function FunnelHero({ config }: FunnelHeroProps) {
   const whoIsItForFooter: ReactNode =
     showResultsSection && !showResultsAfterProcess ? (
       <SectionWave fillClassName={funnelWaveFills.white} />
-    ) : showProcessStepsSection &&
-        (consultationOnlyEnd || hideDoneForYouSection) &&
-        (!salesStagePicker || hasAnswer) ? (
-      <SectionWave fillClassName={funnelWaveFills.process} variant="smooth" />
-    ) : showProcessStepsSection && !consultationOnlyEnd ? (
-      <SectionWave fillClassName={funnelWaveFills.process} variant="smooth" />
+    ) : showProcessStepsSection && (!salesStagePicker || hasAnswer) ? (
+      <SectionWave fillClassName={funnelWaveFills.foreground} variant="smooth" />
     ) : null;
 
   const showPasFlow = Boolean(salesStagePicker && hasAnswer);
@@ -195,13 +190,15 @@ export function FunnelHero({ config }: FunnelHeroProps) {
               LANDING_REVEAL_CLASS,
             )}
           >
-            <a
+            <FunnelScrollCtaLink
+              config={config}
+              section="hero"
               href={ctaHref}
               className="group inline-flex h-14 w-full max-w-md items-center justify-center gap-2.5 rounded-full bg-accent px-10 text-lg font-semibold text-accent-foreground shadow-[var(--shadow-glow)] transition-transform hover:scale-[1.02] motion-reduce:hover:scale-100 sm:w-auto md:h-16 md:px-12 md:text-xl"
             >
               {hero.ctaLabel}
               <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5 md:size-6" />
-            </a>
+            </FunnelScrollCtaLink>
           </div>
 
           {showHeroGoogleReviews ? (
@@ -217,7 +214,11 @@ export function FunnelHero({ config }: FunnelHeroProps) {
       </section>
 
       {salesStagePicker ? (
-        <FunnelSalesStagePicker funnelId={config.id} picker={salesStagePicker} />
+        <FunnelSalesStagePicker
+          funnelId={config.id}
+          picker={salesStagePicker}
+          pagePath={config.pagePath}
+        />
       ) : null}
 
       {showPasFlow && pasSection ? (
@@ -235,7 +236,12 @@ export function FunnelHero({ config }: FunnelHeroProps) {
           whoIsItFor={whoIsItFor}
           serviceId={serviceId}
           footer={whoIsItForFooter}
-          className={cn("bg-[var(--funnel-lavender)]", showPasFlow && "pt-14 md:pt-20 lg:pt-24")}
+          className={cn(
+            "bg-[var(--funnel-lavender)]",
+            showPasFlow && "pt-14 md:pt-20 lg:pt-24",
+          )}
+          footerSpacingClassName={showPasFlow ? "pb-14 md:pb-20 lg:pb-24" : undefined}
+          gridClassName={showPasFlow ? "mt-6 md:mt-8" : undefined}
         />
       )}
 
