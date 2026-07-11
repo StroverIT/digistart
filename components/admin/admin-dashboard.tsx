@@ -28,7 +28,7 @@ import { DigitalRoadmapLeadsPanel } from "@/components/admin/digital-roadmap-lea
 import { DashboardSectionHeading } from "@/components/admin/dashboard-section-heading";
 import { UserDecisionsPanel } from "@/components/admin/user-decisions-panel";
 import { CtaClicksPanel } from "@/components/admin/cta-clicks-panel";
-import { FunnelSalesStagePanel } from "@/components/admin/funnel-sales-stage-panel";
+import { FunnelAudienceViewsPanel } from "@/components/admin/funnel-audience-views-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const DASHBOARD_TABS = [
@@ -102,13 +102,13 @@ export function AdminDashboard() {
     },
     surveyStats: [],
     funnelCompetitorStats: [],
-    funnelSalesStage: {
+    funnelAudienceViews: {
       allTimeTotal: 0,
       lastDaysTotal: 0,
-      byPath: [],
+      bySegment: [],
       byFunnel: [],
       dailyTotals: [],
-      dailyByPath: [],
+      dailyBySegment: [],
     },
     surveyCombinations: {
       byCombo: [],
@@ -166,13 +166,13 @@ export function AdminDashboard() {
             },
             surveyStats: [],
             funnelCompetitorStats: [],
-            funnelSalesStage: {
+            funnelAudienceViews: {
               allTimeTotal: 0,
               lastDaysTotal: 0,
-              byPath: [],
+              bySegment: [],
               byFunnel: [],
               dailyTotals: [],
-              dailyByPath: [],
+              dailyBySegment: [],
             },
             surveyCombinations: {
               byCombo: [],
@@ -667,34 +667,34 @@ export function AdminDashboard() {
         <TabsContent value="funnels" className="space-y-6 mt-0">
       <DashboardSectionHeading
         title="Funnels"
-        description="Избори в sales stage picker и платформени въпросници"
+        description="Прегледи на аудитория funnel страници и платформени въпросници"
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
-          title="Етап на продажби"
-          value={analytics.funnelSalesStage.allTimeTotal.toString()}
-          description={`${analytics.funnelSalesStage.lastDaysTotal} за 30 дни`}
+          title="Денонощна машина"
+          value={analytics.funnelAudienceViews.allTimeTotal.toString()}
+          description={`${analytics.funnelAudienceViews.lastDaysTotal} за 30 дни`}
           icon={<Users className="h-6 w-6" />}
         />
         <StatCard
           title="Искам да продавам"
           value={(
-            analytics.funnelSalesStage.byPath.find((entry) => entry.pathId === "starting")?.count ?? 0
+            analytics.funnelAudienceViews.bySegment.find((entry) => entry.segment === "starting")?.views ?? 0
           ).toString()}
-          description="Общо избора"
+          description="Общо прегледи"
           icon={<TrendingUp className="h-6 w-6" />}
         />
         <StatCard
           title="Вече продавам"
           value={(
-            analytics.funnelSalesStage.byPath.find((entry) => entry.pathId === "selling")?.count ?? 0
+            analytics.funnelAudienceViews.bySegment.find((entry) => entry.segment === "selling")?.views ?? 0
           ).toString()}
-          description="Общо избора"
+          description="Общо прегледи"
           icon={<ShoppingBag className="h-6 w-6" />}
         />
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <FunnelSalesStagePanel stats={analytics.funnelSalesStage} />
+        <FunnelAudienceViewsPanel stats={analytics.funnelAudienceViews} />
         <UserDecisionsPanel funnelCompetitorStats={analytics.funnelCompetitorStats} />
       </div>
 

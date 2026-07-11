@@ -19,23 +19,11 @@ export type ReadyStoreV2HeroConfig = {
   ctaHint: string;
 };
 
-export type SalesStagePathId = "starting" | "selling";
+export type FunnelAudienceSegment = "starting" | "selling";
 
 export type SalesStagePasBlock = {
   title: string;
   description: string;
-};
-
-export type SalesStagePickerConfig = {
-  title: string;
-  options: Array<{ id: SalesStagePathId; label: string }>;
-  paths: Record<
-    SalesStagePathId,
-    {
-      problem: SalesStagePasBlock;
-      agitate: SalesStagePasBlock;
-    }
-  >;
 };
 
 export type ServiceFunnelWhoIsItFor = {
@@ -55,6 +43,8 @@ type ServiceFunnelSharedFields = {
   serviceId: string;
   funnelSlug: string;
   adminLabel: string;
+  /** Used in admin analytics when the funnel targets a specific sales audience. */
+  audienceSegment?: FunnelAudienceSegment;
   sourcePage: string;
   analyticsCtaId: string;
   meta: {
@@ -147,7 +137,8 @@ type ServiceFunnelSharedFields = {
 
 export type ServiceFunnelPasDefinition = ServiceFunnelSharedFields & {
   layout?: "pas";
-  salesStagePicker?: SalesStagePickerConfig;
+  /** Problem/agitate block shown before the main who-is-it-for section. */
+  pasSection?: ServiceFunnelWhoIsItFor;
   hero: {
     eyebrow?: string;
     title: string;

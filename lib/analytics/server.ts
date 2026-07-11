@@ -10,11 +10,8 @@ import {
   COMPETITOR_PLATFORM_LABELS,
   type CompetitorPlatform,
 } from "@/lib/funnel/competitor-platform";
-import {
-  SALES_STAGE_PATH_LABELS,
-  type SalesStagePathId,
-} from "@/lib/funnel/sales-stage";
-import { getFunnelById } from "@/config/service-funnels";
+import { SERVICE_FUNNELS } from "@/config/service-funnels";
+import type { FunnelAudienceSegment } from "@/config/service-funnels/types";
 import {
   ANALYTICS_EVENT_TYPES,
   type AnalyticsAdminResponse,
@@ -27,8 +24,8 @@ import {
   type UtmDailyStats,
   type SurveyAnalyticsStat,
   type FunnelCompetitorStat,
-  type FunnelSalesStageAggregate,
-  type FunnelSalesStageStat,
+  type FunnelAudienceViewsAggregate,
+  type FunnelAudienceViewsStat,
   type SurveyCombinationsAggregate,
   type UtmLandingEventPayload,
   type UtmMonthlyStats,
@@ -451,95 +448,108 @@ function buildFunnelCompetitorStats(rows: AnalyticsRow[]): FunnelCompetitorStat[
   return Array.from(byKey.values()).sort((a, b) => b.count - a.count);
 }
 
-function resolveSalesStageLabel(funnelId: string, pathId: string): string {
-  const funnel = getFunnelById(funnelId);
-  const option = funnel && "salesStagePicker" in funnel
-    ? funnel.salesStagePicker?.options.find((entry) => entry.id === pathId)
-    : undefined;
-
-  if (option) return option.label;
-
-  if (pathId in SALES_STAGE_PATH_LABELS) {
-    return SALES_STAGE_PATH_LABELS[pathId as SalesStagePathId];
-  }
-
-  return pathId;
-}
-
-const EMPTY_FUNNEL_SALES_STAGE: FunnelSalesStageAggregate = {
-  allTimeTotal: 0,
-  lastDaysTotal: 0,
-  byPath: [],
-  byFunnel: [],
-  dailyTotals: [],
-  dailyByPath: [],
+const AUDIENCE_SEGMENT_LABELS: Record<FunnelAudienceSegment, string> = {
+  starting: "Искам да продавам",
+  selling: "Вече продавам",
 };
 
-function buildFunnelSalesStageStats(rows: AnalyticsRow[], lastDays = 30): FunnelSalesStageAggregate {
-  const selectionRows = rows.filter((row) => row.eventType === "funnel_sales_stage_selection");
-  if (selectionRows.length === 0) return EMPTY_FUNNEL_SALES_STAGE;
+const TRACKED_AUDIENCE_FUNNELS = SERVICE_FUNNELS.filter(
+  (funnel) => funnel.audienceSegment,
+).map((funnel) => ({
+  funnelId: funnel.id,
+  page: funnel.pagePath,
+  segment: funnel.audienceSegment as FunnelAudienceSegment,
+  label: AUDIENCE_SEGMENT_LABELS[funnel.audienceSegment as FunnelAudienceSegment],
+}));
+
+function resolveAudienceFunnel(page: string, funnelId?: string) {
+  if (funnelId) {
+    const byId = TRACKED_AUDIENCE_FUNNELS.find((entry) => entry.funnelId === funnelId);
+    if (byId) return byId;
+  }
+
+  return TRACKED_AUDIENCE_FUNNELS.find((entry) => entry.page === page);
+}
+
+const EMPTY_FUNNEL_AUDIENCE_VIEWS: FunnelAudienceViewsAggregate = {
+  allTimeTotal: 0,
+  lastDaysTotal: 0,
+  bySegment: [],
+  byFunnel: [],
+  dailyTotals: [],
+  dailyBySegment: [],
+};
+
+function buildFunnelAudienceViewStats(rows: AnalyticsRow[], lastDays = 30): FunnelAudienceViewsAggregate {
+  const viewRows = rows.filter((row) => row.eventType === "page_view");
+  if (viewRows.length === 0 || TRACKED_AUDIENCE_FUNNELS.length === 0) {
+    return EMPTY_FUNNEL_AUDIENCE_VIEWS;
+  }
 
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - lastDays);
   cutoff.setHours(0, 0, 0, 0);
 
-  const byFunnelKey = new Map<string, FunnelSalesStageStat>();
-  const byPathKey = new Map<string, { pathId: string; label: string; count: number }>();
+  const byFunnelKey = new Map<string, FunnelAudienceViewsStat>();
+  const bySegmentKey = new Map<string, { segment: string; label: string; views: number }>();
   const dailyTotals = new Map<string, number>();
-  const dailyByPath = new Map<string, number>();
+  const dailyBySegment = new Map<string, number>();
 
   let allTimeTotal = 0;
   let lastDaysTotal = 0;
 
-  for (const row of selectionRows) {
+  for (const row of viewRows) {
     const metadata = (row.metadata ?? {}) as Record<string, unknown>;
     const funnelId = String(metadata.funnel_id ?? "").trim();
-    const pathId = String(metadata.path_id ?? "").trim();
-    if (!funnelId || !pathId) continue;
+    const tracked = resolveAudienceFunnel(row.page, funnelId || undefined);
+    if (!tracked) continue;
 
-    const label = resolveSalesStageLabel(funnelId, pathId);
     const date = row.createdAt.toISOString().split("T")[0];
 
     allTimeTotal += 1;
     if (row.createdAt >= cutoff) lastDaysTotal += 1;
 
     dailyTotals.set(date, (dailyTotals.get(date) ?? 0) + 1);
-    const dailyPathKey = `${date}::${pathId}`;
-    dailyByPath.set(dailyPathKey, (dailyByPath.get(dailyPathKey) ?? 0) + 1);
+    const dailySegmentKey = `${date}::${tracked.segment}`;
+    dailyBySegment.set(dailySegmentKey, (dailyBySegment.get(dailySegmentKey) ?? 0) + 1);
 
-    const funnelStatKey = `${funnelId}::${pathId}`;
-    const existingFunnel = byFunnelKey.get(funnelStatKey) ?? {
-      funnelId,
-      pathId,
-      label,
-      count: 0,
+    const existingFunnel = byFunnelKey.get(tracked.funnelId) ?? {
+      funnelId: tracked.funnelId,
+      page: tracked.page,
+      segment: tracked.segment,
+      label: tracked.label,
+      views: 0,
     };
-    existingFunnel.count += 1;
-    byFunnelKey.set(funnelStatKey, existingFunnel);
+    existingFunnel.views += 1;
+    byFunnelKey.set(tracked.funnelId, existingFunnel);
 
-    const existingPath = byPathKey.get(pathId) ?? { pathId, label, count: 0 };
-    existingPath.count += 1;
-    byPathKey.set(pathId, existingPath);
+    const existingSegment = bySegmentKey.get(tracked.segment) ?? {
+      segment: tracked.segment,
+      label: tracked.label,
+      views: 0,
+    };
+    existingSegment.views += 1;
+    bySegmentKey.set(tracked.segment, existingSegment);
   }
 
   return {
     allTimeTotal,
     lastDaysTotal,
-    byPath: Array.from(byPathKey.values()).sort((a, b) => b.count - a.count),
-    byFunnel: Array.from(byFunnelKey.values()).sort((a, b) => b.count - a.count),
+    bySegment: Array.from(bySegmentKey.values()).sort((a, b) => b.views - a.views),
+    byFunnel: Array.from(byFunnelKey.values()).sort((a, b) => b.views - a.views),
     dailyTotals: Array.from(dailyTotals.entries())
-      .map(([date, totalSelections]) => ({ date, totalSelections }))
+      .map(([date, totalViews]) => ({ date, totalViews }))
       .sort((a, b) => a.date.localeCompare(b.date)),
-    dailyByPath: Array.from(dailyByPath.entries())
-      .map(([key, count]) => {
+    dailyBySegment: Array.from(dailyBySegment.entries())
+      .map(([key, views]) => {
         const sep = key.indexOf("::");
         return {
           date: key.slice(0, sep),
-          pathId: key.slice(sep + 2),
-          count,
+          segment: key.slice(sep + 2),
+          views,
         };
       })
-      .sort((a, b) => a.date.localeCompare(b.date) || a.pathId.localeCompare(b.pathId)),
+      .sort((a, b) => a.date.localeCompare(b.date) || a.segment.localeCompare(b.segment)),
   };
 }
 
@@ -795,7 +805,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
   const cartAdditions = buildCartAdditionStats(rows, 30);
   const surveyStats = buildSurveyStats(rows);
   const funnelCompetitorStats = buildFunnelCompetitorStats(rows);
-  const funnelSalesStage = buildFunnelSalesStageStats(rows, 30);
+  const funnelAudienceViews = buildFunnelAudienceViewStats(rows, 30);
   const surveyCombinations = buildSurveyCombinationStats(rows);
   const checkoutFunnel = buildCheckoutFunnelStats(rows, 30);
 
@@ -813,7 +823,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     cartAdditions,
     surveyStats,
     funnelCompetitorStats,
-    funnelSalesStage,
+    funnelAudienceViews,
     surveyCombinations,
     checkoutFunnel,
   };

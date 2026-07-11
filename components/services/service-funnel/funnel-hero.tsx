@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { SiteLogo } from "@/components/layout/site-logo";
 import GoogleReviewsSection from "@/components/services/service-detail-ready-store-v2/GoogleReviewsSection";
@@ -16,9 +16,6 @@ import {
 import type { ServiceFunnelPasConfig } from "@/config/service-funnels/types";
 import { CaseStudy as RestyledCaseStudy } from "@/components/home/case-study";
 import { FunnelWhoIsItForSection } from "@/components/services/service-funnel/funnel-who-is-it-for-section";
-import { FunnelSalesStagePicker } from "@/components/services/service-funnel/funnel-sales-stage-picker";
-import { useSalesStageSelection } from "@/components/services/funnel/use-sales-stage-selection";
-import { resolveSalesStagePasSection } from "@/lib/funnel/sales-stage-pas";
 import { FunnelScrollCtaLink } from "@/components/services/service-funnel/funnel-scroll-cta-link";
 import { cn } from "@/lib/utils";
 
@@ -58,7 +55,7 @@ function renderHeroTitle(title: string, titleLead?: string) {
 }
 
 export function FunnelHero({ config }: FunnelHeroProps) {
-  const { hero, whoIsItFor, features, serviceId, salesStagePicker } = config;
+  const { hero, whoIsItFor, features, serviceId, pasSection } = config;
   const showHeroDescription = features?.showHeroDescription ?? false;
   const showHeroGoogleReviews = features?.showHeroGoogleReviews ?? true;
   const showProcessStepsSection = features?.showProcessStepsSection ?? false;
@@ -66,28 +63,16 @@ export function FunnelHero({ config }: FunnelHeroProps) {
   const showResultsAfterProcess = features?.showResultsAfterProcess ?? false;
   const ctaHref = resolveCtaHref(config);
   const heroSectionRef = useRef<HTMLElement>(null);
-  const { answer, hasAnswer } = useSalesStageSelection(
-    salesStagePicker ? config.id : undefined,
-  );
-
-  const pasSection = useMemo(
-    () =>
-      salesStagePicker && answer
-        ? resolveSalesStagePasSection(salesStagePicker, answer)
-        : null,
-    [answer, salesStagePicker],
-  );
+  const showPasFlow = Boolean(pasSection);
 
   useSectionScrollAnimations(heroSectionRef, { staggerReveal: 0.1, animateOnMount: true });
 
   const whoIsItForFooter: ReactNode =
     showResultsSection && !showResultsAfterProcess ? (
       <SectionWave fillClassName={funnelWaveFills.white} />
-    ) : showProcessStepsSection && (!salesStagePicker || hasAnswer) ? (
+    ) : showProcessStepsSection ? (
       <SectionWave fillClassName={funnelWaveFills.foreground} variant="smooth" />
     ) : null;
-
-  const showPasFlow = Boolean(salesStagePicker && hasAnswer);
 
   return (
     <>
@@ -213,15 +198,7 @@ export function FunnelHero({ config }: FunnelHeroProps) {
         <SectionWave fillClassName={funnelWaveFills.lavender} />
       </section>
 
-      {salesStagePicker ? (
-        <FunnelSalesStagePicker
-          funnelId={config.id}
-          picker={salesStagePicker}
-          pagePath={config.pagePath}
-        />
-      ) : null}
-
-      {showPasFlow && pasSection ? (
+      {pasSection ? (
         <FunnelWhoIsItForSection
           whoIsItFor={pasSection}
           serviceId={serviceId}
@@ -231,19 +208,17 @@ export function FunnelHero({ config }: FunnelHeroProps) {
         />
       ) : null}
 
-      {salesStagePicker && !showPasFlow ? null : (
-        <FunnelWhoIsItForSection
-          whoIsItFor={whoIsItFor}
-          serviceId={serviceId}
-          footer={whoIsItForFooter}
-          className={cn(
-            "bg-[var(--funnel-lavender)]",
-            showPasFlow && "pt-14 md:pt-20 lg:pt-24",
-          )}
-          footerSpacingClassName={showPasFlow ? "pb-14 md:pb-20 lg:pb-24" : undefined}
-          gridClassName={showPasFlow ? "mt-6 md:mt-8" : undefined}
-        />
-      )}
+      <FunnelWhoIsItForSection
+        whoIsItFor={whoIsItFor}
+        serviceId={serviceId}
+        footer={whoIsItForFooter}
+        className={cn(
+          "bg-[var(--funnel-lavender)]",
+          showPasFlow && "pt-14 md:pt-20 lg:pt-24",
+        )}
+        footerSpacingClassName={showPasFlow ? "pb-14 md:pb-20 lg:pb-24" : undefined}
+        gridClassName={showPasFlow ? "mt-6 md:mt-8" : undefined}
+      />
 
       {showResultsSection && !showResultsAfterProcess ? (
         <div className="-mt-10 bg-white sm:-mt-12 md:-mt-16">

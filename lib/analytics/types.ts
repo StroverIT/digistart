@@ -68,7 +68,7 @@ export type AnalyticsAdminResponse = {
   };
   surveyStats: SurveyAnalyticsStat[];
   funnelCompetitorStats: FunnelCompetitorStat[];
-  funnelSalesStage: FunnelSalesStageAggregate;
+  funnelAudienceViews: FunnelAudienceViewsAggregate;
   surveyCombinations: SurveyCombinationsAggregate;
   checkoutFunnel: CheckoutFunnelAggregate;
 };
@@ -128,20 +128,21 @@ export type FunnelCompetitorStat = {
   count: number;
 };
 
-export type FunnelSalesStageStat = {
+export type FunnelAudienceViewsStat = {
   funnelId: string;
-  pathId: string;
+  page: string;
+  segment: string;
   label: string;
-  count: number;
+  views: number;
 };
 
-export type FunnelSalesStageAggregate = {
+export type FunnelAudienceViewsAggregate = {
   allTimeTotal: number;
   lastDaysTotal: number;
-  byPath: { pathId: string; label: string; count: number }[];
-  byFunnel: FunnelSalesStageStat[];
-  dailyTotals: { date: string; totalSelections: number }[];
-  dailyByPath: { date: string; pathId: string; count: number }[];
+  bySegment: { segment: string; label: string; views: number }[];
+  byFunnel: FunnelAudienceViewsStat[];
+  dailyTotals: { date: string; totalViews: number }[];
+  dailyBySegment: { date: string; segment: string; views: number }[];
 };
 
 export type SurveyComboStat = {

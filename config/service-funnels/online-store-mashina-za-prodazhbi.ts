@@ -1,95 +1,74 @@
 import { ONLINE_STORE_SERVICE_ID } from "@/config/service-landing/online-store";
-import type { ServiceFunnelDefinition } from "@/config/service-funnels/types";
+import type {
+  SalesStagePasBlock,
+  ServiceFunnelDefinition,
+  ServiceFunnelWhoIsItFor,
+} from "@/config/service-funnels/types";
 
-export const ONLINE_STORE_MASHINA_ZA_PRODAZHBI_FUNNEL: ServiceFunnelDefinition = {
-  id: "online-store-mashina-za-prodazhbi",
+const PAS_PROBLEM_IMAGE = "/funnel/online-store/start-selling-online/problem.png";
+const PAS_AGITATE_IMAGE = "/funnel/online-store/start-selling-online/agitate.png";
+
+const MASHINA_WHO_IS_IT_FOR: ServiceFunnelWhoIsItFor = {
+  title: "Какво предлагаме",
+  subtitle: "Три стълба, без които онлайн продажбите не работят",
+  items: [
+    {
+      title: "Целева аудитория",
+      description:
+        "Определяме кой е Вашият идеален клиент и как да го достигнем. Ако не знаем на кого продаваме, губим продажби.",
+    },
+    {
+      title: "Маркетингова стратегия",
+      description:
+        "Изграждаме ясен план как да Ви виждат и купуват.\n\nАко не знаем как да го представим правилно на правилните хора, губим продажби.",
+    },
+    {
+      title: "Инструментите",
+      description:
+        "Онлайн магазин, сайтове, SEO оптимизация, реклами, социални мрежи и Google My Business. Всеки инструмент зависи от бизнеса Ви – избираме само това, което носи резултат.",
+    },
+  ],
+};
+
+function buildPasSection(problem: SalesStagePasBlock, agitate: SalesStagePasBlock): ServiceFunnelWhoIsItFor {
+  return {
+    title: "",
+    subtitle: "",
+    items: [
+      {
+        badge: "Проблем",
+        title: problem.title,
+        description: problem.description,
+        image: PAS_PROBLEM_IMAGE,
+        imageFirst: false,
+      },
+      {
+        badge: "Натиск",
+        title: agitate.title,
+        description: agitate.description,
+        image: PAS_AGITATE_IMAGE,
+        imageFirst: true,
+      },
+    ],
+  };
+}
+
+const MASHINA_SHARED = {
   serviceId: ONLINE_STORE_SERVICE_ID,
-  funnelSlug: "mashina-za-prodazhbi",
-  adminLabel: "Денонощна машина за продажби",
-  sourcePage: "Онлайн магазин funnel (/services/online-store/mashina-za-prodazhbi)",
   analyticsCtaId: "online_store_mashina_za_prodazhbi_consultation_submit",
-  meta: {
-    title: "Денонощна машина за продажби – безплатна консултация",
-    description:
-      "Не просто онлайн магазин – система, която продава денонощно. Запазете безплатна 1-часова консултация и нека разберем как да изградим машина за продажби за Вашия бизнес.",
-    ogCoverKey: "onlineStore",
-    ogAlt: "DigiStart – Денонощна машина за продажби",
-    robots: { index: false, follow: true },
-  },
-  metaLead: {
-    contentName: "DigiStart - Денонощна машина за продажби (funnel)",
-    leadSource: "online_store_mashina_za_prodazhbi",
-  },
-  metaPageView: {
-    contentName: "DigiStart - Денонощна машина за продажби (funnel)",
-    viewSource: "online_store_mashina_za_prodazhbi",
-  },
   hero: {
     title: "Не инструменти. Създаваме система за онлайн продажби",
     titleLead: "Не",
     ctaLabel: "Стартирайте процеса сега",
     video: {
-      provider: "google-drive",
+      provider: "google-drive" as const,
       fileId: "1VeV2RJqhtWhxzY7iOZc6RGY9big9aflY",
       title: "DigiStart – Денонощна машина за продажби",
       thumbnailSrc: "/funnel/ако-не-ти-се-чеете.png",
-      format: "standard",
+      format: "standard" as const,
     },
   },
-  salesStagePicker: {
-    title: "Какво правите в момента",
-    options: [
-      { id: "starting", label: "Искам да продавам" },
-      { id: "selling", label: "Вече продавам" },
-    ],
-    paths: {
-      starting: {
-        problem: {
-          title: "Искате да започнете, но не знаете как",
-          description:
-            "Не знаете как да го направите, а агенциите Ви искат хиляди евро, договори и Ви говорят на техния си език. При нас не е така.",
-        },
-        agitate: {
-          title: "Всеки ден без действие е загубена възможност",
-          description:
-            "Не сте сигурни дали сега е правилният момент? Всеки ден, в който не предлагате продукта си онлайн, губите клиенти и възможности.",
-        },
-      },
-      selling: {
-        problem: {
-          title: "Платформата Ви задържа",
-          description:
-            "Използвате готова платформа? Но не разбирате от дизайн, програмиране и/или маркетинг? Всяка техническа част е едно голямо препятствие? Супер – ние сме тук да помогнем с всичко. Винаги сме до Вас и Ви предлагаме нови идеи, които са доказани на пазара и продават.",
-        },
-        agitate: {
-          title: "Всеки иска повече оборот",
-          description:
-            "Свикнали сте с платформата или оборотът Ви е достатъчен? Хмм, нека не се лъжем. Всеки иска повече и повече оборот, а платформата е просто един инструмент, с който успяваме да продаваме.",
-        },
-      },
-    },
-  },
-  whoIsItFor: {
-    title: "Какво предлагаме",
-    subtitle: "Три стълба, без които онлайн продажбите не работят",
-    items: [
-      {
-        title: "Целева аудитория",
-        description:
-          "Определяме кой е Вашият идеален клиент и как да го достигнем. Ако не знаем на кого продаваме, губим продажби.",
-      },
-      {
-        title: "Маркетингова стратегия",
-        description:
-          "Изграждаме ясен план как да Ви виждат и купуват.\n\nАко не знаем как да го представим правилно на правилните хора, губим продажби.",
-      },
-      {
-        title: "Инструментите",
-        description:
-          "Онлайн магазин, сайтове, SEO оптимизация, реклами, социални мрежи и Google My Business. Всеки инструмент зависи от бизнеса Ви – избираме само това, което носи резултат.",
-      },
-    ],
-  },
+  whoIsItFor: MASHINA_WHO_IS_IT_FOR,
   processSteps: {
     title: "Пътят към успеха",
     subtitle: "Пет ясни стъпки от интерес до съвместна работа",
@@ -105,8 +84,7 @@ export const ONLINE_STORE_MASHINA_ZA_PRODAZHBI_FUNNEL: ServiceFunnelDefinition =
       },
       {
         title: "Избор на пакет",
-        description:
-          "Пращаме Ви оферта и спрямо бюджета, който имате, започваме работа.",
+        description: "Пращаме Ви оферта и спрямо бюджета, който имате, започваме работа.",
       },
       {
         title: "Създаване на стратегия",
@@ -174,4 +152,80 @@ export const ONLINE_STORE_MASHINA_ZA_PRODAZHBI_FUNNEL: ServiceFunnelDefinition =
     showProcessStepsSection: true,
     showProcessStepsInBooking: false,
   },
+};
+
+export const ONLINE_STORE_MASHINA_ZA_PRODAZHBI_STARTING_FUNNEL: ServiceFunnelDefinition = {
+  ...MASHINA_SHARED,
+  id: "online-store-mashina-za-prodazhbi-starting",
+  funnelSlug: "mashina-za-prodazhbi-iskam-da-prodavam",
+  adminLabel: "Денонощна машина – Искам да продавам",
+  audienceSegment: "starting",
+  sourcePage:
+    "Онлайн магазин funnel (/services/online-store/mashina-za-prodazhbi-iskam-da-prodavam)",
+  meta: {
+    title: "Денонощна машина за продажби – искате да започнете онлайн",
+    description:
+      "Искате да продавате онлайн, но не знаете откъде да започнете? Запазете безплатна 1-часова консултация и нека изградим система за продажби за Вашия бизнес.",
+    ogCoverKey: "onlineStore",
+    ogAlt: "DigiStart – Денонощна машина за продажби (искам да продавам)",
+    robots: { index: false, follow: true },
+  },
+  metaLead: {
+    contentName: "DigiStart - Денонощна машина за продажби (искам да продавам)",
+    leadSource: "online_store_mashina_za_prodazhbi_starting",
+  },
+  metaPageView: {
+    contentName: "DigiStart - Денонощна машина за продажби (искам да продавам)",
+    viewSource: "online_store_mashina_za_prodazhbi_starting",
+  },
+  pasSection: buildPasSection(
+    {
+      title: "Искате да започнете, но не знаете как",
+      description:
+        "Не знаете как да го направите, а агенциите Ви искат хиляди евро, договори и Ви говорят на техния си език. При нас не е така.",
+    },
+    {
+      title: "Всеки ден без действие е загубена възможност",
+      description:
+        "Не сте сигурни дали сега е правилният момент? Всеки ден, в който не предлагате продукта си онлайн, губите клиенти и възможности.",
+    },
+  ),
+};
+
+export const ONLINE_STORE_MASHINA_ZA_PRODAZHBI_SELLING_FUNNEL: ServiceFunnelDefinition = {
+  ...MASHINA_SHARED,
+  id: "online-store-mashina-za-prodazhbi-selling",
+  funnelSlug: "mashina-za-prodazhbi-veche-prodavam",
+  adminLabel: "Денонощна машина – Вече продавам",
+  audienceSegment: "selling",
+  sourcePage:
+    "Онлайн магазин funnel (/services/online-store/mashina-za-prodazhbi-veche-prodavam)",
+  meta: {
+    title: "Денонощна машина за продажби – вече продавате онлайн",
+    description:
+      "Вече продавате онлайн, но искате повече оборот? Запазете безплатна 1-часова консултация и нека надградим системата Ви за продажби.",
+    ogCoverKey: "onlineStore",
+    ogAlt: "DigiStart – Денонощна машина за продажби (вече продавам)",
+    robots: { index: false, follow: true },
+  },
+  metaLead: {
+    contentName: "DigiStart - Денонощна машина за продажби (вече продавам)",
+    leadSource: "online_store_mashina_za_prodazhbi_selling",
+  },
+  metaPageView: {
+    contentName: "DigiStart - Денонощна машина за продажби (вече продавам)",
+    viewSource: "online_store_mashina_za_prodazhbi_selling",
+  },
+  pasSection: buildPasSection(
+    {
+      title: "Платформата Ви задържа",
+      description:
+        "Използвате готова платформа? Но не разбирате от дизайн, програмиране и/или маркетинг? Всяка техническа част е едно голямо препятствие? Супер – ние сме тук да помогнем с всичко. Винаги сме до Вас и Ви предлагаме нови идеи, които са доказани на пазара и продават.",
+    },
+    {
+      title: "Всеки иска повече оборот",
+      description:
+        "Свикнали сте с платформата или оборотът Ви е достатъчен? Хмм, нека не се лъжем. Всеки иска повече и повече оборот, а платформата е просто един инструмент, с който успяваме да продаваме.",
+    },
+  ),
 };

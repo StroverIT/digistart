@@ -14,12 +14,16 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getFunnelById } from "@/config/service-funnels";
-import type { FunnelSalesStageAggregate } from "@/lib/analytics/types";
-import { SALES_STAGE_PATH_LABELS } from "@/lib/funnel/sales-stage";
+import type { FunnelAudienceViewsAggregate } from "@/lib/analytics/types";
 import { RankedStatsList, type RankedStatItem } from "@/components/admin/ranked-stats-list";
 
-type FunnelSalesStagePanelProps = {
-  stats: FunnelSalesStageAggregate;
+const AUDIENCE_SEGMENT_LABELS = {
+  starting: "Искам да продавам",
+  selling: "Вече продавам",
+} as const;
+
+type FunnelAudienceViewsPanelProps = {
+  stats: FunnelAudienceViewsAggregate;
 };
 
 function getFunnelLabel(funnelId: string): string {
@@ -27,54 +31,54 @@ function getFunnelLabel(funnelId: string): string {
   return funnel?.adminLabel ?? funnelId;
 }
 
-function buildPerFunnelItems(stats: FunnelSalesStageAggregate): RankedStatItem[] {
+function buildPerFunnelItems(stats: FunnelAudienceViewsAggregate): RankedStatItem[] {
   return stats.byFunnel.map((entry) => ({
-    id: `${entry.funnelId}-${entry.pathId}`,
-    label: entry.label,
-    count: entry.count,
-    subtitle: getFunnelLabel(entry.funnelId),
+    id: entry.funnelId,
+    label: getFunnelLabel(entry.funnelId),
+    count: entry.views,
+    subtitle: entry.page,
   }));
 }
 
-function buildPathItems(stats: FunnelSalesStageAggregate): RankedStatItem[] {
-  return stats.byPath.map((entry, index) => ({
-    id: entry.pathId,
+function buildSegmentItems(stats: FunnelAudienceViewsAggregate): RankedStatItem[] {
+  return stats.bySegment.map((entry, index) => ({
+    id: entry.segment,
     label: entry.label,
-    count: entry.count,
-    badge: index === 0 && entry.count > 0 ? "Най-често" : undefined,
+    count: entry.views,
+    badge: index === 0 && entry.views > 0 ? "Най-често" : undefined,
   }));
 }
 
-export function FunnelSalesStagePanel({ stats }: FunnelSalesStagePanelProps) {
-  const pathItems = useMemo(() => buildPathItems(stats), [stats]);
+export function FunnelAudienceViewsPanel({ stats }: FunnelAudienceViewsPanelProps) {
+  const segmentItems = useMemo(() => buildSegmentItems(stats), [stats]);
   const perFunnelItems = useMemo(() => buildPerFunnelItems(stats), [stats]);
 
   return (
     <Card data-admin-animate className="bg-card border-border">
       <CardHeader>
-        <CardTitle>Етап на продажби</CardTitle>
+        <CardTitle>Аудитория на денонощната машина</CardTitle>
         <p className="text-sm text-muted-foreground font-normal">
-          Отговори на „Какво правиш в момента?“ — общо {stats.allTimeTotal} избора
+          Прегледи на отделните funnel страници — общо {stats.allTimeTotal} прегледа
           {stats.lastDaysTotal > 0 ? ` (${stats.lastDaysTotal} за 30 дни)` : ""}
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <h3 className="text-sm font-semibold mb-3">По отговор</h3>
+          <h3 className="text-sm font-semibold mb-3">По аудитория</h3>
           <RankedStatsList
-            items={pathItems}
-            emptyMessage="Все още няма избрани отговори от посетители."
-            countLabel="избора"
+            items={segmentItems}
+            emptyMessage="Все още няма прегледи на funnel страниците."
+            countLabel="прегледа"
           />
         </div>
 
         {perFunnelItems.length > 0 ? (
           <div className="pt-4 border-t border-border">
-            <h3 className="text-sm font-semibold mb-3">По funnel</h3>
+            <h3 className="text-sm font-semibold mb-3">По страница</h3>
             <RankedStatsList
               items={perFunnelItems}
               emptyMessage=""
-              countLabel="избора"
+              countLabel="прегледа"
               showRank
             />
           </div>
@@ -82,8 +86,8 @@ export function FunnelSalesStagePanel({ stats }: FunnelSalesStagePanelProps) {
 
         {stats.dailyTotals.length > 0 ? (
           <div className="pt-4 border-t border-border">
-            <h3 className="text-sm font-semibold mb-3">Избори по дни (30 дни)</h3>
-            <FunnelSalesStageDailyChart stats={stats} />
+            <h3 className="text-sm font-semibold mb-3">Прегледи по дни (30 дни)</h3>
+            <FunnelAudienceViewsDailyChart stats={stats} />
           </div>
         ) : null}
       </CardContent>
@@ -91,7 +95,7 @@ export function FunnelSalesStagePanel({ stats }: FunnelSalesStagePanelProps) {
   );
 }
 
-function FunnelSalesStageDailyChart({ stats }: { stats: FunnelSalesStageAggregate }) {
+function FunnelAudienceViewsDailyChart({ stats }: { stats: FunnelAudienceViewsAggregate }) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
   const chartData = useMemo(() => {
@@ -100,21 +104,21 @@ function FunnelSalesStageDailyChart({ stats }: { stats: FunnelSalesStageAggregat
     for (const row of stats.dailyTotals) {
       byDate.set(row.date, {
         date: row.date,
-        total: row.totalSelections,
+        total: row.totalViews,
         starting: 0,
         selling: 0,
       });
     }
 
-    for (const row of stats.dailyByPath) {
+    for (const row of stats.dailyBySegment) {
       const existing = byDate.get(row.date) ?? {
         date: row.date,
         total: 0,
         starting: 0,
         selling: 0,
       };
-      if (row.pathId === "starting" || row.pathId === "selling") {
-        existing[row.pathId] = row.count;
+      if (row.segment === "starting" || row.segment === "selling") {
+        existing[row.segment] = row.views;
       }
       byDate.set(row.date, existing);
     }
@@ -126,10 +130,10 @@ function FunnelSalesStageDailyChart({ stats }: { stats: FunnelSalesStageAggregat
           day: "numeric",
           month: "short",
         }),
-        [SALES_STAGE_PATH_LABELS.starting]: row.starting as number,
-        [SALES_STAGE_PATH_LABELS.selling]: row.selling as number,
+        [AUDIENCE_SEGMENT_LABELS.starting]: row.starting as number,
+        [AUDIENCE_SEGMENT_LABELS.selling]: row.selling as number,
       }));
-  }, [stats.dailyByPath, stats.dailyTotals]);
+  }, [stats.dailyBySegment, stats.dailyTotals]);
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -178,14 +182,14 @@ function FunnelSalesStageDailyChart({ stats }: { stats: FunnelSalesStageAggregat
           />
           <Legend />
           <Bar
-            dataKey={SALES_STAGE_PATH_LABELS.starting}
-            stackId="stage"
+            dataKey={AUDIENCE_SEGMENT_LABELS.starting}
+            stackId="audience"
             fill="oklch(0.55 0.18 280)"
             radius={[0, 0, 0, 0]}
           />
           <Bar
-            dataKey={SALES_STAGE_PATH_LABELS.selling}
-            stackId="stage"
+            dataKey={AUDIENCE_SEGMENT_LABELS.selling}
+            stackId="audience"
             fill="oklch(0.65 0.15 200)"
             radius={[4, 4, 0, 0]}
           />

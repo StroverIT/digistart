@@ -37,6 +37,11 @@ const nextConfig: NextConfig = {
         destination: "/services/social-media/dont-lose-turnover",
         permanent: true,
       },
+      {
+        source: "/services/online-store/mashina-za-prodazhbi",
+        destination: "/services/online-store/mashina-za-prodazhbi-iskam-da-prodavam",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

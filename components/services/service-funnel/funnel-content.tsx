@@ -7,7 +7,6 @@ import { FunnelBookingCard } from "@/components/services/service-funnel/funnel-b
 import { FunnelCheckoutSection } from "@/components/services/service-funnel/funnel-checkout-section";
 import { FunnelConsultationSection } from "@/components/services/service-funnel/funnel-consultation-section";
 import { FunnelProcessStepsSection } from "@/components/services/service-funnel/funnel-process-steps-section";
-import { useSalesStageSelection } from "@/components/services/funnel/use-sales-stage-selection";
 import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
 import {
@@ -123,15 +122,13 @@ function DoneForYouSection({
 }
 
 export function FunnelContentSections({ config }: FunnelContentSectionsProps) {
-  const { faq, features, checkout, salesStagePicker } = config;
+  const { faq, features, checkout } = config;
   const showCaseStudy = features?.showCaseStudy ?? true;
   const showResultsSection = features?.showResultsSection ?? false;
   const showResultsAfterProcess = features?.showResultsAfterProcess ?? false;
   const showProcessStepsSection = features?.showProcessStepsSection ?? false;
   const consultationOnlyEnd = features?.consultationOnlyEnd ?? false;
   const hideDoneForYouSection = features?.hideDoneForYouSection ?? false;
-  const { hasAnswer } = useSalesStageSelection(salesStagePicker ? config.id : undefined);
-  const showPostPickerContent = !salesStagePicker || hasAnswer;
   const ctaHref = resolveCtaHref(config);
 
   const doneForYouWaveFill =
@@ -142,7 +139,7 @@ export function FunnelContentSections({ config }: FunnelContentSectionsProps) {
         : funnelWaveFills.white;
 
   const processSection =
-    showProcessStepsSection && showPostPickerContent ? (
+    showProcessStepsSection ? (
       <FunnelProcessStepsSection config={config} ctaHref={consultationOnlyEnd ? ctaHref : undefined} />
     ) : null;
 
@@ -172,16 +169,16 @@ export function FunnelContentSections({ config }: FunnelContentSectionsProps) {
         </>
       )}
 
-      {showResultsSection && showResultsAfterProcess && showPostPickerContent ? (
+      {showResultsSection && showResultsAfterProcess ? (
         <div className="bg-white">
           <RestyledCaseStudy className="pt-12 pb-20 md:pt-16 md:pb-28" />
           <SectionWave fillClassName={funnelWaveFills.faq} variant="smooth" />
         </div>
       ) : null}
 
-      {showCaseStudy && showPostPickerContent ? <CaseStudy compact /> : null}
+      {showCaseStudy ? <CaseStudy compact /> : null}
 
-      {showCaseStudy && showPostPickerContent ? (
+      {showCaseStudy ? (
         <SectionWave fillClassName={funnelWaveFills.white} />
       ) : null}
 
@@ -191,15 +188,15 @@ export function FunnelContentSections({ config }: FunnelContentSectionsProps) {
         <FunnelBookingCard config={config} />
       )}
 
-      {showPostPickerContent ? <PasFaqSection {...faq} /> : null}
+      <PasFaqSection {...faq} />
 
       {checkout && config.consultation ? (
         <SectionWave fillClassName={funnelWaveFills.background} />
-      ) : consultationOnlyEnd && config.consultation && showPostPickerContent ? (
+      ) : consultationOnlyEnd && config.consultation ? (
         <SectionWave fillClassName={funnelWaveFills.background} variant="smooth" />
       ) : null}
 
-      {config.consultation && showPostPickerContent ? (
+      {config.consultation ? (
         <FunnelConsultationSection config={config} />
       ) : null}
     </>
