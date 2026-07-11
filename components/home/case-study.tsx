@@ -29,20 +29,20 @@ export function CaseStudy({ className }: CaseStudyProps) {
       <div className="mt-12 grid gap-6 lg:grid-cols-[1fr_1.1fr] lg:items-stretch">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
           <div className="rounded-3xl border border-destructive/20 bg-card p-7">
-            <div className="text-xs font-bold uppercase tracking-widest text-destructive">
+            <div className="text-xs font-bold uppercase tracking-widest text-destructive lg:text-sm">
               Преди
             </div>
-            <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+            <ul className="mt-4 space-y-3 text-sm text-black lg:text-base lg:leading-relaxed">
               <li>• Хаос в чата, ръчна комуникация за всеки размер и адрес.</li>
               <li>• Трудно управление на 500+ продукта.</li>
               <li>• Собственикът – единствената движеща сила на бизенса.</li>
             </ul>
           </div>
           <div className="rounded-3xl border border-primary/30 bg-card p-7">
-            <div className="inline-flex rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground">
+            <div className="inline-flex rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground lg:text-sm">
               След DigiStart
             </div>
-            <ul className="mt-4 space-y-3 text-sm text-foreground">
+            <ul className="mt-4 space-y-3 text-sm text-black lg:text-base lg:leading-relaxed">
               <li>• ~90 автоматизирани поръчки на месец.</li>
               <li>• Каталог с 10 000+ продукта.</li>
               <li>• Поддържаме социалните мрежи и рекламата – отговаряме вместо него.</li>
