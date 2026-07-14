@@ -205,6 +205,16 @@ export const ONLINE_STORE_MASHINA_ZA_PRODAZHBI_SELLING_FUNNEL: ServiceFunnelDefi
   audienceSegment: "selling",
   sourcePage:
     "Онлайн магазин funnel (/services/online-store/mashina-za-prodazhbi-veche-prodavam)",
+  hero: {
+    ...MASHINA_SHARED.hero,
+    video: {
+      provider: "google-drive",
+      fileId: "1aC5NbixOVWQNCae3I65HQ9izhGREQa7E",
+      title: "DigiStart – Денонощна машина за продажби",
+      thumbnailSrc: "/funnel/ако-не-ти-се-чеете(1080-1920).png",
+      format: "short",
+    },
+  },
   meta: {
     title: "Денонощна машина за продажби – вече продавате онлайн",
     description:
