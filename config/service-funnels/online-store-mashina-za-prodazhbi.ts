@@ -62,10 +62,10 @@ const MASHINA_SHARED = {
     ctaLabel: "Стартирайте процеса сега",
     video: {
       provider: "google-drive" as const,
-      fileId: "1VeV2RJqhtWhxzY7iOZc6RGY9big9aflY",
+      fileId: "1aC5NbixOVWQNCae3I65HQ9izhGREQa7E",
       title: "DigiStart – Денонощна машина за продажби",
-      thumbnailSrc: "/funnel/ако-не-ти-се-чеете.png",
-      format: "standard" as const,
+      thumbnailSrc: "/funnel/ако-не-ти-се-чеете(1080-1920).png",
+      format: "short" as const,
     },
   },
   whoIsItFor: MASHINA_WHO_IS_IT_FOR,
@@ -171,7 +171,7 @@ export const ONLINE_STORE_MASHINA_ZA_PRODAZHBI_STARTING_FUNNEL: ServiceFunnelDef
     title: "Денонощна машина за продажби – искате да започнете онлайн",
     description:
       "Искате да продавате онлайн, но не знаете откъде да започнете? Запазете безплатна 1-часова консултация и нека изградим система за продажби за Вашия бизнес.",
-    ogCoverKey: "onlineStore",
+    ogCoverKey: "homeOnline",
     ogAlt: "DigiStart – Денонощна машина за продажби (искам да продавам)",
     robots: { index: false, follow: true },
   },
@@ -205,21 +205,11 @@ export const ONLINE_STORE_MASHINA_ZA_PRODAZHBI_SELLING_FUNNEL: ServiceFunnelDefi
   audienceSegment: "selling",
   sourcePage:
     "Онлайн магазин funnel (/services/online-store/mashina-za-prodazhbi-veche-prodavam)",
-  hero: {
-    ...MASHINA_SHARED.hero,
-    video: {
-      provider: "google-drive",
-      fileId: "1aC5NbixOVWQNCae3I65HQ9izhGREQa7E",
-      title: "DigiStart – Денонощна машина за продажби",
-      thumbnailSrc: "/funnel/ако-не-ти-се-чеете(1080-1920).png",
-      format: "short",
-    },
-  },
   meta: {
     title: "Денонощна машина за продажби – вече продавате онлайн",
     description:
       "Вече продавате онлайн, но искате повече оборот? Запазете безплатна 1-часова консултация и нека надградим системата Ви за продажби.",
-    ogCoverKey: "onlineStore",
+    ogCoverKey: "homeOnline",
     ogAlt: "DigiStart – Денонощна машина за продажби (вече продавам)",
     robots: { index: false, follow: true },
   },

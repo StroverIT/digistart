@@ -15,8 +15,8 @@ const InnerNavigation = ({ funnelLayout = false }: InnerNavigationProps) => (
     items={funnelLayout ? READY_STORE_FUNNEL_SECTION_NAV : READY_STORE_SECTION_NAV}
     ariaLabel="Навигация по секции"
     capitalizeLinks
-    ctaHref="#buy-section"
-    ctaLabel="Купи сега"
+    ctaHref="#consultation"
+    ctaLabel="Безплатна консултация"
     stickyOffset={funnelLayout ? "funnel-banner" : "site-header"}
   />
 );

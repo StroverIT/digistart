@@ -21,7 +21,7 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
     title: `Започни да продаваш онлайн – от €${PACKAGE_TOTAL}/месец`,
     description:
       "Най-евтиният и най-лесният старт за онлайн продажби. Готов магазин, плащания, куриери и Meta реклами – ти само качваш продуктите.",
-    ogCoverKey: "onlineStore",
+    ogCoverKey: "homeOnline",
     ogAlt: "DigiStart – Старт на онлайн магазин",
   },
   metaLead: {

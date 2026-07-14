@@ -278,12 +278,8 @@ export function FunnelProcessStepsSection({ config, ctaHref }: FunnelProcessStep
       ref={sectionRef}
       id="process"
       aria-labelledby="process-steps-heading"
-      className="relative bg-foreground text-background"
+      className="relative overflow-hidden bg-foreground text-background"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-24 -top-28 z-20 h-80 w-80 rounded-full bg-primary/35 blur-3xl md:-right-20 md:-top-36 md:h-96 md:w-96"
-      />
       <div
         aria-hidden
         className="pointer-events-none absolute -bottom-20 -left-20 z-0 h-72 w-72 rounded-full bg-primary/20 blur-3xl"

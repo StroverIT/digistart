@@ -157,7 +157,7 @@ export default async function RootLayout({
   const showComingSoon = shouldRenderComingSoonInLayout(pathname);
 
   return (
-    <html lang="bg" className="bg-background">
+    <html lang="bg" className="bg-background overflow-x-clip">
       <body
         className={`${inter.variable} ${unbounded.variable} ${robotoSlab.variable} font-sans antialiased overflow-x-clip overscroll-x-none`}
       >
