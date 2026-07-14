@@ -157,6 +157,8 @@ export function FunnelHero({ config }: FunnelHeroProps) {
                   <YoutubeEmbed
                     youtubeId={hero.video.youtubeId}
                     title={hero.video.title}
+                    thumbnailSrc={hero.video.thumbnailSrc}
+                    format={hero.video.format}
                     className={cn(
                       funnelVideoEmbedClass,
                       hero.video.format === "short"

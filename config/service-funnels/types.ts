@@ -152,6 +152,7 @@ export type ServiceFunnelPasDefinition = ServiceFunnelSharedFields & {
           provider: "youtube";
           youtubeId: string;
           title: string;
+          thumbnailSrc?: string;
           format?: "short" | "standard";
         }
       | {

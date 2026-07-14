@@ -61,8 +61,8 @@ const MASHINA_SHARED = {
     titleLead: "Не",
     ctaLabel: "Стартирайте процеса сега",
     video: {
-      provider: "google-drive" as const,
-      fileId: "1aC5NbixOVWQNCae3I65HQ9izhGREQa7E",
+      provider: "youtube" as const,
+      youtubeId: "nefQSJ6FRxA",
       title: "DigiStart – Денонощна машина за продажби",
       thumbnailSrc: "/funnel/ако-не-ти-се-чеете(1080-1920).png",
       format: "short" as const,

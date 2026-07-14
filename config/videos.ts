@@ -33,8 +33,9 @@ export function getVideoBySlug(slug: string) {
   return videos.find((video) => video.slug === slug);
 }
 
-export function getYoutubeEmbedUrl(id: string) {
-  return `https://www.youtube-nocookie.com/embed/${id}`;
+export function getYoutubeEmbedUrl(id: string, options?: { autoplay?: boolean }) {
+  const url = `https://www.youtube-nocookie.com/embed/${id}`;
+  return options?.autoplay ? `${url}?autoplay=1` : url;
 }
 
 export function getGoogleDriveEmbedUrl(fileId: string, options?: { autoplay?: boolean }) {
