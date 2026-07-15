@@ -43,6 +43,7 @@ type HeroSectionProps = {
   hero?: ReadyStoreV2HeroConfig;
   contentClassName?: string;
   funnelId?: string;
+  ctaHref?: string;
 };
 
 // const HeroVideo = dynamic(() => import("./HeroVideo"), {
@@ -62,6 +63,7 @@ const HeroSection = ({
   hero,
   contentClassName = "pt-site-header",
   funnelId,
+  ctaHref = "#buy-section",
 }: HeroSectionProps) => {
   const config = hero ?? defaultHeroConfig;
   const { answer } = useCompetitorPlatformSelection(funnelId);
@@ -146,7 +148,7 @@ const HeroSection = ({
 
             <div className="flex flex-col items-center gap-3 border-t border-primary/10 bg-linear-to-b from-transparent to-primary/5 px-4 py-6 sm:px-6">
               <a
-                href="#buy-section"
+                href={ctaHref}
                 className="group inline-flex h-12 w-full max-w-sm items-center justify-center gap-2 rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition-transform hover:scale-[1.02] motion-reduce:hover:scale-100 sm:w-auto"
               >
                 {config.ctaLabel}

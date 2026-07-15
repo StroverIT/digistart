@@ -37,10 +37,6 @@ const AdminPanel = dynamic(
 const RealShop = dynamic(
   () => import("@/components/services/service-detail-ready-store-v2/RealShop"),
 );
-const BuySection = dynamic(
-  () => import("@/components/services/service-detail-ready-store-v2/BuySection"),
-);
-
 const ServiceBuyConsultationFormSection = dynamic(() =>
   import("@/components/services/service-buy-consultation-section").then((mod) => ({
     default: mod.ServiceBuyConsultationFormSection,
@@ -57,18 +53,17 @@ export const metadata: Metadata = {
 export default function OnlineStorePage() {
   return (
     <section>
-      <HeroSection />
+      <HeroSection ctaHref="#consultation" />
       <div className="bg-white pt-10 md:rounded-t-4xl md:-mt-10">
         <InnerNavigation />
         <Templates />
         <Benefits />
         <BuiltInChat />
         <MarketingTools />
-        <AdminPanel />
+        <AdminPanel ctaHref="#consultation" />
         <RealShop />
       </div>
 
-      <BuySection />
       <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
       <ServiceBuyConsultationFormSection consultation={ONLINE_STORE_CONSULTATION} />
     </section>

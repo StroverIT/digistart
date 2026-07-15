@@ -15,6 +15,10 @@ const SERVICE_LABELS: Record<ServiceSlug, string> = {
   ads: "Реклами",
 };
 
+const SERVICE_PAGE_PATHS: Partial<Record<ServiceSlug, string>> = {
+  "online-store": "/services/online-store/start-selling-online",
+};
+
 export function getServiceLabel(slug: ServiceSlug): string {
   return SERVICE_LABELS[slug];
 }
@@ -25,7 +29,9 @@ export async function addServiceFromPage(
   slug: ServiceSlug,
   expectedItemCount?: number,
 ) {
-  await page.goto(`/services/${slug}`, { waitUntil: "networkidle" });
+  await page.goto(SERVICE_PAGE_PATHS[slug] ?? `/services/${slug}`, {
+    waitUntil: "networkidle",
+  });
 
   if (slug === "ads") {
     await page

@@ -28,13 +28,24 @@ async function expectServiceBuySection(page: Page, buttonLabel = "Купи се�
   ).toBeVisible({ timeout: 30_000 });
 }
 
+async function expectServicePageReady(page: Page, serviceSlug: ServiceSlug) {
+  if (serviceSlug === "online-store") {
+    await expect(
+      page.locator("#consultation").getByRole("heading", { name: "Запиши безплатна консултация" }),
+    ).toBeVisible({ timeout: 30_000 });
+    return;
+  }
+
+  await expectServiceBuySection(page);
+}
+
 test.describe("Navigation and services", () => {
   test.describe("Cyrillic URL rewrites", () => {
     for (const { path, serviceSlug } of CYRILLIC_REWRITES) {
       test(`rewrite ${path} → /services/${serviceSlug}`, async ({ page }) => {
         await page.goto(path, { waitUntil: "domcontentloaded" });
         await expect(page).toHaveURL(new RegExp(`/services/${serviceSlug}`));
-        await expectServiceBuySection(page);
+        await expectServicePageReady(page, serviceSlug);
       });
     }
   });

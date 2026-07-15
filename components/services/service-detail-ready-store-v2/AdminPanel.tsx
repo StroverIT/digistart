@@ -35,7 +35,11 @@ const adminFeatures = [
   },
 ] as const;
 
-const AdminPanel = () => {
+type AdminPanelProps = {
+  ctaHref?: string;
+};
+
+const AdminPanel = ({ ctaHref = "#buy-section" }: AdminPanelProps) => {
   const sectionRef = useRef<HTMLElement>(null);
   useLandingScrollAnimations(sectionRef, { staggerReveal: 0.1, staggerCard: 0.12 });
 
@@ -54,7 +58,7 @@ const AdminPanel = () => {
             size="sm"
             className="shrink-0 self-center rounded-full px-8 text-sm font-semibold shadow-lg shadow-primary/20"
           >
-            <a href="#buy-section">Започни сега</a>
+            <a href={ctaHref}>Започни сега</a>
           </Button>
         </div>
       </div>
