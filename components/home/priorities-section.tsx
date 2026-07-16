@@ -22,7 +22,7 @@ const PRIORITIES = [
   {
     icon: Wrench,
     title: "„Инструменти“",
-    description: "Сайт, магазин, реклами - важни, но чак на трето място.",
+    description: "Сайт/онлайн магазин, магазин, реклами - важни, но чак на трето място.",
     trap: true,
   },
 ] as const;
@@ -70,7 +70,7 @@ export function PrioritiesSection() {
               LANDING_REVEAL_CLASS,
             )}
           >
-            Вече продаваш или искаш да започнеш?
+            Предлагаш продукт или услуга?
           </h2>
           <p
             data-animate-reveal
@@ -161,7 +161,7 @@ export function PrioritiesSection() {
           )}
         >
           <p className="font-accent text-xl leading-snug text-foreground md:text-2xl">
-            Създаваш най-добрия онлайн магазин, социална мрежа или SEO - но без
+            Създаваш най-добрия онлайн магазин/сайт, социална мрежа или SEO - но без
             аудитория и стратегия е все едно да си най-добрият оратор и да говориш
             на стената.
           </p>
