@@ -44,7 +44,7 @@ export function FunnelConsultationSection({ config, className }: FunnelConsultat
           showSocialProfileToggle={consultation.booking?.showSocialProfileToggle}
           notesLabel={consultation.booking?.notesLabel}
           notesPlaceholder={consultation.booking?.notesPlaceholder}
-          showOnSiteOption={consultation.booking?.showOnSiteOption ?? true}
+          showOnSiteOption={consultation.booking?.showOnSiteOption ?? false}
           pricing={consultation.pricing}
           className={cn("pt-0 md:pt-0", className)}
       />

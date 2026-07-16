@@ -86,7 +86,7 @@ export function ServiceBuyConsultationFormSection({
           showSocialProfileToggle={consultation.booking?.showSocialProfileToggle}
           notesLabel={consultation.booking?.notesLabel}
           notesPlaceholder={consultation.booking?.notesPlaceholder}
-          showOnSiteOption={consultation.booking?.showOnSiteOption ?? true}
+          showOnSiteOption={consultation.booking?.showOnSiteOption ?? false}
           className={cn("w-full max-w-none px-0 py-10 md:py-14", className)}
         />
       </div>

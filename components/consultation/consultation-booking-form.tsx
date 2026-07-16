@@ -14,6 +14,10 @@ import { flushAnalyticsEventsAsync, trackAnalyticsEvent } from "@/lib/analytics/
 import { trackMetaLead } from "@/lib/analytics/meta-pixel";
 import { toast } from "sonner";
 import { writeConsultationLeadSuccess } from "@/lib/consultation/lead-success";
+import { ConsultationSlotCalendar } from "@/components/consultation/consultation-slot-calendar";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+type HomeBookingStep = "calendar" | "times" | "slots" | "contact";
 
 type SlotDay = {
   date: string;
@@ -65,6 +69,7 @@ type Props = {
   orderId?: string;
   onBooked?: (booking: BookedPayload) => void;
   successRedirectPath?: string;
+  embeddedShowSlotsFirst?: boolean;
 };
 
 function formatDisplayDate(value: string, variant: "card" | "embedded") {
@@ -99,11 +104,21 @@ export default function ConsultationBookingForm({
   orderId,
   onBooked,
   successRedirectPath = source === "public" ? "/thank-you-lead" : undefined,
+  embeddedShowSlotsFirst = false,
 }: Props) {
   const { router, startLoadingOverlay, cancelLoadingOverlay } = useTransitionRouter();
   const rootRef = useRef<HTMLDivElement>(null);
+  const stepViewportRef = useRef<HTMLDivElement>(null);
+  const calendarStepRef = useRef<HTMLDivElement>(null);
+  const timesStepRef = useRef<HTMLDivElement>(null);
+  const slotsStepRef = useRef<HTMLDivElement>(null);
+  const contactStepRef = useRef<HTMLDivElement>(null);
+  const stepTweenRef = useRef<gsap.core.Timeline | null>(null);
+  const isStepAnimatingRef = useRef(false);
   const animatedSectionsRef = useRef(new Set<string>());
   const isEmbedded = variant === "embedded";
+  const isMobile = useIsMobile();
+  const isHomeSlotsFlow = embeddedShowSlotsFirst && isEmbedded;
   const [days, setDays] = useState<SlotDay[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
@@ -122,6 +137,7 @@ export default function ConsultationBookingForm({
   });
   const [meetingType, setMeetingType] = useState<"online" | "in_person">("online");
   const [hasSocialProfiles, setHasSocialProfiles] = useState(false);
+  const [bookingStep, setBookingStep] = useState<HomeBookingStep>("slots");
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -173,10 +189,18 @@ export default function ConsultationBookingForm({
     return name.length > 0 && phone.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }, [formData.name, formData.phone, formData.email]);
 
-  const showDayPicker = isContactComplete;
+  const showDayPicker = embeddedShowSlotsFirst ? true : isContactComplete;
   const showMeetingTypePicker = isContactComplete && showOnSiteOption;
   const showAddressField = showMeetingTypePicker && meetingType === "in_person";
-  const showTimePicker = isContactComplete && Boolean(selectedDate);
+  const showTimePickerInDesktopSlots =
+    isHomeSlotsFlow && !isMobile && Boolean(selectedDate);
+  const showTimePicker =
+    embeddedShowSlotsFirst && isHomeSlotsFlow && isMobile
+      ? false
+      : embeddedShowSlotsFirst
+        ? Boolean(selectedDate)
+        : isContactComplete && Boolean(selectedDate);
+  const showContactAfterSlotSelection = embeddedShowSlotsFirst ? Boolean(selectedTime) : true;
   const isAddressValid =
     meetingType !== "in_person" || formData.address.trim().length >= 5;
 
@@ -186,11 +210,285 @@ export default function ConsultationBookingForm({
       (showNotesField && !showSocialProfileToggle));
 
   useEffect(() => {
+    if (!isHomeSlotsFlow || isLoadingSlots) return;
+    const step: HomeBookingStep = isMobile ? "calendar" : "slots";
+    resetHomeStepView(step);
+    setBookingStep(step);
+  }, [isHomeSlotsFlow, isLoadingSlots, isMobile]);
+
+  useEffect(() => {
+    if (!isHomeSlotsFlow || selectedTime || isStepAnimatingRef.current) return;
+
+    const step: HomeBookingStep = isMobile ? (selectedDate ? "times" : "calendar") : "slots";
+    resetHomeStepView(step);
+    setBookingStep(step);
+  }, [isHomeSlotsFlow, isMobile, selectedDate, selectedTime]);
+
+  useEffect(() => {
+    if (!isHomeSlotsFlow || !isMobile || !selectedDate || bookingStep !== "calendar") return;
+    if (isStepAnimatingRef.current) return;
+
+    const fromEl = calendarStepRef.current;
+    const toEl = timesStepRef.current;
+    if (!fromEl || !toEl) {
+      setBookingStep("times");
+      return;
+    }
+
+    animateHomePanels("forward", fromEl, toEl, () => {
+      setBookingStep("times");
+      stepViewportRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [bookingStep, isHomeSlotsFlow, isMobile, selectedDate]);
+
+  useEffect(() => {
+    if (!isHomeSlotsFlow || !selectedTime || isStepAnimatingRef.current) return;
+
+    if (isMobile && bookingStep === "times") {
+      const fromEl = timesStepRef.current;
+      const toEl = contactStepRef.current;
+      if (!fromEl || !toEl) {
+        setBookingStep("contact");
+        return;
+      }
+
+      animateHomePanels("forward", fromEl, toEl, () => {
+        setBookingStep("contact");
+        stepViewportRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      return;
+    }
+
+    if (!isMobile && bookingStep === "slots") {
+      const fromEl = slotsStepRef.current;
+      const toEl = contactStepRef.current;
+      if (!fromEl || !toEl) {
+        setBookingStep("contact");
+        return;
+      }
+
+      animateHomePanels("forward", fromEl, toEl, () => {
+        setBookingStep("contact");
+      });
+    }
+  }, [bookingStep, isHomeSlotsFlow, isMobile, selectedTime]);
+
+  useEffect(() => {
+    if (embeddedShowSlotsFirst) return;
     if (!isContactComplete) {
       setSelectedDate("");
       setSelectedTime("");
     }
-  }, [isContactComplete]);
+  }, [embeddedShowSlotsFirst, isContactComplete]);
+
+  const isTimeLocallyDisabled = (date: string, time: string) =>
+    locallyDisabledSlots[date]?.has(time) ?? false;
+
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date);
+  };
+
+  const handleTimeSelect = (time: string) => {
+    if (isTimeLocallyDisabled(selectedDate, time)) return;
+    setSelectedTime(time);
+  };
+
+  const handleBackToCalendar = () => {
+    if (!isHomeSlotsFlow || !isMobile || bookingStep !== "times") return;
+
+    const fromEl = timesStepRef.current;
+    const toEl = calendarStepRef.current;
+    if (!fromEl || !toEl) {
+      setSelectedDate("");
+      setSelectedTime("");
+      setBookingStep("calendar");
+      return;
+    }
+
+    animateHomePanels("back", fromEl, toEl, () => {
+      animatedSectionsRef.current.delete("day-picker");
+      setSelectedDate("");
+      setSelectedTime("");
+      setBookingStep("calendar");
+    });
+  };
+
+  const handleBackToSlots = () => {
+    if (!isHomeSlotsFlow) return;
+
+    if (isMobile && bookingStep === "contact" && selectedTime) {
+      const fromEl = contactStepRef.current;
+      const toEl = timesStepRef.current;
+      if (!fromEl || !toEl) {
+        setSelectedTime("");
+        setBookingStep("times");
+        return;
+      }
+
+      animateHomePanels("back", fromEl, toEl, () => {
+        setSelectedTime("");
+        setBookingStep("times");
+      });
+      return;
+    }
+
+    if (!isMobile && bookingStep === "contact" && selectedTime) {
+      const fromEl = contactStepRef.current;
+      const toEl = slotsStepRef.current;
+      if (!fromEl || !toEl) {
+        setSelectedTime("");
+        setBookingStep("slots");
+        return;
+      }
+
+      animateHomePanels("back", fromEl, toEl, () => {
+        animatedSectionsRef.current.delete("time-picker");
+        setSelectedTime("");
+        setBookingStep("slots");
+      });
+      return;
+    }
+
+    setSelectedTime("");
+    setBookingStep(isMobile ? "times" : "slots");
+  };
+
+  function resetHomeStepView(step: HomeBookingStep) {
+    const calendarEl = calendarStepRef.current;
+    const timesEl = timesStepRef.current;
+    const slotsEl = slotsStepRef.current;
+    const contactEl = contactStepRef.current;
+
+    stepTweenRef.current?.kill();
+    isStepAnimatingRef.current = false;
+
+    const hide = (el: HTMLElement | null) => {
+      if (!el) return;
+      gsap.set(el, {
+        display: "none",
+        x: 0,
+        xPercent: 0,
+        opacity: 1,
+        clearProps: "transform,top,left,right",
+      });
+    };
+
+    const show = (el: HTMLElement | null) => {
+      if (!el) return;
+      gsap.set(el, {
+        display: "grid",
+        position: "relative",
+        x: 0,
+        xPercent: 0,
+        opacity: 1,
+        clearProps: "transform,top,left,right",
+      });
+    };
+
+    hide(calendarEl);
+    hide(timesEl);
+    hide(slotsEl);
+    hide(contactEl);
+
+    if (isMobile) {
+      if (step === "calendar") show(calendarEl);
+      if (step === "times") show(timesEl);
+      if (step === "contact") show(contactEl);
+      return;
+    }
+
+    if (step === "slots") show(slotsEl);
+    if (step === "contact") show(contactEl);
+  }
+
+  function animateHomePanels(
+    direction: "forward" | "back",
+    fromEl: HTMLElement,
+    toEl: HTMLElement,
+    onComplete?: () => void,
+  ) {
+    stepTweenRef.current?.kill();
+    isStepAnimatingRef.current = true;
+
+    const duration = 0.42;
+    const ease = "power2.inOut";
+
+    if (stepViewportRef.current) {
+      stepViewportRef.current.style.overflowX = "hidden";
+    }
+
+    if (direction === "forward") {
+      gsap.set(fromEl, { display: "grid", position: "relative", xPercent: 0, opacity: 1 });
+      gsap.set(toEl, {
+        display: "grid",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        xPercent: 100,
+        opacity: 1,
+      });
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          gsap.set(fromEl, { display: "none", clearProps: "transform,opacity" });
+          gsap.set(toEl, {
+            position: "relative",
+            clearProps: "transform,top,left,right,opacity",
+          });
+          if (stepViewportRef.current) {
+            stepViewportRef.current.style.overflowX = "";
+          }
+          isStepAnimatingRef.current = false;
+          onComplete?.();
+        },
+      });
+
+      tl.to(fromEl, { xPercent: -100, opacity: 0.45, duration, ease }, 0).to(
+        toEl,
+        { xPercent: 0, duration, ease },
+        0,
+      );
+
+      stepTweenRef.current = tl;
+      return;
+    }
+
+    gsap.set(fromEl, { display: "grid", position: "relative", xPercent: 0, opacity: 1 });
+    gsap.set(toEl, {
+      display: "grid",
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      xPercent: -100,
+      opacity: 0.45,
+    });
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        gsap.set(fromEl, { display: "none", clearProps: "transform,opacity" });
+        gsap.set(toEl, {
+          position: "relative",
+          opacity: 1,
+          clearProps: "transform,top,left,right",
+        });
+        if (stepViewportRef.current) {
+          stepViewportRef.current.style.overflowX = "";
+        }
+        isStepAnimatingRef.current = false;
+        onComplete?.();
+      },
+    });
+
+    tl.to(fromEl, { xPercent: 100, opacity: 0.45, duration, ease }, 0).to(
+      toEl,
+      { xPercent: 0, opacity: 1, duration, ease },
+      0,
+    );
+
+    stepTweenRef.current = tl;
+  }
 
   useEffect(() => {
     if (meetingType === "online") {
@@ -203,9 +501,6 @@ export default function ConsultationBookingForm({
       setSelectedTime("");
     }
   }, [selectedDate]);
-
-  const isTimeLocallyDisabled = (date: string, time: string) =>
-    locallyDisabledSlots[date]?.has(time) ?? false;
 
   useEffect(() => {
     if (!selectedDate) return;
@@ -286,7 +581,19 @@ export default function ConsultationBookingForm({
     return () => {
       tween.kill();
     };
-  }, [isLoadingSlots, isContactComplete, showMeetingTypePicker, showAddressField, showTimePicker, hasSocialProfiles, showSocialProfileToggle]);
+  }, [
+    isLoadingSlots,
+    isContactComplete,
+    showMeetingTypePicker,
+    showAddressField,
+    showTimePicker,
+    showDayPicker,
+    showContactAfterSlotSelection,
+    embeddedShowSlotsFirst,
+    bookingStep,
+    hasSocialProfiles,
+    showSocialProfileToggle,
+  ]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -442,13 +749,217 @@ export default function ConsultationBookingForm({
 
   const embeddedInputClass =
     "h-12 border-0 bg-background shadow-sm ring-1 ring-foreground/[0.06] focus-visible:ring-accent/30";
+  const embeddedTextareaClass =
+    "min-h-28 resize-none border-0 bg-background shadow-sm ring-1 ring-foreground/[0.06] focus-visible:ring-accent/30";
 
-  const formContent = isLoadingSlots ? (
-    <div className="flex items-center justify-center py-10">
-      <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+  const dayPickerSection = showDayPicker ? (
+    <div
+      data-consult-animate-key="day-picker"
+      className={cn(
+        "opacity-0 translate-y-10",
+        isEmbedded ? undefined : "space-y-2",
+      )}
+    >
+      {isEmbedded ? (
+        <ConsultationSlotCalendar
+          days={days}
+          selectedDate={selectedDate}
+          onSelectDate={handleDateSelect}
+        />
+      ) : (
+        <>
+          <p className="text-sm font-medium">Изберете ден</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {days.map((day) => (
+              <button
+                key={day.date}
+                type="button"
+                onClick={() => setSelectedDate(day.date)}
+                className={dayButtonClass(day)}
+                disabled={day.availableTimes.length === 0}
+              >
+                {formatDisplayDate(day.date, variant)}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
-  ) : (
-    <div className={cn(isEmbedded ? "grid gap-5" : "space-y-6")}>
+  ) : null;
+
+  const timeSlotsContent = (
+    <div className={cn(isEmbedded ? "grid grid-cols-3 gap-2 md:grid-cols-4" : "flex flex-wrap gap-2")}>
+      {availableTimes.map((time) => (
+        <button
+          key={time}
+          type="button"
+          onClick={() => handleTimeSelect(time)}
+          className={timeButtonClass(time)}
+          disabled={isTimeLocallyDisabled(selectedDate, time)}
+        >
+          {time}
+        </button>
+      ))}
+      {availableTimes.length === 0 && (
+        <p className="text-sm text-muted-foreground">Няма свободни часове за избрания ден.</p>
+      )}
+    </div>
+  );
+
+  const timePickerSection = showTimePicker ? (
+    <div data-consult-animate-key="time-picker" className="space-y-2 opacity-0 translate-y-10">
+      {isEmbedded ? (
+        <Label>Свободни часове</Label>
+      ) : (
+        <p className="text-sm font-medium">Изберете час</p>
+      )}
+      {timeSlotsContent}
+    </div>
+  ) : null;
+
+  const mobileTimesSection = (
+    <div className="grid gap-5">
+      <div className="space-y-3">
+        <h3 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+          Изберете час
+        </h3>
+        {selectedDate ? (
+          <p className="text-sm text-muted-foreground">
+            {formatDisplayDate(selectedDate, variant)}
+          </p>
+        ) : null}
+        <button
+          type="button"
+          onClick={handleBackToCalendar}
+          className="text-sm font-medium text-accent transition-colors hover:text-accent/80"
+        >
+          ← Промени ден
+        </button>
+      </div>
+      <div data-consult-animate-key="time-picker" className="space-y-2">
+        <Label>Свободни часове</Label>
+        {timeSlotsContent}
+      </div>
+    </div>
+  );
+
+  const submitSection =
+    showTimePicker && showContactAfterSlotSelection ? (
+      <div data-consult-animate-key="submit" className="opacity-0 translate-y-10">
+        <Button
+          type="button"
+          onClick={() => void handleSubmit()}
+          disabled={
+            isSubmitting ||
+            !selectedDate ||
+            !selectedTime ||
+            !isContactComplete ||
+            !isAddressValid ||
+            availableTimes.length === 0 ||
+            isTimeLocallyDisabled(selectedDate, selectedTime)
+          }
+          className={cn(
+            "w-full",
+            isEmbedded &&
+            "h-14 rounded-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90",
+          )}
+        >
+          {isSubmitting ? "Запазване..." : submitLabel}
+        </Button>
+      </div>
+    ) : null;
+
+  const homeContactSection = (
+    <div className="grid gap-5">
+      <div className="space-y-3">
+        <h3 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+          Попълни данните си
+        </h3>
+        {selectedDate && selectedTime ? (
+          <p className="text-sm text-muted-foreground">
+            {formatDisplayDate(selectedDate, variant)}, {selectedTime} ч.
+          </p>
+        ) : null}
+        <button
+          type="button"
+          onClick={handleBackToSlots}
+          className="text-sm font-medium text-accent transition-colors hover:text-accent/80"
+        >
+          ← Промени час
+        </button>
+      </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor="consult-name">Две имена</Label>
+        <Input
+          id="consult-name"
+          name="name"
+          value={formData.name}
+          onChange={onInputChange}
+          placeholder="Иван Иванов"
+          className={cn(embeddedInputClass, "h-12")}
+          required
+        />
+      </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor="consult-email">Имейл</Label>
+        <Input
+          id="consult-email"
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={onInputChange}
+          placeholder="ivan@example.com"
+          className={cn(embeddedInputClass, "h-12")}
+          required
+        />
+      </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor="consult-company">Уебсайт / Онлайн магазин</Label>
+        <Input
+          id="consult-company"
+          name="company"
+          value={formData.company}
+          onChange={onInputChange}
+          placeholder="https://example.com"
+          className={cn(embeddedInputClass, "h-12")}
+        />
+      </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor="consult-notes">
+          Какво се опитваш да постигнеш / как можем да ти помогнем?
+        </Label>
+        <Textarea
+          id="consult-notes"
+          name="notes"
+          value={formData.notes}
+          onChange={onInputChange}
+          placeholder="Разкажи накратко за целта си и какво искаш да постигнеш."
+          rows={4}
+          className={embeddedTextareaClass}
+        />
+      </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor="consult-phone">Телефонен номер</Label>
+        <Input
+          id="consult-phone"
+          name="phone"
+          value={formData.phone}
+          onChange={onInputChange}
+          placeholder="0888 123 456"
+          className={cn(embeddedInputClass, "h-12")}
+          required
+        />
+      </div>
+    </div>
+  );
+
+  const contactSection = (
+    <>
       <div
         data-consult-animate-key="contact"
         className={cn(
@@ -456,7 +967,7 @@ export default function ConsultationBookingForm({
           isEmbedded ? "grid gap-5" : "grid grid-cols-1 gap-4 sm:grid-cols-2",
         )}
       >
-        {isEmbedded ? (
+        {showContactAfterSlotSelection && isEmbedded && !isHomeSlotsFlow ? (
           <div className="grid gap-2">
             <Label htmlFor="consult-name">Име и фамилия</Label>
             <Input
@@ -469,7 +980,7 @@ export default function ConsultationBookingForm({
               required
             />
           </div>
-        ) : (
+        ) : showContactAfterSlotSelection ? (
           <Input
             name="name"
             value={formData.name}
@@ -477,9 +988,9 @@ export default function ConsultationBookingForm({
             placeholder="Име и фамилия"
             required
           />
-        )}
+        ) : null}
 
-        {isEmbedded ? (
+        {showContactAfterSlotSelection && isEmbedded && !isHomeSlotsFlow ? (
           <div className="grid gap-5 md:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="consult-phone">Телефон</Label>
@@ -507,7 +1018,7 @@ export default function ConsultationBookingForm({
               />
             </div>
           </div>
-        ) : (
+        ) : showContactAfterSlotSelection ? (
           <>
             <Input
               name="phone"
@@ -533,10 +1044,10 @@ export default function ConsultationBookingForm({
               />
             ) : null}
           </>
-        )}
+        ) : null}
       </div>
 
-      {isEmbedded && showSocialProfileToggle ? (
+      {showContactAfterSlotSelection && isEmbedded && showSocialProfileToggle ? (
         <div
           data-consult-animate-key="social-toggle"
           className="flex items-center gap-3 opacity-0 translate-y-10"
@@ -552,7 +1063,7 @@ export default function ConsultationBookingForm({
         </div>
       ) : null}
 
-      {showSocialProfileLinkField ? (
+      {showContactAfterSlotSelection && showSocialProfileLinkField ? (
         <div data-consult-animate-key="notes" className="grid gap-2 opacity-0 translate-y-10">
           <Label htmlFor="consult-notes">{notesLabel}</Label>
           <Input
@@ -566,7 +1077,7 @@ export default function ConsultationBookingForm({
         </div>
       ) : null}
 
-      {showMeetingTypePicker ? (
+      {showContactAfterSlotSelection && showMeetingTypePicker ? (
         <div data-consult-animate-key="meeting-type" className="space-y-2 opacity-0 translate-y-10">
           <Label>Формат на срещата</Label>
           <div className="grid grid-cols-2 gap-2">
@@ -588,7 +1099,7 @@ export default function ConsultationBookingForm({
         </div>
       ) : null}
 
-      {showAddressField ? (
+      {showContactAfterSlotSelection && showAddressField ? (
         <div data-consult-animate-key="address" className="grid gap-2 opacity-0 translate-y-10">
           <Label htmlFor="consult-address">Адрес в София</Label>
           <Input
@@ -603,56 +1114,7 @@ export default function ConsultationBookingForm({
         </div>
       ) : null}
 
-      {showDayPicker ? (
-        <div data-consult-animate-key="day-picker" className="space-y-2 opacity-0 translate-y-10">
-          {isEmbedded ? (
-            <Label>Изберете ден</Label>
-          ) : (
-            <p className="text-sm font-medium">Изберете ден</p>
-          )}
-          <div className={cn("grid gap-2", isEmbedded ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2 sm:grid-cols-3")}>
-            {days.map((day) => (
-              <button
-                key={day.date}
-                type="button"
-                onClick={() => setSelectedDate(day.date)}
-                className={dayButtonClass(day)}
-                disabled={day.availableTimes.length === 0}
-              >
-                {formatDisplayDate(day.date, variant)}
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      {showTimePicker ? (
-        <div data-consult-animate-key="time-picker" className="space-y-2 opacity-0 translate-y-10">
-          {isEmbedded ? (
-            <Label>Свободни часове</Label>
-          ) : (
-            <p className="text-sm font-medium">Изберете час</p>
-          )}
-          <div className={cn(isEmbedded ? "grid grid-cols-3 gap-2 md:grid-cols-4" : "flex flex-wrap gap-2")}>
-            {availableTimes.map((time) => (
-              <button
-                key={time}
-                type="button"
-                onClick={() => setSelectedTime(time)}
-                className={timeButtonClass(time)}
-                disabled={isTimeLocallyDisabled(selectedDate, time)}
-              >
-                {time}
-              </button>
-            ))}
-            {availableTimes.length === 0 && (
-              <p className="text-sm text-muted-foreground">Няма свободни часове за избрания ден.</p>
-            )}
-          </div>
-        </div>
-      ) : null}
-
-      {!isEmbedded && showNotesField ? (
+      {showContactAfterSlotSelection && !isEmbedded && showNotesField ? (
         <div data-consult-animate-key="notes" className="opacity-0 translate-y-10">
           <Textarea
             name="notes"
@@ -663,11 +1125,36 @@ export default function ConsultationBookingForm({
           />
         </div>
       ) : null}
+    </>
+  );
 
-      {error ? <p className="text-sm text-red-500">{error}</p> : null}
+  const formContent = isLoadingSlots ? (
+    <div className="flex items-center justify-center py-10">
+      <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+    </div>
+  ) : isHomeSlotsFlow ? (
+    <div ref={stepViewportRef} className="relative w-full overflow-x-hidden">
+      {isMobile ? (
+        <>
+          <div ref={calendarStepRef} className="grid w-full gap-5">
+            {dayPickerSection}
+          </div>
 
-      {showTimePicker ? (
-        <div data-consult-animate-key="submit" className="opacity-0 translate-y-10">
+          <div ref={timesStepRef} className="hidden w-full gap-5">
+            {mobileTimesSection}
+          </div>
+        </>
+      ) : (
+        <div ref={slotsStepRef} className="grid w-full gap-5">
+          {dayPickerSection}
+          {showTimePickerInDesktopSlots ? timePickerSection : null}
+        </div>
+      )}
+
+      <div ref={contactStepRef} className="hidden w-full gap-5">
+        {homeContactSection}
+        {error ? <p className="text-sm text-red-500">{error}</p> : null}
+        {selectedTime ? (
           <Button
             type="button"
             onClick={() => void handleSubmit()}
@@ -675,20 +1162,36 @@ export default function ConsultationBookingForm({
               isSubmitting ||
               !selectedDate ||
               !selectedTime ||
+              !isContactComplete ||
               !isAddressValid ||
               availableTimes.length === 0 ||
               isTimeLocallyDisabled(selectedDate, selectedTime)
             }
-            className={cn(
-              "w-full",
-              isEmbedded &&
-              "h-14 rounded-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90",
-            )}
+            className="h-14 w-full rounded-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
           >
             {isSubmitting ? "Запазване..." : submitLabel}
           </Button>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
+    </div>
+  ) : (
+    <div className={cn(isEmbedded ? "grid gap-5" : "space-y-6")}>
+      {embeddedShowSlotsFirst ? (
+        <>
+          {dayPickerSection}
+          {timePickerSection}
+          {contactSection}
+        </>
+      ) : (
+        <>
+          {contactSection}
+          {dayPickerSection}
+          {timePickerSection}
+        </>
+      )}
+
+      {error ? <p className="text-sm text-red-500">{error}</p> : null}
+      {submitSection}
     </div>
   );
 

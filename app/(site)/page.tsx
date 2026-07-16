@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { BookingForm } from "@/components/home/booking-form";
 import { CaseStudy } from "@/components/home/case-study";
 import { HomeHero } from "@/components/home/hero";
-import { MotivationBlock } from "@/components/home/motivation-block";
-import { PathTabs } from "@/components/home/path-tabs";
+import { PrioritiesSection } from "@/components/home/priorities-section";
+import { TargetAudiencesTeaser } from "@/components/home/target-audiences-teaser";
+// import { PathTabs } from "@/components/home/path-tabs";
 import { HOME_PATHS, parsePathKey } from "@/lib/data/home-paths";
 import { HOME_PATH_OG_COVER, OG_COVER } from "@/lib/seo/open-graph";
 
@@ -61,10 +62,11 @@ export default function HomePage() {
   return (
     <>
       <HomeHero />
-      <PathTabs />
-      <MotivationBlock />
+      <BookingForm showProcessSteps={false} showBadge={false} />
+      <PrioritiesSection />
+      {/* <PathTabs /> */}
       <CaseStudy />
-      <BookingForm />
+      <TargetAudiencesTeaser />
     </>
   );
 }

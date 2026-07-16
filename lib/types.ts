@@ -213,6 +213,19 @@ export interface DigitalRoadmapLeadRow {
   createdAt: string;
 }
 
+export interface TargetAudienceLeadRow {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  website: string | null;
+  company: string;
+  urgency: string;
+  source: string;
+  pagePath: string | null;
+  createdAt: string;
+}
+
 // Business Lead types
 export type LeadStatus = "prospect" | "contacted" | "accepted" | "declined";
 

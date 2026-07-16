@@ -105,6 +105,5 @@ export const SOCIAL_MEDIA_DONT_LOSE_TURNOVER_FUNNEL: ServiceFunnelDefinition = {
     showSocialProfileToggle: true,
     notesLabel: "Линк към Instagram/Facebook профила",
     notesPlaceholder: "https://instagram.com/твоят_профил",
-    showOnSiteOption: true,
   },
 };

@@ -113,7 +113,6 @@ const MASHINA_SHARED = {
     booking: {
       notesLabel: "Какво искате да продавате онлайн?",
       notesPlaceholder: "Напр. handmade свещи, дрехи, хранителни продукти...",
-      showOnSiteOption: true,
     },
   },
   faq: {

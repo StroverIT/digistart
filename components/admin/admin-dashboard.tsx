@@ -25,6 +25,7 @@ import { SurveyCombinationsChart } from "@/components/admin/survey-combinations-
 import { ViewsPerDayChart } from "@/components/admin/views-per-day-chart";
 import { ServiceSlotsPanel } from "@/components/admin/service-slots-panel";
 import { DigitalRoadmapLeadsPanel } from "@/components/admin/digital-roadmap-leads-panel";
+import { TargetAudienceLeadsPanel } from "@/components/admin/target-audience-leads-panel";
 import { DashboardSectionHeading } from "@/components/admin/dashboard-section-heading";
 import { UserDecisionsPanel } from "@/components/admin/user-decisions-panel";
 import { CtaClicksPanel } from "@/components/admin/cta-clicks-panel";
@@ -76,9 +77,9 @@ function StatCard({ title, value, description, icon, trend }: StatCardProps) {
   );
 }
 
-export function AdminDashboard() {
+export function AdminDashboard({ initialTab }: { initialTab?: DashboardTabId }) {
   const dashboardRootRef = useRef<HTMLDivElement>(null);
-  const [activeTab, setActiveTab] = useState<DashboardTabId>("overview");
+  const [activeTab, setActiveTab] = useState<DashboardTabId>(initialTab ?? "overview");
   const [orders, setOrders] = useState<Order[]>([]);
   const [serviceStats, setServiceStats] = useState<ServiceStats[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -1237,6 +1238,7 @@ export function AdminDashboard() {
         description="Слотове, заявки и текущи задачи"
       />
       <ServiceSlotsPanel />
+      <TargetAudienceLeadsPanel />
       <DigitalRoadmapLeadsPanel />
         </TabsContent>
       </Tabs>

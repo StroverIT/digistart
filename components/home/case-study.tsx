@@ -71,7 +71,8 @@ export function CaseStudy({ className }: CaseStudyProps) {
             <ul className="mt-4 space-y-3 text-sm text-black lg:text-base lg:leading-relaxed">
               <li>• Хаос в чата, ръчна комуникация за всеки размер и адрес.</li>
               <li>• Трудно управление на 500+ продукта.</li>
-              <li>• Собственикът – единствената движеща сила на бизенса.</li>
+              <li>• Рекламите говореха към грешната аудитория.</li>
+              <li>• Собственикът – единствената движеща сила на бизнеса.</li>
             </ul>
           </div>
           <div

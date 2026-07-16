@@ -160,7 +160,6 @@ export const ONLINE_STORE_START_SELLING_FUNNEL: ServiceFunnelDefinition = {
     booking: {
       notesLabel: "Какво искаш да продаваш онлайн?",
       notesPlaceholder: "Напр. handmade свещи, дрехи, хранителни продукти...",
-      showOnSiteOption: true,
     },
   },
   faq: {

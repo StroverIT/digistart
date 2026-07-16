@@ -331,3 +331,21 @@ model DigitalRoadmapLead {
   @@index([createdAt(sort: Desc)])
   @@map("digital_roadmap_leads")
 }
+
+model TargetAudienceLead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  website   String?
+  company   String
+  urgency   String
+  source    String   @default("target-audiences")
+  pagePath  String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([createdAt(sort: Desc)])
+  @@index([email])
+  @@map("target_audience_leads")
+}

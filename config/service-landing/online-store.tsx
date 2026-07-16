@@ -226,6 +226,5 @@ export const ONLINE_STORE_CONSULTATION = {
   booking: {
     notesLabel: "Какво искаш да продаваш онлайн?",
     notesPlaceholder: "Напр. handmade свещи, дрехи, хранителни продукти...",
-    showOnSiteOption: true,
   },
 } as const;
