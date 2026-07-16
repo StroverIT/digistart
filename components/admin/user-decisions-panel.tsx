@@ -70,7 +70,7 @@ export function UserDecisionsPanel({ funnelCompetitorStats }: UserDecisionsPanel
       <CardHeader>
         <CardTitle>Решения на посетителите</CardTitle>
         <p className="text-sm text-muted-foreground font-normal">
-          Отговори на „От коя платформа идваш?“ — общо {totalDecisions} избора
+          Отговори на „От коя платформа идваш?“ - общо {totalDecisions} избора
         </p>
       </CardHeader>
       <CardContent className="space-y-6">

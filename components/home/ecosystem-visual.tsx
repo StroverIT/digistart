@@ -163,7 +163,7 @@ export function EcosystemVisual() {
 
   return (
     <div ref={rootRef} className="relative mx-auto aspect-square w-full max-w-[480px]">
-      {/* Soft ambient wash — wrappers keep centering free of GSAP transforms */}
+      {/* Soft ambient wash - wrappers keep centering free of GSAP transforms */}
       <div className="absolute left-1/2 top-1/2 h-[70%] w-[70%] -translate-x-1/2 -translate-y-1/2">
         <div
           data-eco-corona

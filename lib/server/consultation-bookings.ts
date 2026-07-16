@@ -346,7 +346,7 @@ async function sendConsultationEmails(booking: ConsultationRecord) {
   const notesLine = booking.notes?.trim() ? `\nБележки: ${booking.notes.trim()}` : "";
   const commonText =
     booking.meetingType === "in_person"
-      ? `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: На място в София${booking.address ? ` — ${booking.address}` : ""}${notesLine}\n${calendarLine}`
+      ? `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: На място в София${booking.address ? ` - ${booking.address}` : ""}${notesLine}\n${calendarLine}`
       : `Консултация: ${booking.date} ${booking.time} (${booking.timezone ?? "Europe/Sofia"})\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nИзточник: ${booking.sourcePage ?? booking.source}\nФормат: Онлайн\nGoogle Meet: ${booking.meetUrl ?? "Ще бъде добавен допълнително"}${notesLine}\n${calendarLine}`;
 
   const delivery = resolveOutboundEmailDelivery({

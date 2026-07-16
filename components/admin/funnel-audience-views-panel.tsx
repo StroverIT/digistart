@@ -58,7 +58,7 @@ export function FunnelAudienceViewsPanel({ stats }: FunnelAudienceViewsPanelProp
       <CardHeader>
         <CardTitle>Аудитория на денонощната машина</CardTitle>
         <p className="text-sm text-muted-foreground font-normal">
-          Прегледи на отделните funnel страници — общо {stats.allTimeTotal} прегледа
+          Прегледи на отделните funnel страници - общо {stats.allTimeTotal} прегледа
           {stats.lastDaysTotal > 0 ? ` (${stats.lastDaysTotal} за 30 дни)` : ""}
         </p>
       </CardHeader>

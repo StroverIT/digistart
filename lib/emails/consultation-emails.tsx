@@ -81,7 +81,7 @@ function ConsultationCustomerEmail({ booking }: { booking: ConsultationEmailBook
           </Text>
           {booking.meetingType === "in_person" ? (
             <>
-              <Text>На място в София: {booking.address ? ` — ${booking.address}` : ""}</Text>
+              <Text>На място в София: {booking.address ? ` - ${booking.address}` : ""}</Text>
             </>
           ) : (
             <>
@@ -119,7 +119,7 @@ function ConsultationAdminEmail({ booking }: { booking: ConsultationEmailBooking
             {booking.notes ? <Text>Бележки: {booking.notes}</Text> : null}
             {booking.meetingType === "in_person" ? (
               <>
-                <Text>Формат: На място в София — {booking.address ?? "-"}</Text>
+                <Text>Формат: На място в София - {booking.address ?? "-"}</Text>
               </>
             ) : (
               <>

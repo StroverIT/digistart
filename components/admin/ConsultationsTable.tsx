@@ -351,7 +351,7 @@ export default function ConsultationsTable({
                         {consultation.notes}
                       </span>
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <span className="text-muted-foreground">-</span>
                     )}
                   </td>
                   <td className="py-3 px-4 text-sm">
@@ -382,7 +382,7 @@ export default function ConsultationsTable({
                     {consultation.meetingType === "in_person" ? (
                       <span title={consultation.address}>
                         На място
-                        {consultation.address ? ` — ${consultation.address}` : ""}
+                        {consultation.address ? ` - ${consultation.address}` : ""}
                       </span>
                     ) : consultation.meetUrl ? (
                       <a
@@ -431,7 +431,7 @@ export default function ConsultationsTable({
                     variant="outline"
                     className={cn(
                       statusBadgeClass[selectedConsultation.status as VisibleStatus] ??
-                        "border-border bg-muted text-foreground"
+                      "border-border bg-muted text-foreground"
                     )}
                   >
                     {statusLabel[selectedConsultation.status as VisibleStatus] ??
@@ -542,7 +542,7 @@ export default function ConsultationsTable({
                 </section>
 
                 {selectedConsultation.meetingType === "in_person" &&
-                selectedConsultation.address?.trim() ? (
+                  selectedConsultation.address?.trim() ? (
                   <section className="space-y-2">
                     <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                       Адрес
@@ -612,7 +612,7 @@ export default function ConsultationsTable({
 
               <SheetFooter className="shrink-0 border-t border-border bg-background px-6 py-4 sm:flex-row sm:justify-stretch">
                 {selectedConsultation.meetingType !== "in_person" &&
-                selectedConsultation.meetUrl ? (
+                  selectedConsultation.meetUrl ? (
                   <Button asChild className="w-full">
                     <a
                       href={selectedConsultation.meetUrl}

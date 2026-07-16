@@ -214,7 +214,7 @@ export default function TargetAudiencesLeadsTable({
                         {lead.website}
                       </a>
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <span className="text-muted-foreground">-</span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-sm">{lead.company}</td>
@@ -279,7 +279,7 @@ export default function TargetAudiencesLeadsTable({
                 />
                 <FormAnswer
                   label={targetAudiencesFormFields.website}
-                  value={selectedLead.website ?? "—"}
+                  value={selectedLead.website ?? "-"}
                   href={selectedLead.website ? toHref(selectedLead.website) : undefined}
                   copyable={Boolean(selectedLead.website)}
                 />

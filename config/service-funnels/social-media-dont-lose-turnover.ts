@@ -31,7 +31,7 @@ export const SOCIAL_MEDIA_DONT_LOSE_TURNOVER_FUNNEL: ServiceFunnelDefinition = {
   },
   whoIsItFor: {
     title: "За кого е?",
-    subtitle: "Партньорство за дългосрочен растеж — не еднократна услуга",
+    subtitle: "Партньорство за дългосрочен растеж - не еднократна услуга",
     items: [
       {
         title: "Ако не търсиш изпълнители или дигитални агенции.",

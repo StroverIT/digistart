@@ -291,7 +291,7 @@ export function CompetitorPlatformPicker({
                   Коя платформа използваш?
                 </label>
                 <p className="mt-1 text-sm text-slate-600">
-                  Напиши името на платформата — полето е задължително.
+                  Напиши името на платформата - полето е задължително.
                 </p>
                 <Input
                   id="competitor-other-label"

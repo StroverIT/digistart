@@ -52,7 +52,7 @@ export function ConsultationSourcesPanel({ stats }: ConsultationSourcesPanelProp
       <CardHeader>
         <CardTitle>Консултации по източник</CardTitle>
         <p className="text-sm text-muted-foreground font-normal">
-          От коя страница идват записаните консултации — общо {stats.allTimeTotal} записа
+          От коя страница идват записаните консултации - общо {stats.allTimeTotal} записа
           {stats.lastDaysTotal > 0 ? ` (${stats.lastDaysTotal} за 30 дни)` : ""}
         </p>
       </CardHeader>

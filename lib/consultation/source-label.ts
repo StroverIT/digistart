@@ -16,5 +16,5 @@ export function formatConsultationSourceLabel(
   if (source === "checkout") return "Checkout";
   if (source === "public") return "Публична форма";
 
-  return source ?? "—";
+  return source ?? "-";
 }

@@ -83,7 +83,7 @@ export function FunnelSlotsEditor({ funnelId, adminLabel }: FunnelSlotsEditorPro
         <p className="text-sm">
           Оставащи:{" "}
           <span className="font-bold text-primary tabular-nums">
-            {availability?.remaining ?? "—"}
+            {availability?.remaining ?? "-"}
           </span>
           <span className="ml-2 text-muted-foreground">
             (платени: {availability?.paidCount ?? 0})

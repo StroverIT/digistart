@@ -22,7 +22,7 @@ const PRIORITIES = [
   {
     icon: Wrench,
     title: "„Инструменти“",
-    description: "Сайт, магазин, реклами — важни, но чак на трето място.",
+    description: "Сайт, магазин, реклами - важни, но чак на трето място.",
     trap: true,
   },
 ] as const;
@@ -79,7 +79,7 @@ export function PrioritiesSection() {
               LANDING_REVEAL_CLASS,
             )}
           >
-            При двете ситуации са ти нужни едни и същи три неща.
+            При двете ситуации са ти нужни едни и същи неща.
           </p>
         </div>
 
@@ -161,7 +161,7 @@ export function PrioritiesSection() {
           )}
         >
           <p className="font-accent text-xl leading-snug text-foreground md:text-2xl">
-            Създаваш най-добрия онлайн магазин, социална мрежа или SEO — но без
+            Създаваш най-добрия онлайн магазин, социална мрежа или SEO - но без
             аудитория и стратегия е все едно да си най-добрият оратор и да говориш
             на стената.
           </p>
@@ -211,7 +211,7 @@ export function PrioritiesSection() {
                     <span className="font-semibold text-background">
                       маркетинговата стратегия
                     </span>
-                    . Ако искаш — и изпълнението.
+                    . Ако искаш - и изпълнението.
                   </p>
                 </div>
 

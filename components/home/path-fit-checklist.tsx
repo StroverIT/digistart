@@ -66,11 +66,11 @@ export function PathFitChecklist({ fitTitle, fits }: PathFitChecklistProps) {
         >
           {count >= threshold ? (
             <>
-              <span className="font-bold">{count} от {fits.length}</span> критерия ти пасват — изглежда си на правилното място.
+              <span className="font-bold">{count} от {fits.length}</span> критерия ти пасват - изглежда си на правилното място.
             </>
           ) : (
             <>
-              Избрал си <span className="font-bold">{count} от {fits.length}</span> — маркирай още, за да видиш дали сме добър match.
+              Избрал си <span className="font-bold">{count} от {fits.length}</span> - маркирай още, за да видиш дали сме добър match.
             </>
           )}
         </div>

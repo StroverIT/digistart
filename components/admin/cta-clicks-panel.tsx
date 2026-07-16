@@ -34,7 +34,7 @@ export function CtaClicksPanel({ ctaStats, totalClicks }: CtaClicksPanelProps) {
       <CardHeader>
         <CardTitle>Най-кликани CTA</CardTitle>
         <p className="text-sm text-muted-foreground font-normal">
-          Подредени от най-много към най-малко кликове — общо {totalClicks} клика
+          Подредени от най-много към най-малко кликове - общо {totalClicks} клика
         </p>
       </CardHeader>
       <CardContent>
