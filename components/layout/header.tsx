@@ -56,7 +56,10 @@ const usefulNavLinks = [
   { href: "/blog", label: "Блог", paths: ["/blog"] },
 ] as const;
 
-const navLinks = [{ href: "/", label: "Начало", paths: ["/"] }] as const;
+const navLinks = [
+  { href: "/", label: "Начало", paths: ["/"] },
+  { href: "/marketing", label: "Маркетинг", paths: ["/marketing"] },
+] as const;
 
 function isPathActive(pathname: string, paths: readonly string[]) {
   const decoded = (() => {
@@ -564,15 +567,17 @@ export function Header() {
 
           <nav aria-label="Основна навигация" className="pt-8">
             <ul ref={linksRef} className="flex flex-col gap-y-5 md:gap-y-7">
-              <li>
-                <AnimatedNavLink
-                  href="/"
-                  isActive={isPathActive(pathname, navLinks[0].paths)}
-                  onNavigate={() => void closeMenu()}
-                >
-                  {navLinks[0].label}
-                </AnimatedNavLink>
-              </li>
+              {navLinks.map((link) => (
+                <li key={link.href}>
+                  <AnimatedNavLink
+                    href={link.href}
+                    isActive={isPathActive(pathname, link.paths)}
+                    onNavigate={() => void closeMenu()}
+                  >
+                    {link.label}
+                  </AnimatedNavLink>
+                </li>
+              ))}
               {serviceNavLinks.map((link) => (
                 <li key={link.href}>
                   <AnimatedNavLink

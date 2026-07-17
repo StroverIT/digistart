@@ -64,6 +64,7 @@ const EXCLUDED_PATH_PREFIXES = [
 
 const PAGES_WITH_OWN_BOOKING = [
   /^\/$/,
+  /^\/marketing$/,
   /^\/services\//,
   /^\/about$/,
   /^\/consultation$/,
