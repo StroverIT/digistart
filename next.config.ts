@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/google",
+        destination: "/services/google-business",
+        permanent: true,
+      },
+      {
         source: "/demo/:category/:id",
         destination: "/templates/:category/:id",
         permanent: true,
