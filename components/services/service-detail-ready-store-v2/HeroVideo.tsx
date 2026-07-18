@@ -1,9 +1,10 @@
 "use client";
 
+import { X } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { getYoutubeEmbedUrl } from "@/config/videos";
-import { cn } from "@/lib/utils";
 
 type HeroVideoProps = {
   videoId: string;
@@ -26,10 +27,14 @@ function YouTubePlayButton() {
   );
 }
 
-function sendYouTubeCommand(iframe: HTMLIFrameElement | null, func: string) {
+function sendYouTubeCommand(
+  iframe: HTMLIFrameElement | null,
+  func: string,
+  args: unknown[] = [],
+) {
   if (!iframe?.contentWindow) return;
   iframe.contentWindow.postMessage(
-    JSON.stringify({ event: "command", func, args: [] }),
+    JSON.stringify({ event: "command", func, args }),
     "*",
   );
 }
@@ -40,8 +45,9 @@ export default function HeroVideo({
   thumbnailSrc,
   muteOnPlay = false,
 }: HeroVideoProps) {
-  const [hasStarted, setHasStarted] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const fullscreenIframeRef = useRef<HTMLIFrameElement>(null);
   const playMutedInBackground = Boolean(thumbnailSrc) && muteOnPlay;
 
   const forcePlay = useCallback(() => {
@@ -51,8 +57,15 @@ export default function HeroVideo({
     if (muteOnPlay) sendYouTubeCommand(iframe, "mute");
   }, [muteOnPlay]);
 
+  const unmuteFullscreen = useCallback(() => {
+    const iframe = fullscreenIframeRef.current;
+    if (!iframe) return;
+    sendYouTubeCommand(iframe, "unMute");
+    sendYouTubeCommand(iframe, "setVolume", [100]);
+  }, []);
+
   useEffect(() => {
-    if (!playMutedInBackground) return;
+    if (!playMutedInBackground || isFullscreen) return;
 
     const iframe = iframeRef.current;
     if (!iframe) return;
@@ -74,14 +87,55 @@ export default function HeroVideo({
       iframe.removeEventListener("load", onLoad);
       retries.forEach(clearTimeout);
     };
-  }, [forcePlay, playMutedInBackground, videoId]);
+  }, [forcePlay, isFullscreen, playMutedInBackground, videoId]);
+
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    sendYouTubeCommand(iframeRef.current, "pauseVideo");
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsFullscreen(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isFullscreen]);
+
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    const iframe = fullscreenIframeRef.current;
+    if (!iframe) return;
+
+    // Fresh autoplay embed already starts at 0 — only unmute, never seek/replay.
+    const retries = [
+      window.setTimeout(unmuteFullscreen, 300),
+      window.setTimeout(unmuteFullscreen, 800),
+    ];
+    iframe.addEventListener("load", unmuteFullscreen);
+
+    return () => {
+      iframe.removeEventListener("load", unmuteFullscreen);
+      retries.forEach(clearTimeout);
+    };
+  }, [isFullscreen, unmuteFullscreen]);
 
   const startVideo = () => {
-    setHasStarted(true);
-    forcePlay();
-    // Retry after React paints the interactive iframe.
-    window.setTimeout(forcePlay, 100);
-    window.setTimeout(forcePlay, 400);
+    setIsFullscreen(true);
+  };
+
+  const closeFullscreen = () => {
+    setIsFullscreen(false);
   };
 
   if (!thumbnailSrc) {
@@ -94,7 +148,7 @@ export default function HeroVideo({
               src={getYoutubeEmbedUrl(videoId)}
               title={title}
               loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             />
@@ -110,44 +164,79 @@ export default function HeroVideo({
         <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-black">
           <iframe
             ref={iframeRef}
-            className={cn(
-              "absolute inset-0 h-full w-full border-0",
-              !hasStarted && "pointer-events-none",
-            )}
+            className="pointer-events-none absolute inset-0 h-full w-full border-0"
             src={getYoutubeEmbedUrl(videoId, {
-              autoplay: playMutedInBackground || hasStarted,
+              autoplay: playMutedInBackground,
               mute: muteOnPlay || playMutedInBackground,
               enableJsApi: true,
             })}
             title={title}
             loading="eager"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
             referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
           />
 
-          {!hasStarted ? (
-            <button
-              type="button"
-              onClick={startVideo}
-              className="group absolute inset-0 z-10 block h-full w-full cursor-pointer"
-              aria-label={`Пусни видео: ${title}`}
-            >
-              <Image
-                src={thumbnailSrc}
-                alt=""
-                fill
-                priority
-                sizes="(max-width: 896px) 100vw, 896px"
-                className="object-cover"
-              />
-              <span className="absolute inset-0 flex items-center justify-center">
-                <YouTubePlayButton />
-              </span>
-            </button>
-          ) : null}
+          <button
+            type="button"
+            onClick={startVideo}
+            className="group absolute inset-0 z-10 block h-full w-full cursor-pointer"
+            aria-label={`Пусни видео: ${title}`}
+          >
+            <Image
+              src={thumbnailSrc}
+              alt=""
+              fill
+              priority
+              sizes="(max-width: 896px) 100vw, 896px"
+              className="object-cover"
+            />
+            <span className="absolute inset-0 flex items-center justify-center">
+              <YouTubePlayButton />
+            </span>
+          </button>
         </div>
       </div>
+
+      {isFullscreen && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4"
+              role="dialog"
+              aria-modal="true"
+              aria-label={title}
+              onClick={closeFullscreen}
+            >
+              <button
+                type="button"
+                onClick={closeFullscreen}
+                className="absolute top-4 right-4 z-10 flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                aria-label="Затвори видео"
+              >
+                <X className="size-5" aria-hidden />
+              </button>
+              <div
+                className="relative aspect-video h-[min(100dvh,calc(100vw*9/16))] w-[min(100vw,calc(100dvh*16/9))] overflow-hidden rounded-xl bg-black shadow-2xl"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <iframe
+                  ref={fullscreenIframeRef}
+                  className="absolute inset-0 h-full w-full border-0"
+                  src={getYoutubeEmbedUrl(videoId, {
+                    autoplay: true,
+                    mute: false,
+                    enableJsApi: true,
+                  })}
+                  title={title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </article>
   );
 }

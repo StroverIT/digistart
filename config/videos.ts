@@ -39,9 +39,10 @@ export function getYoutubeEmbedUrl(
 ) {
   const params = new URLSearchParams();
   if (options?.autoplay) params.set("autoplay", "1");
-  if (options?.mute) params.set("mute", "1");
+  if (options?.mute === true) params.set("mute", "1");
+  if (options?.mute === false) params.set("mute", "0");
   if (options?.enableJsApi) params.set("enablejsapi", "1");
-  if (options?.autoplay || options?.mute || options?.enableJsApi) {
+  if (options?.autoplay || options?.mute !== undefined || options?.enableJsApi) {
     params.set("playsinline", "1");
     params.set("rel", "0");
   }
