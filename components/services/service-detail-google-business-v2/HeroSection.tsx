@@ -19,14 +19,14 @@ const HeroSection = () => {
   return (
     <LandingSection
       ref={sectionRef}
-      className="border-b-0 bg-linear-to-b from-white to-primary/50 pt-0 pb-8 md:pb-20 lg:pb-24"
-      contentClassName={`${gbContainerClass} pt-site-header`}
+      className="border-b-0 bg-linear-to-b from-white to-primary/50 !pt-0 pb-8 md:pb-20 lg:pb-24"
+      contentClassName={`${gbContainerClass} pt-[calc(var(--site-header-height)+1.5rem)] md:pt-[calc(var(--site-header-height-md)+2rem)]`}
     >
-      <div className="mx-auto flex w-full flex-col items-center justify-center gap-4 text-center sm:min-h-[50vh] sm:gap-8 md:gap-10">
+      <div className="mx-auto flex w-full flex-col items-center justify-start gap-4 text-center sm:gap-8 md:gap-10">
         <h1
           data-animate-reveal
           className={cn(
-            "font-heading w-full text-balance text-4xl font-medium leading-[1.15] tracking-tight text-foreground sm:leading-[1.2]",
+            "font-heading w-full text-balance text-4xl font-medium leading-[1.15] tracking-tight text-foreground sm:text-5xl sm:leading-[1.15] md:text-5xl lg:text-6xl lg:leading-[1.1]",
             LANDING_REVEAL_CLASS,
           )}
         >
