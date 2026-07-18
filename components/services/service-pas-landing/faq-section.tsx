@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, type ReactNode } from "react";
 import { Faq, type FaqItem } from "@/components/ui/faq";
 import { useCompetitorPlatformSelection } from "@/components/services/funnel/use-competitor-platform-selection";
 import {
@@ -17,10 +17,14 @@ import { useSectionScrollAnimations } from "./use-section-scroll-animations";
 import { cn } from "@/lib/utils";
 
 export interface PasFaqSectionProps {
-  title: string;
-  description: string;
+  title: ReactNode;
+  description?: string;
   items: readonly FaqItem[];
   headingFontClass?: string;
+  titleClassName?: string;
+  eyebrow?: string;
+  eyebrowClassName?: string;
+  answerClassName?: string;
   buyCta?: ServiceSectionBuyCtaConfig;
   className?: string;
   funnelId?: string;
@@ -31,6 +35,10 @@ export function PasFaqSection({
   description,
   items,
   headingFontClass,
+  titleClassName = "mb-3",
+  eyebrow,
+  eyebrowClassName,
+  answerClassName,
   buyCta,
   className,
   funnelId,
@@ -81,13 +89,15 @@ export function PasFaqSection({
     <section ref={sectionRef} id="faq" className={cn("bg-card/40 py-8 md:py-14", className)}>
       <div className="container mx-auto px-4">
         <PasSectionIntro
+          eyebrow={eyebrow}
+          eyebrowClassName={eyebrowClassName}
           title={title}
           description={description}
           headingFontClass={headingFontClass}
-          titleClassName="mb-3"
+          titleClassName={titleClassName}
         />
         <div className="mx-auto max-w-4xl rounded-2xl border border-border bg-card px-5 py-2 shadow-sm sm:px-8 sm:py-4">
-          <Faq items={faqItems} staggerItems />
+          <Faq items={faqItems} staggerItems answerClassName={answerClassName} />
         </div>
         {buyCta ? (
           <div data-animate-reveal className="mt-8 opacity-0 translate-y-10 md:mt-10">

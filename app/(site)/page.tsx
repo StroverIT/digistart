@@ -62,7 +62,7 @@ export default function HomePage() {
   return (
     <>
       <HomeHero />
-      <BookingForm showProcessSteps={false} showBadge={false} />
+      <BookingForm showBadge={false} />
       <PrioritiesSection />
       {/* <PathTabs /> */}
       <CaseStudy />

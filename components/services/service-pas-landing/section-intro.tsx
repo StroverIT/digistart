@@ -1,11 +1,13 @@
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export interface PasSectionIntroProps {
   eyebrow?: string;
-  title: string;
+  title: ReactNode;
   description?: string;
   headingFontClass?: string;
   titleClassName?: string;
+  eyebrowClassName?: string;
 }
 
 export function PasSectionIntro({
@@ -14,13 +16,17 @@ export function PasSectionIntro({
   description,
   headingFontClass = "font-heading tracking-tight",
   titleClassName,
+  eyebrowClassName,
 }: PasSectionIntroProps) {
   return (
     <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
       {eyebrow ? (
         <span
           data-animate-reveal
-          className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary mb-4 opacity-0 translate-y-10"
+          className={cn(
+            "inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary mb-4 opacity-0 translate-y-10",
+            eyebrowClassName,
+          )}
         >
           {eyebrow}
         </span>

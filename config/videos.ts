@@ -33,9 +33,20 @@ export function getVideoBySlug(slug: string) {
   return videos.find((video) => video.slug === slug);
 }
 
-export function getYoutubeEmbedUrl(id: string, options?: { autoplay?: boolean }) {
-  const url = `https://www.youtube-nocookie.com/embed/${id}`;
-  return options?.autoplay ? `${url}?autoplay=1` : url;
+export function getYoutubeEmbedUrl(
+  id: string,
+  options?: { autoplay?: boolean; mute?: boolean; enableJsApi?: boolean },
+) {
+  const params = new URLSearchParams();
+  if (options?.autoplay) params.set("autoplay", "1");
+  if (options?.mute) params.set("mute", "1");
+  if (options?.enableJsApi) params.set("enablejsapi", "1");
+  if (options?.autoplay || options?.mute || options?.enableJsApi) {
+    params.set("playsinline", "1");
+    params.set("rel", "0");
+  }
+  const query = params.toString();
+  return `https://www.youtube-nocookie.com/embed/${id}${query ? `?${query}` : ""}`;
 }
 
 export function getGoogleDriveEmbedUrl(fileId: string, options?: { autoplay?: boolean }) {

@@ -77,7 +77,6 @@ export function ServiceBuyConsultationFormSection({
             consultation.description ??
             "Нека обсъдим всичко което те притеснява за да имаш плавен старт"
           }
-          showProcessSteps={false}
           sourcePage={consultation.sourcePage}
           pagePath={consultation.analyticsPath}
           analyticsPath={consultation.analyticsPath}

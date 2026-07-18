@@ -1,9 +1,12 @@
+"use client";
+
 import Image from "next/image";
+import { useRef } from "react";
 import { Clock3 } from "lucide-react";
 import ConsultationBookingForm from "@/components/consultation/consultation-booking-form";
-import { ProcessStepsContent } from "@/components/home/process-steps";
 import { Price } from "@/components/ui/price";
 import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
+import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
 import {
   SITE_LOGO_HEIGHT,
   SITE_LOGO_SIZES,
@@ -21,7 +24,6 @@ type BookingFormProps = {
   introTitle?: string;
   title?: string;
   description?: string;
-  showProcessSteps?: boolean;
   className?: string;
   metaLead?: {
     contentName: string;
@@ -49,7 +51,6 @@ export function BookingForm({
   introTitle,
   title = "DigiStart опознавателен разговор за постигане на резултати",
   description = "",
-  showProcessSteps = true,
   metaLead,
   showSocialProfileToggle,
   notesLabel,
@@ -60,11 +61,15 @@ export function BookingForm({
   className,
   animateReveals = false,
 }: BookingFormProps = {}) {
+  const sectionRef = useRef<HTMLElement>(null);
   const showNotesField = Boolean(notesLabel);
   const revealClass = animateReveals ? LANDING_REVEAL_CLASS : undefined;
 
+  useSectionScrollAnimations(sectionRef, { staggerReveal: 0.1 }, animateReveals);
+
   return (
     <section
+      ref={sectionRef}
       id={sectionId}
       className={cn("container mx-auto px-4 py-20 md:px-8 md:py-28", className)}
     >
@@ -161,12 +166,6 @@ export function BookingForm({
                 ) : null}
               </div>
             </div>
-
-            {showProcessSteps ? (
-              <div className="mt-10 border-t border-border/60 px-5 pt-10 md:px-6 lg:px-8">
-                <ProcessStepsContent variant="embedded" />
-              </div>
-            ) : null}
           </div>
 
           <div

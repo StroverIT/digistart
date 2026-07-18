@@ -14,6 +14,7 @@ import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { ServiceSlotsBanner } from "@/components/layout/service-slots-banner";
 import { FunnelSlotsBanner } from "@/components/layout/funnel-slots-banner";
 import { SiteLogo } from "@/components/layout/site-logo";
+import { gbContainerClass } from "@/components/services/service-detail-google-business-v2/shared";
 import { isServiceFunnelPath } from "@/lib/service-funnels/path";
 
 let gsapModule: Promise<typeof import("gsap")> | null = null;
@@ -311,6 +312,9 @@ export function Header() {
   })();
   const isCartPage = pathname === "/cart" || pathnameDecoded === "/cart";
   const isFunnelPage = isServiceFunnelPath(pathname);
+  const isGoogleBusinessPage =
+    pathname === "/services/google-business" ||
+    pathnameDecoded === "/services/google-business";
 
   useEffect(() => {
     setCartCount(getCartItemCount());
@@ -323,6 +327,17 @@ export function Header() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isGoogleBusinessPage) {
+      root.style.setProperty("--site-slots-banner-height", "0px");
+      return () => {
+        root.style.removeProperty("--site-slots-banner-height");
+      };
+    }
+    root.style.removeProperty("--site-slots-banner-height");
+  }, [isGoogleBusinessPage]);
 
   const closeMenu = useCallback(() => {
     return new Promise<void>((resolve) => {
@@ -433,7 +448,11 @@ export function Header() {
           className={`transition-all duration-300 border-b border-white/50 bg-white/55 backdrop-blur-xl backdrop-saturate-150 supports-backdrop-filter:bg-white/40 ${isScrolled ? "shadow-[var(--shadow-soft)]" : "shadow-sm shadow-black/5"
             }`}
         >
-          <div className="container mx-auto px-4">
+          <div
+            className={cn(
+              isGoogleBusinessPage ? gbContainerClass : "container mx-auto px-4",
+            )}
+          >
             <div className="flex h-16 items-center justify-between md:h-20">
               <SiteLogo className="relative z-60" />
 
@@ -494,7 +513,7 @@ export function Header() {
             </div>
           </div>
         </header>
-        <ServiceSlotsBanner />
+        {!isGoogleBusinessPage ? <ServiceSlotsBanner /> : null}
       </div>
 
       <div

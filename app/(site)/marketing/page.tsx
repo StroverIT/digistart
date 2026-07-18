@@ -61,7 +61,7 @@ export default function MarketingPage() {
   return (
     <>
       <HomeHero />
-      <BookingForm showProcessSteps={false} showBadge={false} />
+      <BookingForm showBadge={false} />
       <PrioritiesSection />
       <CaseStudy />
       <TargetAudiencesTeaser />
