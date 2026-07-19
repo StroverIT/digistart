@@ -35,7 +35,7 @@ const HeroSection = () => {
         </h1>
         <div data-animate-reveal className={cn("w-full", LANDING_REVEAL_CLASS)}>
           <HeroVideo
-            videoId="Hqp6eMmTq-Y"
+            videoId="lJg2HTFACtA"
             title="Единствените две неща, които трябва да знаете за маркетинга"
             thumbnailSrc="/video-thumbnail.png"
             muteOnPlay
