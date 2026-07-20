@@ -117,7 +117,7 @@ export default function HeroVideo({
     const iframe = fullscreenIframeRef.current;
     if (!iframe) return;
 
-    // Fresh autoplay embed already starts at 0 — only unmute, never seek/replay.
+    // Fresh autoplay embed already starts at 0 - only unmute, never seek/replay.
     const retries = [
       window.setTimeout(unmuteFullscreen, 300),
       window.setTimeout(unmuteFullscreen, 800),
@@ -200,42 +200,42 @@ export default function HeroVideo({
 
       {isFullscreen && typeof document !== "undefined"
         ? createPortal(
-            <div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4"
-              role="dialog"
-              aria-modal="true"
-              aria-label={title}
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label={title}
+            onClick={closeFullscreen}
+          >
+            <button
+              type="button"
               onClick={closeFullscreen}
+              className="absolute top-4 right-4 z-10 flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+              aria-label="Затвори видео"
             >
-              <button
-                type="button"
-                onClick={closeFullscreen}
-                className="absolute top-4 right-4 z-10 flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-                aria-label="Затвори видео"
-              >
-                <X className="size-5" aria-hidden />
-              </button>
-              <div
-                className="relative aspect-video h-[min(100dvh,calc(100vw*9/16))] w-[min(100vw,calc(100dvh*16/9))] overflow-hidden rounded-xl bg-black shadow-2xl"
-                onClick={(event) => event.stopPropagation()}
-              >
-                <iframe
-                  ref={fullscreenIframeRef}
-                  className="absolute inset-0 h-full w-full border-0"
-                  src={getYoutubeEmbedUrl(videoId, {
-                    autoplay: true,
-                    mute: false,
-                    enableJsApi: true,
-                  })}
-                  title={title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                />
-              </div>
-            </div>,
-            document.body,
-          )
+              <X className="size-5" aria-hidden />
+            </button>
+            <div
+              className="relative aspect-video h-[min(100dvh,calc(100vw*9/16))] w-[min(100vw,calc(100dvh*16/9))] overflow-hidden rounded-xl bg-black shadow-2xl"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <iframe
+                ref={fullscreenIframeRef}
+                className="absolute inset-0 h-full w-full border-0"
+                src={getYoutubeEmbedUrl(videoId, {
+                  autoplay: true,
+                  mute: false,
+                  enableJsApi: true,
+                })}
+                title={title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+          </div>,
+          document.body,
+        )
         : null}
     </article>
   );
