@@ -60,6 +60,8 @@ const EXCLUDED_PATH_PREFIXES = [
   "/sign-in",
   "/sign-up",
   "/onboarding",
+  "/google/three-free-tips",
+  "/google/free-analysis",
 ] as const;
 
 const PAGES_WITH_OWN_BOOKING = [
