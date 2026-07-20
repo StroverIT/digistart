@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function GoogleFreeAnalysisPage() {
   return (
     <div className="min-h-screen bg-linear-to-b from-white via-background to-primary/30 [&_.container]:mx-auto [&_.container]:w-full [&_.container]:max-w-[1200px] [&_.container]:px-4 sm:[&_.container]:px-6 md:[&_.container]:px-12">
-      <main className="mx-auto w-full max-w-[1200px] px-4 pb-16 pt-8 sm:px-6 md:px-12 md:pb-24 md:pt-12">
+      <main className="mx-auto w-full max-w-[1200px] px-4 pb-16 pt-24 sm:px-6 md:px-12 md:pb-24 md:pt-28">
         <section className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-8 md:flex-row md:items-start md:gap-10 lg:gap-14">
           <div className="flex w-full flex-col gap-4 text-center md:w-1/2 md:gap-6 md:text-left">
             <span

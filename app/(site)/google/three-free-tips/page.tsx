@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function ThreeFreeTipsPage() {
   return (
     <div className="min-h-screen bg-linear-to-b from-white via-background to-primary/30">
-      <main className="mx-auto w-full max-w-[1200px] px-4 pb-16 pt-8 sm:px-6 md:px-12 md:pb-24 md:pt-12">
+      <main className="mx-auto w-full max-w-[1200px] px-4 pb-16 pt-24 sm:px-6 md:px-12 md:pb-24 md:pt-28">
         <section className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-8 text-center md:flex-row md:items-center md:gap-10 md:text-left lg:gap-14">
           <div className="flex w-full flex-col gap-4 md:w-1/2 md:gap-6">
             <h1 className="font-heading text-balance text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-4xl lg:text-5xl">
@@ -43,7 +43,7 @@ export default function ThreeFreeTipsPage() {
           </div>
           <div className="w-full md:w-1/2">
             <HeroVideo
-              videoId="lJg2HTFACtA"
+              videoId="9giP4v2PfxE"
               title="3 безплатни съвета за по-високо класиране в Google"
               thumbnailSrc="/video-thumbnail.png"
               muteOnPlay
