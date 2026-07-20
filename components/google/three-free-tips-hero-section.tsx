@@ -73,7 +73,7 @@ export function ThreeFreeTipsHeroSection() {
       </div>
       <div data-animate-reveal className={cn("w-full md:w-1/2", LANDING_REVEAL_CLASS)}>
         <HeroVideo
-          videoId="9giP4v2PfxE"
+          videoId="GikSOo2qqeE"
           title="3 безплатни съвета за по-високо класиране в Google"
           thumbnailSrc="/video-thumbnail.png"
           muteOnPlay
