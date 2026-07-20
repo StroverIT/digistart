@@ -5,6 +5,8 @@ export const siteContact = {
   phoneHref: "tel:+359877187271",
   /** Display with spaces for BG mobile */
   phoneLabel: "+359877187271",
+  /** Business address lines for footer / local SEO */
+  addressLines: ["ж.к. Дружба 2, бл. 321", "1582 София"] as const,
   facebook: "https://www.facebook.com/profile.php?id=61564485825627",
   instagram: "https://www.instagram.com/digistartbg/",
   /** Public company page; use this on the site, not the LinkedIn admin URL. */

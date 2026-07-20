@@ -7,6 +7,7 @@ import Image from "next/image";
 import {
   ArrowRight,
   Mail,
+  MapPin,
   Phone,
   Facebook,
   Instagram,
@@ -246,6 +247,25 @@ export function Footer() {
             <div data-footer-column className="col-span-2 opacity-0 translate-y-8 lg:col-span-3">
               <FooterColumnHeading>Контакти</FooterColumnHeading>
               <ul className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1">
+                <li>
+                  <div className="flex items-start gap-3 rounded-xl border border-border/80 bg-background/70 p-3.5">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
+                      <MapPin className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0 pt-0.5">
+                      <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        Адрес
+                      </span>
+                      <span className="mt-0.5 block text-sm leading-relaxed text-foreground">
+                        {siteContact.addressLines.map((line) => (
+                          <span key={line} className="block">
+                            {line}
+                          </span>
+                        ))}
+                      </span>
+                    </span>
+                  </div>
+                </li>
                 <li>
                   <a
                     href={`mailto:${siteContact.email}`}
