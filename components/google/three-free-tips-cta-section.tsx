@@ -12,19 +12,13 @@ export function ThreeFreeTipsCtaSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useSectionScrollAnimations(sectionRef, {
-    staggerReveal: 0.1,
-    itemStart: "top 88%",
+    staggerReveal: 0.12,
+    start: "top 85%",
   });
 
   return (
     <section ref={sectionRef} className="relative overflow-hidden py-8 md:py-12">
-      <div
-        data-animate-reveal
-        className={cn(
-          "relative overflow-hidden rounded-4xl bg-foreground px-6 py-12 text-center text-background md:rounded-[2.5rem] md:px-12 md:py-16",
-          LANDING_REVEAL_CLASS,
-        )}
-      >
+      <div className="relative overflow-hidden rounded-4xl bg-foreground px-6 py-12 text-center text-background md:rounded-[2.5rem] md:px-12 md:py-16">
         <div
           aria-hidden
           className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-primary/25 blur-3xl"
@@ -35,22 +29,44 @@ export function ThreeFreeTipsCtaSection() {
         />
 
         <div className="relative">
-          <span className="inline-flex items-center gap-2 rounded-full bg-background/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
+          <span
+            data-animate-reveal
+            className={cn(
+              "inline-flex items-center gap-2 rounded-full bg-background/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary",
+              LANDING_REVEAL_CLASS,
+            )}
+          >
             <Gift className="h-3.5 w-3.5" strokeWidth={2.4} />
             {googleFreeAnalysisContent.tipsCta.badge}
           </span>
 
-          <h2 className="mt-5 font-heading text-3xl font-bold tracking-tight md:text-5xl">
+          <h2
+            data-animate-reveal
+            className={cn(
+              "mt-5 font-heading text-3xl font-bold tracking-tight md:text-5xl",
+              LANDING_REVEAL_CLASS,
+            )}
+          >
             {googleFreeAnalysisContent.tipsCta.title}
           </h2>
 
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-background/75 md:text-lg">
+          <p
+            data-animate-reveal
+            className={cn(
+              "mx-auto mt-4 max-w-2xl text-base leading-relaxed text-background/75 md:text-lg",
+              LANDING_REVEAL_CLASS,
+            )}
+          >
             {googleFreeAnalysisContent.tipsCta.description}
           </p>
 
           <Link
+            data-animate-reveal
             href="/google/free-analysis"
-            className="group mt-8 inline-flex h-14 items-center gap-3 rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground shadow-(--shadow-glow) transition-transform hover:scale-[1.03]"
+            className={cn(
+              "group mt-8 inline-flex h-14 items-center gap-3 rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground shadow-(--shadow-glow) transition-transform hover:scale-[1.03]",
+              LANDING_REVEAL_CLASS,
+            )}
           >
             {googleFreeAnalysisContent.tipsCta.cta}
             <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
