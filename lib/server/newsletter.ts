@@ -2,12 +2,14 @@ import type { NewsletterSubscriber, Prisma } from "@prisma/client";
 import {
   sendNewsletterSignupEmails,
   sendNicheRecommendationEmails,
+  sendThreeFreeTipsEmails,
 } from "@/lib/emails/newsletter-emails";
 import { prisma } from "@/lib/prisma";
 
 export const COMING_SOON_SOURCE = "coming-soon" as const;
 export const COMING_SOON_MAX_SPOTS = 20;
 export const TEMPLATE_NICHE_SOURCE = "template-niche-recommendation" as const;
+export const THREE_FREE_TIPS_SOURCE = "three-free-tips" as const;
 export const NICHE_LAUNCH_DISCOUNT_PERCENT = 10;
 
 export type NicheRecommendationEntry = {
@@ -206,4 +208,84 @@ export async function getNewsletterSubscribers(): Promise<NewsletterSubscriber[]
   return prisma.newsletterSubscriber.findMany({
     orderBy: { createdAt: "desc" },
   });
+}
+
+export async function listThreeFreeTipsSubscribersNewestFirst() {
+  const subscribers = await prisma.newsletterSubscriber.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+
+  return subscribers.filter((row) => {
+    if (row.source === THREE_FREE_TIPS_SOURCE) return true;
+    if (!row.metadata || typeof row.metadata !== "object" || Array.isArray(row.metadata)) {
+      return false;
+    }
+    return "threeFreeTipsAt" in row.metadata;
+  });
+}
+
+export type ThreeFreeTipsSubscribeResult = {
+  status: "ok";
+  subscriber: NewsletterSubscriber;
+  alreadySubscribed: boolean;
+  emailSent: boolean;
+};
+
+export async function subscribeToThreeFreeTips(
+  email: string,
+): Promise<ThreeFreeTipsSubscribeResult> {
+  const normalized = email.trim().toLowerCase();
+  const existing = await prisma.newsletterSubscriber.findUnique({
+    where: { email: normalized },
+  });
+
+  const tipMeta = { threeFreeTipsAt: new Date().toISOString() };
+  const mergedMetadata =
+    existing?.metadata &&
+    typeof existing.metadata === "object" &&
+    !Array.isArray(existing.metadata)
+      ? { ...(existing.metadata as Record<string, unknown>), ...tipMeta }
+      : tipMeta;
+
+  const alreadyHadTips =
+    Boolean(existing) &&
+    (existing!.source === THREE_FREE_TIPS_SOURCE ||
+      (existing!.metadata &&
+        typeof existing!.metadata === "object" &&
+        !Array.isArray(existing!.metadata) &&
+        "threeFreeTipsAt" in existing!.metadata));
+
+  const subscriber = existing
+    ? await prisma.newsletterSubscriber.update({
+        where: { email: normalized },
+        data: { metadata: mergedMetadata },
+      })
+    : await prisma.newsletterSubscriber.create({
+        data: {
+          email: normalized,
+          source: THREE_FREE_TIPS_SOURCE,
+          metadata: tipMeta,
+        },
+      });
+
+  let emailSent = false;
+
+  try {
+    await sendThreeFreeTipsEmails({
+      email: normalized,
+      source: THREE_FREE_TIPS_SOURCE,
+      subscribedAt: subscriber.createdAt,
+      notifyAdmin: !alreadyHadTips,
+    });
+    emailSent = true;
+  } catch {
+    emailSent = false;
+  }
+
+  return {
+    status: "ok",
+    subscriber,
+    alreadySubscribed: Boolean(existing),
+    emailSent,
+  };
 }

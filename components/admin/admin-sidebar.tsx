@@ -22,6 +22,7 @@ import {
   FlaskConical,
   Megaphone,
   Users,
+  Gift,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +48,7 @@ const navItems = [
   { href: "/admin/subscriptions", label: "Абонаменти", icon: RefreshCw },
   { href: "/admin/consultations", label: "Консултации", icon: CalendarDays },
   { href: "/admin/target-audiences", label: "Целеви аудитории", icon: Users },
+  { href: "/admin/free", label: "Безплатни", icon: Gift },
   { href: "/admin/support", label: "Чат за помощ", icon: MessageCircle },
   { href: "/admin/newsletter", label: "Бюлетин", icon: Newspaper },
   { href: "/admin/businesses", label: "Бизнеси", icon: MapPin },
@@ -101,6 +103,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
           const isActive =
             pathname === item.href ||
             (item.href === "/admin/support" && pathname.startsWith("/admin/support")) ||
+            (item.href === "/admin/free" && pathname.startsWith("/admin/free")) ||
             (item.href === "/services/funnels" && pathname.startsWith("/services/funnels"));
           return (
             <Link

@@ -226,6 +226,27 @@ export interface TargetAudienceLeadRow {
   createdAt: string;
 }
 
+export interface ThreeFreeTipsLeadRow {
+  id: string;
+  email: string;
+  source: string;
+  createdAt: string;
+}
+
+export interface GoogleFreeAnalysisLeadRow {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  website: string;
+  company: string;
+  googleMapsUrl: string;
+  urgency: string;
+  source: string;
+  pagePath: string | null;
+  createdAt: string;
+}
+
 // Business Lead types
 export type LeadStatus = "prospect" | "contacted" | "accepted" | "declined";
 

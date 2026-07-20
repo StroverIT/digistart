@@ -349,3 +349,22 @@ model TargetAudienceLead {
   @@index([email])
   @@map("target_audience_leads")
 }
+
+model GoogleFreeAnalysisLead {
+  id            String   @id @default(cuid())
+  name          String
+  email         String
+  phone         String
+  website       String
+  company       String
+  googleMapsUrl String   @map("google_maps_url")
+  urgency       String
+  source        String   @default("google-free-analysis")
+  pagePath      String?  @map("page_path")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([createdAt(sort: Desc)])
+  @@index([email])
+  @@map("google_free_analysis_leads")
+}

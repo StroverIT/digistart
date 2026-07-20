@@ -710,3 +710,307 @@ export async function sendNicheRecommendationEmails(params: {
     throw new Error("One or more niche recommendation emails failed to send.");
   }
 }
+
+export const THREE_FREE_TIPS_VIDEO_URL = "https://youtu.be/2iV_UfIyOdc" as const;
+
+async function renderThreeFreeTipsSubscriberEmailHtml() {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
+
+  return render(
+    React.createElement(
+      Html,
+      null,
+      React.createElement(Head),
+      React.createElement(
+        Preview,
+        null,
+        "Заповядайте — обещаният клип с 3 безплатни съвета",
+      ),
+      React.createElement(
+        Body,
+        {
+          style: {
+            backgroundColor: colors.pageBg,
+            fontFamily:
+              'Inter, system-ui, -apple-system, "Segoe UI", Arial, sans-serif',
+            margin: 0,
+            padding: "32px 16px",
+          },
+        },
+        React.createElement(
+          Container,
+          {
+            style: {
+              margin: "0 auto",
+              maxWidth: "560px",
+              backgroundColor: colors.cardBg,
+              borderRadius: "12px",
+              border: `1px solid ${colors.border}`,
+              overflow: "hidden",
+              boxShadow: "0 12px 40px rgba(15, 23, 42, 0.08)",
+            },
+          },
+          React.createElement(
+            Section,
+            {
+              style: {
+                background: `linear-gradient(135deg, ${colors.accentSoft} 0%, ${colors.cardBg} 55%)`,
+                padding: "28px 28px 20px",
+              },
+            },
+            React.createElement(
+              Text,
+              {
+                style: {
+                  margin: "0 0 8px",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: colors.primary,
+                },
+              },
+              "DigiStart",
+            ),
+            React.createElement(
+              Heading,
+              {
+                as: "h1",
+                style: {
+                  margin: "0",
+                  fontSize: "24px",
+                  lineHeight: "1.25",
+                  color: colors.foreground,
+                  fontWeight: 800,
+                },
+              },
+              "3 безплатни съвета за Google",
+            ),
+            React.createElement(
+              Text,
+              {
+                style: {
+                  margin: "16px 0 0",
+                  fontSize: "15px",
+                  lineHeight: "1.6",
+                  color: colors.muted,
+                },
+              },
+              "Заповядайте, това е обещаният клип с безплатни 3 съвета.",
+            ),
+          ),
+          React.createElement(
+            Section,
+            { style: { padding: "0 28px 24px" } },
+            React.createElement(
+              Button,
+              {
+                href: THREE_FREE_TIPS_VIDEO_URL,
+                style: {
+                  backgroundColor: colors.primary,
+                  color: colors.primaryFg,
+                  borderRadius: "8px",
+                  padding: "12px 22px",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  textDecoration: "none",
+                  display: "inline-block",
+                },
+              },
+              "Гледай клипа",
+            ),
+            React.createElement(
+              Text,
+              {
+                style: {
+                  margin: "16px 0 0",
+                  fontSize: "13px",
+                  lineHeight: "1.6",
+                  color: colors.muted,
+                },
+              },
+              "Линк: ",
+              React.createElement(
+                Link,
+                { href: THREE_FREE_TIPS_VIDEO_URL, style: { color: colors.primary } },
+                THREE_FREE_TIPS_VIDEO_URL,
+              ),
+            ),
+          ),
+          React.createElement(Hr, { style: { borderColor: colors.border, margin: "0" } }),
+          React.createElement(
+            Section,
+            { style: { padding: "16px 28px 24px" } },
+            React.createElement(
+              Text,
+              { style: { margin: "0", fontSize: "12px", color: colors.muted } },
+              React.createElement(Link, { href: siteUrl, style: { color: colors.primary } }, siteUrl),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+async function renderThreeFreeTipsAdminEmailHtml(params: {
+  email: string;
+  source: string;
+  subscribedAt: Date;
+}) {
+  return render(
+    React.createElement(
+      Html,
+      null,
+      React.createElement(Head),
+      React.createElement(Preview, null, `Нов абонамент: 3 безплатни съвета — ${params.email}`),
+      React.createElement(
+        Body,
+        {
+          style: {
+            backgroundColor: colors.pageBg,
+            fontFamily:
+              'Inter, system-ui, -apple-system, "Segoe UI", Arial, sans-serif',
+            margin: 0,
+            padding: "32px 16px",
+          },
+        },
+        React.createElement(
+          Container,
+          {
+            style: {
+              margin: "0 auto",
+              maxWidth: "560px",
+              backgroundColor: colors.cardBg,
+              borderRadius: "12px",
+              border: `1px solid ${colors.border}`,
+              padding: "28px",
+              boxShadow: "0 12px 40px rgba(15, 23, 42, 0.08)",
+            },
+          },
+          React.createElement(
+            Heading,
+            {
+              as: "h1",
+              style: {
+                margin: "0 0 16px",
+                fontSize: "22px",
+                color: colors.foreground,
+              },
+            },
+            "Нов абонамент: 3 безплатни съвета",
+          ),
+          React.createElement(
+            Section,
+            {
+              style: {
+                backgroundColor: colors.accentSoft,
+                borderRadius: "8px",
+                padding: "16px",
+                border: `1px solid ${colors.border}`,
+              },
+            },
+            React.createElement(
+              Text,
+              { style: { margin: "0 0 8px", fontSize: "14px", color: colors.foreground } },
+              React.createElement("strong", null, "Имейл: "),
+              params.email,
+            ),
+            React.createElement(
+              Text,
+              { style: { margin: "0 0 8px", fontSize: "14px", color: colors.foreground } },
+              React.createElement("strong", null, "Източник: "),
+              params.source,
+            ),
+            React.createElement(
+              Text,
+              { style: { margin: "0", fontSize: "14px", color: colors.foreground } },
+              React.createElement("strong", null, "Дата: "),
+              formatBgDate(params.subscribedAt),
+            ),
+          ),
+          React.createElement(Hr, { style: { borderColor: colors.border, margin: "24px 0" } }),
+          React.createElement(
+            Text,
+            { style: { margin: "0", fontSize: "12px", color: colors.muted } },
+            "DigiStart Admin",
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+export async function sendThreeFreeTipsEmails(params: {
+  email: string;
+  source: string;
+  subscribedAt: Date;
+  notifyAdmin: boolean;
+}): Promise<void> {
+  const from = resolveFromAddress();
+  const adminEmail = process.env.ADMIN_EMAIL ?? process.env.admin_email;
+  const mailer = await createOAuth2Transporter();
+
+  if (!from || !adminEmail || !mailer) {
+    throw new Error("Email is not configured (OAuth2 transporter, SMTP_FROM, or ADMIN_EMAIL).");
+  }
+
+  const delivery = resolveOutboundEmailDelivery({
+    customerEmail: params.email,
+    adminEmail,
+  });
+  const mailFrom = withTestFrom(from, delivery.testMode);
+
+  const subscriberHtml = await renderThreeFreeTipsSubscriberEmailHtml();
+  const subscriberSubject = withTestSubject(
+    "3 безплатни съвета за Google - DigiStart",
+    delivery.testMode,
+  );
+  const subscriberText = `Заповядайте, това е обещаният клип с безплатни 3 съвета\n\n${THREE_FREE_TIPS_VIDEO_URL}\n\nПоздрави,\nDigiStart`;
+
+  const sends: Promise<unknown>[] = [
+    mailer.sendMail({
+      from: mailFrom,
+      to: delivery.customerTo,
+      subject: subscriberSubject,
+      text: withTestTextBody(subscriberText, delivery.testMode, {
+        originalTo: params.email,
+      }),
+      html: withTestHtmlBody(subscriberHtml, delivery.testMode, {
+        originalTo: params.email,
+      }),
+    }),
+  ];
+
+  if (params.notifyAdmin) {
+    const adminHtml = await renderThreeFreeTipsAdminEmailHtml({
+      email: params.email,
+      source: params.source,
+      subscribedAt: params.subscribedAt,
+    });
+    const adminSubject = withTestSubject(
+      `Нов абонамент: 3 безплатни съвета — ${params.email}`,
+      delivery.testMode,
+    );
+
+    sends.push(
+      mailer.sendMail({
+        from: mailFrom,
+        to: delivery.adminTo,
+        subject: adminSubject,
+        text: withTestTextBody(
+          `Нов абонамент за 3 безплатни съвета.\nИмейл: ${params.email}\nИзточник: ${params.source}\nДата: ${formatBgDate(params.subscribedAt)}`,
+          delivery.testMode,
+          { originalTo: adminEmail },
+        ),
+        html: withTestHtmlBody(adminHtml, delivery.testMode, { originalTo: adminEmail }),
+      }),
+    );
+  }
+
+  const results = await Promise.allSettled(sends);
+
+  if (results.some((r) => r.status === "rejected")) {
+    throw new Error("One or more three free tips emails failed to send.");
+  }
+}

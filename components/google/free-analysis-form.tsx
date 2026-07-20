@@ -67,7 +67,7 @@ export function FreeAnalysisForm() {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/target-audiences", {
+      const response = await fetch("/api/google/free-analysis", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -75,7 +75,8 @@ export function FreeAnalysisForm() {
           email: payload.email.trim(),
           phone: payload.phone.trim(),
           website: payload.website.trim(),
-          company: `${payload.company.trim()} | Maps: ${payload.googleMapsUrl.trim()}`,
+          company: payload.company.trim(),
+          googleMapsUrl: payload.googleMapsUrl.trim(),
           urgency: payload.urgency,
           source: payload.source,
           pagePath: pathname,

@@ -7,10 +7,16 @@ export const GOOGLE_FREE_ANALYSIS_URGENCY_OPTIONS: {
   value: GoogleFreeAnalysisUrgency;
   label: string;
 }[] = [
-    { value: "today", label: "Днес" },
-    { value: "tomorrow", label: "Утре" },
-    { value: "few_weeks", label: "След няколко седмици" },
-  ];
+  { value: "today", label: "Днес" },
+  { value: "tomorrow", label: "Утре" },
+  { value: "few_weeks", label: "След няколко седмици" },
+];
+
+export function getGoogleFreeAnalysisUrgencyLabel(value: string) {
+  return (
+    GOOGLE_FREE_ANALYSIS_URGENCY_OPTIONS.find((entry) => entry.value === value)?.label ?? value
+  );
+}
 
 export const googleFreeAnalysisFormFields = {
   name: "Две имена",
