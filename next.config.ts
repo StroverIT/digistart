@@ -33,6 +33,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/gnewsletter",
+        destination: "/google/newsletter",
+        permanent: true,
+      },
+      {
         source: "/demo/:category/:id",
         destination: "/templates/:category/:id",
         permanent: true,

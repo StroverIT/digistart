@@ -62,6 +62,7 @@ const EXCLUDED_PATH_PREFIXES = [
   "/onboarding",
   "/google/three-free-tips",
   "/google/free-analysis",
+  "/google/newsletter",
 ] as const;
 
 const PAGES_WITH_OWN_BOOKING = [

@@ -17,7 +17,7 @@ export default async function AdminNewsletterPage() {
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
         <h1 className="mb-2 text-3xl font-bold">Бюлетин</h1>
         <p className="text-muted-foreground">
-          Абонати от бюлетина и препоръки за ниши от страницата с шаблони
+          Абонати от бюлетина, Google бюлетина и препоръки за ниши от страницата с шаблони
         </p>
       </div>
 

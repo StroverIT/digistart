@@ -18,6 +18,7 @@ export function isComingSoonBypassPath(pathname: string): boolean {
   if (path.startsWith("/api/analytics/utm")) return true;
   if (path.startsWith("/api/newsletter/subscribe")) return true;
   if (path.startsWith("/api/newsletter/three-free-tips")) return true;
+  if (path.startsWith("/api/newsletter/google-newsletter")) return true;
   if (path.startsWith("/api/google/free-analysis")) return true;
   if (path.startsWith("/api/stripe/webhook")) return true;
   if (path.startsWith("/user")) return true;
@@ -33,6 +34,7 @@ export function isComingSoonAllowedApiPath(pathname: string): boolean {
   if (path.startsWith("/api/analytics/utm")) return true;
   if (path.startsWith("/api/newsletter/subscribe")) return true;
   if (path.startsWith("/api/newsletter/three-free-tips")) return true;
+  if (path.startsWith("/api/newsletter/google-newsletter")) return true;
   if (path.startsWith("/api/google/free-analysis")) return true;
   if (path.startsWith("/api/stripe/webhook")) return true;
   if (path.startsWith("/api/support-chats")) return true;

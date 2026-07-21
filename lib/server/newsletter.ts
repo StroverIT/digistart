@@ -1,5 +1,6 @@
 import type { NewsletterSubscriber, Prisma } from "@prisma/client";
 import {
+  sendGoogleNewsletterEmails,
   sendNewsletterSignupEmails,
   sendNicheRecommendationEmails,
   sendThreeFreeTipsEmails,
@@ -10,6 +11,7 @@ export const COMING_SOON_SOURCE = "coming-soon" as const;
 export const COMING_SOON_MAX_SPOTS = 20;
 export const TEMPLATE_NICHE_SOURCE = "template-niche-recommendation" as const;
 export const THREE_FREE_TIPS_SOURCE = "three-free-tips" as const;
+export const GOOGLE_NEWSLETTER_SOURCE = "google-newsletter" as const;
 export const NICHE_LAUNCH_DISCOUNT_PERCENT = 10;
 
 export type NicheRecommendationEntry = {
@@ -276,6 +278,78 @@ export async function subscribeToThreeFreeTips(
       source: THREE_FREE_TIPS_SOURCE,
       subscribedAt: subscriber.createdAt,
       notifyAdmin: !alreadyHadTips,
+    });
+    emailSent = true;
+  } catch {
+    emailSent = false;
+  }
+
+  return {
+    status: "ok",
+    subscriber,
+    alreadySubscribed: Boolean(existing),
+    emailSent,
+  };
+}
+
+export type GoogleNewsletterSubscribeResult = {
+  status: "ok";
+  subscriber: NewsletterSubscriber;
+  alreadySubscribed: boolean;
+  emailSent: boolean;
+};
+
+export async function subscribeToGoogleNewsletter(
+  email: string,
+  firstName: string,
+): Promise<GoogleNewsletterSubscribeResult> {
+  const normalized = email.trim().toLowerCase();
+  const normalizedName = firstName.trim().replace(/\s+/g, " ");
+  const existing = await prisma.newsletterSubscriber.findUnique({
+    where: { email: normalized },
+  });
+
+  const signupMeta = {
+    firstName: normalizedName,
+    googleNewsletterAt: new Date().toISOString(),
+  };
+  const mergedMetadata =
+    existing?.metadata &&
+    typeof existing.metadata === "object" &&
+    !Array.isArray(existing.metadata)
+      ? { ...(existing.metadata as Record<string, unknown>), ...signupMeta }
+      : signupMeta;
+
+  const alreadyHadGoogleNewsletter =
+    Boolean(existing) &&
+    (existing!.source === GOOGLE_NEWSLETTER_SOURCE ||
+      (existing!.metadata &&
+        typeof existing!.metadata === "object" &&
+        !Array.isArray(existing!.metadata) &&
+        "googleNewsletterAt" in existing!.metadata));
+
+  const subscriber = existing
+    ? await prisma.newsletterSubscriber.update({
+        where: { email: normalized },
+        data: { metadata: mergedMetadata },
+      })
+    : await prisma.newsletterSubscriber.create({
+        data: {
+          email: normalized,
+          source: GOOGLE_NEWSLETTER_SOURCE,
+          metadata: signupMeta,
+        },
+      });
+
+  let emailSent = false;
+
+  try {
+    await sendGoogleNewsletterEmails({
+      email: normalized,
+      firstName: normalizedName,
+      source: GOOGLE_NEWSLETTER_SOURCE,
+      subscribedAt: subscriber.createdAt,
+      notifyAdmin: !alreadyHadGoogleNewsletter,
     });
     emailSent = true;
   } catch {
