@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { GoogleNewsletterPage } from "@/components/google/google-newsletter-page";
 import { gbLabelClass } from "@/components/services/service-detail-google-business-v2/shared";
 import { googleNewsletterContent } from "@/lib/data/google-newsletter-content";
+import { ogImageMetadata } from "@/lib/seo/open-graph";
 
 const PasFaqSection = dynamic(() =>
   import("@/components/services/service-pas-landing/faq-section").then((mod) => ({
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
   title: "Бюлетин",
   description:
     "Прости маркетингови тактики, които наистина работят за локални бизнеси. Запишете се за бюлетина на DigiStart.",
+  ...ogImageMetadata("googleBusiness", "DigiStart – Бюлетин"),
 };
 
 export default function GoogleNewsletterRoutePage() {
