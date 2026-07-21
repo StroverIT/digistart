@@ -156,7 +156,7 @@ export async function sendGoogleFreeAnalysisLeadEmails(input: GoogleFreeAnalysis
     delivery.testMode,
   );
   const adminSubject = withTestSubject(
-    `Нова заявка: безплатен Google анализ — ${input.email}`,
+    `Нова заявка: безплатен Google анализ - ${input.email}`,
     delivery.testMode,
   );
 

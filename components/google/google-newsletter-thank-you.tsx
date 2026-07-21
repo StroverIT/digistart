@@ -17,7 +17,7 @@ export function GoogleNewsletterThankYou() {
       </h1>
 
       <p className="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl md:text-2xl">
-        Успешно се записахте за нашия бюлетин. Проверете пощата си — очаквайте между 3 и 5 имейла
+        Успешно се записахте за нашия бюлетин. Проверете пощата си - очаквайте между 3 и 5 имейла
         всяка седмица с важна информация за SEO.
       </p>
     </div>

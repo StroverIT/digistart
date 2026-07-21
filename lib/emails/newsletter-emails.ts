@@ -724,7 +724,7 @@ async function renderThreeFreeTipsSubscriberEmailHtml() {
       React.createElement(
         Preview,
         null,
-        "Заповядайте — обещаният клип с 3 безплатни съвета",
+        "Заповядайте - обещаният клип с 3 безплатни съвета",
       ),
       React.createElement(
         Body,
@@ -863,7 +863,7 @@ async function renderThreeFreeTipsAdminEmailHtml(params: {
       Html,
       null,
       React.createElement(Head),
-      React.createElement(Preview, null, `Нов абонамент: 3 безплатни съвета — ${params.email}`),
+      React.createElement(Preview, null, `Нов абонамент: 3 безплатни съвета - ${params.email}`),
       React.createElement(
         Body,
         {
@@ -989,7 +989,7 @@ export async function sendThreeFreeTipsEmails(params: {
       subscribedAt: params.subscribedAt,
     });
     const adminSubject = withTestSubject(
-      `Нов абонамент: 3 безплатни съвета — ${params.email}`,
+      `Нов абонамент: 3 безплатни съвета - ${params.email}`,
       delivery.testMode,
     );
 
@@ -1287,7 +1287,7 @@ export async function sendGoogleNewsletterEmails(params: {
       subscribedAt: params.subscribedAt,
     });
     const adminSubject = withTestSubject(
-      `Нов абонамент за Google бюлетин — ${params.email}`,
+      `Нов абонамент за Google бюлетин - ${params.email}`,
       delivery.testMode,
     );
 
