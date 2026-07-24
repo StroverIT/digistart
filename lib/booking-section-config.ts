@@ -71,6 +71,7 @@ const PAGES_WITH_OWN_BOOKING = [
   /^\/services\//,
   /^\/about$/,
   /^\/consultation$/,
+  /^\/business-consultation$/,
 ] as const;
 
 export function shouldRenderSiteBookingSection(pathname: string): boolean {

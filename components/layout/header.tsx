@@ -616,7 +616,7 @@ export function Header() {
               />
               <li>
                 <TrackedCtaLink
-                  href="#booking"
+                  href="/business-consultation"
                   ctaId="menu_free_consultation"
                   onClick={() => closeMenu()}
                 >
