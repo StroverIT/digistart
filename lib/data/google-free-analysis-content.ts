@@ -7,10 +7,10 @@ export const GOOGLE_FREE_ANALYSIS_URGENCY_OPTIONS: {
   value: GoogleFreeAnalysisUrgency;
   label: string;
 }[] = [
-  { value: "today", label: "Днес" },
-  { value: "tomorrow", label: "Утре" },
-  { value: "few_weeks", label: "След няколко седмици" },
-];
+    { value: "today", label: "Днес" },
+    { value: "tomorrow", label: "Утре" },
+    { value: "few_weeks", label: "След няколко седмици" },
+  ];
 
 export function getGoogleFreeAnalysisUrgencyLabel(value: string) {
   return (
@@ -60,7 +60,7 @@ export const googleFreeAnalysisContent = {
       {
         question: "Колко всъщност ще ми струва това?",
         answer:
-          "Цената е €490 на месец. Няма дългосрочни договори с обвързване. Можеш да спреш по всяко време, но повечето клиенти остават, защото резултатите говорят сами за себе си.",
+          "Цената е €190 на месец. Няма дългосрочни договори с обвързване. Можеш да спреш по всяко време, но повечето клиенти остават, защото резултатите говорят сами за себе си.",
       },
       {
         question: "Ще работи ли това за моя тип бизнес?",
