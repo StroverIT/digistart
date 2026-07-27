@@ -24,7 +24,6 @@ type LeadPayload = {
   phone: string;
   website: string;
   company: string;
-  googleMapsUrl: string;
   urgency: GoogleFreeAnalysisUrgency;
   source: string;
 };
@@ -46,7 +45,6 @@ export function FreeAnalysisForm() {
     phone: "",
     website: "",
     company: "",
-    googleMapsUrl: "",
     urgency: "today",
     source,
   });
@@ -76,7 +74,6 @@ export function FreeAnalysisForm() {
           phone: payload.phone.trim(),
           website: payload.website.trim(),
           company: payload.company.trim(),
-          googleMapsUrl: payload.googleMapsUrl.trim(),
           urgency: payload.urgency,
           source: payload.source,
           pagePath: pathname,
@@ -200,19 +197,6 @@ export function FreeAnalysisForm() {
           id="analysis-company"
           value={payload.company}
           onChange={(event) => onChange("company", event.target.value)}
-          className={inputClassName}
-          required
-          disabled={loading}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="analysis-maps">{googleFreeAnalysisFormFields.googleMapsUrl} *</Label>
-        <Input
-          id="analysis-maps"
-          value={payload.googleMapsUrl}
-          onChange={(event) => onChange("googleMapsUrl", event.target.value)}
-          placeholder="https://maps.google.com/..."
           className={inputClassName}
           required
           disabled={loading}

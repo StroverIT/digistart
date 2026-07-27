@@ -109,7 +109,11 @@ function renderAdminHtml(input: GoogleFreeAnalysisEmailInput) {
         <li><strong>Телефон:</strong> ${escapeHtml(input.phone)}</li>
         <li><strong>Уебсайт:</strong> ${escapeHtml(input.website)}</li>
         <li><strong>Фирма:</strong> ${escapeHtml(input.company)}</li>
-        <li><strong>Google Maps:</strong> ${escapeHtml(input.googleMapsUrl)}</li>
+        ${
+          input.googleMapsUrl.trim()
+            ? `<li><strong>Google Maps:</strong> ${escapeHtml(input.googleMapsUrl)}</li>`
+            : ""
+        }
         <li><strong>Срок:</strong> ${escapeHtml(urgency)}</li>
         <li><strong>Източник:</strong> ${escapeHtml(input.source)}</li>
       </ul>
@@ -125,7 +129,9 @@ function renderAdminText(input: GoogleFreeAnalysisEmailInput) {
     `Телефон: ${input.phone}`,
     `Уебсайт: ${input.website}`,
     `Фирма: ${input.company}`,
-    `Google Maps: ${input.googleMapsUrl}`,
+    ...(input.googleMapsUrl.trim()
+      ? [`Google Maps: ${input.googleMapsUrl}`]
+      : []),
     `Срок: ${getGoogleFreeAnalysisUrgencyLabel(input.urgency)}`,
     `Източник: ${input.source}`,
   ].join("\n");

@@ -22,7 +22,8 @@ const PRIORITIES = [
   {
     icon: Wrench,
     title: "„Инструменти“",
-    description: "Сайт/онлайн магазин, магазин, реклами - важни, но чак на трето място.",
+    description:
+      "Сайт, онлайн магазин, Google Ads, Meta Ads, SEO - важни, но чак на трето място.",
     trap: true,
   },
 ] as const;

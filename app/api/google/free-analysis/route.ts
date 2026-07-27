@@ -8,7 +8,6 @@ const payloadSchema = z.object({
   phone: z.string().trim().min(6, "Въведете валиден телефонен номер."),
   website: z.string().trim().min(2, "Въведете уебсайт."),
   company: z.string().trim().min(2, "Въведете име на фирмата."),
-  googleMapsUrl: z.string().trim().min(5, "Въведете URL на Google Maps профила."),
   urgency: z.enum(["today", "tomorrow", "few_weeks"]),
   source: z.string().trim().max(120).optional(),
   pagePath: z.string().trim().max(300).optional(),
@@ -25,7 +24,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const result = await createGoogleFreeAnalysisLead(parsed.data);
+    const result = await createGoogleFreeAnalysisLead({
+      ...parsed.data,
+      googleMapsUrl: "",
+    });
     if (result.status !== "ok") {
       return NextResponse.json({ error: "Неуспешно записване." }, { status: 500 });
     }
