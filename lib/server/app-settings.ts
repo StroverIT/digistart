@@ -4,7 +4,7 @@ export const THREE_FREE_TIPS_VIDEO_URL_KEY = "three_free_tips_video_url" as cons
 
 /** Fallback when no admin override is saved. */
 export const THREE_FREE_TIPS_VIDEO_URL_DEFAULT =
-  "https://youtu.be/2iV_UfIyOdc" as const;
+  "https://youtu.be/_yCuk-GYlzo" as const;
 
 export async function getAppSetting(key: string): Promise<string | null> {
   const row = await prisma.appSetting.findUnique({ where: { key } });
