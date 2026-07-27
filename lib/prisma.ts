@@ -30,7 +30,7 @@ function createPrismaClient() {
 }
 
 /** Bump when the schema changes so dev HMR does not reuse a stale client. */
-const PRISMA_SCHEMA_CACHE_KEY = "20260525140000-remove-slot-adjustment";
+const PRISMA_SCHEMA_CACHE_KEY = "20260727180000-add-app-settings";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -53,7 +53,11 @@ function getCachedPrisma(): PrismaClient | undefined {
     global.prisma = undefined;
     return undefined;
   }
-  if (!("supportChat" in cached) || !("serviceWaitlistEntry" in cached)) {
+  if (
+    !("supportChat" in cached) ||
+    !("serviceWaitlistEntry" in cached) ||
+    !("appSetting" in cached)
+  ) {
     global.prisma = undefined;
     return undefined;
   }

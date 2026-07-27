@@ -711,9 +711,7 @@ export async function sendNicheRecommendationEmails(params: {
   }
 }
 
-export const THREE_FREE_TIPS_VIDEO_URL = "https://youtu.be/2iV_UfIyOdc" as const;
-
-async function renderThreeFreeTipsSubscriberEmailHtml() {
+async function renderThreeFreeTipsSubscriberEmailHtml(videoUrl: string) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
 
   return render(
@@ -805,7 +803,7 @@ async function renderThreeFreeTipsSubscriberEmailHtml() {
             React.createElement(
               Button,
               {
-                href: THREE_FREE_TIPS_VIDEO_URL,
+                href: videoUrl,
                 style: {
                   backgroundColor: colors.primary,
                   color: colors.primaryFg,
@@ -832,8 +830,8 @@ async function renderThreeFreeTipsSubscriberEmailHtml() {
               "Линк: ",
               React.createElement(
                 Link,
-                { href: THREE_FREE_TIPS_VIDEO_URL, style: { color: colors.primary } },
-                THREE_FREE_TIPS_VIDEO_URL,
+                { href: videoUrl, style: { color: colors.primary } },
+                videoUrl,
               ),
             ),
           ),
@@ -947,6 +945,9 @@ export async function sendThreeFreeTipsEmails(params: {
   subscribedAt: Date;
   notifyAdmin: boolean;
 }): Promise<void> {
+  const { getThreeFreeTipsVideoUrl } = await import("@/lib/server/app-settings");
+  const videoUrl = await getThreeFreeTipsVideoUrl();
+
   const from = resolveFromAddress();
   const adminEmail = process.env.ADMIN_EMAIL ?? process.env.admin_email;
   const mailer = await createOAuth2Transporter();
@@ -961,12 +962,12 @@ export async function sendThreeFreeTipsEmails(params: {
   });
   const mailFrom = withTestFrom(from, delivery.testMode);
 
-  const subscriberHtml = await renderThreeFreeTipsSubscriberEmailHtml();
+  const subscriberHtml = await renderThreeFreeTipsSubscriberEmailHtml(videoUrl);
   const subscriberSubject = withTestSubject(
     "3 безплатни съвета за Google - DigiStart",
     delivery.testMode,
   );
-  const subscriberText = `Заповядайте, това е обещаният клип с безплатни 3 съвета\n\n${THREE_FREE_TIPS_VIDEO_URL}\n\nПоздрави,\nDigiStart`;
+  const subscriberText = `Заповядайте, това е обещаният клип с безплатни 3 съвета\n\n${videoUrl}\n\nПоздрави,\nDigiStart`;
 
   const sends: Promise<unknown>[] = [
     mailer.sendMail({

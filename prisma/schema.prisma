@@ -368,3 +368,12 @@ model GoogleFreeAnalysisLead {
   @@index([email])
   @@map("google_free_analysis_leads")
 }
+
+model AppSetting {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("app_settings")
+}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import GoogleFreeAnalysisLeadsTable from "@/components/admin/google-free-analysis-leads-table";
 import ThreeFreeTipsLeadsTable from "@/components/admin/three-free-tips-leads-table";
+import { ThreeFreeTipsVideoUrlEditor } from "@/components/admin/three-free-tips-video-url-editor";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -66,7 +67,8 @@ export function GoogleFreeLeadsPanel({
           </Card>
         </TabsContent>
 
-        <TabsContent value="tips">
+        <TabsContent value="tips" className="space-y-4">
+          <ThreeFreeTipsVideoUrlEditor />
           <Card>
             <CardHeader>
               <CardTitle>
