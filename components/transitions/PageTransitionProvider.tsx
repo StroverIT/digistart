@@ -297,7 +297,7 @@ function PageTransitionProviderContent({
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!pendingNavigationRef.current || routeSnapshotRef.current === null) {
       return;
     }
@@ -306,6 +306,10 @@ function PageTransitionProviderContent({
     if (currentRoute !== routeSnapshotRef.current) {
       pendingNavigationRef.current = false;
       routeSnapshotRef.current = null;
+      // Soft navigations keep window scroll; reset under the overlay before reveal.
+      if (!window.location.hash) {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      }
       finishTransition();
     }
   }, [pathname, searchParamsVersion, getCurrentRoute, finishTransition]);
