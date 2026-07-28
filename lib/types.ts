@@ -233,6 +233,8 @@ export interface ThreeFreeTipsLeadRow {
   createdAt: string;
 }
 
+export type GoogleFreeAnalysisLeadStatus = "pending" | "done";
+
 export interface GoogleFreeAnalysisLeadRow {
   id: string;
   name: string;
@@ -242,6 +244,7 @@ export interface GoogleFreeAnalysisLeadRow {
   company: string;
   googleMapsUrl: string;
   urgency: string;
+  status: GoogleFreeAnalysisLeadStatus;
   source: string;
   pagePath: string | null;
   createdAt: string;

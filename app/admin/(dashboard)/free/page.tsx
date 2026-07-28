@@ -27,6 +27,7 @@ function toAnalysisLeadRow(
     company: lead.company,
     googleMapsUrl: lead.googleMapsUrl,
     urgency: lead.urgency,
+    status: lead.status === "done" ? "done" : "pending",
     source: lead.source,
     pagePath: lead.pagePath,
     createdAt: lead.createdAt.toISOString(),

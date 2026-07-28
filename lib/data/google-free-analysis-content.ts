@@ -2,6 +2,7 @@ export const GOOGLE_FREE_ANALYSIS_PAGE_PATH = "/google/free-analysis" as const;
 export const GOOGLE_FREE_ANALYSIS_SOURCE_DEFAULT = "google-free-analysis" as const;
 
 export type GoogleFreeAnalysisUrgency = "today" | "tomorrow" | "few_weeks";
+export type GoogleFreeAnalysisLeadStatus = "pending" | "done";
 
 export const GOOGLE_FREE_ANALYSIS_URGENCY_OPTIONS: {
   value: GoogleFreeAnalysisUrgency;
@@ -12,9 +13,23 @@ export const GOOGLE_FREE_ANALYSIS_URGENCY_OPTIONS: {
     { value: "few_weeks", label: "След няколко седмици" },
   ];
 
+export const GOOGLE_FREE_ANALYSIS_STATUS_OPTIONS: {
+  value: GoogleFreeAnalysisLeadStatus;
+  label: string;
+}[] = [
+    { value: "pending", label: "Чака видео" },
+    { value: "done", label: "Готово" },
+  ];
+
 export function getGoogleFreeAnalysisUrgencyLabel(value: string) {
   return (
     GOOGLE_FREE_ANALYSIS_URGENCY_OPTIONS.find((entry) => entry.value === value)?.label ?? value
+  );
+}
+
+export function getGoogleFreeAnalysisStatusLabel(value: string) {
+  return (
+    GOOGLE_FREE_ANALYSIS_STATUS_OPTIONS.find((entry) => entry.value === value)?.label ?? value
   );
 }
 

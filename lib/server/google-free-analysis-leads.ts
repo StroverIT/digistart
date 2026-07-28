@@ -1,6 +1,7 @@
 import type { GoogleFreeAnalysisLead } from "@prisma/client";
 import {
   GOOGLE_FREE_ANALYSIS_SOURCE_DEFAULT,
+  type GoogleFreeAnalysisLeadStatus,
   type GoogleFreeAnalysisUrgency,
 } from "@/lib/data/google-free-analysis-content";
 import { sendGoogleFreeAnalysisLeadEmails } from "@/lib/emails/google-free-analysis-emails";
@@ -88,5 +89,15 @@ export async function createGoogleFreeAnalysisLead(params: {
 export async function listGoogleFreeAnalysisLeadsNewestFirst() {
   return prisma.googleFreeAnalysisLead.findMany({
     orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function updateGoogleFreeAnalysisLeadStatus(
+  id: string,
+  status: GoogleFreeAnalysisLeadStatus,
+) {
+  return prisma.googleFreeAnalysisLead.update({
+    where: { id },
+    data: { status },
   });
 }

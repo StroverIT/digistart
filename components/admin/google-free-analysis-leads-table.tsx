@@ -5,9 +5,11 @@ import Link from "next/link";
 import {
   ArrowDownUp,
   Check,
+  CheckCircle2,
   Copy,
   Eye,
   ExternalLink,
+  RotateCcw,
   Search,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -30,13 +32,19 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
+  getGoogleFreeAnalysisStatusLabel,
   getGoogleFreeAnalysisUrgencyLabel,
   GOOGLE_FREE_ANALYSIS_PAGE_PATH,
   GOOGLE_FREE_ANALYSIS_URGENCY_OPTIONS,
   googleFreeAnalysisFormFields,
 } from "@/lib/data/google-free-analysis-content";
-import type { GoogleFreeAnalysisLeadRow } from "@/lib/types";
+import type {
+  GoogleFreeAnalysisLeadRow,
+  GoogleFreeAnalysisLeadStatus,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+type StatusFilter = "pending" | "done" | "all";
 
 function formatBgDate(iso: string) {
   return new Date(iso).toLocaleString("bg-BG", {
@@ -115,25 +123,48 @@ function FormAnswer({
   );
 }
 
+function StatusBadge({ status }: { status: GoogleFreeAnalysisLeadStatus }) {
+  return (
+    <Badge
+      variant={status === "done" ? "default" : "secondary"}
+      className={
+        status === "done"
+          ? "bg-emerald-600/15 text-emerald-700 hover:bg-emerald-600/15 dark:text-emerald-400"
+          : undefined
+      }
+    >
+      {getGoogleFreeAnalysisStatusLabel(status)}
+    </Badge>
+  );
+}
+
 export default function GoogleFreeAnalysisLeadsTable({
   initialLeads,
 }: {
   initialLeads: GoogleFreeAnalysisLeadRow[];
 }) {
-  const [leads] = useState(initialLeads);
+  const [leads, setLeads] = useState(initialLeads);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("pending");
   const [sortByDate, setSortByDate] = useState<"newest" | "oldest">("newest");
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+  const [savingId, setSavingId] = useState<string | null>(null);
 
   const selectedLead = useMemo(
     () => leads.find((lead) => lead.id === selectedLeadId) ?? null,
     [leads, selectedLeadId],
   );
 
+  const pendingCount = useMemo(
+    () => leads.filter((lead) => lead.status === "pending").length,
+    [leads],
+  );
+
   const visibleLeads = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
     const filtered = leads.filter((lead) => {
+      if (statusFilter !== "all" && lead.status !== statusFilter) return false;
       if (!normalizedSearch) return true;
       return (
         lead.email.toLowerCase().includes(normalizedSearch) ||
@@ -147,7 +178,36 @@ export default function GoogleFreeAnalysisLeadsTable({
       const bTime = new Date(b.createdAt).getTime();
       return sortByDate === "newest" ? bTime - aTime : aTime - bTime;
     });
-  }, [leads, search, sortByDate]);
+  }, [leads, search, sortByDate, statusFilter]);
+
+  const onStatusChange = useCallback(
+    async (id: string, status: GoogleFreeAnalysisLeadStatus) => {
+      setSavingId(id);
+      try {
+        const res = await fetch(`/api/admin/google-free-analysis/${id}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status }),
+        });
+        if (!res.ok) throw new Error("Status update failed");
+
+        const data = (await res.json()) as { lead?: GoogleFreeAnalysisLeadRow };
+        if (!data.lead) return;
+
+        setLeads((prev) =>
+          prev.map((item) => (item.id === id ? { ...item, status: data.lead!.status } : item)),
+        );
+        toast.success(
+          status === "done" ? "Маркирано като готово" : "Върнато към чакащи",
+        );
+      } catch {
+        toast.error("Неуспешна промяна на статуса");
+      } finally {
+        setSavingId(null);
+      }
+    },
+    [],
+  );
 
   return (
     <div className="space-y-4">
@@ -161,6 +221,20 @@ export default function GoogleFreeAnalysisLeadsTable({
             className="pl-10"
           />
         </div>
+
+        <Select
+          value={statusFilter}
+          onValueChange={(value) => setStatusFilter(value as StatusFilter)}
+        >
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="Филтър статус" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="pending">Чакащи ({pendingCount})</SelectItem>
+            <SelectItem value="done">Готови</SelectItem>
+            <SelectItem value="all">Всички</SelectItem>
+          </SelectContent>
+        </Select>
 
         <Select
           value={sortByDate}
@@ -194,10 +268,13 @@ export default function GoogleFreeAnalysisLeadsTable({
                   Срок
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
+                  Статус
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                   Записан на
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
-                  Детайли
+                  Действия
                 </th>
               </tr>
             </thead>
@@ -214,19 +291,47 @@ export default function GoogleFreeAnalysisLeadsTable({
                       {getGoogleFreeAnalysisUrgencyLabel(lead.urgency)}
                     </Badge>
                   </td>
+                  <td className="px-4 py-3 text-sm">
+                    <StatusBadge status={lead.status} />
+                  </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
                     {formatBgDate(lead.createdAt)}
                   </td>
                   <td className="px-4 py-3 text-sm">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedLeadId(lead.id)}
-                    >
-                      <Eye className="mr-2 h-4 w-4" />
-                      Детайли
-                    </Button>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedLeadId(lead.id)}
+                      >
+                        <Eye className="mr-2 h-4 w-4" />
+                        Детайли
+                      </Button>
+                      {lead.status === "pending" ? (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          disabled={savingId === lead.id}
+                          onClick={() => void onStatusChange(lead.id, "done")}
+                        >
+                          <CheckCircle2 className="mr-2 h-4 w-4" />
+                          Готово
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled={savingId === lead.id}
+                          onClick={() => void onStatusChange(lead.id, "pending")}
+                        >
+                          <RotateCcw className="mr-2 h-4 w-4" />
+                          Върни
+                        </Button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -246,7 +351,10 @@ export default function GoogleFreeAnalysisLeadsTable({
           {!selectedLead ? null : (
             <>
               <SheetHeader className="shrink-0 space-y-1 border-b border-border px-6 py-5 pr-12 text-left">
-                <SheetTitle className="text-xl">Заявка за Google анализ</SheetTitle>
+                <div className="flex flex-wrap items-center gap-2">
+                  <SheetTitle className="text-xl">Заявка за Google анализ</SheetTitle>
+                  <StatusBadge status={selectedLead.status} />
+                </div>
                 <SheetDescription>
                   {selectedLead.name} · записана на {formatBgDate(selectedLead.createdAt)}
                 </SheetDescription>
@@ -339,7 +447,29 @@ export default function GoogleFreeAnalysisLeadsTable({
                 </section>
               </div>
 
-              <SheetFooter className="shrink-0 border-t border-border bg-background px-6 py-4 sm:flex-row sm:justify-stretch">
+              <SheetFooter className="shrink-0 flex-col gap-2 border-t border-border bg-background px-6 py-4 sm:flex-col sm:space-x-0">
+                {selectedLead.status === "pending" ? (
+                  <Button
+                    type="button"
+                    className="w-full"
+                    disabled={savingId === selectedLead.id}
+                    onClick={() => void onStatusChange(selectedLead.id, "done")}
+                  >
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                    Маркирай видеото като готово
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="w-full"
+                    disabled={savingId === selectedLead.id}
+                    onClick={() => void onStatusChange(selectedLead.id, "pending")}
+                  >
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Върни към чакащи
+                  </Button>
+                )}
                 <Button asChild variant="outline" className="w-full">
                   <Link href={GOOGLE_FREE_ANALYSIS_PAGE_PATH} target="_blank" rel="noreferrer">
                     <ExternalLink className="mr-2 h-4 w-4" />

@@ -17,6 +17,8 @@ export function GoogleFreeLeadsPanel({
   tipLeads: ThreeFreeTipsLeadRow[];
   analysisLeads: GoogleFreeAnalysisLeadRow[];
 }) {
+  const pendingAnalysisCount = analysisLeads.filter((lead) => lead.status === "pending").length;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -42,7 +44,7 @@ export function GoogleFreeLeadsPanel({
       <Tabs defaultValue="analysis" className="space-y-4">
         <TabsList>
           <TabsTrigger value="analysis">
-            Безплатен анализ ({analysisLeads.length})
+            Безплатен анализ ({pendingAnalysisCount}/{analysisLeads.length})
           </TabsTrigger>
           <TabsTrigger value="tips">
             3 безплатни съвета ({tipLeads.length})
@@ -53,8 +55,8 @@ export function GoogleFreeLeadsPanel({
           <Card>
             <CardHeader>
               <CardTitle>
-                {analysisLeads.length}{" "}
-                {analysisLeads.length === 1 ? "заявка" : "заявки"} за Google анализ
+                {pendingAnalysisCount} чакащи · {analysisLeads.length}{" "}
+                {analysisLeads.length === 1 ? "заявка" : "заявки"} общо
               </CardTitle>
             </CardHeader>
             <CardContent>
