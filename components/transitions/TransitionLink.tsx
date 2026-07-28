@@ -133,6 +133,12 @@ const TransitionLink = ({
       setPendingNavigation(true);
 
       playExit(() => {
+        const html = document.documentElement;
+        const previousBehavior = html.style.scrollBehavior;
+        html.style.scrollBehavior = "auto";
+        (document.scrollingElement ?? html).scrollTop = 0;
+        window.scrollTo(0, 0);
+        html.style.scrollBehavior = previousBehavior;
         router.push(currentHrefRef.current);
       });
 

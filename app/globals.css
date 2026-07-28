@@ -132,7 +132,8 @@
   }
 
   html {
-    scroll-behavior: smooth;
+    /* Instant scroll on route changes; in-page anchors pass behavior:"smooth" explicitly. */
+    scroll-behavior: auto;
   }
 
   body {

@@ -306,11 +306,32 @@ function PageTransitionProviderContent({
     if (currentRoute !== routeSnapshotRef.current) {
       pendingNavigationRef.current = false;
       routeSnapshotRef.current = null;
-      // Soft navigations keep window scroll; reset under the overlay before reveal.
-      if (!window.location.hash) {
-        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+      const hash = window.location.hash;
+      // Soft navigations keep window scroll; force an instant reset before reveal.
+      // (CSS smooth scrolling can make scrollTo async and get cancelled mid-transition.)
+      if (!hash) {
+        const html = document.documentElement;
+        const previousBehavior = html.style.scrollBehavior;
+        html.style.scrollBehavior = "auto";
+        const scrollingEl = document.scrollingElement ?? html;
+        scrollingEl.scrollTop = 0;
+        html.scrollTop = 0;
+        document.body.scrollTop = 0;
+        window.scrollTo(0, 0);
+        html.style.scrollBehavior = previousBehavior;
       }
+
       finishTransition();
+
+      // Re-assert after overlay teardown / React commit (scroll anchoring can restore Y).
+      if (!hash) {
+        requestAnimationFrame(() => {
+          const scrollingEl = document.scrollingElement ?? document.documentElement;
+          scrollingEl.scrollTop = 0;
+          window.scrollTo(0, 0);
+        });
+      }
     }
   }, [pathname, searchParamsVersion, getCurrentRoute, finishTransition]);
 
