@@ -18,7 +18,7 @@ export default function BlogPage() {
     <div className="pt-24 pb-16 md:pt-28 md:pb-24">
       <div className="container mx-auto px-4 space-y-12 md:space-y-16">
         <section className="max-w-3xl space-y-4">
-          <p className="text-sm font-medium tracking-wide uppercase text-primary">
+          <p className="text-sm font-medium tracking-wide uppercase text-accent">
             Блог
           </p>
           <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">

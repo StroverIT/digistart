@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowDownUp,
@@ -9,6 +9,7 @@ import {
   Copy,
   Eye,
   ExternalLink,
+  Mail,
   RotateCcw,
   Search,
 } from "lucide-react";
@@ -16,6 +17,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -43,6 +45,28 @@ import type {
   GoogleFreeAnalysisLeadStatus,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+const CLIP_EMAIL_SUBJECT = "Безплатен анализ – вашият клип";
+
+function buildClipEmailBody(name: string, clipUrl: string) {
+  const greetingName = name.trim() || "{name}";
+  const link = clipUrl.trim();
+
+  return [
+    `Здравейте, ${greetingName},`,
+    "",
+    "Това е обещаният клип за безплатен анализ с 3 съвета, за по-добро класиране в Google My Business.",
+    "",
+    "Линк към клипа:",
+    link,
+  ].join("\n");
+}
+
+function buildClipEmailMailto(email: string, name: string, clipUrl: string) {
+  const subject = encodeURIComponent(CLIP_EMAIL_SUBJECT);
+  const body = encodeURIComponent(buildClipEmailBody(name, clipUrl));
+  return `mailto:${email}?subject=${subject}&body=${body}`;
+}
 
 type StatusFilter = "pending" | "done" | "all";
 
@@ -149,11 +173,27 @@ export default function GoogleFreeAnalysisLeadsTable({
   const [sortByDate, setSortByDate] = useState<"newest" | "oldest">("newest");
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [greetingName, setGreetingName] = useState("");
+  const [clipUrl, setClipUrl] = useState("");
 
   const selectedLead = useMemo(
     () => leads.find((lead) => lead.id === selectedLeadId) ?? null,
     [leads, selectedLeadId],
   );
+
+  useEffect(() => {
+    if (!selectedLeadId) {
+      setGreetingName("");
+      setClipUrl("");
+      return;
+    }
+    const lead = leads.find((item) => item.id === selectedLeadId);
+    if (!lead) return;
+    setGreetingName(lead.name);
+    setClipUrl("");
+    // Only reset when opening a different lead, not on status updates.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLeadId]);
 
   const pendingCount = useMemo(
     () => leads.filter((lead) => lead.status === "pending").length,
@@ -361,17 +401,62 @@ export default function GoogleFreeAnalysisLeadsTable({
               </SheetHeader>
 
               <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-6 py-5">
-                <FormAnswer
-                  label={googleFreeAnalysisFormFields.name}
-                  value={selectedLead.name}
-                  copyable
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="lead-greeting-name" className="text-sm font-medium">
+                    {googleFreeAnalysisFormFields.name}
+                  </Label>
+                  <div className="flex items-start gap-2 border-b border-border pb-3">
+                    <Input
+                      id="lead-greeting-name"
+                      value={greetingName}
+                      onChange={(event) => setGreetingName(event.target.value)}
+                      placeholder={selectedLead.name}
+                      className="min-w-0 flex-1"
+                    />
+                    <CopyButton value={greetingName || selectedLead.name} label="Име" />
+                  </div>
+                </div>
+
                 <FormAnswer
                   label={googleFreeAnalysisFormFields.email}
                   value={selectedLead.email}
                   href={`mailto:${selectedLead.email}`}
                   copyable
                 />
+
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium leading-none">Изпрати клип по имейл</p>
+                    <p className="text-xs text-muted-foreground">
+                      Отваря имейл към {selectedLead.email} с попълнен шаблон.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lead-clip-url" className="text-sm font-medium">
+                      Линк към клипа
+                    </Label>
+                    <Input
+                      id="lead-clip-url"
+                      type="url"
+                      value={clipUrl}
+                      onChange={(event) => setClipUrl(event.target.value)}
+                      placeholder="https://youtube.com/..."
+                    />
+                  </div>
+                  <Button asChild className="w-full" variant="secondary">
+                    <a
+                      href={buildClipEmailMailto(
+                        selectedLead.email,
+                        greetingName || selectedLead.name,
+                        clipUrl,
+                      )}
+                    >
+                      <Mail className="mr-2 h-4 w-4" />
+                      Изпрати имейл
+                    </a>
+                  </Button>
+                </div>
+
                 <FormAnswer
                   label={googleFreeAnalysisFormFields.phone}
                   value={selectedLead.phone}
