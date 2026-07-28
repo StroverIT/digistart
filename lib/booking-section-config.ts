@@ -60,6 +60,7 @@ const EXCLUDED_PATH_PREFIXES = [
   "/sign-in",
   "/sign-up",
   "/onboarding",
+  "/blog",
   "/google/three-free-tips",
   "/google/free-analysis",
   "/google/newsletter",

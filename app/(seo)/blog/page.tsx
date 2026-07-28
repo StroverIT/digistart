@@ -1,70 +1,71 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 import { getBlogPosts } from "@/config/blog";
+import { ThreeFreeTipsCtaSection } from "@/components/google/three-free-tips-cta-section";
 import TransitionLink from "@/components/transitions/TransitionLink";
 
 export const metadata: Metadata = {
   title: "Блог",
   description:
-    "Практически съвети за собственици на физически магазини, които искат да растат онлайн.",
+    "Прости маркетингови тактики за локални бизнеси и физически магазини - без теории, с неща, които можеш да приложиш тази седмица.",
 };
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("bg-BG", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(value));
-}
 
 export default function BlogPage() {
   const posts = getBlogPosts();
 
   return (
     <div className="pt-24 pb-16 md:pt-28 md:pb-24">
-      <div className="container mx-auto px-4 space-y-10">
-        <section className="max-w-4xl space-y-4">
+      <div className="container mx-auto px-4 space-y-12 md:space-y-16">
+        <section className="max-w-3xl space-y-4">
           <p className="text-sm font-medium tracking-wide uppercase text-primary">
-            DigiStart Blog
+            Блог
           </p>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
-            Идеи за растеж на физическия ти магазин
+          <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
+            Блогът за повече клиенти.
           </h1>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-3xl">
-            Реални стратегии, които ти помагат да продаваш повече - без хаос,
-            без сложни термини и без излишни разходи.
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl leading-relaxed">
+            Прости маркетингови тактики, които работят за локални бизнеси. Без
+            вода и теории - само неща, които можеш да ползваш още тази седмица,
+            за да вкарат повече хора през вратата.
           </p>
         </section>
 
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        <section className="grid grid-cols-1 gap-8 sm:gap-10 lg:grid-cols-2 lg:gap-x-8 lg:gap-y-12">
           {posts.map((post) => (
-            <article
+            <TransitionLink
               key={post.slug}
-              className="rounded-2xl border border-border bg-card p-6 md:p-8 space-y-4"
+              href={`/blog/${post.slug}`}
+              className="group flex flex-col gap-4 outline-none"
             >
-              <p className="text-sm text-muted-foreground">
-                {formatDate(post.publishedAt)}
-              </p>
-              <h2 className="text-2xl font-semibold leading-tight">
-                <TransitionLink
-                  href={`/blog/${post.slug}`}
-                  className="hover:text-primary transition-colors"
-                >
+              <div className="relative aspect-669/483 overflow-hidden rounded-2xl bg-muted">
+                <Image
+                  src={post.coverImage.src}
+                  alt={post.coverImage.alt || post.title}
+                  width={post.coverImage.width}
+                  height={post.coverImage.height}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  sizes="(max-width: 1024px) 100vw, 669px"
+                />
+              </div>
+
+              <article className="relative flex flex-1 flex-col gap-3 rounded-2xl bg-card px-5 py-6 shadow-sm ring-1 ring-border/60 transition-colors group-hover:ring-primary/30 md:px-6 md:py-7">
+                <h2 className="font-heading text-xl font-bold leading-snug tracking-tight text-foreground md:text-2xl">
                   {post.title}
-                </TransitionLink>
-              </h2>
-              <p className="text-muted-foreground leading-relaxed">
-                {post.excerpt}
-              </p>
-              <TransitionLink
-                href={`/blog/${post.slug}`}
-                className="inline-flex text-sm font-medium text-primary hover:underline"
-              >
-                Прочети статията
-              </TransitionLink>
-            </article>
+                </h2>
+                <p className="flex-1 text-sm leading-relaxed text-muted-foreground md:text-base">
+                  {post.excerpt}
+                </p>
+                <span className="mt-2 inline-flex size-10 items-center justify-center self-end rounded-full bg-foreground text-background transition-transform group-hover:scale-105">
+                  <ArrowRight className="size-4" strokeWidth={2.4} />
+                  <span className="sr-only">Прочети статията</span>
+                </span>
+              </article>
+            </TransitionLink>
           ))}
         </section>
+
+        <ThreeFreeTipsCtaSection variant="tips" />
       </div>
     </div>
   );

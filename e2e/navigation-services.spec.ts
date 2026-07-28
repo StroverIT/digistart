@@ -17,7 +17,7 @@ const CYRILLIC_REWRITES: { path: string; serviceSlug: ServiceSlug }[] = [
 
 const CORE_PAGES: { menuLabel?: string; path: string; heading: RegExp | string }[] = [
   { menuLabel: "За нас", path: "/about", heading: /Кои сме/i },
-  { menuLabel: "Блог", path: "/blog", heading: /растеж/i },
+  { menuLabel: "Блог", path: "/blog", heading: /клиенти/i },
   { menuLabel: "Шаблони", path: "/templates", heading: /Шаблони за/i },
   { path: "/consultation", heading: "Безплатна консултация" },
 ];

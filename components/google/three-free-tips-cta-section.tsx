@@ -8,8 +8,21 @@ import { useSectionScrollAnimations } from "@/components/services/service-pas-la
 import { googleFreeAnalysisContent } from "@/lib/data/google-free-analysis-content";
 import { cn } from "@/lib/utils";
 
-export function ThreeFreeTipsCtaSection() {
+type ThreeFreeTipsCtaSectionProps = {
+  /** `tips` = blog CTA → /google/three-free-tips; `analysis` = upsell → free analysis */
+  variant?: "tips" | "analysis";
+};
+
+export function ThreeFreeTipsCtaSection({
+  variant = "tips",
+}: ThreeFreeTipsCtaSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
+  const copy =
+    variant === "analysis"
+      ? googleFreeAnalysisContent.analysisCta
+      : googleFreeAnalysisContent.tipsCta;
+  const href =
+    variant === "analysis" ? "/google/free-analysis" : "/google/three-free-tips";
 
   useSectionScrollAnimations(sectionRef, {
     staggerReveal: 0.12,
@@ -37,7 +50,7 @@ export function ThreeFreeTipsCtaSection() {
             )}
           >
             <Gift className="h-3.5 w-3.5" strokeWidth={2.4} />
-            {googleFreeAnalysisContent.tipsCta.badge}
+            {copy.badge}
           </span>
 
           <h2
@@ -47,7 +60,7 @@ export function ThreeFreeTipsCtaSection() {
               LANDING_REVEAL_CLASS,
             )}
           >
-            {googleFreeAnalysisContent.tipsCta.title}
+            {copy.title}
           </h2>
 
           <p
@@ -57,18 +70,30 @@ export function ThreeFreeTipsCtaSection() {
               LANDING_REVEAL_CLASS,
             )}
           >
-            {googleFreeAnalysisContent.tipsCta.description}
+            {copy.description}
           </p>
+
+          {"note" in copy && copy.note ? (
+            <p
+              data-animate-reveal
+              className={cn(
+                "mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-background/60",
+                LANDING_REVEAL_CLASS,
+              )}
+            >
+              {copy.note}
+            </p>
+          ) : null}
 
           <Link
             data-animate-reveal
-            href="/google/free-analysis"
+            href={href}
             className={cn(
               "group mt-8 inline-flex h-14 items-center gap-3 rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground shadow-(--shadow-glow) transition-transform hover:scale-[1.03]",
               LANDING_REVEAL_CLASS,
             )}
           >
-            {googleFreeAnalysisContent.tipsCta.cta}
+            {copy.cta}
             <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>

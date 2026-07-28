@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBlogPostBySlug, getBlogPosts } from "@/config/blog";
+import { ThreeFreeTipsCtaSection } from "@/components/google/three-free-tips-cta-section";
 import TransitionLink from "@/components/transitions/TransitionLink";
 
 type BlogPostPageProps = {
@@ -48,37 +48,52 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   if (!post) notFound();
 
   return (
-    <article className="p-6 sm:p-8 md:p-10 space-y-8">
-      <header className="space-y-4">
+    <article className="space-y-10">
+      <header className="space-y-5">
         <TransitionLink
           href="/blog"
-          className="inline-flex text-sm font-medium text-primary hover:underline"
+          className="inline-flex text-sm font-medium text-accent hover:underline"
         >
           Назад към блога
         </TransitionLink>
-        <p className="text-sm text-muted-foreground">{formatDate(post.publishedAt)}</p>
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
+        <p className="text-sm text-muted-foreground">
+          {formatDate(post.publishedAt)}
+        </p>
+        <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
           {post.title}
         </h1>
         <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
           {post.excerpt}
         </p>
+        <div className="relative aspect-669/483 overflow-hidden rounded-2xl bg-muted">
+          <Image
+            src={post.coverImage.src}
+            alt={post.coverImage.alt || post.title}
+            width={post.coverImage.width}
+            height={post.coverImage.height}
+            className="h-full w-full object-cover"
+            sizes="(max-width: 896px) 100vw, 896px"
+            priority
+          />
+        </div>
       </header>
 
-      <div className="space-y-6">
-        {post.content.map((section) => (
+      <div className="space-y-8">
+        {post.content.map((section, sectionIndex) => (
           <section
-            key={section.heading}
-            className="space-y-4 rounded-2xl border border-border bg-background p-5 sm:p-6"
+            key={section.heading ?? `section-${sectionIndex}`}
+            className="space-y-4"
           >
-            <h2 className="text-2xl font-semibold tracking-tight">
-              {section.heading}
-            </h2>
+            {section.heading ? (
+              <h2 className="font-heading text-2xl font-semibold tracking-tight">
+                {section.heading}
+              </h2>
+            ) : null}
             <div className="space-y-4">
               {section.paragraphs.map((paragraph, paragraphIndex) => (
                 <p
-                  key={`${section.heading}-${paragraphIndex}`}
-                  className="text-base sm:text-lg text-muted-foreground leading-relaxed"
+                  key={`${section.heading ?? sectionIndex}-${paragraphIndex}`}
+                  className="text-base sm:text-lg text-foreground/85 leading-relaxed"
                 >
                   {paragraph}
                 </p>
@@ -89,7 +104,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <div className="space-y-4">
                 {section.images.map((image) => (
                   <figure
-                    key={`${section.heading}-${image.src}`}
+                    key={`${section.heading ?? sectionIndex}-${image.src}`}
                     className="overflow-hidden rounded-xl border border-border bg-background"
                   >
                     <Image
@@ -106,6 +121,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </section>
         ))}
       </div>
+
+      <ThreeFreeTipsCtaSection variant="tips" />
     </article>
   );
 }
