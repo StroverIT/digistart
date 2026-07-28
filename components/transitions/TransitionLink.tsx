@@ -72,6 +72,7 @@ type TransitionLinkProps = {
   children: React.ReactNode;
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void | Promise<void>;
+  ref?: React.Ref<HTMLAnchorElement>;
   [key: string]: unknown;
 };
 
@@ -80,6 +81,7 @@ const TransitionLink = ({
   children,
   className,
   onClick: parentOnClick,
+  ref,
   ...props
 }: TransitionLinkProps) => {
   const router = useRouter();
@@ -156,6 +158,7 @@ const TransitionLink = ({
 
   return (
     <Link
+      ref={ref}
       href={href}
       {...props}
       onClick={handleClick}
