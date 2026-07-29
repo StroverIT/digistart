@@ -9,7 +9,6 @@ import {
   Copy,
   Eye,
   ExternalLink,
-  Mail,
   RotateCcw,
   Search,
 } from "lucide-react";
@@ -46,8 +45,6 @@ import type {
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const CLIP_EMAIL_SUBJECT = "Безплатен анализ – вашият клип";
-
 function buildClipEmailBody(name: string, clipUrl: string) {
   const greetingName = name.trim() || "{name}";
   const link = clipUrl.trim();
@@ -60,12 +57,6 @@ function buildClipEmailBody(name: string, clipUrl: string) {
     "Линк към клипа:",
     link,
   ].join("\n");
-}
-
-function buildClipEmailMailto(email: string, name: string, clipUrl: string) {
-  const subject = encodeURIComponent(CLIP_EMAIL_SUBJECT);
-  const body = encodeURIComponent(buildClipEmailBody(name, clipUrl));
-  return `mailto:${email}?subject=${subject}&body=${body}`;
 }
 
 type StatusFilter = "pending" | "done" | "all";
@@ -426,9 +417,9 @@ export default function GoogleFreeAnalysisLeadsTable({
 
                 <div className="space-y-3">
                   <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">Изпрати клип по имейл</p>
+                    <p className="text-sm font-medium leading-none">Копирай текст за имейл</p>
                     <p className="text-xs text-muted-foreground">
-                      Отваря имейл към {selectedLead.email} с попълнен шаблон.
+                      Копира шаблона с линка към клипа в клипборда.
                     </p>
                   </div>
                   <div className="space-y-2">
@@ -443,17 +434,28 @@ export default function GoogleFreeAnalysisLeadsTable({
                       placeholder="https://youtube.com/..."
                     />
                   </div>
-                  <Button asChild className="w-full" variant="secondary">
-                    <a
-                      href={buildClipEmailMailto(
-                        selectedLead.email,
-                        greetingName || selectedLead.name,
-                        clipUrl,
-                      )}
-                    >
-                      <Mail className="mr-2 h-4 w-4" />
-                      Изпрати имейл
-                    </a>
+                  <Button
+                    type="button"
+                    className="w-full"
+                    variant="secondary"
+                    onClick={() => {
+                      void (async () => {
+                        try {
+                          await navigator.clipboard.writeText(
+                            buildClipEmailBody(
+                              greetingName || selectedLead.name,
+                              clipUrl,
+                            ),
+                          );
+                          toast.success("Текстът на имейла е копиран");
+                        } catch {
+                          toast.error("Неуспешно копиране");
+                        }
+                      })();
+                    }}
+                  >
+                    <Copy className="mr-2 h-4 w-4" />
+                    Копирай имейл
                   </Button>
                 </div>
 
