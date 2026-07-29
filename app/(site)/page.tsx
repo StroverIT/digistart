@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { BookingForm } from "@/components/home/booking-form";
 import { CaseStudy } from "@/components/home/case-study";
 import { HomeHero } from "@/components/home/hero";
+import { LocalServicesSection } from "@/components/home/local-services-section";
 import { PrioritiesSection } from "@/components/home/priorities-section";
 import { TargetAudiencesTeaser } from "@/components/home/target-audiences-teaser";
 // import { PathTabs } from "@/components/home/path-tabs";
@@ -9,12 +10,15 @@ import { HOME_PATHS, parsePathKey } from "@/lib/data/home-paths";
 import { HOME_PATH_OG_COVER, OG_COVER } from "@/lib/seo/open-graph";
 
 const HOME_METADATA = {
-  title: "DigiStart – Дигитална екосистема за твоя бизнес",
+  title: {
+    absolute:
+      "Рекламна агенция София | DigiStart – Google Ads, Meta, SEO, онлайн магазини",
+  },
   description:
-    "От онлайн магазин до реклами и съдържание, което продава. Реални хора, не AI ботове. Запиши безплатна консултация.",
-  openGraphTitle: "DigiStart – Дигитална екосистема за твоя бизнес",
+    "Рекламна агенция в София: Google Ads, Meta Ads, SEO, Google Business и онлайн магазини. Стратегия и изпълнение от един екип. Безплатна консултация.",
+  openGraphTitle: "Рекламна агенция София | DigiStart",
   openGraphDescription:
-    "Превръщаме чатовете в автоматизирани поръчки. Сайт, реклами и съдържание – всичко на едно място.",
+    "Google Ads, Meta, SEO, Google Business и онлайн магазини за бизнеси в София. Запиши безплатна консултация.",
 } as const;
 
 type HomePageProps = {
@@ -32,7 +36,7 @@ export async function generateMetadata({
     : null;
   const alt = pathLabel
     ? `DigiStart – ${pathLabel}`
-    : "DigiStart – Дигитална екосистема за твоя бизнес";
+    : "Рекламна агенция София | DigiStart";
 
   return {
     title: HOME_METADATA.title,
@@ -64,6 +68,7 @@ export default function HomePage() {
       <HomeHero />
       <BookingForm showBadge={false} />
       <PrioritiesSection />
+      <LocalServicesSection />
       {/* <PathTabs /> */}
       <CaseStudy />
       <TargetAudiencesTeaser />

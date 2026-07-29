@@ -6,13 +6,11 @@ import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import Image from "next/image";
 import {
   ArrowRight,
-  Mail,
-  MapPin,
-  Phone,
   Facebook,
   Instagram,
   Linkedin,
 } from "lucide-react";
+import { GoogleMapsEmbed } from "@/components/seo/google-maps-embed";
 import { siteContact } from "@/lib/site-contact";
 import {
   SITE_LOGO_HEIGHT,
@@ -33,7 +31,7 @@ const services = [
 const quickLinks = [
   { href: "/", label: "Начало" },
   { href: "/business-consultation", label: "Безплатна консултация" },
-  { href: "/#paths", label: "Как работим" },
+  { href: "/#services", label: "Услуги" },
   { href: "/about", label: "За нас" },
   { href: "/templates", label: "Шаблони" },
   { href: "/blog", label: "Блог" },
@@ -159,7 +157,7 @@ export function Footer() {
             {/* Brand */}
             <div
               data-footer-column
-              className="col-span-2 opacity-0 translate-y-8 lg:col-span-4"
+              className="col-span-2 opacity-0 translate-y-8 lg:col-span-3"
             >
               <TrackedCtaLink
                 href="/"
@@ -186,8 +184,8 @@ export function Footer() {
               </TrackedCtaLink>
 
               <p className="mb-6 max-w-sm text-sm leading-relaxed text-muted-foreground">
-                Помагаме на малки бизнеси и странични проекти да стартират онлайн бързо,
-                ясно и без излишен риск.
+                Рекламна агенция в София — онлайн магазини, Google Ads, Meta, SEO и
+                Google Business за малки бизнеси, ясно и без излишен риск.
               </p>
 
               <div className="flex items-center gap-2.5">
@@ -227,7 +225,7 @@ export function Footer() {
             </div>
 
             {/* Quick Links */}
-            <div data-footer-column className="opacity-0 translate-y-8 lg:col-span-3">
+            <div data-footer-column className="opacity-0 translate-y-8 lg:col-span-2">
               <FooterColumnHeading>Бързи връзки</FooterColumnHeading>
               <ul className="space-y-2.5">
                 {quickLinks.map((link) => (
@@ -243,66 +241,46 @@ export function Footer() {
               </ul>
             </div>
 
-            {/* Contact */}
-            <div data-footer-column className="col-span-2 opacity-0 translate-y-8 lg:col-span-3">
-              <FooterColumnHeading>Контакти</FooterColumnHeading>
-              <ul className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1">
-                <li>
-                  <div className="flex items-start gap-3 rounded-xl border border-border/80 bg-background/70 p-3.5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
-                      <MapPin className="h-4 w-4" />
-                    </span>
-                    <span className="min-w-0 pt-0.5">
-                      <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                        Адрес
-                      </span>
-                      <span className="mt-0.5 block text-sm leading-relaxed text-foreground">
-                        {siteContact.addressLines.map((line) => (
-                          <span key={line} className="block">
-                            {line}
-                          </span>
-                        ))}
-                      </span>
-                    </span>
-                  </div>
-                </li>
-                <li>
-                  <a
-                    href={`mailto:${siteContact.email}`}
-                    className="group flex items-start gap-3 rounded-xl border border-border/80 bg-background/70 p-3.5 transition-colors hover:border-primary/25 hover:bg-background"
-                  >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
-                      <Mail className="h-4 w-4" />
-                    </span>
-                    <span className="min-w-0 pt-0.5">
-                      <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                        Имейл
-                      </span>
-                      <span className="mt-0.5 block truncate text-sm text-foreground transition-colors group-hover:text-accent">
-                        {siteContact.email}
-                      </span>
-                    </span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={siteContact.phoneHref}
-                    className="group flex items-start gap-3 rounded-xl border border-border/80 bg-background/70 p-3.5 transition-colors hover:border-primary/25 hover:bg-background"
-                  >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
-                      <Phone className="h-4 w-4" />
-                    </span>
-                    <span className="min-w-0 pt-0.5">
-                      <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                        Телефон
-                      </span>
-                      <span className="mt-0.5 block text-sm text-foreground transition-colors group-hover:text-accent">
-                        {siteContact.phoneLabel}
-                      </span>
-                    </span>
-                  </a>
-                </li>
-              </ul>
+            {/* Contacts + map (single NAP block) */}
+            <div
+              id="location"
+              data-footer-column
+              className="col-span-2 space-y-4 opacity-0 translate-y-8 lg:col-span-5"
+            >
+              <h2 className="font-heading text-lg font-bold tracking-tight text-foreground md:text-xl">
+                Рекламна агенция в София
+              </h2>
+              <dl className="space-y-2 text-sm">
+                <div>
+                  <dt className="font-semibold text-foreground">Адрес</dt>
+                  <dd className="text-muted-foreground">
+                    {siteContact.addressSingleLine}
+                  </dd>
+                </div>
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="font-semibold text-foreground">Телефон</dt>
+                  <dd>
+                    <a
+                      href={siteContact.phoneHref}
+                      className="text-accent hover:underline"
+                    >
+                      {siteContact.phoneLabel}
+                    </a>
+                  </dd>
+                </div>
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="font-semibold text-foreground">Имейл</dt>
+                  <dd>
+                    <a
+                      href={`mailto:${siteContact.email}`}
+                      className="text-accent hover:underline"
+                    >
+                      {siteContact.email}
+                    </a>
+                  </dd>
+                </div>
+              </dl>
+              <GoogleMapsEmbed compact hideCaption />
             </div>
           </div>
 

@@ -7,6 +7,7 @@ import { ComingSoonPage } from "@/components/coming-soon-page";
 import { MetaPixelEvents } from "@/components/analytics/meta-pixel-events";
 import { UtmTracker } from "@/components/analytics/utm-tracker";
 import { Providers } from "@/components/providers";
+import { LocalBusinessJsonLd } from "@/components/seo/local-business-json-ld";
 import { shouldRenderComingSoonInLayout } from "@/lib/coming-soon";
 import { OG_COVER, SITE_METADATA_BASE } from "@/lib/seo/open-graph";
 import { Toaster } from "sonner";
@@ -36,19 +37,22 @@ const robotoSlab = Roboto_Slab({
 export const metadata: Metadata = {
   metadataBase: SITE_METADATA_BASE,
   title: {
-    default: "DigiStart | Дигитална агенция",
+    default: "Рекламна агенция София | DigiStart",
     template: "%s | DigiStart",
   },
   description:
-    "Онлайн магазини, Google Business оптимизация и социални мрежи за малки бизнеси, странични проекти и създатели в България.",
+    "Рекламна агенция в София: онлайн магазини, Google Ads, Meta Ads, SEO, Google Business и социални мрежи за малки бизнеси.",
   keywords: [
+    "рекламна агенция",
+    "рекламна агенция София",
+    "дигитална агенция София",
     "онлайн магазини",
     "Google Business",
-    "социални мрежи",
-    "Социални мрежи и реклама",
-    "дигитален маркетинг",
+    "Google Ads",
+    "Meta Ads",
     "SEO",
-    "България",
+    "социални мрежи",
+    "София",
   ],
   authors: [{ name: "DigiStart" }],
   creator: "DigiStart",
@@ -56,23 +60,23 @@ export const metadata: Metadata = {
     type: "website",
     locale: "bg_BG",
     siteName: "DigiStart",
-    title: "DigiStart | Дигитална агенция",
+    title: "Рекламна агенция София | DigiStart",
     description:
-      "Бърз и бюджетен онлайн старт за малки бизнеси, странични проекти и създатели",
+      "Google Ads, Meta, SEO, Google Business и онлайн магазини за бизнеси в София",
     images: [
       {
         url: OG_COVER.generic,
         width: 2400,
         height: 1260,
-        alt: "DigiStart | Дигитална агенция",
+        alt: "Рекламна агенция София | DigiStart",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "DigiStart | Дигитална агенция",
+    title: "Рекламна агенция София | DigiStart",
     description:
-      "Бърз и бюджетен онлайн старт за малки бизнеси, странични проекти и създатели",
+      "Google Ads, Meta, SEO, Google Business и онлайн магазини за бизнеси в София",
     images: [OG_COVER.generic],
   },
   robots: {
@@ -170,6 +174,7 @@ export default async function RootLayout({
           </>
         ) : (
           <>
+            <LocalBusinessJsonLd />
             <UtmTracker />
             <DigiStartAnalytics />
             <MetaPixelConsentLoader />
