@@ -245,6 +245,7 @@ export interface GoogleFreeAnalysisLeadRow {
   googleMapsUrl: string;
   urgency: string;
   status: GoogleFreeAnalysisLeadStatus;
+  notes: string | null;
   source: string;
   pagePath: string | null;
   createdAt: string;

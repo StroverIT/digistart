@@ -101,3 +101,13 @@ export async function updateGoogleFreeAnalysisLeadStatus(
     data: { status },
   });
 }
+
+export async function updateGoogleFreeAnalysisLeadNotes(
+  id: string,
+  notes: string | null,
+) {
+  return prisma.googleFreeAnalysisLead.update({
+    where: { id },
+    data: { notes },
+  });
+}

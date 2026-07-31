@@ -32,6 +32,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Textarea } from "@/components/ui/textarea";
 import {
   getGoogleFreeAnalysisStatusLabel,
   getGoogleFreeAnalysisUrgencyLabel,
@@ -164,24 +165,31 @@ export default function GoogleFreeAnalysisLeadsTable({
   const [sortByDate, setSortByDate] = useState<"newest" | "oldest">("newest");
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [savingNotesId, setSavingNotesId] = useState<string | null>(null);
   const [greetingName, setGreetingName] = useState("");
   const [clipUrl, setClipUrl] = useState("");
+  const [notesDraft, setNotesDraft] = useState("");
 
   const selectedLead = useMemo(
     () => leads.find((lead) => lead.id === selectedLeadId) ?? null,
     [leads, selectedLeadId],
   );
 
+  const notesDirty =
+    selectedLead != null && notesDraft.trim() !== (selectedLead.notes ?? "").trim();
+
   useEffect(() => {
     if (!selectedLeadId) {
       setGreetingName("");
       setClipUrl("");
+      setNotesDraft("");
       return;
     }
     const lead = leads.find((item) => item.id === selectedLeadId);
     if (!lead) return;
     setGreetingName(lead.name);
     setClipUrl("");
+    setNotesDraft(lead.notes ?? "");
     // Only reset when opening a different lead, not on status updates.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLeadId]);
@@ -226,7 +234,11 @@ export default function GoogleFreeAnalysisLeadsTable({
         if (!data.lead) return;
 
         setLeads((prev) =>
-          prev.map((item) => (item.id === id ? { ...item, status: data.lead!.status } : item)),
+          prev.map((item) =>
+            item.id === id
+              ? { ...item, status: data.lead!.status, notes: data.lead!.notes }
+              : item,
+          ),
         );
         toast.success(
           status === "done" ? "Маркирано като готово" : "Върнато към чакащи",
@@ -239,6 +251,33 @@ export default function GoogleFreeAnalysisLeadsTable({
     },
     [],
   );
+
+  const onSaveNotes = useCallback(async (id: string, notes: string) => {
+    setSavingNotesId(id);
+    try {
+      const res = await fetch(`/api/admin/google-free-analysis/${id}/notes`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes: notes.trim() ? notes.trim() : null }),
+      });
+      if (!res.ok) throw new Error("Notes update failed");
+
+      const data = (await res.json()) as { lead?: GoogleFreeAnalysisLeadRow };
+      if (!data.lead) return;
+
+      setLeads((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, notes: data.lead!.notes } : item,
+        ),
+      );
+      setNotesDraft(data.lead.notes ?? "");
+      toast.success("Бележките са записани");
+    } catch {
+      toast.error("Неуспешно записване на бележките");
+    } finally {
+      setSavingNotesId(null);
+    }
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -505,6 +544,33 @@ export default function GoogleFreeAnalysisLeadsTable({
                       );
                     })}
                   </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="lead-notes" className="text-sm font-medium">
+                      Бележки
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Вътрешни бележки за тази заявка — видими само в админа.
+                    </p>
+                  </div>
+                  <Textarea
+                    id="lead-notes"
+                    value={notesDraft}
+                    onChange={(event) => setNotesDraft(event.target.value)}
+                    placeholder="Напр. обадих се, чака линк, предпочита WhatsApp..."
+                    className="min-h-28"
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="w-full"
+                    disabled={savingNotesId === selectedLead.id || !notesDirty}
+                    onClick={() => void onSaveNotes(selectedLead.id, notesDraft)}
+                  >
+                    {savingNotesId === selectedLead.id ? "Записване..." : "Запази бележки"}
+                  </Button>
                 </div>
 
                 <section className="space-y-2 border-t border-border pt-4">

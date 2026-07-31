@@ -2,14 +2,14 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
-import { updateGoogleFreeAnalysisLeadStatus } from "@/lib/server/google-free-analysis-leads";
+import { updateGoogleFreeAnalysisLeadNotes } from "@/lib/server/google-free-analysis-leads";
 
 const paramsSchema = z.object({
   id: z.string().min(1),
 });
 
 const payloadSchema = z.object({
-  status: z.enum(["pending", "done"]),
+  notes: z.string().trim().max(5000).nullable(),
 });
 
 async function requireAdmin() {
@@ -37,15 +37,13 @@ export async function PATCH(
     const parsed = payloadSchema.safeParse(await req.json());
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "Invalid status payload", issues: parsed.error.issues },
+        { error: "Invalid notes payload", issues: parsed.error.issues },
         { status: 400 },
       );
     }
 
-    const lead = await updateGoogleFreeAnalysisLeadStatus(
-      params.data.id,
-      parsed.data.status,
-    );
+    const notes = parsed.data.notes?.trim() ? parsed.data.notes.trim() : null;
+    const lead = await updateGoogleFreeAnalysisLeadNotes(params.data.id, notes);
 
     return NextResponse.json({
       lead: {
@@ -66,7 +64,7 @@ export async function PATCH(
     });
   } catch {
     return NextResponse.json(
-      { error: "Failed to update google free analysis lead status." },
+      { error: "Failed to update google free analysis lead notes." },
       { status: 500 },
     );
   }

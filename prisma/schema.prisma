@@ -361,6 +361,7 @@ model GoogleFreeAnalysisLead {
   urgency       String
   /// pending = video not made yet; done = analysis video completed
   status        String   @default("pending")
+  notes         String?
   source        String   @default("google-free-analysis")
   pagePath      String?  @map("page_path")
   createdAt     DateTime @default(now()) @map("created_at")
