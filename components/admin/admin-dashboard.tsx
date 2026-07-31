@@ -349,13 +349,6 @@ export function AdminDashboard({ initialTab }: { initialTab?: DashboardTabId }) 
     );
   }
 
-  const totalRevenue = orders.reduce(
-    (sum, order) => sum + order.cart.totalOneTime + order.cart.totalMonthly,
-    0
-  );
-  const pendingOrders = orders.filter((o) => o.status === "pending").length;
-  const completedOrders = orders.filter((o) => o.status === "completed").length;
-
   return (
     <div ref={dashboardRootRef} className="space-y-8">
       {/* Header */}
@@ -388,25 +381,6 @@ export function AdminDashboard({ initialTab }: { initialTab?: DashboardTabId }) 
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard
-              title="Общо приходи"
-              value={<Price value={totalRevenue} layout="vertical" />}
-              description="Всички времена"
-              icon={<CreditCard className="h-6 w-6" />}
-              trend="+12% от миналия месец"
-            />
-            <StatCard
-              title="Общо поръчки"
-              value={orders.length.toString()}
-              description={`${pendingOrders} чакащи`}
-              icon={<ShoppingBag className="h-6 w-6" />}
-            />
-            <StatCard
-              title="Завършени"
-              value={completedOrders.toString()}
-              description="Успешно доставени"
-              icon={<TrendingUp className="h-6 w-6" />}
-            />
-            <StatCard
               title="Общо посещения"
               value={analytics.dailyStats.reduce((sum, row) => sum + row.visits, 0).toString()}
               description="Реални page views"
@@ -414,20 +388,41 @@ export function AdminDashboard({ initialTab }: { initialTab?: DashboardTabId }) 
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <StatCard
-              title="Клиенти"
-              value={new Set(orders.map((o) => o.customer.email)).size.toString()}
-              description="Уникални клиенти"
-              icon={<Users className="h-6 w-6" />}
-            />
-            <StatCard
-              title="Добавяния в кошницата"
-              value={analytics.cartAdditions.allTimeTotalAdds.toString()}
-              description={`${analytics.cartAdditions.lastDaysTotalAdds} за 30 дни`}
-              icon={<ShoppingBag className="h-6 w-6" />}
-            />
-          </div>
+          <Card data-admin-animate className="bg-card border-border">
+            <CardHeader>
+              <CardTitle>Посещения по страница</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {analytics.pageStats.length === 0 ? (
+                <p className="text-muted-foreground text-sm">Няма page views.</p>
+              ) : (
+                <div className="overflow-x-auto rounded-md border border-border">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border bg-muted/40">
+                        <th className="text-left py-2 px-3">Страница</th>
+                        <th className="text-right py-2 px-3">Views</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[...analytics.pageStats]
+                        .sort((a, b) => b.views - a.views)
+                        .map((stat) => (
+                          <tr key={stat.page} className="border-b border-border/50 last:border-0">
+                            <td className="py-2 px-3 font-mono text-xs break-all max-w-[min(28rem,55vw)]">
+                              {stat.page}
+                            </td>
+                            <td className="py-2 px-3 text-right tabular-nums font-semibold">
+                              {stat.views}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           <DashboardSectionHeading
             title="Последни поръчки"
