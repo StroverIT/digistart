@@ -78,22 +78,22 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       </header>
 
-      <div className="space-y-8">
+      <div className="mx-auto max-w-2xl space-y-8">
         {post.content.map((section, sectionIndex) => (
           <section
             key={section.heading ?? `section-${sectionIndex}`}
-            className="space-y-4"
+            className="space-y-5"
           >
             {section.heading ? (
-              <h2 className="font-heading text-2xl font-semibold tracking-tight">
+              <h2 className="font-heading text-2xl font-semibold tracking-tight text-black">
                 {section.heading}
               </h2>
             ) : null}
-            <div className="space-y-4">
+            <div className="space-y-5">
               {section.paragraphs.map((paragraph, paragraphIndex) => (
                 <p
                   key={`${section.heading ?? sectionIndex}-${paragraphIndex}`}
-                  className="text-base sm:text-lg text-foreground/85 leading-relaxed"
+                  className="text-lg sm:text-xl text-black leading-[1.8]"
                 >
                   {paragraph}
                 </p>
