@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import Link from "next/link";
 import {
   ArrowRight,
   Globe2,
@@ -12,6 +11,7 @@ import {
 } from "lucide-react";
 import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
+import TransitionLink from "@/components/transitions/TransitionLink";
 import { cn } from "@/lib/utils";
 
 const SERVICES = [
@@ -110,7 +110,7 @@ export function LocalServicesSection() {
             const Icon = service.icon;
             return (
               <li key={service.href} data-animate-reveal className={LANDING_REVEAL_CLASS}>
-                <Link
+                <TransitionLink
                   href={service.href}
                   className="group flex h-full flex-col rounded-2xl border border-border/80 bg-card/80 p-5 transition-colors hover:border-primary/30 hover:bg-card"
                 >
@@ -127,7 +127,7 @@ export function LocalServicesSection() {
                     Виж повече
                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                   </span>
-                </Link>
+                </TransitionLink>
               </li>
             );
           })}
