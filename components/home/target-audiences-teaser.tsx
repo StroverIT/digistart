@@ -3,10 +3,7 @@
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
-import {
-  TARGET_AUDIENCES_PAGE_PATH,
-  targetAudiencesContent,
-} from "@/lib/data/target-audiences-content";
+import { googleFreeAnalysisContent } from "@/lib/data/google-free-analysis-content";
 import {
   SITE_LOGO_HEIGHT,
   SITE_LOGO_SIZES,
@@ -40,26 +37,25 @@ export function TargetAudiencesTeaser() {
             />
           </div>
           <span className="inline-flex rounded-full bg-muted px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            {targetAudiencesContent.teaser.badge}
+            {googleFreeAnalysisContent.tipsCta.badge}
           </span>
-          <h2 className="mt-6 font-heading text-4xl font-bold tracking-tight text-foreground md:text-6xl">
-            3 Потенциални
-            <span className="mt-2 block font-accent italic">целеви аудитории</span>
+          <h2 className="mt-6 font-heading text-3xl font-bold tracking-tight text-foreground md:text-5xl">
+            {googleFreeAnalysisContent.tipsCta.title}
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground md:text-xl">
-            {targetAudiencesContent.teaser.description}
+            {googleFreeAnalysisContent.tipsCta.description}
           </p>
           <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-            {targetAudiencesContent.teaser.helper}
+            {googleFreeAnalysisContent.tipsCta.note}
           </p>
 
           <TrackedCtaLink
-            href={TARGET_AUDIENCES_PAGE_PATH}
-            ctaId="home_target_audiences_cta"
+            href="/google/three-free-tips"
+            ctaId="home_google_tips_cta"
             className="mt-8 inline-flex"
           >
             <span className="group inline-flex h-14 items-center gap-3 rounded-full bg-foreground px-8 text-lg font-semibold text-background transition-transform hover:scale-[1.02]">
-              {targetAudiencesContent.teaser.cta}
+              {googleFreeAnalysisContent.tipsCta.cta}
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </span>
           </TrackedCtaLink>
