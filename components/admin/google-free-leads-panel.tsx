@@ -10,22 +10,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  buildMetaValueBasedAudienceCsv,
+  buildMetaAudienceCsv,
   downloadTextFile,
-  freeAnalysisAudienceValue,
-  META_AUDIENCE_LEAD_VALUES,
   splitPersonName,
-  type MetaValueBasedAudienceRow,
-} from "@/lib/meta-value-based-audience-csv";
+  type MetaAudienceRow,
+} from "@/lib/meta-audience-csv";
 import type { GoogleFreeAnalysisLeadRow, ThreeFreeTipsLeadRow } from "@/lib/types";
 
 function exportDateStamp() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function analysisAudienceRows(
-  leads: GoogleFreeAnalysisLeadRow[],
-): MetaValueBasedAudienceRow[] {
+function analysisAudienceRows(leads: GoogleFreeAnalysisLeadRow[]): MetaAudienceRow[] {
   return leads.map((lead) => {
     const { firstName, lastName } = splitPersonName(lead.name);
     return {
@@ -34,27 +30,29 @@ function analysisAudienceRows(
       firstName,
       lastName,
       country: "bg",
-      uid: lead.id,
-      value: freeAnalysisAudienceValue(lead.urgency),
     };
   });
 }
 
-function tipsAudienceRows(leads: ThreeFreeTipsLeadRow[]): MetaValueBasedAudienceRow[] {
+function tipsAudienceRows(leads: ThreeFreeTipsLeadRow[]): MetaAudienceRow[] {
   return leads.map((lead) => ({
     email: lead.email,
     country: "bg",
-    uid: lead.id,
-    value: META_AUDIENCE_LEAD_VALUES.threeFreeTips,
   }));
 }
 
-/** Prefer richer/higher-value analysis rows when the same email appears in both lists. */
+function audienceRowRichness(row: MetaAudienceRow): number {
+  return [row.phone, row.firstName, row.lastName, row.zip].filter(
+    (field) => (field ?? "").trim().length > 0,
+  ).length;
+}
+
+/** Prefer richer analysis rows when the same email appears in both lists. */
 function mergeAudienceRows(
-  analysisRows: MetaValueBasedAudienceRow[],
-  tipRows: MetaValueBasedAudienceRow[],
-): MetaValueBasedAudienceRow[] {
-  const byEmail = new Map<string, MetaValueBasedAudienceRow>();
+  analysisRows: MetaAudienceRow[],
+  tipRows: MetaAudienceRow[],
+): MetaAudienceRow[] {
+  const byEmail = new Map<string, MetaAudienceRow>();
 
   for (const row of tipRows) {
     const email = (row.email ?? "").trim().toLowerCase();
@@ -66,7 +64,7 @@ function mergeAudienceRows(
     const email = (row.email ?? "").trim().toLowerCase();
     if (!email) continue;
     const existing = byEmail.get(email);
-    if (!existing || row.value >= existing.value) {
+    if (!existing || audienceRowRichness(row) >= audienceRowRichness(existing)) {
       byEmail.set(email, row);
     }
   }
@@ -85,7 +83,7 @@ export function GoogleFreeLeadsPanel({
   const totalLeadCount = tipLeads.length + analysisLeads.length;
 
   const exportAudience = (
-    rows: MetaValueBasedAudienceRow[],
+    rows: MetaAudienceRow[],
     filenamePrefix: string,
     emptyMessage: string,
     successMessage: (count: number) => string,
@@ -97,7 +95,7 @@ export function GoogleFreeLeadsPanel({
 
     downloadTextFile(
       `${filenamePrefix}-${exportDateStamp()}.csv`,
-      buildMetaValueBasedAudienceCsv(rows),
+      buildMetaAudienceCsv(rows),
     );
     toast.success(successMessage(rows.length));
   };
@@ -105,7 +103,7 @@ export function GoogleFreeLeadsPanel({
   const exportAnalysisAudience = () => {
     exportAudience(
       analysisAudienceRows(analysisLeads),
-      "meta-value-based-audience-free-analysis",
+      "meta-audience-free-analysis",
       "Няма заявки за експорт.",
       (count) => `Експортирани ${count} заявки за анализ.`,
     );
@@ -114,7 +112,7 @@ export function GoogleFreeLeadsPanel({
   const exportTipsAudience = () => {
     exportAudience(
       tipsAudienceRows(tipLeads),
-      "meta-value-based-audience-three-free-tips",
+      "meta-audience-three-free-tips",
       "Няма абонати за експорт.",
       (count) => `Експортирани ${count} абоната за 3 съвета.`,
     );
@@ -128,7 +126,7 @@ export function GoogleFreeLeadsPanel({
 
     exportAudience(
       rows,
-      "meta-value-based-audience-google-leads",
+      "meta-audience-google-leads",
       "Няма данни за експорт.",
       (count) =>
         `Експортирани ${count} контакта (анализ + 3 съвета, без дублирани имейли).`,
