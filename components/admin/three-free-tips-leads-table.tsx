@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Eye, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,14 +22,26 @@ function formatBgDate(iso: string) {
   });
 }
 
+function formatStageLabel(stage: number | null, lastStage: number) {
+  const resolved = stage ?? 1;
+  if (lastStage > 0 && resolved > lastStage) return `Завършил (${resolved})`;
+  return String(resolved);
+}
+
 export default function ThreeFreeTipsLeadsTable({
   initialLeads,
+  lastTipsEmailStage,
 }: {
   initialLeads: ThreeFreeTipsLeadRow[];
+  lastTipsEmailStage: number;
 }) {
-  const [leads] = useState(initialLeads);
+  const [leads, setLeads] = useState(initialLeads);
   const [search, setSearch] = useState("");
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLeads(initialLeads);
+  }, [initialLeads]);
 
   const selectedLead = useMemo(
     () => leads.find((lead) => lead.id === selectedLeadId) ?? null,
@@ -65,6 +77,9 @@ export default function ThreeFreeTipsLeadsTable({
                   Имейл
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
+                  Етап
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                   Записан на
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
@@ -76,6 +91,9 @@ export default function ThreeFreeTipsLeadsTable({
               {visibleLeads.map((lead) => (
                 <tr key={lead.id} className="border-b border-border/60 last:border-0">
                   <td className="px-4 py-3 font-mono text-sm">{lead.email}</td>
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
+                    {formatStageLabel(lead.tipsEmailStage, lastTipsEmailStage)}
+                  </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
                     {formatBgDate(lead.createdAt)}
                   </td>
@@ -119,6 +137,20 @@ export default function ThreeFreeTipsLeadsTable({
                   >
                     {selectedLead.email}
                   </a>
+                </div>
+                <div className="space-y-2 border-b border-border pb-3">
+                  <p className="text-sm font-medium">Етап</p>
+                  <p className="text-sm text-muted-foreground">
+                    {formatStageLabel(selectedLead.tipsEmailStage, lastTipsEmailStage)}
+                  </p>
+                </div>
+                <div className="space-y-2 border-b border-border pb-3">
+                  <p className="text-sm font-medium">Последен кампаниен имейл</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedLead.tipsLastEmailSentAt
+                      ? formatBgDate(selectedLead.tipsLastEmailSentAt)
+                      : "Все още не е изпращан"}
+                  </p>
                 </div>
                 <div className="space-y-2 border-b border-border pb-3">
                   <p className="text-sm font-medium">Източник</p>

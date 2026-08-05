@@ -1,5 +1,6 @@
 import { GoogleFreeLeadsPanel } from "@/components/admin/google-free-leads-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getLastThreeFreeTipsStageNumber } from "@/lib/emails/three-free-tips-stages";
 import { listGoogleFreeAnalysisLeadsNewestFirst } from "@/lib/server/google-free-analysis-leads";
 import { listThreeFreeTipsSubscribersNewestFirst } from "@/lib/server/newsletter";
 import type { GoogleFreeAnalysisLeadRow, ThreeFreeTipsLeadRow } from "@/lib/types";
@@ -11,6 +12,8 @@ function toTipLeadRow(
     id: lead.id,
     email: lead.email,
     source: lead.source,
+    tipsEmailStage: lead.tipsEmailStage ?? 1,
+    tipsLastEmailSentAt: lead.tipsLastEmailSentAt?.toISOString() ?? null,
     createdAt: lead.createdAt.toISOString(),
   };
 }
@@ -62,6 +65,7 @@ export default async function AdminFreePage() {
           <GoogleFreeLeadsPanel
             tipLeads={tipLeads.map(toTipLeadRow)}
             analysisLeads={analysisLeads.map(toAnalysisLeadRow)}
+            lastTipsEmailStage={getLastThreeFreeTipsStageNumber()}
           />
         </TabsContent>
       </Tabs>

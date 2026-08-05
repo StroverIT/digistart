@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Download, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import GoogleFreeAnalysisLeadsTable from "@/components/admin/google-free-analysis-leads-table";
+import { ThreeFreeTipsCampaignPanel } from "@/components/admin/three-free-tips-campaign-panel";
 import ThreeFreeTipsLeadsTable from "@/components/admin/three-free-tips-leads-table";
 import { ThreeFreeTipsVideoUrlEditor } from "@/components/admin/three-free-tips-video-url-editor";
 import { Button } from "@/components/ui/button";
@@ -75,10 +77,13 @@ function mergeAudienceRows(
 export function GoogleFreeLeadsPanel({
   tipLeads,
   analysisLeads,
+  lastTipsEmailStage,
 }: {
   tipLeads: ThreeFreeTipsLeadRow[];
   analysisLeads: GoogleFreeAnalysisLeadRow[];
+  lastTipsEmailStage: number;
 }) {
+  const router = useRouter();
   const pendingAnalysisCount = analysisLeads.filter((lead) => lead.status === "pending").length;
   const totalLeadCount = tipLeads.length + analysisLeads.length;
 
@@ -205,6 +210,7 @@ export function GoogleFreeLeadsPanel({
 
         <TabsContent value="tips" className="space-y-4">
           <ThreeFreeTipsVideoUrlEditor />
+          <ThreeFreeTipsCampaignPanel onSent={() => router.refresh()} />
           <Card>
             <CardHeader>
               <CardTitle>
@@ -227,7 +233,10 @@ export function GoogleFreeLeadsPanel({
               {tipLeads.length === 0 ? (
                 <p className="py-8 text-center text-muted-foreground">Няма абонати</p>
               ) : (
-                <ThreeFreeTipsLeadsTable initialLeads={tipLeads} />
+                <ThreeFreeTipsLeadsTable
+                  initialLeads={tipLeads}
+                  lastTipsEmailStage={lastTipsEmailStage}
+                />
               )}
             </CardContent>
           </Card>

@@ -291,12 +291,14 @@ model AnalyticsEvent {
 }
 
 model NewsletterSubscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  source    String   @default("coming-soon")
-  metadata  Json?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  source              String    @default("coming-soon")
+  metadata            Json?
+  tipsEmailStage      Int?      @map("tips_email_stage")
+  tipsLastEmailSentAt DateTime? @map("tips_last_email_sent_at")
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   @@map("newsletter_subscribers")
 }

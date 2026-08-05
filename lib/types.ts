@@ -230,6 +230,8 @@ export interface ThreeFreeTipsLeadRow {
   id: string;
   email: string;
   source: string;
+  tipsEmailStage: number | null;
+  tipsLastEmailSentAt: string | null;
   createdAt: string;
 }
 

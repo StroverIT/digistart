@@ -30,7 +30,7 @@ function createPrismaClient() {
 }
 
 /** Bump when the schema changes so dev HMR does not reuse a stale client. */
-const PRISMA_SCHEMA_CACHE_KEY = "20260727180000-add-app-settings";
+const PRISMA_SCHEMA_CACHE_KEY = "20260805180000-add-tips-email-campaign-stages";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -56,8 +56,14 @@ function getCachedPrisma(): PrismaClient | undefined {
   if (
     !("supportChat" in cached) ||
     !("serviceWaitlistEntry" in cached) ||
-    !("appSetting" in cached)
+    !("appSetting" in cached) ||
+    !("newsletterSubscriber" in cached)
   ) {
+    global.prisma = undefined;
+    return undefined;
+  }
+  const newsletterFields = runtime._runtimeDataModel?.models?.NewsletterSubscriber?.fields;
+  if (newsletterFields && !("tipsEmailStage" in newsletterFields)) {
     global.prisma = undefined;
     return undefined;
   }

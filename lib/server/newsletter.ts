@@ -217,13 +217,30 @@ export async function listThreeFreeTipsSubscribersNewestFirst() {
     orderBy: { createdAt: "desc" },
   });
 
-  return subscribers.filter((row) => {
+  const tips = subscribers.filter((row) => {
     if (row.source === THREE_FREE_TIPS_SOURCE) return true;
     if (!row.metadata || typeof row.metadata !== "object" || Array.isArray(row.metadata)) {
       return false;
     }
     return "threeFreeTipsAt" in row.metadata;
   });
+
+  const missingStageIds = tips
+    .filter((row) => row.tipsEmailStage == null)
+    .map((row) => row.id);
+
+  if (missingStageIds.length > 0) {
+    await prisma.newsletterSubscriber.updateMany({
+      where: { id: { in: missingStageIds } },
+      data: { tipsEmailStage: 1 },
+    });
+
+    return tips.map((row) =>
+      row.tipsEmailStage == null ? { ...row, tipsEmailStage: 1 } : row,
+    );
+  }
+
+  return tips;
 }
 
 export type ThreeFreeTipsSubscribeResult = {
@@ -257,16 +274,20 @@ export async function subscribeToThreeFreeTips(
         !Array.isArray(existing!.metadata) &&
         "threeFreeTipsAt" in existing!.metadata));
 
+  const tipsStageData =
+    existing?.tipsEmailStage == null ? { tipsEmailStage: 1 as const } : {};
+
   const subscriber = existing
     ? await prisma.newsletterSubscriber.update({
         where: { email: normalized },
-        data: { metadata: mergedMetadata },
+        data: { metadata: mergedMetadata, ...tipsStageData },
       })
     : await prisma.newsletterSubscriber.create({
         data: {
           email: normalized,
           source: THREE_FREE_TIPS_SOURCE,
           metadata: tipMeta,
+          tipsEmailStage: 1,
         },
       });
 
