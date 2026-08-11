@@ -212,6 +212,15 @@ export async function getNewsletterSubscribers(): Promise<NewsletterSubscriber[]
   });
 }
 
+export async function removeNewsletterSubscriber(
+  id: string,
+): Promise<NewsletterSubscriber | null> {
+  const existing = await prisma.newsletterSubscriber.findUnique({ where: { id } });
+  if (!existing) return null;
+
+  return prisma.newsletterSubscriber.delete({ where: { id } });
+}
+
 export async function listThreeFreeTipsSubscribersNewestFirst() {
   const subscribers = await prisma.newsletterSubscriber.findMany({
     orderBy: { createdAt: "desc" },

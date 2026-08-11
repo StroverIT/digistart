@@ -235,6 +235,14 @@ export interface ThreeFreeTipsLeadRow {
   createdAt: string;
 }
 
+export interface NewsletterSubscriberRow {
+  id: string;
+  email: string;
+  source: string;
+  createdAt: string;
+  metadata: unknown;
+}
+
 export type GoogleFreeAnalysisLeadStatus = "pending" | "done";
 
 export interface GoogleFreeAnalysisLeadRow {
