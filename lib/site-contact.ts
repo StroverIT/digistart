@@ -69,7 +69,7 @@ export const siteContact = {
   onlineOperatingHours: {
     allDay: true,
     label: "Онлайн запитвания",
-    note: "24 часа, всеки ден",
+    note: "Отворено 24 часа",
   },
 } as const;
 
