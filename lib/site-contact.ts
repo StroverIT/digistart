@@ -1,3 +1,18 @@
+/**
+ * Regular hours — keep identical to Google Business Profile.
+ * GBP + website + JSON-LD must all use 08:00–20:00 every day (Europe/Sofia).
+ * @see https://developers.google.com/search/docs/appearance/structured-data/local-business
+ */
+export const OPENING_HOURS_DAYS = [
+  { dayOfWeek: "Monday", label: "Понеделник", shortLabel: "Пн" },
+  { dayOfWeek: "Tuesday", label: "Вторник", shortLabel: "Вт" },
+  { dayOfWeek: "Wednesday", label: "Сряда", shortLabel: "Ср" },
+  { dayOfWeek: "Thursday", label: "Четвъртък", shortLabel: "Чт" },
+  { dayOfWeek: "Friday", label: "Петък", shortLabel: "Пт" },
+  { dayOfWeek: "Saturday", label: "Събота", shortLabel: "Сб" },
+  { dayOfWeek: "Sunday", label: "Неделя", shortLabel: "Нд" },
+] as const;
+
 /** Site-wide contact and social links (public URLs). Keep NAP identical to Google Business Profile. */
 export const siteContact = {
   /** Public business name (must match GBP) */
@@ -22,9 +37,9 @@ export const siteContact = {
     latitude: 42.6463351,
     longitude: 23.4088513,
   },
-  /** Public Google Maps place URL (GBP) */
+  /** Public Google Maps place URL (GBP listing, not a raw pin) */
   googleMapsUrl:
-    "https://www.google.com/maps/place/Digistart+-+%D1%80%D0%B5%D0%BA%D0%BB%D0%B0%D0%BC%D0%BD%D0%B0+%D0%B0%D0%B3%D0%B5%D0%BD%D1%86%D0%B8%D1%8F/@42.6463351,23.4088513,17z",
+    "https://www.google.com/maps/place/Digistart+-+%D1%80%D0%B5%D0%BA%D0%BB%D0%B0%D0%BC%D0%BD%D0%B0+%D0%B0%D0%B3%D0%B5%D0%BD%D1%86%D0%B8%D1%8F/@42.6463351,23.4088513,17z/data=!4m6!3m5!1s0x6de45c7a12e65d4d:0x34419d40aa2064bc!8m2!3d42.6463351!4d23.4088513!16s%2Fg%2F11j_1z1tcr",
   /** Embeddable map (no API key) */
   googleMapsEmbedUrl:
     "https://maps.google.com/maps?q=42.6463351,23.4088513&z=16&hl=bg&output=embed",
@@ -34,4 +49,47 @@ export const siteContact = {
   linkedin: "https://www.linkedin.com/company/115850325/",
   /** Primary service area for local SEO */
   areaServed: "София",
+  /** Regular hours for schema + on-page citations (must match GBP). */
+  openingHours: {
+    opens: "08:00",
+    closes: "20:00",
+    displayRange: "08:00 – 20:00",
+    schemaRange: "Mo-Su 08:00-20:00",
+    note: "Всеки ден от 08:00 - 20:00",
+    timeZone: "Europe/Sofia",
+  },
 } as const;
+
+function minutesFromHhMm(value: string) {
+  const [hours, minutes] = value.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+export function getSofiaOpeningStatus(now = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: siteContact.openingHours.timeZone,
+    weekday: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(now);
+
+  const read = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+
+  const minutesNow =
+    Number(read("hour")) * 60 + Number(read("minute"));
+  const opens = minutesFromHhMm(siteContact.openingHours.opens);
+  const closes = minutesFromHhMm(siteContact.openingHours.closes);
+
+  return {
+    weekday: read("weekday"),
+    isOpen: minutesNow >= opens && minutesNow < closes,
+    nextHint:
+      minutesNow >= opens && minutesNow < closes
+        ? `Днес до ${siteContact.openingHours.closes}`
+        : minutesNow < opens
+          ? `Отваряме в ${siteContact.openingHours.opens}`
+          : `Отваряме утре в ${siteContact.openingHours.opens}`,
+  };
+}

@@ -1,17 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import Image from "next/image";
 import {
   ArrowRight,
+  Clock,
   Facebook,
   Instagram,
   Linkedin,
+  Mail,
+  MapPin,
+  Phone,
+  type LucideIcon,
 } from "lucide-react";
 import { GoogleMapsEmbed } from "@/components/seo/google-maps-embed";
-import { siteContact } from "@/lib/site-contact";
+import { OPENING_HOURS_DAYS, getSofiaOpeningStatus, siteContact } from "@/lib/site-contact";
 import {
   SITE_LOGO_HEIGHT,
   SITE_LOGO_SIZES,
@@ -49,11 +54,126 @@ const socialLinks = [
   { href: siteContact.linkedin, label: "LinkedIn", icon: Linkedin },
 ] as const;
 
-function FooterColumnHeading({ children }: { children: string }) {
+function FooterColumnHeading({
+  as: Tag = "h3",
+  children,
+}: {
+  as?: "h2" | "h3";
+  children: string;
+}) {
   return (
-    <h3 className="mb-4 font-heading text-xs font-bold uppercase tracking-[0.2em] text-accent">
+    <Tag className="mb-3 font-heading text-xs font-bold uppercase tracking-[0.2em] text-accent">
       {children}
-    </h3>
+    </Tag>
+  );
+}
+
+function FooterContactRow({
+  icon: Icon,
+  label,
+  href,
+  external,
+  children,
+}: {
+  icon: LucideIcon;
+  label: string;
+  href?: string;
+  external?: boolean;
+  children: ReactNode;
+}) {
+  const content = (
+    <>
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/80 bg-background/70 text-accent">
+        <Icon className="h-3.5 w-3.5" />
+      </span>
+      <span className="min-w-0">
+        <span className="sr-only">{label}</span>
+        <span className="block text-sm leading-snug text-foreground">{children}</span>
+      </span>
+    </>
+  );
+
+  const className = cn(
+    "flex items-center gap-2.5 rounded-lg py-0.5 transition-colors",
+    href && "hover:text-accent",
+  );
+
+  if (!href) {
+    return <div className={className}>{content}</div>;
+  }
+
+  return (
+    <a
+      href={href}
+      className={className}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+    >
+      {content}
+    </a>
+  );
+}
+
+function OpeningHoursCard() {
+  const [status, setStatus] = useState<{
+    weekday: string;
+    isOpen: boolean;
+    nextHint: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const sync = () => setStatus(getSofiaOpeningStatus());
+    sync();
+
+    const intervalId = window.setInterval(sync, 60_000);
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  const isOpen = status?.isOpen ?? false;
+
+  return (
+    <div className="flex items-start gap-2.5 py-0.5">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/80 bg-background/70 text-accent">
+        <Clock className="h-3.5 w-3.5" />
+      </span>
+      <div className="min-w-0">
+        <p className="flex items-center gap-1.5 text-sm leading-snug font-medium text-foreground">
+          <span className="relative flex h-2 w-2">
+            {isOpen ? (
+              <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-60 motion-safe:animate-ping" />
+            ) : null}
+            <span
+              className={cn(
+                "relative inline-flex h-2 w-2 rounded-full",
+                isOpen ? "bg-primary" : "bg-muted-foreground/70",
+              )}
+            />
+          </span>
+          {status
+            ? isOpen
+              ? "Отворени сега"
+              : "Затворени сега"
+            : "Работно време"}
+        </p>
+        <p className="text-xs leading-snug text-muted-foreground">
+          {siteContact.openingHours.note}
+          {status && !status.isOpen ? ` · ${status.nextHint}` : null}
+        </p>
+        <ul className="sr-only">
+          {OPENING_HOURS_DAYS.map((day) => (
+            <li key={day.dayOfWeek}>
+              {day.label}:{" "}
+              <time dateTime={siteContact.openingHours.opens}>
+                {siteContact.openingHours.opens}
+              </time>
+              {" – "}
+              <time dateTime={siteContact.openingHours.closes}>
+                {siteContact.openingHours.closes}
+              </time>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }
 
@@ -152,8 +272,8 @@ export function Footer() {
         />
         <div className="pointer-events-none absolute -right-24 top-0 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
 
-        <div className="container relative mx-auto px-4 py-10 md:px-8 md:py-14">
-          <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-12 lg:gap-x-8">
+        <div className="container relative mx-auto px-4 py-8 md:px-8 md:py-10">
+          <div className="grid grid-cols-2 items-start gap-x-6 gap-y-8 lg:grid-cols-12 lg:gap-x-8">
             {/* Brand */}
             <div
               data-footer-column
@@ -162,7 +282,7 @@ export function Footer() {
               <TrackedCtaLink
                 href="/"
                 ctaId="footer_logo_home"
-                className="group mb-4 inline-flex items-center gap-2.5"
+                className="group mb-3 inline-flex items-center gap-2.5"
               >
                 <Image
                   src={SITE_LOGO_SRC}
@@ -183,12 +303,12 @@ export function Footer() {
                 </span>
               </TrackedCtaLink>
 
-              <p className="mb-6 max-w-sm text-sm leading-relaxed text-muted-foreground">
-                Рекламна агенция в София — онлайн магазини, Google Ads, Meta, SEO и
+              <p className="mb-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
+                Рекламна агенция в София - онлайн магазини, Google Ads, Meta, SEO и
                 Google Business за малки бизнеси, ясно и без излишен риск.
               </p>
 
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2">
                 {socialLinks.map(({ href, label, icon: Icon }) => (
                   <a
                     key={label}
@@ -197,7 +317,7 @@ export function Footer() {
                     rel="noopener noreferrer"
                     aria-label={label}
                     className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/80 text-muted-foreground",
+                      "flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/80 text-muted-foreground",
                       "transition-all duration-200 hover:border-primary/30 hover:bg-primary/10 hover:text-accent hover:shadow-[0_0_20px_-6px] hover:shadow-primary/40"
                     )}
                   >
@@ -210,7 +330,7 @@ export function Footer() {
             {/* Services */}
             <div data-footer-column className="opacity-0 translate-y-8 lg:col-span-2">
               <FooterColumnHeading>Услуги</FooterColumnHeading>
-              <ul className="space-y-2.5">
+              <ul className="space-y-2">
                 {services.map((service) => (
                   <li key={service.href}>
                     <FooterNavLink
@@ -227,7 +347,7 @@ export function Footer() {
             {/* Quick Links */}
             <div data-footer-column className="opacity-0 translate-y-8 lg:col-span-2">
               <FooterColumnHeading>Бързи връзки</FooterColumnHeading>
-              <ul className="space-y-2.5">
+              <ul className="space-y-2">
                 {quickLinks.map((link) => (
                   <li key={link.label}>
                     <FooterNavLink
@@ -245,49 +365,47 @@ export function Footer() {
             <div
               id="location"
               data-footer-column
-              className="col-span-2 space-y-4 opacity-0 translate-y-8 lg:col-span-5"
+              className="col-span-2 opacity-0 translate-y-8 lg:col-span-5"
             >
-              <h2 className="font-heading text-lg font-bold tracking-tight text-foreground md:text-xl">
-                Рекламна агенция в София
-              </h2>
-              <dl className="space-y-2 text-sm">
-                <div>
-                  <dt className="font-semibold text-foreground">Адрес</dt>
-                  <dd className="text-muted-foreground">
+              <FooterColumnHeading as="h2">Рекламна агенция в София</FooterColumnHeading>
+
+              <div className="grid gap-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] sm:items-stretch">
+                <div className="space-y-2.5">
+                  <FooterContactRow
+                    icon={MapPin}
+                    label="Адрес"
+                    href={siteContact.googleMapsUrl}
+                    external
+                  >
                     {siteContact.addressSingleLine}
-                  </dd>
+                  </FooterContactRow>
+                  <FooterContactRow
+                    icon={Phone}
+                    label="Телефон"
+                    href={siteContact.phoneHref}
+                  >
+                    {siteContact.phoneLabel}
+                  </FooterContactRow>
+                  <FooterContactRow
+                    icon={Mail}
+                    label="Имейл"
+                    href={`mailto:${siteContact.email}`}
+                  >
+                    {siteContact.email}
+                  </FooterContactRow>
+                  <div className="border-t border-border/70 pt-2.5">
+                    <OpeningHoursCard />
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-x-2">
-                  <dt className="font-semibold text-foreground">Телефон</dt>
-                  <dd>
-                    <a
-                      href={siteContact.phoneHref}
-                      className="text-accent hover:underline"
-                    >
-                      {siteContact.phoneLabel}
-                    </a>
-                  </dd>
-                </div>
-                <div className="flex flex-wrap gap-x-2">
-                  <dt className="font-semibold text-foreground">Имейл</dt>
-                  <dd>
-                    <a
-                      href={`mailto:${siteContact.email}`}
-                      className="text-accent hover:underline"
-                    >
-                      {siteContact.email}
-                    </a>
-                  </dd>
-                </div>
-              </dl>
-              <GoogleMapsEmbed compact hideCaption />
+                <GoogleMapsEmbed compact fill hideCaption className="min-h-44" />
+              </div>
             </div>
           </div>
 
           {/* Bottom bar */}
           <div
             data-footer-column
-            className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border/80 pt-6 opacity-0 translate-y-8 md:flex-row md:pt-8"
+            className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-border/80 pt-5 opacity-0 translate-y-8 md:flex-row"
           >
             <p className="text-center text-sm text-muted-foreground md:text-left">
               &copy; {new Date().getFullYear()} DigiStart. Всички права запазени.

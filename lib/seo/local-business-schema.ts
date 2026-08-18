@@ -1,5 +1,5 @@
 import { SITE_METADATA_BASE } from "@/lib/seo/open-graph";
-import { siteContact } from "@/lib/site-contact";
+import { OPENING_HOURS_DAYS, siteContact } from "@/lib/site-contact";
 
 export function buildLocalBusinessJsonLd() {
   const siteUrl = SITE_METADATA_BASE.origin;
@@ -40,12 +40,13 @@ export function buildLocalBusinessJsonLd() {
     ],
     hasMap: siteContact.googleMapsUrl,
     priceRange: "$$",
+    openingHours: siteContact.openingHours.schemaRange,
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "09:00",
-        closes: "18:00",
+        dayOfWeek: OPENING_HOURS_DAYS.map((day) => day.dayOfWeek),
+        opens: siteContact.openingHours.opens,
+        closes: siteContact.openingHours.closes,
       },
     ],
   } as const;
