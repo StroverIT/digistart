@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Clock,
   Facebook,
+  Globe,
   Instagram,
   Linkedin,
   Mail,
@@ -131,47 +132,62 @@ function OpeningHoursCard() {
   const isOpen = status?.isOpen ?? false;
 
   return (
-    <div className="flex items-start gap-2.5 py-0.5">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/80 bg-background/70 text-accent">
-        <Clock className="h-3.5 w-3.5" />
-      </span>
-      <div className="min-w-0">
-        <p className="flex items-center gap-1.5 text-sm leading-snug font-medium text-foreground">
-          <span className="relative flex h-2 w-2">
-            {isOpen ? (
-              <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-60 motion-safe:animate-ping" />
-            ) : null}
-            <span
-              className={cn(
-                "relative inline-flex h-2 w-2 rounded-full",
-                isOpen ? "bg-primary" : "bg-muted-foreground/70",
-              )}
-            />
-          </span>
-          {status
-            ? isOpen
-              ? "Отворени сега"
-              : "Затворени сега"
-            : "Работно време"}
-        </p>
-        <p className="text-xs leading-snug text-muted-foreground">
-          {siteContact.openingHours.note}
-          {status && !status.isOpen ? ` · ${status.nextHint}` : null}
-        </p>
-        <ul className="sr-only">
-          {OPENING_HOURS_DAYS.map((day) => (
-            <li key={day.dayOfWeek}>
-              {day.label}:{" "}
-              <time dateTime={siteContact.openingHours.opens}>
-                {siteContact.openingHours.opens}
-              </time>
-              {" – "}
-              <time dateTime={siteContact.openingHours.closes}>
-                {siteContact.openingHours.closes}
-              </time>
-            </li>
-          ))}
-        </ul>
+    <div className="space-y-2">
+      <div className="flex items-start gap-2.5 py-0.5">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/80 bg-background/70 text-accent">
+          <Clock className="h-3.5 w-3.5" />
+        </span>
+        <div className="min-w-0">
+          <p className="flex items-center gap-1.5 text-sm leading-snug font-medium text-foreground">
+            <span className="relative flex h-2 w-2">
+              {isOpen ? (
+                <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-60 motion-safe:animate-ping" />
+              ) : null}
+              <span
+                className={cn(
+                  "relative inline-flex h-2 w-2 rounded-full",
+                  isOpen ? "bg-primary" : "bg-muted-foreground/70",
+                )}
+              />
+            </span>
+            {status
+              ? isOpen
+                ? "Офисът е отворен"
+                : "Офисът е затворен"
+              : siteContact.openingHours.label}
+          </p>
+          <p className="text-xs leading-snug text-muted-foreground">
+            {siteContact.openingHours.note}
+            {status && !status.isOpen ? ` · ${status.nextHint}` : null}
+          </p>
+          <ul className="sr-only">
+            {OPENING_HOURS_DAYS.map((day) => (
+              <li key={day.dayOfWeek}>
+                {day.label}:{" "}
+                <time dateTime={siteContact.openingHours.opens}>
+                  {siteContact.openingHours.opens}
+                </time>
+                {" – "}
+                <time dateTime={siteContact.openingHours.closes}>
+                  {siteContact.openingHours.closes}
+                </time>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div className="flex items-start gap-2.5 py-0.5">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/80 bg-background/70 text-accent">
+          <Globe className="h-3.5 w-3.5" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-sm leading-snug font-medium text-foreground">
+            {siteContact.onlineOperatingHours.label}
+          </p>
+          <p className="text-xs leading-snug text-muted-foreground">
+            {siteContact.onlineOperatingHours.note}
+          </p>
+        </div>
       </div>
     </div>
   );

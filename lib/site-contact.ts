@@ -1,6 +1,9 @@
 /**
- * Regular hours — keep identical to Google Business Profile.
- * GBP + website + JSON-LD must all use 08:00–20:00 every day (Europe/Sofia).
+ * Hours — keep identical to Google Business Profile.
+ * Regular Hours (08:00–20:00) drive “open now”, NAP, and JSON-LD.
+ * Online operating hours are a separate GBP “More hours” type and must not
+ * replace regular hours in schema or the office open/closed status.
+ * @see https://support.google.com/business/answer/9876800
  * @see https://developers.google.com/search/docs/appearance/structured-data/local-business
  */
 export const OPENING_HOURS_DAYS = [
@@ -49,14 +52,24 @@ export const siteContact = {
   linkedin: "https://www.linkedin.com/company/115850325/",
   /** Primary service area for local SEO */
   areaServed: "София",
-  /** Regular hours for schema + on-page citations (must match GBP). */
+  /** Regular Hours in GBP — office / customer-facing. Also used in JSON-LD. */
   openingHours: {
     opens: "08:00",
     closes: "20:00",
     displayRange: "08:00 – 20:00",
     schemaRange: "Mo-Su 08:00-20:00",
+    label: "Офис",
     note: "Всеки ден от 08:00 - 20:00",
     timeZone: "Europe/Sofia",
+  },
+  /**
+   * GBP “Online operating hours” (More hours). Display separately on the site.
+   * Do not use this for openingHoursSpecification or the office open/closed pill.
+   */
+  onlineOperatingHours: {
+    allDay: true,
+    label: "Онлайн запитвания",
+    note: "Денонощно",
   },
 } as const;
 
