@@ -6,7 +6,7 @@ import { Loader2, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { trackMetaLead } from "@/lib/analytics/meta-pixel";
+import { META_LEAD_VALUE, trackMetaLead } from "@/lib/analytics/meta-pixel";
 
 type NewsletterSignupFormProps = {
   spotsRemaining: number;
@@ -66,6 +66,7 @@ export function NewsletterSignupForm({ spotsRemaining, totalSpots }: NewsletterS
         content_name: "DigiStart - Бюлетин (очаквайте скоро)",
         page_path: pathname && pathname.length > 0 ? pathname : "/",
         lead_source: "coming_soon_newsletter",
+        value: META_LEAD_VALUE.emailCapture,
         user: { email: trimmed },
       });
 

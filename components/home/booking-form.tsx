@@ -28,6 +28,7 @@ type BookingFormProps = {
   metaLead?: {
     contentName: string;
     leadSource?: string;
+    value?: number;
   };
   showSocialProfileToggle?: boolean;
   notesLabel?: string;
@@ -189,7 +190,11 @@ export function BookingForm({
               submitLabel="Потвърдете консултацията"
               analyticsPath={analyticsPath}
               analyticsCtaId={analyticsCtaId}
-              metaLead={metaLead}
+              metaLead={{
+                contentName: metaLead?.contentName ?? "DigiStart - Безплатна консултация",
+                leadSource: metaLead?.leadSource ?? "consultation",
+                value: metaLead?.value ?? pricing?.originalPrice,
+              }}
               embeddedShowSlotsFirst={sectionId == "booking"}
             />
           </div>

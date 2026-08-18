@@ -18,12 +18,17 @@ export type ServiceBuyConsultationConfig = {
   metaLead?: {
     contentName: string;
     leadSource?: string;
+    value?: number;
   };
   booking?: {
     showSocialProfileToggle?: boolean;
     notesLabel?: string;
     notesPlaceholder?: string;
     showOnSiteOption?: boolean;
+  };
+  pricing?: {
+    originalPrice: number;
+    priceLabel: string;
   };
 };
 
@@ -82,6 +87,7 @@ export function ServiceBuyConsultationFormSection({
           analyticsPath={consultation.analyticsPath}
           analyticsCtaId={consultation.analyticsCtaId}
           metaLead={consultation.metaLead}
+          pricing={consultation.pricing}
           showSocialProfileToggle={consultation.booking?.showSocialProfileToggle}
           notesLabel={consultation.booking?.notesLabel}
           notesPlaceholder={consultation.booking?.notesPlaceholder}

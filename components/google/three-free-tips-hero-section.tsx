@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import HeroVideo from "@/components/services/service-detail-ready-store-v2/HeroVideo";
 import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
-import { trackMetaLead } from "@/lib/analytics/meta-pixel";
+import { META_LEAD_VALUE, trackMetaLead } from "@/lib/analytics/meta-pixel";
 import { cn } from "@/lib/utils";
 
 export function ThreeFreeTipsHeroSection() {
@@ -53,6 +53,7 @@ export function ThreeFreeTipsHeroSection() {
         content_name: "DigiStart - 3 безплатни съвета (Google)",
         page_path: pathname && pathname.length > 0 ? pathname : "/google/three-free-tips",
         lead_source: "three_free_tips",
+        value: META_LEAD_VALUE.freeResource,
         user: { email: trimmed },
       });
 

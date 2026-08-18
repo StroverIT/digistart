@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
 import { AnalyticsModeProvider } from "@/components/analytics/analytics-mode-provider";
+import { MetaPixelAdvancedMatching } from "@/components/analytics/meta-pixel-advanced-matching";
 import { VisitorPreferencesProvider } from "@/components/visitor-preferences/visitor-preferences-provider";
 
 const CookieConsent = dynamic(
@@ -19,6 +20,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       <VisitorPreferencesProvider>
       <AnalyticsModeProvider>
+        <MetaPixelAdvancedMatching />
         {children}
         <CookieConsent />
         <Toaster richColors position="top-center" />

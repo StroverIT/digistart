@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { trackMetaLead } from "@/lib/analytics/meta-pixel";
+import { META_LEAD_VALUE, trackMetaLead } from "@/lib/analytics/meta-pixel";
 import { trackAnalyticsEvent } from "@/lib/analytics/tracker";
 
 export function DigitalRoadmapForm() {
@@ -68,6 +68,7 @@ export function DigitalRoadmapForm() {
         content_name: "DigiStart - Дигитална пътна карта (PDF)",
         page_path: pathname && pathname.length > 0 ? pathname : "/digital-roadmap",
         lead_source: source,
+        value: META_LEAD_VALUE.freeResource,
         user: { email: trimmedEmail },
       });
 

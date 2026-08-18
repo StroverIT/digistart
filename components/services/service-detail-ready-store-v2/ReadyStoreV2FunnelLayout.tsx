@@ -61,6 +61,7 @@ function buildConsultationConfig(config: ServiceFunnelReadyStoreV2Config): Servi
     analyticsPath: config.pagePath,
     metaLead: consultation.metaLead,
     booking: consultation.booking,
+    pricing: consultation.pricing,
   };
 }
 

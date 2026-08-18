@@ -1,3 +1,6 @@
+import { resolveMetaLeadValue } from "@/lib/analytics/meta-lead-value";
+import { hasAdsConsent } from "@/lib/cookies/consent";
+
 /**
  * Meta Pixel + dataLayer helpers for browser events with deduplication-friendly `event_id`.
  *
@@ -38,8 +41,20 @@ export type MetaPixelUserInfo = {
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "";
 const META_CURRENCY = process.env.NEXT_PUBLIC_META_CURRENCY ?? "EUR";
 const SERVER_CAPI_ENDPOINT = "/api/meta/capi";
+const META_ADVANCED_MATCHING_KEY = "digistart_meta_advanced_matching_v1";
 
 let metaPixelInitStarted = false;
+let lastAdvancedMatchingJson = "";
+
+/** Customer data passed as the third `fbq('init')` argument. Pixel SHA-256 hashes it. */
+type MetaAdvancedMatchingParams = {
+  em?: string;
+  ph?: string;
+  fn?: string;
+  ln?: string;
+  external_id?: string;
+  country?: string;
+};
 
 /** Unique per event: prefix + ms timestamp + random segment (Stape/Meta dedupe). */
 export function generateMetaEventId(eventName: string): string {
@@ -95,13 +110,103 @@ function injectMetaPixelBase(): void {
   s?.parentNode?.insertBefore(t, s);
 }
 
-/** Install Meta base snippet once and call fbq('init', pixelId). */
-export function ensureMetaPixelInitialized(): void {
-  if (typeof window === "undefined" || !META_PIXEL_ID || metaPixelInitStarted) return;
-  metaPixelInitStarted = true;
+function normalizeNameForMatching(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\s'-]/gu, "")
+    .replace(/\s+/g, " ");
+}
 
-  injectMetaPixelBase();
-  window.fbq?.("init", META_PIXEL_ID);
+/** Digits only, with BG country code when the number looks local. */
+function normalizePhoneForMatching(value: string): string {
+  let digits = value.replace(/[^\d]/g, "");
+  if (!digits) return "";
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.startsWith("359")) return digits;
+  if (digits.startsWith("0") && digits.length >= 9 && digits.length <= 10) {
+    return `359${digits.slice(1)}`;
+  }
+  return digits;
+}
+
+function readStoredMatchingUser(): MetaPixelUserInfo | undefined {
+  if (typeof window === "undefined") return undefined;
+  try {
+    const raw = window.localStorage.getItem(META_ADVANCED_MATCHING_KEY);
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw) as MetaPixelUserInfo;
+    return cleanUser(parsed);
+  } catch {
+    return undefined;
+  }
+}
+
+function persistMatchingUser(user: MetaPixelUserInfo): void {
+  if (typeof window === "undefined" || !hasAdsConsent()) return;
+  const incoming = cleanUser(user);
+  if (!incoming) return;
+  const current = readStoredMatchingUser() ?? {};
+  const merged: MetaPixelUserInfo = { ...current };
+  if (incoming.email) merged.email = incoming.email;
+  if (incoming.phone) merged.phone = incoming.phone;
+  if (incoming.firstName) merged.firstName = incoming.firstName;
+  if (incoming.lastName) merged.lastName = incoming.lastName;
+  if (incoming.externalId) merged.externalId = incoming.externalId;
+  try {
+    window.localStorage.setItem(META_ADVANCED_MATCHING_KEY, JSON.stringify(merged));
+  } catch {
+    // ignore quota / private mode
+  }
+}
+
+function toAdvancedMatchingParams(user: MetaPixelUserInfo | undefined): MetaAdvancedMatchingParams {
+  const params: MetaAdvancedMatchingParams = {};
+  if (!user) return params;
+  if (user.email) params.em = user.email.trim().toLowerCase();
+  if (user.phone) {
+    const phone = normalizePhoneForMatching(user.phone);
+    if (phone) {
+      params.ph = phone;
+      if (phone.startsWith("359")) params.country = "bg";
+    }
+  }
+  if (user.firstName) {
+    const firstName = normalizeNameForMatching(user.firstName);
+    if (firstName) params.fn = firstName;
+  }
+  if (user.lastName) {
+    const lastName = normalizeNameForMatching(user.lastName);
+    if (lastName) params.ln = lastName;
+  }
+  if (user.externalId) params.external_id = user.externalId.trim();
+  return params;
+}
+
+function fbqInit(matching: MetaAdvancedMatchingParams): void {
+  if (!META_PIXEL_ID || typeof window === "undefined" || !window.fbq) return;
+  const json = JSON.stringify(matching);
+  if (metaPixelInitStarted && json === lastAdvancedMatchingJson) return;
+  lastAdvancedMatchingJson = json;
+  // Manual Advanced Matching: always pass the third argument.
+  window.fbq("init", META_PIXEL_ID, matching);
+}
+
+/**
+ * Install Meta base snippet and call fbq('init', pixelId, advancedMatching).
+ * When `user` is provided, matching data is persisted and init is updated
+ * (Meta uses the latest customer information for subsequent events).
+ */
+export function ensureMetaPixelInitialized(user?: MetaPixelUserInfo): void {
+  if (typeof window === "undefined" || !META_PIXEL_ID) return;
+  if (user) persistMatchingUser(user);
+
+  if (!metaPixelInitStarted) {
+    metaPixelInitStarted = true;
+    injectMetaPixelBase();
+  }
+
+  fbqInit(toAdvancedMatchingParams(readStoredMatchingUser() ?? user));
 }
 
 export type MetaPixelEventPayload = {
@@ -188,7 +293,7 @@ function buildCustomDataFromPayload(payload: MetaPixelEventPayload): ServerCapiB
     currency: payload.currency,
     content_type: payload.content_type,
   };
-  if (typeof payload.value === "number") customData.value = payload.value;
+  if (typeof payload.value === "number" && payload.value > 0) customData.value = payload.value;
   if (payload.content_ids.length > 0) customData.content_ids = payload.content_ids;
   if (payload.contents.length > 0) customData.contents = payload.contents;
   if (payload.content_name) customData.content_name = payload.content_name;
@@ -296,28 +401,33 @@ export function trackMetaPageView(pagePathOrParams?: string | MetaPageViewParams
 
   ensureMetaPixelInitialized();
   pushDataLayer(payload);
-  mirrorEventToServer(payload);
+  mirrorEventToServer(payload, readStoredMatchingUser());
   fbqTrack("PageView", fbqParams, event_id);
   return event_id;
 }
 
 /**
- * Lead - e.g. newsletter signup (standard Meta event for lead campaigns).
+ * Lead - newsletter, forms, and booked consultations.
+ * Always sends numeric `value` > 0 and `currency` so Meta can calculate ROAS.
  */
 export function trackMetaLead(params: {
   content_name: string;
   page_path?: string;
   /** Optional: Stape / GTM context */
   lead_source?: string;
+  /** Predicted opportunity value. Defaults to META_DEFAULT_LEAD_VALUE when missing or <= 0. */
+  value?: number;
   user?: MetaPixelUserInfo;
 }): string {
   const event_id = generateMetaEventId("Lead");
   const items: MetaPixelLineItem[] = [];
-  const content_ids = ["newsletter"];
+  const content_ids = [params.lead_source ?? "lead"];
+  const value = resolveMetaLeadValue(params.value);
   const payload: MetaPixelEventPayload = {
     event_id,
     event_name: "Lead",
     currency: META_CURRENCY,
+    value,
     content_ids,
     content_type: "product",
     contents: [],
@@ -327,14 +437,16 @@ export function trackMetaLead(params: {
     ...(params.lead_source ? { lead_source: params.lead_source } : {}),
   };
 
-  ensureMetaPixelInitialized();
+  ensureMetaPixelInitialized(params.user);
   pushDataLayer(payload);
   mirrorEventToServer(payload, params.user);
   fbqTrack(
     "Lead",
     {
       content_name: params.content_name,
+      content_ids,
       currency: META_CURRENCY,
+      value,
       ...(params.lead_source ? { content_category: params.lead_source } : {}),
     },
     event_id,
@@ -366,7 +478,7 @@ export function trackMetaAddToCart(
     page_path: extra?.page_path,
   };
 
-  ensureMetaPixelInitialized();
+  ensureMetaPixelInitialized(extra?.user);
   pushDataLayer(payload);
   mirrorEventToServer(payload, extra?.user);
   fbqTrack(
@@ -411,7 +523,7 @@ export function trackMetaPurchase(params: {
     ...(params.orderId ? { order_id: params.orderId } : {}),
   };
 
-  ensureMetaPixelInitialized();
+  ensureMetaPixelInitialized(params.user);
   pushDataLayer(payload);
   mirrorEventToServer(payload, params.user);
   fbqTrack(
@@ -430,3 +542,4 @@ export function trackMetaPurchase(params: {
 }
 
 export { META_CURRENCY, META_PIXEL_ID };
+export { META_DEFAULT_LEAD_VALUE, META_LEAD_VALUE, resolveMetaLeadValue } from "@/lib/analytics/meta-lead-value";

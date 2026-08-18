@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { trackMetaLead } from "@/lib/analytics/meta-pixel";
+import { META_LEAD_VALUE, trackMetaLead } from "@/lib/analytics/meta-pixel";
 import { trackAnalyticsEvent } from "@/lib/analytics/tracker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -96,6 +96,7 @@ export function FreeAnalysisForm() {
         content_name: "DigiStart - Безплатен Google анализ",
         page_path: pathname || "/google/free-analysis",
         lead_source: payload.source,
+        value: META_LEAD_VALUE.qualifiedForm,
         user: {
           email: payload.email.trim(),
           phone: payload.phone.trim(),

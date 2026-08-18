@@ -79,7 +79,10 @@ export function FunnelBookingCard({ config }: FunnelBookingCardProps) {
                 submitLabel="Потвърди консултацията"
                 analyticsPath={pagePath}
                 analyticsCtaId={analyticsCtaId}
-                metaLead={metaLead}
+                metaLead={{
+                  ...metaLead,
+                  value: metaLead.value ?? config.checkout?.pricing.total,
+                }}
               />
             </div>
           </div>

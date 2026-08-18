@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { trackMetaLead } from "@/lib/analytics/meta-pixel";
+import { META_LEAD_VALUE, trackMetaLead } from "@/lib/analytics/meta-pixel";
 import { cn } from "@/lib/utils";
 
 type NicheRecommendationDialogProps = {
@@ -71,6 +71,7 @@ export function NicheRecommendationDialog({
         content_name: "DigiStart - Препоръка за ниша (шаблони)",
         page_path: pathname && pathname.length > 0 ? pathname : "/templates",
         lead_source: "template_niche_recommendation",
+        value: META_LEAD_VALUE.freeResource,
         user: { email: trimmedEmail },
       });
 

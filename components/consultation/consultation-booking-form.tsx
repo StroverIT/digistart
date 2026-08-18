@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { flushAnalyticsEventsAsync, trackAnalyticsEvent } from "@/lib/analytics/tracker";
-import { trackMetaLead } from "@/lib/analytics/meta-pixel";
+import { META_LEAD_VALUE, trackMetaLead } from "@/lib/analytics/meta-pixel";
 import { toast } from "sonner";
 import { writeConsultationLeadSuccess } from "@/lib/consultation/lead-success";
 import { ConsultationSlotCalendar } from "@/components/consultation/consultation-slot-calendar";
@@ -58,6 +58,7 @@ type Props = {
   metaLead?: {
     contentName: string;
     leadSource?: string;
+    value?: number;
   };
   initialValues?: {
     name?: string;
@@ -642,20 +643,19 @@ export default function ConsultationBookingForm({
           (source === "checkout" ? "checkout_consultation_submit" : "consultation_submit"),
       });
 
-      if (metaLead) {
-        const nameParts = formData.name.trim().split(/\s+/);
-        trackMetaLead({
-          content_name: metaLead.contentName,
-          page_path: analyticsPath,
-          lead_source: metaLead.leadSource,
-          user: {
-            email: formData.email,
-            phone: formData.phone,
-            firstName: nameParts[0],
-            lastName: nameParts.length > 1 ? nameParts.slice(1).join(" ") : undefined,
-          },
-        });
-      }
+      const nameParts = formData.name.trim().split(/\s+/);
+      trackMetaLead({
+        content_name: metaLead?.contentName ?? "DigiStart - Безплатна консултация",
+        page_path: analyticsPath,
+        lead_source: metaLead?.leadSource ?? "consultation",
+        value: metaLead?.value ?? META_LEAD_VALUE.consultation,
+        user: {
+          email: formData.email,
+          phone: formData.phone,
+          firstName: nameParts[0],
+          lastName: nameParts.length > 1 ? nameParts.slice(1).join(" ") : undefined,
+        },
+      });
 
       await flushAnalyticsEventsAsync();
       onBooked?.(booking);

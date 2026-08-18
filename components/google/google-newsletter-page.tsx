@@ -8,7 +8,7 @@ import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready
 import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { trackMetaLead } from "@/lib/analytics/meta-pixel";
+import { META_LEAD_VALUE, trackMetaLead } from "@/lib/analytics/meta-pixel";
 import { cn } from "@/lib/utils";
 
 const inputClassName =
@@ -65,6 +65,7 @@ export function GoogleNewsletterPage() {
         content_name: "DigiStart - Google бюлетин",
         page_path: pathname && pathname.length > 0 ? pathname : "/google/newsletter",
         lead_source: "google_newsletter",
+        value: META_LEAD_VALUE.emailCapture,
         user: { email: trimmedEmail, firstName: trimmedName },
       });
 

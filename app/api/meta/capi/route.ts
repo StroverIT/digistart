@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { resolveMetaLeadValue } from "@/lib/analytics/meta-lead-value";
 import {
   isMetaCapiConfigured,
   sendMetaCapiEvent,
@@ -79,11 +80,21 @@ export async function POST(req: NextRequest) {
   const userAgent = req.headers.get("user-agent");
   const clientIp = pickClientIp(req);
 
+  let customData = parsedBody.customData as MetaCapiCustomData | undefined;
+  if (parsedBody.eventName === "Lead") {
+    const currency = customData?.currency?.trim() || process.env.NEXT_PUBLIC_META_CURRENCY || "EUR";
+    customData = {
+      ...customData,
+      currency,
+      value: resolveMetaLeadValue(customData?.value),
+    };
+  }
+
   void sendMetaCapiEvent({
     eventName: parsedBody.eventName as MetaCapiEventName,
     eventId: parsedBody.eventId,
     user: parsedBody.user,
-    customData: parsedBody.customData as MetaCapiCustomData | undefined,
+    customData,
     context: {
       clientIpAddress: clientIp,
       clientUserAgent: userAgent,

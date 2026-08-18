@@ -57,6 +57,7 @@ type ServiceFunnelSharedFields = {
   metaLead: {
     contentName: string;
     leadSource: string;
+    value?: number;
   };
   metaPageView: {
     contentName: string;
@@ -99,6 +100,7 @@ type ServiceFunnelSharedFields = {
     metaLead?: {
       contentName: string;
       leadSource: string;
+      value?: number;
     };
     booking?: {
       showSocialProfileToggle?: boolean;
