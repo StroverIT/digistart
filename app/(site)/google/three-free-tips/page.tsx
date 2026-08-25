@@ -3,7 +3,7 @@ import { ThreeFreeTipsCtaSection } from "@/components/google/three-free-tips-cta
 import { ThreeFreeTipsHeroSection } from "@/components/google/three-free-tips-hero-section";
 
 export const metadata: Metadata = {
-  title: "3 безплатни съвета за Google | DigiStart",
+  title: "3 безплатни съвета за Google",
   description:
     "Гледай краткото видео и вземи 3 безплатни съвета, които можеш да приложиш още днес, за да се класираш по-високо в Google.",
 };

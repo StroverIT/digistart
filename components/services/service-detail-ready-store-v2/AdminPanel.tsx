@@ -46,12 +46,12 @@ const AdminPanel = ({ ctaHref = "#buy-section" }: AdminPanelProps) => {
   return (
     <LandingSection ref={sectionRef} id="admin" className="pb-0!">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-8 lg:gap-12">
-        <h1
+        <h2
           data-animate-reveal
           className={`max-w-3xl font-heading text-2xl font-bold tracking-tight text-foreground md:max-w-lg lg:leading-tight ${LANDING_REVEAL_CLASS}`}
         >
           Едно табло, пълен контрол и лесно управление на онлайн магазина ти
-        </h1>
+        </h2>
         <div data-animate-reveal className={LANDING_REVEAL_CLASS}>
           <Button
             asChild
@@ -73,7 +73,7 @@ const AdminPanel = ({ ctaHref = "#buy-section" }: AdminPanelProps) => {
             <span className="mb-4 flex size-11 items-center justify-center rounded-xl bg-accent/10 text-accent">
               <feature.icon className="size-5" aria-hidden />
             </span>
-            <h2 className="font-heading text-sm font-bold">{feature.title}</h2>
+            <h3 className="font-heading text-sm font-bold">{feature.title}</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-xs">
               {feature.description}
             </p>

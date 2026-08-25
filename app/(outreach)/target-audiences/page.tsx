@@ -10,7 +10,7 @@ import {
 } from "@/lib/site-brand";
 
 export const metadata: Metadata = {
-  title: "3 безплатни целеви аудитории | DigiStart",
+  title: "3 безплатни целеви аудитории",
   description:
     "Вземи персонализиран анализ с 3 потенциални целеви аудитории за твоя бизнес.",
 };

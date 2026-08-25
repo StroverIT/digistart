@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -93,7 +93,7 @@ export default function SignUpPage() {
     >
       <Card data-auth-card className="w-full max-w-md bg-card border-border opacity-0 translate-y-10">
         <CardHeader>
-          <CardTitle>Регистрация</CardTitle>
+          <h1 className="leading-none font-semibold">Регистрация</h1>
         </CardHeader>
         <CardContent>
           {error ? (

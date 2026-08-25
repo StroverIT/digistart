@@ -6,6 +6,7 @@ import {
   ONLINE_STORE_LANDING,
 } from "@/config/service-landing/online-store";
 import { formatEuroPrice, READY_STORE_PRICING } from "@/lib/data/ready-store-pricing";
+import { fitMetaDescription } from "@/lib/seo/metadata";
 import { ogImageMetadata } from "@/lib/seo/open-graph";
 
 const InnerNavigation = dynamic(
@@ -45,8 +46,9 @@ const ServiceBuyConsultationFormSection = dynamic(() =>
 
 export const metadata: Metadata = {
   title: "Онлайн магазин · готов за продажби",
-  description:
-    `Мобилен онлайн магазин за продавачи в Instagram, Facebook и OLX - абонамент от ${formatEuroPrice(READY_STORE_PRICING.baseMonthly)}/мес., опционално карти и куриер в количката, старт до 48 часа, 14-дневна гаранция.`,
+  description: fitMetaDescription(
+    `Мобилен онлайн магазин за Instagram, Facebook и OLX. Абонамент от ${formatEuroPrice(READY_STORE_PRICING.baseMonthly)}/мес., карти и куриер в количката, старт до 48 часа.`,
+  ),
   ...ogImageMetadata("onlineStore", "DigiStart – Онлайн магазин"),
 };
 

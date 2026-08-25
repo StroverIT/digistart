@@ -8,9 +8,9 @@ import { HOME_PATHS, parsePathKey } from "@/lib/data/home-paths";
 import { HOME_PATH_OG_COVER, OG_COVER } from "@/lib/seo/open-graph";
 
 const MARKETING_METADATA = {
-  title: "DigiStart – Дигитална екосистема за твоя бизнес",
+  title: "Дигитална екосистема за твоя бизнес",
   description:
-    "От онлайн магазин до реклами и съдържание, което продава. Реални хора, не AI ботове. Запиши безплатна консултация.",
+    "От онлайн магазин до реклами и съдържание, което продава. Реални хора, не AI ботове. Запиши безплатна консултация с екипа.",
   openGraphTitle: "DigiStart – Дигитална екосистема за твоя бизнес",
   openGraphDescription:
     "Превръщаме чатовете в автоматизирани поръчки. Сайт, реклами и съдържание – всичко на едно място.",
@@ -60,7 +60,14 @@ export async function generateMetadata({
 export default function MarketingPage() {
   return (
     <>
-      <HomeHero />
+      <HomeHero
+        heading={
+          <>
+            <span className="block text-balance">Дигитална екосистема</span>
+            <span className="mt-2 block md:mt-3">за твоя бизнес</span>
+          </>
+        }
+      />
       <BookingForm showBadge={false} />
       <PrioritiesSection />
       <CaseStudy />

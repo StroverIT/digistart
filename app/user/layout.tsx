@@ -1,6 +1,8 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
+import { NOINDEX_ROBOTS } from "@/lib/seo/metadata";
 import { LayoutDashboard, MessageCircle } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -10,6 +12,11 @@ import PageTransitionProvider from "@/components/transitions/PageTransitionProvi
 import { getServiceNavSetupHints } from "@/lib/server/user-nav-setup-hints";
 import { getTenantProjectForUser } from "@/lib/server/tenant-projects";
 import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Клиентски профил",
+  robots: NOINDEX_ROBOTS,
+};
 
 export default async function UserLayout({
   children,

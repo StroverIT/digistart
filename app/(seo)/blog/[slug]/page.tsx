@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getBlogPostBySlug, getBlogPosts } from "@/config/blog";
 import { ThreeFreeTipsCtaSection } from "@/components/google/three-free-tips-cta-section";
 import TransitionLink from "@/components/transitions/TransitionLink";
+import { fitMetaDescription } from "@/lib/seo/metadata";
 
 type BlogPostPageProps = {
   params: Promise<{
@@ -37,7 +38,28 @@ export async function generateMetadata({
 
   return {
     title: post.title,
-    description: post.excerpt,
+    description: fitMetaDescription(post.excerpt),
+    alternates: {
+      canonical: `/blog/${post.slug}`,
+      languages: {
+        "bg-BG": `/blog/${post.slug}`,
+        "x-default": `/blog/${post.slug}`,
+      },
+    },
+    openGraph: {
+      title: post.title,
+      description: fitMetaDescription(post.excerpt),
+      type: "article",
+      publishedTime: post.publishedAt,
+      images: [
+        {
+          url: post.coverImage.src,
+          width: post.coverImage.width,
+          height: post.coverImage.height,
+          alt: post.coverImage.alt || post.title,
+        },
+      ],
+    },
   };
 }
 
@@ -113,6 +135,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                       width={image.width}
                       height={image.height}
                       className="h-auto w-full object-cover"
+                      sizes="(max-width: 896px) 100vw, 672px"
                     />
                   </figure>
                 ))}

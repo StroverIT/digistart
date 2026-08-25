@@ -185,10 +185,10 @@ export default function HeroVideo({
           >
             <Image
               src={thumbnailSrc}
-              alt=""
+              alt={`Видео: ${title}`}
               fill
               priority
-              sizes="(max-width: 896px) 100vw, 896px"
+              sizes="(max-width: 896px) 100vw, 560px"
               className="object-cover"
             />
             <span className="absolute inset-0 flex items-center justify-center">

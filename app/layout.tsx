@@ -42,6 +42,13 @@ export const metadata: Metadata = {
   },
   description:
     "Рекламна агенция в София: онлайн магазини, Google Ads, Meta Ads, SEO, Google Business и социални мрежи за малки бизнеси.",
+  alternates: {
+    canonical: "./",
+    languages: {
+      "bg-BG": "./",
+      "x-default": "./",
+    },
+  },
   keywords: [
     "рекламна агенция",
     "рекламна агенция София",

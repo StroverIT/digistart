@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import ConsultationBookingForm from "@/components/consultation/consultation-booking-form";
 import { GoogleMapsEmbed } from "@/components/seo/google-maps-embed";
 import { siteContact } from "@/lib/site-contact";
@@ -13,6 +14,12 @@ import {
   Instagram,
   Linkedin,
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "За нас и контакти",
+  description:
+    "Запознай се с екипа на DigiStart в София и се свържи с нас за онлайн магазин, реклами, SEO и Google Business без излишна сложност.",
+};
 
 type TeamMember = {
   name: string;
@@ -105,6 +112,7 @@ export default function AboutPage() {
                         src={member.image}
                         alt={`Илюстрация на ${member.name}`}
                         fill
+                        sizes="(max-width: 1024px) 160px, 384px"
                         className="object-contain object-top"
                       />
                     ) : (

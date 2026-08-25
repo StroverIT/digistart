@@ -33,7 +33,9 @@ export default function VideosPage() {
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground max-w-3xl">
             Гледай кратки и ясни видеа с практични стъпки - без сложни термини и
-            излишна бюрокрация.
+            излишна бюрокрация. Подходящи са, ако искаш да разбереш как да стартираш
+            онлайн магазин, как да приемаш поръчки и как да избегнеш типичните грешки
+            в началото.
           </p>
         </section>
 
@@ -52,6 +54,7 @@ export default function VideosPage() {
                   alt={video.title}
                   fill
                   loading="lazy"
+                  sizes="(max-width: 1024px) 100vw, 560px"
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 <span className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors group-hover:bg-black/30">

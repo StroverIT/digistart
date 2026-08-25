@@ -110,7 +110,7 @@ function NumberedIconCard({
           {number}
         </span>
       </div>
-      <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
+      <h3 className="font-heading text-xl font-bold text-black">{title}</h3>
       <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
         {description}
       </p>
@@ -138,7 +138,7 @@ function ImageBottomBlock({
       <span className="mb-4 block text-right text-4xl font-bold leading-none text-muted-foreground/20 tabular-nums select-none">
         {number}
       </span>
-      <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
+      <h3 className="font-heading text-xl font-bold text-black">{title}</h3>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
         {description}
       </p>
@@ -179,7 +179,7 @@ function ImageRightBlock({
         <span className="mb-3 block text-4xl font-bold leading-none text-muted-foreground/20 tabular-nums select-none">
           {number}
         </span>
-        <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
+        <h3 className="font-heading text-xl font-bold text-black">{title}</h3>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
           {description}
         </p>
@@ -233,7 +233,7 @@ function ImageLeftBlock({
         <span className="mb-3 block text-4xl font-bold leading-none text-muted-foreground/20 tabular-nums select-none">
           {number}
         </span>
-        <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
+        <h3 className="font-heading text-xl font-bold text-black">{title}</h3>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
           {description}
         </p>
@@ -256,12 +256,12 @@ const Benefits = () => {
       withGradients
       className="border-background/15 bg-foreground text-background"
     >
-      <h1
+      <h2
         data-animate-reveal
         className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_CENTER_CLASS} ${LANDING_REVEAL_CLASS}`}
       >
         Как помагаме на бизнеса ти?
-      </h1>
+      </h2>
 
       <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:[grid-template-areas:'visibility_local_reviews'_'showcase_info_info'_'time_time_time']">
         <li

@@ -17,12 +17,12 @@ const BuiltInChat = () => {
 
   return (
     <LandingSection ref={sectionRef} id="support">
-      <h1
+      <h2
         data-animate-reveal
         className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_CENTER_CLASS} ${LANDING_REVEAL_CLASS}`}
       >
         Не оставаш сам с продажбите
-      </h1>
+      </h2>
 
       <div className="mt-12 grid gap-8 md:grid-cols-2">
         <article
@@ -42,9 +42,9 @@ const BuiltInChat = () => {
             </div>
           </div>
           <div className="flex flex-1 flex-col px-6 py-8 sm:px-10">
-            <h2 className="font-heading text-xl font-bold text-white sm:text-2xl">
+            <h3 className="font-heading text-xl font-bold text-white sm:text-2xl">
               Питаш преди да пускаш бюджет
-            </h2>
+            </h3>
             <p className="mt-3 text-base leading-relaxed text-white">
               Казваш кои продукти искаш да продаваш. Казваме откъде има смисъл да започнем.
             </p>
@@ -67,9 +67,9 @@ const BuiltInChat = () => {
             </div>
           </div>
           <div className="flex flex-1 flex-col px-6 py-8 sm:px-10">
-            <h2 className="font-heading text-xl font-bold text-black sm:text-2xl">
+            <h3 className="font-heading text-xl font-bold text-black sm:text-2xl">
               Знаеш какво му трябва на магазина
-            </h2>
+            </h3>
             <p className="mt-3 text-base leading-relaxed text-black">
               Ясни стъпки: кои продукти рекламираме, къде водим клика и как мерим поръчките.
             </p>

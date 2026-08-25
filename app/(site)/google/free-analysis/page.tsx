@@ -12,7 +12,7 @@ const PasFaqSection = dynamic(() =>
 );
 
 export const metadata: Metadata = {
-  title: "Безплатен Google анализ | DigiStart",
+  title: "Безплатен Google анализ",
   description:
     "Попълни формата и ще запишем персонализиран анализ с точните стъпки, за да се класираш в топ 3 в Google Maps.",
   ...ogImageMetadata("googleBusiness", "DigiStart – Безплатен Google анализ"),

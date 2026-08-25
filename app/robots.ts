@@ -6,7 +6,17 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/services/online-store/stop-being-techie"],
+      disallow: [
+        "/admin",
+        "/api/",
+        "/cart",
+        "/checkout",
+        "/onboarding",
+        "/services/online-store/stop-being-techie",
+        "/sign-in",
+        "/sign-up",
+        "/user",
+      ],
     },
     sitemap: `${SITE_METADATA_BASE.origin}/sitemap.xml`,
   };

@@ -8,6 +8,7 @@ import { authOptions } from "@/lib/auth";
 export const metadata: Metadata = {
   title: "Настройка на проекта",
   description: "Попълни данните и интеграциите за твоя онлайн магазин или маркетинг услуги.",
+  robots: { index: false, follow: false },
 };
 
 type OnboardingPageProps = {

@@ -35,6 +35,7 @@ type BookingFormProps = {
   notesPlaceholder?: string;
   showOnSiteOption?: boolean;
   showBadge?: boolean;
+  titleAs?: "h1" | "h2";
   pricing?: {
     originalPrice: number;
     priceLabel: string;
@@ -58,6 +59,7 @@ export function BookingForm({
   notesPlaceholder,
   showOnSiteOption = false,
   showBadge = true,
+  titleAs: TitleTag = "h2",
   pricing,
   className,
   animateReveals = false,
@@ -124,7 +126,7 @@ export function BookingForm({
                     Безплатна консултация
                   </span>
                 ) : null}
-                <h2
+                <TitleTag
                   data-animate-reveal={animateReveals ? "" : undefined}
                   className={cn(
                     "font-heading text-xl font-bold leading-snug tracking-tight text-foreground md:text-2xl",
@@ -132,7 +134,7 @@ export function BookingForm({
                   )}
                 >
                   {title}
-                </h2>
+                </TitleTag>
                 <p
                   data-animate-reveal={animateReveals ? "" : undefined}
                   className={cn(

@@ -25,7 +25,7 @@ function IconCard({
       <span className="mb-5 flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
         <Icon className="size-6" aria-hidden />
       </span>
-      <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
+      <h3 className="font-heading text-xl font-bold text-black">{title}</h3>
       <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
         {description}
       </p>
@@ -46,7 +46,7 @@ function ImageBottomCard({
 }) {
   return (
     <>
-      <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
+      <h3 className="font-heading text-xl font-bold text-black">{title}</h3>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
         {description}
       </p>
@@ -80,7 +80,7 @@ function ImageRightCard({
   return (
     <div className="flex h-full min-h-0 flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-8">
       <div className="flex min-h-0 flex-1 flex-col lg:justify-center">
-        <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
+        <h3 className="font-heading text-xl font-bold text-black">{title}</h3>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
           {description}
         </p>
@@ -119,7 +119,7 @@ function ImageLeftCard({
         />
       </div>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col sm:justify-center">
-        <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
+        <h3 className="font-heading text-xl font-bold text-black">{title}</h3>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
           {description}
         </p>
@@ -140,12 +140,12 @@ const MarketingTools = () => {
       withGradients
       className="bg-foreground text-background"
     >
-      <h1
+      <h2
         data-animate-reveal
         className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_CENTER_CLASS} ${LANDING_REVEAL_CLASS}`}
       >
         Продавай лесно с нашите вградени маркетинг инструменти
-      </h1>
+      </h2>
 
       <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[minmax(11rem,1fr)_minmax(14rem,1fr)_auto] lg:[grid-template-areas:'seo_analytics_promo'_'email_email_promo'_'trackers_trackers_trackers']">
         <li

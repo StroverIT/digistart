@@ -12,12 +12,12 @@ const BuiltInChat = () => {
 
   return (
     <LandingSection ref={sectionRef} id="support">
-      <h1
+      <h2
         data-animate-reveal
         className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_CENTER_CLASS} ${LANDING_REVEAL_CLASS}`}
       >
         На всяка стъпка сме до теб
-      </h1>
+      </h2>
 
       <div className="mt-12 grid gap-8 md:grid-cols-2">
         <article
@@ -37,7 +37,7 @@ const BuiltInChat = () => {
             </div>
           </div>
           <div className="flex flex-1 flex-col px-6 py-8 sm:px-10">
-            <h2 className="font-heading text-xl font-bold text-white sm:text-2xl">Вграден чат</h2>
+            <h3 className="font-heading text-xl font-bold text-white sm:text-2xl">Вграден чат</h3>
             <p className="mt-3 text-base leading-relaxed text-white">
               Имаме вътрешен чат за да може да отговорим на въпросите ти бързо и ефективно (всеки ден от 9:00 до 22:00)
             </p>
@@ -60,9 +60,9 @@ const BuiltInChat = () => {
             </div>
           </div>
           <div className="flex flex-1 flex-col px-6 py-8 sm:px-10">
-            <h2 className="font-heading text-xl font-bold text-black sm:text-2xl">
+            <h3 className="font-heading text-xl font-bold text-black sm:text-2xl">
               Няма глупави въпроси
-            </h2>
+            </h3>
             <p className="mt-3 text-base leading-relaxed text-black">
               Може да ни питаш каквото искаш. Ние ще помогнем. За да сме още по-организирани, сме направили възможност за различни теми.
             </p>

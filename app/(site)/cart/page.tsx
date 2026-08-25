@@ -232,6 +232,7 @@ export default function CartPage() {
     return (
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-4">
+          <h1 className="text-2xl sm:text-3xl font-bold">Кошница</h1>
           <div className="h-96 flex items-center justify-center">
             <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
           </div>

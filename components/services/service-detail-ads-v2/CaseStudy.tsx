@@ -24,12 +24,12 @@ const CaseStudy = () => {
 
   return (
     <LandingSection ref={sectionRef} id="case-study" className="bg-muted/30">
-      <h1
+      <h2
         data-animate-reveal
         className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_CENTER_CLASS} ${LANDING_REVEAL_CLASS}`}
       >
         От магазин към повече онлайн поръчки
-      </h1>
+      </h2>
 
       <div className="mt-12 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <div
@@ -48,7 +48,7 @@ const CaseStudy = () => {
 
         <div className="order-1 space-y-6 lg:order-2">
           <div data-animate-reveal className={`space-y-2 ${LANDING_REVEAL_CLASS}`}>
-            <h2 className="font-heading text-2xl font-bold sm:text-3xl">Restyled</h2>
+            <h3 className="font-heading text-2xl font-bold sm:text-3xl">Restyled</h3>
             <div className="flex items-center gap-1" role="img" aria-label="5 от 5 звезди">
               {stars.map((_, index) => (
                 <Star key={index} className="size-5 text-amber-400" fill="currentColor" />

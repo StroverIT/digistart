@@ -102,11 +102,11 @@ export function CaseStudy({ className }: CaseStudyProps) {
           )}
         >
           <Image
-            src="/restyled-mockup.png"
-            alt="Restyled онлайн магазин"
+            src="/restyled-mockup.webp"
+            alt="Restyled онлайн магазин след дигитализация с DigiStart"
             width={2160}
             height={1280}
-            unoptimized
+            sizes="(max-width: 1024px) 100vw, 560px"
             className="h-auto w-full object-contain"
           />
         </div>

@@ -18,7 +18,12 @@ export function TemplatesGallery({ templates }: TemplatesGalleryProps) {
           </h1>
           <p className="mt-3 text-muted-foreground text-lg leading-relaxed">
             Разгледай готовите стилове, виж как изглеждат на живо и избери визия, която ти пасва.
-            След това я адаптираме към твоите продукти и бизнес.
+            След това я адаптираме към твоите продукти, цветове и начин на продажба.
+          </p>
+          <p className="mt-3 text-muted-foreground leading-relaxed">
+            Всеки шаблон е готов за количка, доставка с Еконт или Спиди и плащане с наложен платеж
+            или карта. Избираш визията - ние я настройваме към твоя бизнес, за да стартираш онлайн
+            магазин без да започваш от нулата.
           </p>
           <div className="mt-6">
             <NicheRecommendationDialog />

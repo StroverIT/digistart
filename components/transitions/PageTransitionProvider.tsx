@@ -395,7 +395,7 @@ function PageTransitionProviderContent({
           <img
             ref={logoRef}
             src={TRANSITION_LOGO_SRC}
-            alt=""
+            alt="DigiStart"
             width={TRANSITION_LOGO_SIZE}
             height={TRANSITION_LOGO_SIZE}
             className="relative z-10"

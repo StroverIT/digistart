@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { TemplateDetailView } from "@/components/templates/template-detail-view";
 import { getTemplate } from "@/lib/data/templates";
+import { fitMetaDescription } from "@/lib/seo/metadata";
 
 type TemplateDetailPageProps = {
   params: Promise<{ category: string; id: string }>;
@@ -12,9 +13,15 @@ export async function generateMetadata({ params }: TemplateDetailPageProps): Pro
   const template = getTemplate(category, id);
   if (!template) return { title: "Шаблон" };
 
+  const suffix = " Адаптираме визията към продуктите ти.";
+  const description =
+    template.description.length >= 120
+      ? fitMetaDescription(template.description)
+      : fitMetaDescription(`${template.description}${suffix}`);
+
   return {
     title: `${template.name} - стил за онлайн магазин`,
-    description: `${template.description} Избери визията; адаптираме цветове, секции и съдържание към твоите продукти.`,
+    description,
   };
 }
 

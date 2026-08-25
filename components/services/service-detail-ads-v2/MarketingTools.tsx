@@ -29,7 +29,7 @@ function IconCard({
       <span className="mb-5 flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
         <Icon className="size-6" aria-hidden />
       </span>
-      <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
+      <h3 className="font-heading text-xl font-bold text-black">{title}</h3>
       <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
         {description}
       </p>
@@ -49,7 +49,7 @@ function ImageRightCard({
   return (
     <div className="flex h-full min-h-0 flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-8">
       <div className="flex min-h-0 flex-1 flex-col lg:justify-center">
-        <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
+        <h3 className="font-heading text-xl font-bold text-black">{title}</h3>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
           {description}
         </p>
@@ -88,7 +88,7 @@ function ImageLeftCard({
         />
       </div>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col sm:justify-center">
-        <h2 className="font-heading text-xl font-bold text-black">{title}</h2>
+        <h3 className="font-heading text-xl font-bold text-black">{title}</h3>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
           {description}
         </p>
@@ -109,12 +109,12 @@ const MarketingTools = () => {
       withGradients
       className="bg-foreground text-background"
     >
-      <h1
+      <h2
         data-animate-reveal
         className={`${LANDING_HEADING_CLASS} ${LANDING_SECTION_TITLE_CENTER_CLASS} ${LANDING_REVEAL_CLASS}`}
       >
         Защо да не рекламираш магазина сам?
-      </h1>
+      </h2>
 
       <ul className="mt-12 grid w-full list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[auto_auto_auto_auto] lg:[grid-template-areas:'stack_movement_movement'_'stack_google_google'_'channel_channel_channel'_'trackers_trackers_trackers']">
         <li className="contents lg:flex lg:flex-col lg:gap-5 lg:[grid-area:stack]">

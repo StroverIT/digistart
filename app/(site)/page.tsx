@@ -11,8 +11,7 @@ import { HOME_PATH_OG_COVER, OG_COVER } from "@/lib/seo/open-graph";
 
 const HOME_METADATA = {
   title: {
-    absolute:
-      "Рекламна агенция София | DigiStart – Google Ads, Meta, SEO, онлайн магазини",
+    absolute: "Рекламна агенция София | DigiStart",
   },
   description:
     "Рекламна агенция в София: Google Ads, Meta Ads, SEO, Google Business и онлайн магазини. Стратегия и изпълнение от един екип. Безплатна консултация.",
