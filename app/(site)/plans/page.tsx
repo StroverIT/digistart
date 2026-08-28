@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { PlansSection } from "@/components/plans/plans-section";
+import { fitMetaDescription } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "Абонаментни пакети",
-  description:
-    "Избери готов абонаментен пакет: онлайн магазин, социални мрежи и Google Business с отстъпки.",
+  description: fitMetaDescription(
+    "Избери готов абонаментен пакет: онлайн магазин, социални мрежи и Google Business с отстъпки. Сравни цените и виж какво е включено преди да поръчаш.",
+  ),
 };
 
 export default function PlansPage() {

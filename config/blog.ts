@@ -28,7 +28,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Топ 3 в Google звучи страхотно на думи, но си струва ли усилието? Три лесно проверими факта, които ще ти дадат отговора.",
     publishedAt: "2026-07-27",
     coverImage: {
-      src: "/blog/1.png",
+      src: "/blog/1.webp",
       alt: "Защо изобщо да се тормозиш?",
       width: 1338,
       height: 966,
@@ -60,7 +60,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Повечето системи за организация се провалят, защото самата система отнема твърде много време. Ето версия, която работи за 15 минути.",
     publishedAt: "2026-07-26",
     coverImage: {
-      src: "/blog/2.png",
+      src: "/blog/2.webp",
       alt: "Как да вършиш повече за по-малко време",
       width: 1338,
       height: 966,
@@ -94,7 +94,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Google Ads са страхотни, когато тръгнат - но пътят дотам прилича на игра без правила. Ето как да не се загубиш.",
     publishedAt: "2026-07-25",
     coverImage: {
-      src: "/blog/3.png",
+      src: "/blog/3.webp",
       alt: "Мистериозната кутия на Google Ads",
       width: 1338,
       height: 966,
@@ -127,7 +127,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Обещават ти AI, който пише точно като теб. Реалността е различна - и всъщност това е добра новина за теб.",
     publishedAt: "2026-07-24",
     coverImage: {
-      src: "/blog/4.png",
+      src: "/blog/4.webp",
       alt: "AI бозата е най-лошото",
       width: 1338,
       height: 966,
@@ -159,7 +159,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Половината хора, отговорни за най-скъпите поръчки, дори не си правят труда да отговорят. А това ти струва пари.",
     publishedAt: "2026-07-23",
     coverImage: {
-      src: "/blog/5.png",
+      src: "/blog/5.webp",
       alt: "Проблемът с бавния отговор",
       width: 1338,
       height: 966,
@@ -194,7 +194,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Четеш, гледаш видеа, питаш ChatGPT - а класирането ти не мърда. Ето защо информацията не решава нищо сама по себе си.",
     publishedAt: "2026-07-22",
     coverImage: {
-      src: "/blog/6.png",
+      src: "/blog/6.webp",
       alt: "Защо информацията сама по себе си не ти помага",
       width: 1338,
       height: 966,
@@ -229,7 +229,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Един тарикатски таксиметров шофьор в Румъния ме научи защо прозрачните цени спестяват нерви на всички.",
     publishedAt: "2026-07-21",
     coverImage: {
-      src: "/blog/7.png",
+      src: "/blog/7.webp",
       alt: "Хората са странни (затова цените ни са ясни)",
       width: 1338,
       height: 966,
@@ -262,7 +262,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Топ 3 резултатите в Google почти винаги имат ключовата дума в името си. Ето легален начин да си вземеш това предимство.",
     publishedAt: "2026-07-20",
     coverImage: {
-      src: "/blog/8.png",
+      src: "/blog/8.webp",
       alt: "Малкият трик с името на фирмата",
       width: 1338,
       height: 966,
@@ -297,7 +297,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Забрави сложните системи за планиране. Ето формулата, която реално върши работа, когато трябва да смогнеш с всичко.",
     publishedAt: "2026-07-19",
     coverImage: {
-      src: "/blog/9.png",
+      src: "/blog/9.webp",
       alt: "Управлението на времето в шест думи",
       width: 1338,
       height: 966,
@@ -333,7 +333,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Защо инвестицията в класиране в Google винаги излиза по-евтина, отколкото ти се струва на пръв поглед.",
     publishedAt: "2026-07-18",
     coverImage: {
-      src: "/blog/10.png",
+      src: "/blog/10.webp",
       alt: "Наистина е скъпо",
       width: 1338,
       height: 966,
@@ -370,7 +370,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Малка промяна в начина, по който отговаряш на отзивите си, може да ти донесе видимо по-добро класиране в Google.",
     publishedAt: "2026-07-17",
     coverImage: {
-      src: "/blog/11.png",
+      src: "/blog/11.webp",
       alt: "Бърз начин да се качиш по-високо в Google",
       width: 1338,
       height: 966,
@@ -403,7 +403,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Един акаунт в Google Ads, спрян без предупреждение, може да срине бизнес за седмици. Ето защо диверсификацията не е лукс.",
     publishedAt: "2026-07-16",
     coverImage: {
-      src: "/blog/12.png",
+      src: "/blog/12.webp",
       alt: "Рекламите са страхотни, докато не спрат да бъдат такива",
       width: 1338,
       height: 966,
@@ -439,7 +439,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Защо объркването на причина и следствие ти пречи да оправиш профила си в Google - и как това ти коства реални клиенти.",
     publishedAt: "2026-07-15",
     coverImage: {
-      src: "/blog/13.png",
+      src: "/blog/13.webp",
       alt: "Странни връзки в главата ти",
       width: 1338,
       height: 966,
@@ -475,7 +475,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Всяка нова технология ражда паникьори, които обявяват края на света. Ето какво научихме от истерията около AI, метавселената и криптото.",
     publishedAt: "2026-07-14",
     coverImage: {
-      src: "/blog/14.png",
+      src: "/blog/14.webp",
       alt: "Роботите идват",
       width: 1338,
       height: 966,
@@ -511,7 +511,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Опитният поглед разпознава кога клиент никога няма да купи - и защо да спреш да убеждаваш е по-добра стратегия от това да продължаваш да натискаш.",
     publishedAt: "2026-07-13",
     coverImage: {
-      src: "/blog/15.png",
+      src: "/blog/15.webp",
       alt: "Когато има съмнение - просто не го прави",
       width: 1338,
       height: 966,
@@ -547,7 +547,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "История за плъхове в тавана и вредител, който отказа да свърши работата си - и какво може да научи всеки бизнес от най-лошата продажба на света.",
     publishedAt: "2026-07-12",
     coverImage: {
-      src: "/blog/16.png",
+      src: "/blog/16.webp",
       alt: "Плъхове и най-лошият продавач на света",
       width: 1338,
       height: 966,
@@ -584,7 +584,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Не ти трябва сложна система за брейнсторминг. Само тефтер, тишина и фокус - и почти всеки бизнес проблем може да се реши.",
     publishedAt: "2026-07-11",
     coverImage: {
-      src: "/blog/17.png",
+      src: "/blog/17.webp",
       alt: "3 неща, от които се нуждаеш, за да решиш всеки проблем",
       width: 1338,
       height: 966,
@@ -618,7 +618,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Класирането извън топ 3 в Google означава, че никой не те вижда. Ето защо второто място не е достатъчно.",
     publishedAt: "2026-07-10",
     coverImage: {
-      src: "/blog/18.png",
+      src: "/blog/18.webp",
       alt: "Второто място е първият губещ",
       width: 1338,
       height: 966,
@@ -651,7 +651,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Твърде голямата зона на обслужване в Google Business Profile е тихият убиец на класирането ти. Ето защо по-малко е повече.",
     publishedAt: "2026-07-09",
     coverImage: {
-      src: "/blog/19.png",
+      src: "/blog/19.webp",
       alt: "Проблемът с лакомата гъсеница",
       width: 1338,
       height: 966,
@@ -684,7 +684,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Двама конкуренти държаха върха нечестно вече 7 години. Ето как ги задминахме в Google, без да прибягваме до черни SEO техники.",
     publishedAt: "2026-07-08",
     coverImage: {
-      src: "/blog/20.png",
+      src: "/blog/20.webp",
       alt: "Как качихме клиент до #1 в Google",
       width: 1338,
       height: 966,
@@ -721,7 +721,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Два неочаквани сайта направиха огромна разлика в класирането на един клиент. Ето защо дребните детайли тежат повече, отколкото изглеждат.",
     publishedAt: "2026-07-07",
     coverImage: {
-      src: "/blog/21.png",
+      src: "/blog/21.webp",
       alt: "Малките панти отварят големи врати",
       width: 1338,
       height: 966,
@@ -758,7 +758,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Повечето хора, които виждат офертата ти, не купуват веднага. Ретаргетингът е начинът да не ги загубиш завинаги.",
     publishedAt: "2026-07-06",
     coverImage: {
-      src: "/blog/22.png",
+      src: "/blog/22.webp",
       alt: "Още един шанс: силата на ретаргетинга",
       width: 1338,
       height: 966,
@@ -793,7 +793,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Не ти трябва най-добрата оферта на пазара - трябва ти постоянно присъствие. Ето как да станеш \"онзи, при когото отиваш\".",
     publishedAt: "2026-07-05",
     coverImage: {
-      src: "/blog/23.png",
+      src: "/blog/23.webp",
       alt: "Как побеждаваш конкуренцията без гениална оферта",
       width: 1338,
       height: 966,
@@ -829,7 +829,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Некомпетентността рядко е въпрос на способности - обикновено е въпрос на липса на стандарти. Ето как да го поправиш.",
     publishedAt: "2026-07-04",
     coverImage: {
-      src: "/blog/24.png",
+      src: "/blog/24.webp",
       alt: "Пука ли му на екипа ти?",
       width: 1338,
       height: 966,
@@ -866,7 +866,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Колкото повече обясняваш, толкова по-малко продаваш. Клиентите не искат лекция - искат решение, и то бързо.",
     publishedAt: "2026-07-03",
     coverImage: {
-      src: "/blog/25.png",
+      src: "/blog/25.webp",
       alt: "Информацията е врагът",
       width: 1338,
       height: 966,
@@ -902,7 +902,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Преди да добавиш нова кампания, нов пост или нова услуга - спри. Разбери защо сегашното не работи. Иначе просто трупаш хаос.",
     publishedAt: "2026-07-02",
     coverImage: {
-      src: "/blog/26.png",
+      src: "/blog/26.webp",
       alt: "Спри да хвърляш на сляпо",
       width: 1338,
       height: 966,
@@ -937,7 +937,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "SEO не е тайна магия, запазена за посветени. Логично мислене плюс труд плюс време - това е цялата формула.",
     publishedAt: "2026-07-01",
     coverImage: {
-      src: "/blog/27.png",
+      src: "/blog/27.webp",
       alt: "Магьосниците на SEO",
       width: 1338,
       height: 966,
@@ -971,7 +971,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Едно. Един служител. Един доставчик. Един източник на клиенти. Числото 1 може да съсипе бизнеса ти за седмици, ако разчиташ само на него.",
     publishedAt: "2026-06-30",
     coverImage: {
-      src: "/blog/28.png",
+      src: "/blog/28.webp",
       alt: "Най-лошото число в бизнеса",
       width: 1338,
       height: 966,
@@ -1005,7 +1005,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Колкото повече усложняваш офертата си, толкова по-объркани стават клиентите. А объркан клиент не купува - той просто изчезва.",
     publishedAt: "2026-06-29",
     coverImage: {
-      src: "/blog/29.png",
+      src: "/blog/29.webp",
       alt: "Простотата продава",
       width: 1338,
       height: 966,
@@ -1036,7 +1036,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Ако вече имаш нещо, което връща 4 лева за всеки вложен лев - не го усложнявай. Просто налей повече пари в него.",
     publishedAt: "2026-06-28",
     coverImage: {
-      src: "/blog/30.png",
+      src: "/blog/30.webp",
       alt: "Машината за пари",
       width: 1338,
       height: 966,
@@ -1068,7 +1068,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Мислиш, че Google показва най-близкия бизнес до търсещия? Не е така. И това означава, че клиенти, които търсят точно теб, попадат при конкурента ти.",
     publishedAt: "2026-06-27",
     coverImage: {
-      src: "/blog/31.png",
+      src: "/blog/31.webp",
       alt: "Трикът на Google с „близо до мен“",
       width: 1338,
       height: 966,
@@ -1101,7 +1101,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Всеки локален бизнес трябва да пуска Google реклами. Въпросът е само дали ще го направиш правилно, или ще изгориш бюджета в грешна кампания.",
     publishedAt: "2026-06-26",
     coverImage: {
-      src: "/blog/32.png",
+      src: "/blog/32.webp",
       alt: "Това трябва да го направиш",
       width: 1338,
       height: 966,
@@ -1135,7 +1135,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Влагаш душата си в сайта и офертите си. Клиентите не забелязват нищо от всичко това - искат само едно: да проработи.",
     publishedAt: "2026-06-25",
     coverImage: {
-      src: "/blog/33.png",
+      src: "/blog/33.webp",
       alt: "На никого не му пука. Наистина.",
       width: 1338,
       height: 966,
@@ -1167,7 +1167,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Преди години открих проста формула за локален бизнес: ясна оферта, видимост в Google и последователни продажби. И до днес работи.",
     publishedAt: "2026-06-24",
     coverImage: {
-      src: "/blog/34.png",
+      src: "/blog/34.webp",
       alt: "Формулата за повече продажби",
       width: 1338,
       height: 966,
@@ -1202,7 +1202,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Единственото нещо, което трябва да направиш, за да победиш локалната конкуренция в Google, се събира в две думи.",
     publishedAt: "2026-06-23",
     coverImage: {
-      src: "/blog/35.png",
+      src: "/blog/35.webp",
       alt: "Бъди по-релевантен",
       width: 1338,
       height: 966,
@@ -1236,7 +1236,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Локалният бизнес е игра, в която можеш да печелиш почти всеки път - стига да избереш правилната битка.",
     publishedAt: "2026-06-22",
     coverImage: {
-      src: "/blog/36.png",
+      src: "/blog/36.webp",
       alt: "Лесни победи",
       width: 1338,
       height: 966,
@@ -1266,7 +1266,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Звучи странно, но е вярно: движението напред в бизнеса е по-лесно от това да стоиш на едно място и да чакаш късмета да дойде.",
     publishedAt: "2026-06-21",
     coverImage: {
-      src: "/blog/37.png",
+      src: "/blog/37.webp",
       alt: "Парадоксът с инерцията",
       width: 1338,
       height: 966,
@@ -1296,7 +1296,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Когато всичко се трупа, решението не е повече дисциплина. Решението са прости системи, които носят ежедневната работа вместо теб.",
     publishedAt: "2026-06-20",
     coverImage: {
-      src: "/blog/38.png",
+      src: "/blog/38.webp",
       alt: "Битката с претоварването",
       width: 1338,
       height: 966,
@@ -1325,7 +1325,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Google Ads не се е променил колкото мислиш. Собствениците на локален бизнес - също. Ето кое се повтаря отново и отново.",
     publishedAt: "2026-06-19",
     coverImage: {
-      src: "/blog/39.png",
+      src: "/blog/39.webp",
       alt: "15 години по-късно, същите грешки",
       width: 1338,
       height: 966,
@@ -1355,7 +1355,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Google Ads са сложни. Точно затова са ти изгодни - повечето хора никога няма да намерят търпение да ги научат.",
     publishedAt: "2026-06-18",
     coverImage: {
-      src: "/blog/40.png",
+      src: "/blog/40.webp",
       alt: "Сложното е предимство",
       width: 1338,
       height: 966,
@@ -1387,7 +1387,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Отстъпките изглеждат отчаяно, обясненията отегчават. Единственото, което наистина продава, е демонстрацията.",
     publishedAt: "2026-06-17",
     coverImage: {
-      src: "/blog/41.png",
+      src: "/blog/41.webp",
       alt: "Покажи го, не го обяснявай",
       width: 1338,
       height: 966,
@@ -1419,7 +1419,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Докато спориш дали да похарчиш бюджет за реклама, клиентите ти вече скролват телефона си. Въпросът е - виждат ли теб там?",
     publishedAt: "2026-06-16",
     coverImage: {
-      src: "/blog/42.png",
+      src: "/blog/42.webp",
       alt: "Първото нещо, което прави клиентът ти сутрин",
       width: 1338,
       height: 966,
@@ -1450,7 +1450,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Coca-Cola хвърля стотици милиони в реклама и ѝ се получава. Ти нямаш такъв бюджет - затова трябва да си по-умен, не по-тих.",
     publishedAt: "2026-06-15",
     coverImage: {
-      src: "/blog/43.png",
+      src: "/blog/43.webp",
       alt: "Малък и умен бие голям и тъп",
       width: 1338,
       height: 966,
@@ -1487,7 +1487,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Звучи налудничаво, но е вярно: най-добрите бизнес идеи не идват пред екрана, а докато вървиш и оставяш ума да работи свободно.",
     publishedAt: "2026-06-14",
     coverImage: {
-      src: "/blog/44.png",
+      src: "/blog/44.webp",
       alt: "Реши проблема си с една разходка",
       width: 1338,
       height: 966,
@@ -1521,7 +1521,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "20+ години в продажби ме научиха на едно нещо, което работи всеки път: опростяваш офертата и печелиш повече, не по-малко.",
     publishedAt: "2026-06-13",
     coverImage: {
-      src: "/blog/45.png",
+      src: "/blog/45.webp",
       alt: "Прави по-малко, печели повече",
       width: 1338,
       height: 966,
@@ -1551,7 +1551,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Хищниците следят движението. Хората също. Ето защо видеото почти винаги бие снимката - и как да го приложиш безплатно.",
     publishedAt: "2026-06-12",
     coverImage: {
-      src: "/blog/46.png",
+      src: "/blog/46.webp",
       alt: "Трикът, който бие всяка статична реклама",
       width: 1338,
       height: 966,
@@ -1580,7 +1580,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Претоварен си с бизнеса си? Решението не е нов списък със задачи. Решението е да спреш да правиш половината от него.",
     publishedAt: "2026-06-11",
     coverImage: {
-      src: "/blog/47.png",
+      src: "/blog/47.webp",
       alt: "Прави по-малко, за да свършиш повече",
       width: 1338,
       height: 966,
@@ -1616,7 +1616,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Работата не е противоположност на живота. Ако имаш собствен бизнес, тя е част от него - ето как да го приемеш без излишна вина.",
     publishedAt: "2026-06-10",
     coverImage: {
-      src: "/blog/48.png",
+      src: "/blog/48.webp",
       alt: "„Балансът между работа и живот“ не съществува",
       width: 1338,
       height: 966,
@@ -1650,7 +1650,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Добрата сделка с лош човек винаги свършва зле. Ето защо говоря с всеки клиент, преди да поемем проект - и защо връщам парите, ако не си пасваме.",
     publishedAt: "2026-06-09",
     coverImage: {
-      src: "/blog/49.png",
+      src: "/blog/49.webp",
       alt: "Добра сделка с лош човек",
       width: 1338,
       height: 966,
@@ -1682,7 +1682,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Собствениците на бизнес са скроени различно от служителите - и точно затова се справят с нещата, които другите биха избягали.",
     publishedAt: "2026-06-08",
     coverImage: {
-      src: "/blog/50.png",
+      src: "/blog/50.webp",
       alt: "Скроени сме различно",
       width: 1338,
       height: 966,
@@ -1713,7 +1713,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "AI върши чудеса за много неща в бизнеса, но да продаваш на хора си остава човешка работа. Ето защо живият контакт бие автоматизацията.",
     publishedAt: "2026-06-07",
     coverImage: {
-      src: "/blog/51.png",
+      src: "/blog/51.webp",
       alt: "AI не продава, хората продават",
       width: 1338,
       height: 966,
@@ -1746,7 +1746,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Усукването е тихият убиец на продажбите. Ето как да разпознаеш размития език в текстовете си и да го замениш с изречения, които режат като трион.",
     publishedAt: "2026-06-06",
     coverImage: {
-      src: "/blog/52.png",
+      src: "/blog/52.webp",
       alt: "Спри да усукваш",
       width: 1338,
       height: 966,
@@ -1783,7 +1783,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Има един безотказен тест, който показва дали текстът ти звучи като истински човек или като извънземен робот. Прочети написаното на глас и ще разбереш веднага.",
     publishedAt: "2026-06-05",
     coverImage: {
-      src: "/blog/53.png",
+      src: "/blog/53.webp",
       alt: "БАР тестът, който винаги печели",
       width: 1338,
       height: 966,
@@ -1819,7 +1819,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Доброто писане е суперсила за бизнеса ти. Ето първата стъпка да пишеш текстове, които хората наистина прочитат докрай.",
     publishedAt: "2026-06-04",
     coverImage: {
-      src: "/blog/54.png",
+      src: "/blog/54.webp",
       alt: "Продавай повече с по-добро писане",
       width: 1338,
       height: 966,
@@ -1856,7 +1856,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Ретаргетингът има лошо име заради досадни реклами. Направен правилно обаче, той е причината клиентът да избере точно теб на финалната права.",
     publishedAt: "2026-06-03",
     coverImage: {
-      src: "/blog/55.png",
+      src: "/blog/55.webp",
       alt: "Ретаргетинг, без да си досаден",
       width: 1338,
       height: 966,
@@ -1891,7 +1891,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Един блокиран рекламен акаунт ми показа най-опасното число в бизнеса: едно. Ето защо никога не трябва да зависиш само от един източник на клиенти.",
     publishedAt: "2026-06-02",
     coverImage: {
-      src: "/blog/56.png",
+      src: "/blog/56.webp",
       alt: "Когато Google спре рекламите ти за една нощ",
       width: 1338,
       height: 966,
@@ -1926,7 +1926,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Когато на клиента му потрябва точно твоята услуга, той трябва пръв да се сети за теб. Едно просто CTA прави точно това.",
     publishedAt: "2026-06-01",
     coverImage: {
-      src: "/blog/57.png",
+      src: "/blog/57.webp",
       alt: "Как да станеш първия избор в главата на клиента",
       width: 1338,
       height: 966,
@@ -1959,7 +1959,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "95% от съдържанието онлайн минава незабелязано. Ето как да пишеш текстове, които хората наистина довършват.",
     publishedAt: "2026-05-31",
     coverImage: {
-      src: "/blog/58.png",
+      src: "/blog/58.webp",
       alt: "Как да пишеш текстове, които продават",
       width: 1338,
       height: 966,
@@ -1992,7 +1992,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Генеричните реклами звучат еднакво навсякъде - затова никой не спира на тях. Ето как да направиш оферта, която клиентите забелязват.",
     publishedAt: "2026-05-30",
     coverImage: {
-      src: "/blog/59.png",
+      src: "/blog/59.webp",
       alt: "Оферта, която клиентите не могат да подминат",
       width: 1338,
       height: 966,
@@ -2026,7 +2026,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Реклама към „всеки с пулс“ изхабява бюджета ти. Насочи се към точния клиент и резултатите тръгват в правилната посока.",
     publishedAt: "2026-05-29",
     coverImage: {
-      src: "/blog/60.png",
+      src: "/blog/60.webp",
       alt: "Спри да стреляш напосоки с рекламите",
       width: 1338,
       height: 966,
@@ -2057,7 +2057,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Повечето реклами на локален бизнес звучат като брошура. Ето как да ги напишеш все едно говори жив продавач.",
     publishedAt: "2026-05-28",
     coverImage: {
-      src: "/blog/61.png",
+      src: "/blog/61.webp",
       alt: "Как да напишеш реклама, която носи клиенти",
       width: 1338,
       height: 966,
@@ -2091,7 +2091,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Не ти трябва бюджетът на Кока-Кола, за да работи маркетингът ти. Трябва ти ясна оферта към точните хора.",
     publishedAt: "2026-05-27",
     coverImage: {
-      src: "/blog/62.png",
+      src: "/blog/62.webp",
       alt: "Масовият маркетинг не работи. Какво вместо това",
       width: 1338,
       height: 966,
@@ -2124,7 +2124,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "Вниманието на клиентите ти намалява всяка година. Решението не е по-къса реклама, а повече и по-разнообразно съдържание.",
     publishedAt: "2026-05-26",
     coverImage: {
-      src: "/blog/63.png",
+      src: "/blog/63.webp",
       alt: "Защо винаги трябва да мислиш за нови реклами",
       width: 1338,
       height: 966,
@@ -2157,7 +2157,7 @@ const blogPosts: BlogPost[] = [
     excerpt: "„Брандинг“ не е оправдание, когато реклама не носи резултат. Ето защо всяка стотинка за маркетинг трябва да се измерва.",
     publishedAt: "2026-05-25",
     coverImage: {
-      src: "/blog/64.png",
+      src: "/blog/64.webp",
       alt: "Една проста стъпка към реклами, които наистина работят",
       width: 1338,
       height: 966,

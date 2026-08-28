@@ -3,11 +3,13 @@ import Image from "next/image";
 import { Play } from "lucide-react";
 import { getVideos, getYoutubeThumbnailUrl } from "@/config/videos";
 import TransitionLink from "@/components/transitions/TransitionLink";
+import { fitMetaDescription } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "Видеа",
-  description:
-    "Практични видео ръководства за собственици на бизнеси, които искат да стартират или развият онлайн магазин.",
+  description: fitMetaDescription(
+    "Практични видео ръководства за собственици на бизнеси: онлайн магазин, поръчки, доставка и реклами - кратко, ясно и без излишна бюрокрация.",
+  ),
 };
 
 function formatDate(value: string) {
@@ -36,6 +38,11 @@ export default function VideosPage() {
             излишна бюрокрация. Подходящи са, ако искаш да разбереш как да стартираш
             онлайн магазин, как да приемаш поръчки и как да избегнеш типичните грешки
             в началото.
+          </p>
+          <p className="text-base text-muted-foreground max-w-3xl leading-relaxed">
+            Всяко видео е направено за собственици, които вършат всичко сами и нямат
+            време за дълги курсове. Гледай на телефона, спри на важните моменти и
+            приложи следващата стъпка още днес - без да чакаш „перфектния“ момент.
           </p>
         </section>
 

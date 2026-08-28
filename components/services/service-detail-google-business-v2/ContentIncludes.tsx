@@ -86,7 +86,7 @@ const ContentIncludes = () => {
 
         <div className="relative z-10 h-full w-full rounded-3xl md:-mt-22 lg:-mt-38">
           <Image
-            src="/dashboard-google-business.png"
+            src="/dashboard-google-business.webp"
             alt="Визуализация на Google Business настройката"
             fill
             className="object-contain object-bottom"

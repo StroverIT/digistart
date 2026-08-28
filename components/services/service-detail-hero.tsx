@@ -64,6 +64,7 @@ export function ServiceDetailHero({
         <Image
           src="/lightenings.png"
           alt=""
+          aria-hidden
           fill
           sizes="100vw"
           priority

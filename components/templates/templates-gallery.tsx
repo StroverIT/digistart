@@ -20,10 +20,15 @@ export function TemplatesGallery({ templates }: TemplatesGalleryProps) {
             Разгледай готовите стилове, виж как изглеждат на живо и избери визия, която ти пасва.
             След това я адаптираме към твоите продукти, цветове и начин на продажба.
           </p>
-          <p className="mt-3 text-muted-foreground leading-relaxed">
+          <p className="text-base text-muted-foreground leading-relaxed">
             Всеки шаблон е готов за количка, доставка с Еконт или Спиди и плащане с наложен платеж
             или карта. Избираш визията - ние я настройваме към твоя бизнес, за да стартираш онлайн
             магазин без да започваш от нулата.
+          </p>
+          <p className="text-base text-muted-foreground leading-relaxed">
+            След избор получаваш адаптирани цветове, секции и структура спрямо продуктите ти.
+            Можеш да разгледаш live преглед на всеки стил, да сравниш подходящите варианти за
+            твоя бранд и да поискаш препоръка, ако не си сигурен откъде да започнеш.
           </p>
           <div className="mt-6">
             <NicheRecommendationDialog />

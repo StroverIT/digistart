@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { getBlogPosts } from "@/config/blog";
 import { BlogPostCard } from "@/components/blog/blog-post-card";
 import { ThreeFreeTipsCtaSection } from "@/components/google/three-free-tips-cta-section";
+import { fitMetaDescription } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "Блог",
-  description:
-    "Прости маркетингови тактики за локални бизнеси и физически магазини - без теории, с неща, които можеш да приложиш тази седмица.",
+  description: fitMetaDescription(
+    "Прости маркетингови тактики за локални бизнеси и физически магазини: Google, реклами, продажби и организация - без теории, с неща, които можеш да приложиш още тази седмица.",
+  ),
 };
 
 export default function BlogPage() {
@@ -26,6 +28,16 @@ export default function BlogPage() {
             Прости маркетингови тактики, които работят за локални бизнеси.
             Без боза и теории - само неща, които можеш да ползваш още тази седмица,
             за да вкараш повече хора през вратата.
+          </p>
+          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+            Пишем за Google Business, реклами, оферти, организация и продажби -
+            винаги с фокус върху малки бизнеси, които нямат време за маркетингови
+            „стратегии“, но искат реални резултати от следващата седмица.
+          </p>
+          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+            Избери статия по тема, прочети я за няколко минути и запиши една стъпка,
+            която можеш да приложиш веднага - без екип, без огромен бюджет и без
+            да се затваряш в още една сложна система.
           </p>
         </section>
 

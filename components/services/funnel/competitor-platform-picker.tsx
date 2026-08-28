@@ -262,7 +262,7 @@ export function CompetitorPlatformPicker({
                     {option.logoSrc ? (
                       <Image
                         src={option.logoSrc}
-                        alt=""
+                        alt={option.label}
                         width={72}
                         height={72}
                         className="h-14 w-auto max-w-[5.5rem] object-contain sm:h-16 sm:max-w-[6rem]"
