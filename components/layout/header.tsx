@@ -57,10 +57,7 @@ const usefulNavLinks = [
   { href: "/blog", label: "Блог", paths: ["/blog"] },
 ] as const;
 
-const navLinks = [
-  { href: "/", label: "Начало", paths: ["/"] },
-  { href: "/marketing", label: "Маркетинг", paths: ["/marketing"] },
-] as const;
+const navLinks = [{ href: "/", label: "Начало", paths: ["/"] }] as const;
 
 function isPathActive(pathname: string, paths: readonly string[]) {
   const decoded = (() => {

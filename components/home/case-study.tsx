@@ -104,8 +104,8 @@ export function CaseStudy({ className }: CaseStudyProps) {
           <Image
             src="/restyled-mockup.webp"
             alt="Restyled онлайн магазин след дигитализация с DigiStart"
-            width={2160}
-            height={1280}
+            width={1200}
+            height={712}
             sizes="(max-width: 1024px) 100vw, 560px"
             className="h-auto w-full object-contain"
           />

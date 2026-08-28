@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { BookingForm } from "@/components/home/booking-form";
+import { fitMetaDescription } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "Безплатна бизнес консултация",
-  description:
-    "Запази безплатен 30-минутен опознавателен разговор с DigiStart. Ще уточним целите ти и ще ти дадем ясен план за повече клиенти и продажби.",
+  description: fitMetaDescription(
+    "Запази безплатен 30-минутен опознавателен разговор с DigiStart. Ще уточним целите ти, ще открием къде губиш клиенти и ще ти дадем ясен план за повече продажби.",
+  ),
 };
 
 export default function BusinessConsultationPage() {

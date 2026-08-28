@@ -21,7 +21,6 @@ const STATIC_PATHS: Array<{
   { path: "/google/three-free-tips", changeFrequency: "monthly", priority: 0.65 },
   { path: "/videos", changeFrequency: "monthly", priority: 0.55 },
   { path: "/plans", changeFrequency: "monthly", priority: 0.5 },
-  { path: "/marketing", changeFrequency: "monthly", priority: 0.5 },
   { path: "/privacy-policy", changeFrequency: "yearly", priority: 0.2 },
   { path: "/terms-and-conditions", changeFrequency: "yearly", priority: 0.2 },
   { path: "/cookies-policy", changeFrequency: "yearly", priority: 0.2 },

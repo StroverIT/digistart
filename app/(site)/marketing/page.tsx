@@ -6,6 +6,7 @@ import { PrioritiesSection } from "@/components/home/priorities-section";
 import { TargetAudiencesTeaser } from "@/components/home/target-audiences-teaser";
 import { HOME_PATHS, parsePathKey } from "@/lib/data/home-paths";
 import { HOME_PATH_OG_COVER, OG_COVER } from "@/lib/seo/open-graph";
+import { NOINDEX_ROBOTS } from "@/lib/seo/metadata";
 
 const MARKETING_METADATA = {
   title: "Дигитална екосистема за твоя бизнес",
@@ -36,6 +37,7 @@ export async function generateMetadata({
   return {
     title: MARKETING_METADATA.title,
     description: MARKETING_METADATA.description,
+    robots: NOINDEX_ROBOTS,
     openGraph: {
       title: MARKETING_METADATA.openGraphTitle,
       description: MARKETING_METADATA.openGraphDescription,
