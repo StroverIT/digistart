@@ -28,6 +28,7 @@ type CampaignSummary = {
   stages: Array<{ stage: number; subject: string; count: number }>;
   completedCount: number;
   eligibleTodayCount: number;
+  sentTodayCount: number;
   totalTipsSubscribers: number;
 };
 
@@ -41,6 +42,8 @@ type SendResult = {
   sent: number;
   failed: number;
   skipped: number;
+  remainingEligible: number;
+  errors?: Array<{ email: string; stage: number; message: string }>;
   error?: string;
 };
 
@@ -56,6 +59,7 @@ export function ThreeFreeTipsCampaignPanel({
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [sending, setSending] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [sendProgress, setSendProgress] = useState<string | null>(null);
 
   const loadSummary = useCallback(async () => {
     setLoadingSummary(true);
@@ -105,30 +109,71 @@ export function ThreeFreeTipsCampaignPanel({
 
   const handleSend = async () => {
     setSending(true);
+    setSendProgress("Стартиране...");
+    let totalSent = 0;
+    let totalFailed = 0;
+    const errorMessages: string[] = [];
+
     try {
-      const response = await fetch("/api/admin/three-free-tips-campaign/send", {
-        method: "POST",
-      });
-      const data = (await response.json()) as SendResult;
-      if (!response.ok) {
-        toast.error(data.error ?? "Неуспешно изпращане.");
-        return;
+      while (true) {
+        const response = await fetch("/api/admin/three-free-tips-campaign/send", {
+          method: "POST",
+        });
+        let data: SendResult;
+        try {
+          data = (await response.json()) as SendResult;
+        } catch {
+          toast.error(
+            "Времето за изпращане изтече. Вече изпратените няма да се дублират днес — натисни отново за останалите.",
+          );
+          await loadSummary();
+          return;
+        }
+
+        if (!response.ok) {
+          toast.error(data.error ?? "Неуспешно изпращане.");
+          return;
+        }
+
+        totalSent += data.sent;
+        totalFailed += data.failed;
+        if (data.errors?.length) {
+          errorMessages.push(
+            ...data.errors.slice(0, 3).map((item) => `${item.email}: ${item.message}`),
+          );
+        }
+
+        const remaining = data.remainingEligible ?? 0;
+        setSendProgress(
+          `Изпратени ${totalSent}${totalFailed > 0 ? ` · неуспешни ${totalFailed}` : ""} · остават ${remaining}`,
+        );
+        await loadSummary();
+
+        if (remaining <= 0) break;
+        if (data.sent === 0) {
+          toast.error(
+            errorMessages[0] ??
+              "Никой имейл не беше изпратен в тази партида. Провери Gmail лимита и опитай отново след малко.",
+          );
+          return;
+        }
       }
 
       toast.success(
-        `Изпратени: ${data.sent} · Неуспешни: ${data.failed} · Пропуснати: ${data.skipped}`,
+        `Изпратени: ${totalSent} · Неуспешни: ${totalFailed}`,
       );
       setConfirmOpen(false);
-      await loadSummary();
       onSent?.();
     } catch {
       toast.error("Неуспешно изпращане.");
     } finally {
       setSending(false);
+      setSendProgress(null);
     }
   };
 
   const eligible = summary?.eligibleTodayCount ?? 0;
+  const sentToday = summary?.sentTodayCount ?? 0;
 
   return (
     <Card>
@@ -155,7 +200,13 @@ export function ThreeFreeTipsCampaignPanel({
             )}
             Обнови
           </Button>
-          <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+          <AlertDialog
+            open={confirmOpen}
+            onOpenChange={(open) => {
+              if (sending && !open) return;
+              setConfirmOpen(open);
+            }}
+          >
             <AlertDialogTrigger asChild>
               <Button
                 type="button"
@@ -175,9 +226,11 @@ export function ThreeFreeTipsCampaignPanel({
                 <AlertDialogTitle>Изпращане на днешните имейли?</AlertDialogTitle>
                 <AlertDialogDescription>
                   Ще се изпратят имейли на {eligible}{" "}
-                  {eligible === 1 ? "абонат" : "абоната"} според текущия им етап.
-                  Абонати, на които вече е изпратен имейл днес, ще бъдат
-                  пропуснати.
+                  {eligible === 1 ? "абонат" : "абоната"}, които още нямат
+                  имейл за днес, според текущия им етап. {sentToday}{" "}
+                  {sentToday === 1 ? "абонат вече е получил" : "абоната вече са получили"}{" "}
+                  имейл днес и ще бъдат пропуснати до утре. Изпращането става на
+                  партиди, за да не прекъсне заявката.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -189,7 +242,7 @@ export function ThreeFreeTipsCampaignPanel({
                     void handleSend();
                   }}
                 >
-                  {sending ? "Изпращане..." : "Изпрати"}
+                  {sending ? sendProgress ?? "Изпращане..." : "Изпрати"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -222,10 +275,22 @@ export function ThreeFreeTipsCampaignPanel({
                 </span>
               </div>
               <div className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
+                <span className="font-medium">Изпратени днес</span>
+                <span className="text-muted-foreground">
+                  {" "}
+                  · {sentToday}
+                </span>
+              </div>
+              <div className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
                 <span className="font-medium">За изпращане днес</span>
                 <span className="text-muted-foreground"> · {eligible}</span>
               </div>
             </div>
+            <p className="text-xs text-muted-foreground">
+              Всеки абонат получава най-много един кампаниен имейл на ден.
+              „За изпращане днес“ са хората без имейл за днес — не всички, които
+              стоят на даден етап.
+            </p>
 
             <div className="space-y-2">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

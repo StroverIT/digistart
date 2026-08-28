@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { sendDailyThreeFreeTipsStageEmails } from "@/lib/server/three-free-tips-campaign";
 
+export const maxDuration = 60;
+
 export async function POST() {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "admin") {

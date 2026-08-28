@@ -17,7 +17,15 @@ import {
 } from "@/lib/server/email-test";
 import { THREE_FREE_TIPS_SOURCE } from "@/lib/server/newsletter";
 
-const BATCH_SIZE = 10;
+const BATCH_SIZE = 3;
+const SEND_LIMIT_PER_REQUEST = 20;
+const DELAY_BETWEEN_BATCHES_MS = 400;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
 function resolveGmailUser(): string | undefined {
   const pairs = [
@@ -130,6 +138,7 @@ export type ThreeFreeTipsCampaignSummary = {
   stages: Array<{ stage: number; subject: string; count: number }>;
   completedCount: number;
   eligibleTodayCount: number;
+  sentTodayCount: number;
   totalTipsSubscribers: number;
 };
 
@@ -154,6 +163,7 @@ export async function getThreeFreeTipsCampaignSummary(): Promise<ThreeFreeTipsCa
 
   let completedCount = 0;
   let eligibleTodayCount = 0;
+  let sentTodayCount = 0;
 
   for (const row of tips) {
     const stage = row.tipsEmailStage ?? 1;
@@ -168,10 +178,12 @@ export async function getThreeFreeTipsCampaignSummary(): Promise<ThreeFreeTipsCa
       countsByStage.set(stage, 1);
     }
 
-    if (
-      canSendTipsCampaignStage(stage, lastStage) &&
-      !wasSentTodaySofia(row.tipsLastEmailSentAt)
-    ) {
+    if (wasSentTodaySofia(row.tipsLastEmailSentAt)) {
+      sentTodayCount += 1;
+      continue;
+    }
+
+    if (canSendTipsCampaignStage(stage, lastStage)) {
       eligibleTodayCount += 1;
     }
   }
@@ -187,6 +199,7 @@ export async function getThreeFreeTipsCampaignSummary(): Promise<ThreeFreeTipsCa
     }),
     completedCount,
     eligibleTodayCount,
+    sentTodayCount,
     totalTipsSubscribers: tips.length,
   };
 }
@@ -211,6 +224,7 @@ export type ThreeFreeTipsDailySendResult = {
   sent: number;
   failed: number;
   skipped: number;
+  remainingEligible: number;
   byStage: Record<string, { sent: number; failed: number }>;
   errors: Array<{ email: string; stage: number; message: string }>;
 };
@@ -247,7 +261,9 @@ async function sendStageEmailToSubscriber(params: {
   });
 }
 
-export async function sendDailyThreeFreeTipsStageEmails(): Promise<ThreeFreeTipsDailySendResult> {
+export async function sendDailyThreeFreeTipsStageEmails(
+  options?: { limit?: number },
+): Promise<ThreeFreeTipsDailySendResult> {
   const from = resolveFromAddress();
   const mailer = await createOAuth2Transporter();
 
@@ -258,7 +274,14 @@ export async function sendDailyThreeFreeTipsStageEmails(): Promise<ThreeFreeTips
   }
 
   if (THREE_FREE_TIPS_STAGES.length === 0) {
-    return { sent: 0, failed: 0, skipped: 0, byStage: {}, errors: [] };
+    return {
+      sent: 0,
+      failed: 0,
+      skipped: 0,
+      remainingEligible: 0,
+      byStage: {},
+      errors: [],
+    };
   }
 
   const lastStage = getLastThreeFreeTipsStageNumber();
@@ -266,7 +289,7 @@ export async function sendDailyThreeFreeTipsStageEmails(): Promise<ThreeFreeTips
     orderBy: { createdAt: "asc" },
   });
 
-  const eligible = subscribers.filter((row) => {
+  const eligibleAll = subscribers.filter((row) => {
     if (!isTipsSubscriber(row)) return false;
     const stage = row.tipsEmailStage ?? 1;
     // Past last stage (e.g. 8 of 7): skip — no email, no +1.
@@ -275,15 +298,25 @@ export async function sendDailyThreeFreeTipsStageEmails(): Promise<ThreeFreeTips
     return true;
   });
 
+  const limit = Math.min(
+    Math.max(options?.limit ?? SEND_LIMIT_PER_REQUEST, 1),
+    50,
+  );
+  const eligible = eligibleAll.slice(0, limit);
+
   const result: ThreeFreeTipsDailySendResult = {
     sent: 0,
     failed: 0,
-    skipped: subscribers.filter(isTipsSubscriber).length - eligible.length,
+    skipped: eligibleAll.length - eligible.length,
+    remainingEligible: eligibleAll.length,
     byStage: {},
     errors: [],
   };
 
   for (let i = 0; i < eligible.length; i += BATCH_SIZE) {
+    if (i > 0) {
+      await sleep(DELAY_BETWEEN_BATCHES_MS);
+    }
     const batch = eligible.slice(i, i + BATCH_SIZE);
     const settled = await Promise.allSettled(
       batch.map(async (row) => {
@@ -333,5 +366,6 @@ export async function sendDailyThreeFreeTipsStageEmails(): Promise<ThreeFreeTips
     }
   }
 
+  result.remainingEligible = eligibleAll.length - result.sent;
   return result;
 }
