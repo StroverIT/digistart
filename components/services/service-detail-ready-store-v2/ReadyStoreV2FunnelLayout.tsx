@@ -122,11 +122,11 @@ export function ReadyStoreV2FunnelLayout({ config }: ReadyStoreV2FunnelLayoutPro
         ctaId={config.analyticsCtaId}
         consultation={consultation}
       />
+      <ServiceBuyConsultationFormSection consultation={consultation} />
       <PasFaqSection
         {...config.faq}
         funnelId={competitorPicker?.enabled ? config.id : undefined}
       />
-      <ServiceBuyConsultationFormSection consultation={consultation} />
     </section>
   );
 }

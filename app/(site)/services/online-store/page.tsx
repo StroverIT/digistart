@@ -66,8 +66,8 @@ export default function OnlineStorePage() {
         <RealShop />
       </div>
 
-      <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
       <ServiceBuyConsultationFormSection consultation={ONLINE_STORE_CONSULTATION} />
+      <PasFaqSection {...ONLINE_STORE_LANDING.faq} />
     </section>
   );
 }
