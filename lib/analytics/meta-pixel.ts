@@ -19,7 +19,7 @@ declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void;
     _fbq?: unknown;
-    dataLayer?: Record<string, unknown>[];
+    dataLayer?: unknown[];
   }
 }
 
@@ -68,7 +68,7 @@ export function generateMetaEventId(eventName: string): string {
   return `${safePrefix}_${Date.now()}_${random}`;
 }
 
-function ensureDataLayer(): Record<string, unknown>[] {
+function ensureDataLayer(): unknown[] {
   if (typeof window === "undefined") return [];
   window.dataLayer = window.dataLayer ?? [];
   return window.dataLayer;

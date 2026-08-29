@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Roboto_Slab, Unbounded } from "next/font/google";
 import { headers } from "next/headers";
 import { DigiStartAnalytics } from "@/components/analytics/digistart-analytics";
+import { GoogleAnalyticsConsentLoader } from "@/components/analytics/google-analytics-consent-loader";
+import { GoogleAnalyticsEvents } from "@/components/analytics/google-analytics-events";
 import { MetaPixelConsentLoader } from "@/components/analytics/meta-pixel-consent-loader";
 import { ComingSoonPage } from "@/components/coming-soon-page";
 import { MetaPixelEvents } from "@/components/analytics/meta-pixel-events";
@@ -176,6 +178,8 @@ export default async function RootLayout({
           <>
             <UtmTracker />
             <ComingSoonPage />
+            <GoogleAnalyticsConsentLoader />
+            <GoogleAnalyticsEvents />
             <MetaPixelEvents />
             <Toaster richColors position="top-center" />
           </>
@@ -184,6 +188,8 @@ export default async function RootLayout({
             <LocalBusinessJsonLd />
             <UtmTracker />
             <DigiStartAnalytics />
+            <GoogleAnalyticsConsentLoader />
+            <GoogleAnalyticsEvents />
             <MetaPixelConsentLoader />
             <MetaPixelEvents />
             <Providers>{children}</Providers>
