@@ -1,4 +1,9 @@
 import { resolveMetaLeadValue } from "@/lib/analytics/meta-lead-value";
+import {
+  trackGoogleAnalyticsAddToCart,
+  trackGoogleAnalyticsGenerateLead,
+  trackGoogleAnalyticsPurchase,
+} from "@/lib/analytics/google-analytics";
 import { hasAdsConsent } from "@/lib/cookies/consent";
 
 /**
@@ -451,6 +456,13 @@ export function trackMetaLead(params: {
     },
     event_id,
   );
+  trackGoogleAnalyticsGenerateLead({
+    content_name: params.content_name,
+    page_path: params.page_path,
+    lead_source: params.lead_source,
+    value,
+    currency: META_CURRENCY,
+  });
   return event_id;
 }
 
@@ -493,6 +505,7 @@ export function trackMetaAddToCart(
     },
     event_id,
   );
+  trackGoogleAnalyticsAddToCart(items, { page_path: extra?.page_path });
   return event_id;
 }
 
@@ -538,6 +551,14 @@ export function trackMetaPurchase(params: {
     },
     event_id,
   );
+  if (params.orderId) {
+    trackGoogleAnalyticsPurchase({
+      lineItems: items,
+      value: params.value,
+      transactionId: params.orderId,
+      page_path: params.page_path,
+    });
+  }
   return event_id;
 }
 

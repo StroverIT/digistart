@@ -11,10 +11,11 @@ import {
   GA_MEASUREMENT_ID,
   trackGoogleAnalyticsPageView,
 } from "@/lib/analytics/google-analytics";
+import { getFunnelByPathname } from "@/lib/service-funnels/path";
 
 /**
  * Fires GA4 page_view on SPA route changes after ads/analytics consent.
- * Skips admin routes.
+ * Skips admin routes. Includes funnel content metadata when available.
  */
 export function GoogleAnalyticsEvents() {
   const pathname = usePathname();
@@ -25,16 +26,33 @@ export function GoogleAnalyticsEvents() {
 
     const trackIfAllowed = () => {
       if (!pathname || pathname.startsWith("/admin") || !hasAdsConsent()) return;
-      if (lastTrackedRef.current === pathname) return;
-      lastTrackedRef.current = pathname;
-      trackGoogleAnalyticsPageView(pathname);
+      const key = `${pathname}${typeof window !== "undefined" ? window.location.search : ""}`;
+      if (lastTrackedRef.current === key) return;
+      lastTrackedRef.current = key;
+
+      // Title often updates after the pathname effect; defer one frame.
+      requestAnimationFrame(() => {
+        const funnel = getFunnelByPathname(pathname);
+        if (funnel) {
+          trackGoogleAnalyticsPageView(pathname, {
+            content_name: funnel.metaPageView.contentName,
+            content_ids: [funnel.id],
+            view_source: funnel.metaPageView.viewSource,
+          });
+          return;
+        }
+        trackGoogleAnalyticsPageView(pathname);
+      });
     };
 
     trackIfAllowed();
 
     const onConsentUpdated = (event: Event) => {
       const detail = (event as CustomEvent<CookieConsentState>).detail;
-      if (detail?.ads) trackIfAllowed();
+      if (detail?.ads) {
+        lastTrackedRef.current = null;
+        trackIfAllowed();
+      }
     };
 
     window.addEventListener(COOKIE_CONSENT_UPDATED_EVENT, onConsentUpdated);

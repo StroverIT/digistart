@@ -25,6 +25,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Price } from "@/components/ui/price";
 import type { Cart, CustomerInfo, Service } from "@/lib/types";
 import { getCheckoutStage } from "@/lib/analytics/checkout-funnel";
+import { trackGoogleAnalyticsBeginCheckout } from "@/lib/analytics/google-analytics";
+import { cartItemToMetaLineItem } from "@/lib/analytics/meta-pixel";
 import { getCart, clearCart, updateCartItemUpsells } from "@/lib/store/cart";
 import { recordCheckoutFunnelStage } from "@/lib/store/checkout-analytics";
 import {
@@ -260,6 +262,7 @@ export default function CheckoutPage() {
   const paymentInitRef = useRef(false);
   const checkoutRootRef = useRef<HTMLDivElement>(null);
   const recordedFunnelStagesRef = useRef<Set<string>>(new Set());
+  const beginCheckoutFiredRef = useRef(false);
 
   const [formData, setFormData] = useState<CustomerInfo>({
     name: "",
@@ -480,6 +483,14 @@ export default function CheckoutPage() {
       isLoggedIn: isLoggedInForCheckout,
     });
   }, [mounted, cart.items.length, logicalStep, isLoggedInForCheckout, totalSteps]);
+
+  useEffect(() => {
+    if (!mounted || cart.items.length === 0 || beginCheckoutFiredRef.current) return;
+    beginCheckoutFiredRef.current = true;
+    trackGoogleAnalyticsBeginCheckout(cart.items.map(cartItemToMetaLineItem), {
+      page_path: "/checkout",
+    });
+  }, [mounted, cart.items]);
 
   const paymentStepIndex = totalSteps;
 
