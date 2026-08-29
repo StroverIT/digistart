@@ -22,7 +22,7 @@ export function FreeAnalysisFormSection() {
     <section
       ref={sectionRef}
       id={GOOGLE_FREE_ANALYSIS_FORM_ID}
-      className="scroll-mt-28 py-12 md:py-20"
+      className="scroll-mt-28 pt-12 pb-0 md:pt-16"
     >
       <div
         data-animate-reveal

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function GoogleAnalysis3TipsPage() {
   return (
     <div className="min-h-screen bg-linear-to-b from-white via-background to-primary/30 [&_.container]:mx-auto [&_.container]:w-full [&_.container]:max-w-[1200px] [&_.container]:px-4 sm:[&_.container]:px-6 md:[&_.container]:px-12">
-      <main className="mx-auto w-full max-w-[1200px] px-4 pb-16 pt-24 sm:px-6 md:px-12 md:pb-24 md:pt-28">
+      <main className="mx-auto w-full max-w-[1200px] px-4 pb-8 pt-24 sm:px-6 md:px-12 md:pb-10 md:pt-28">
         <Analysis3TipsHeroSection />
         <Analysis3TipsFormSection />
       </main>
@@ -40,7 +40,7 @@ export default function GoogleAnalysis3TipsPage() {
         }
         titleClassName="mb-3 mt-5 font-normal text-2xl sm:text-3xl md:text-4xl"
         answerClassName="text-black"
-        className="bg-transparent py-12 md:py-28"
+        className="bg-transparent py-8 md:py-12"
       />
     </div>
   );

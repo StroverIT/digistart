@@ -25,7 +25,7 @@ export function Analysis3TipsFormSection() {
     <section
       ref={sectionRef}
       id={GOOGLE_ANALYSIS_3_TIPS_FORM_ID}
-      className="scroll-mt-28 py-12 md:py-20"
+      className="scroll-mt-28 pt-12 pb-0 md:pt-16"
     >
       <div
         data-animate-reveal
