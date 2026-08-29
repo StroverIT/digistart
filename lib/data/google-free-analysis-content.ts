@@ -1,5 +1,11 @@
 export const GOOGLE_FREE_ANALYSIS_PAGE_PATH = "/google/free-analysis" as const;
 export const GOOGLE_FREE_ANALYSIS_SOURCE_DEFAULT = "google-free-analysis" as const;
+export const GOOGLE_FREE_ANALYSIS_FORM_ID = "free-analysis-form" as const;
+
+/** Prof Results–style offer: free audit with 3 actionable fixes. */
+export const GOOGLE_ANALYSIS_3_TIPS_PAGE_PATH = "/google/analysis-3-tips" as const;
+export const GOOGLE_ANALYSIS_3_TIPS_SOURCE = "analysis-3-tips" as const;
+export const GOOGLE_ANALYSIS_3_TIPS_FORM_ID = "analysis-3-tips-form" as const;
 
 export type GoogleFreeAnalysisUrgency = "today" | "tomorrow" | "few_weeks";
 export type GoogleFreeAnalysisLeadStatus = "pending" | "done";
@@ -43,6 +49,9 @@ export const googleFreeAnalysisFormFields = {
   urgency: "До кога искаш да решиш този проблем?",
 } as const;
 
+export const GOOGLE_FREE_ANALYSIS_MARKETING_CONSENT =
+  "С натискане на „Изпрати“ се съгласяваш да получаваш маркетингови съобщения от DigiStart по имейл, телефон и/или SMS. Можеш да се отпишеш по всяко време чрез линка за отписване в нашите имейли или като се свържеш с нас." as const;
+
 export const googleFreeAnalysisContent = {
   formPage: {
     badge: "Безплатно",
@@ -51,10 +60,28 @@ export const googleFreeAnalysisContent = {
       "Попълни формата и ще запишем персонализиран анализ с точните неща, които трябва да се случат, за да се класираш в топ 3 в твоя район.",
     disclaimer:
       "Без разходи, без задължения, без досадни опити за продажба. Гарантирано.",
-    submit: "Изпрати заявката",
+    submit: "Изпрати",
+    consent: GOOGLE_FREE_ANALYSIS_MARKETING_CONSENT,
     successTitle: "Готово - получихме заявката ти.",
     successDescription:
       "Ще запишем персонализирания анализ и ще се свържем с теб на посочения имейл.",
+  },
+  /** Landing modeled on Prof Results /offer/gmb — “Free Analysis: 3 Things…”. */
+  analysis3TipsPage: {
+    hero: {
+      title:
+        "Безплатен анализ: 3 неща, които лесно да промениш, за да се класираш по-високо в Google",
+      description:
+        "Ще одитираме Google Business профила ти безплатно, без задължения, и ще ти кажем 3 неща, които можеш да направиш веднага, за да спреш да си невидим.",
+      cta: "Вземи безплатния анализ",
+    },
+    form: {
+      badge: "Започни",
+      titleBefore: "Попълни формата по-долу за твоите ",
+      titleAccent: "безплатни корекции.",
+      submit: "Изпрати",
+      consent: GOOGLE_FREE_ANALYSIS_MARKETING_CONSENT,
+    },
   },
   tipsCta: {
     badge: "Безплатни материали",

@@ -17,6 +17,7 @@ import {
   googleFreeAnalysisFormFields,
   type GoogleFreeAnalysisUrgency,
 } from "@/lib/data/google-free-analysis-content";
+import { cn } from "@/lib/utils";
 
 type LeadPayload = {
   name: string;
@@ -28,14 +29,36 @@ type LeadPayload = {
   source: string;
 };
 
+type FreeAnalysisFormProps = {
+  /** Overrides `?source=` and the default source when set. */
+  source?: string;
+  /** Public POST endpoint. Default: `/api/google/free-analysis`. */
+  apiPath?: string;
+  metaContentName?: string;
+  analyticsCtaId?: string;
+  submitLabel?: string;
+  consentText?: string;
+  className?: string;
+};
+
 const inputClassName =
   "h-12 rounded-lg border border-border bg-white px-4 shadow-none focus-visible:ring-2 focus-visible:ring-accent/20";
 
-export function FreeAnalysisForm() {
+export function FreeAnalysisForm({
+  source: sourceProp,
+  apiPath = "/api/google/free-analysis",
+  metaContentName = "DigiStart - Безплатен Google анализ",
+  analyticsCtaId = "google_free_analysis_submit",
+  submitLabel,
+  consentText,
+  className,
+}: FreeAnalysisFormProps = {}) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const source =
-    searchParams.get("source")?.trim() || GOOGLE_FREE_ANALYSIS_SOURCE_DEFAULT;
+    sourceProp?.trim() ||
+    searchParams.get("source")?.trim() ||
+    GOOGLE_FREE_ANALYSIS_SOURCE_DEFAULT;
 
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -65,7 +88,7 @@ export function FreeAnalysisForm() {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/google/free-analysis", {
+      const response = await fetch(apiPath, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -93,8 +116,8 @@ export function FreeAnalysisForm() {
       }
 
       trackMetaLead({
-        content_name: "DigiStart - Безплатен Google анализ",
-        page_path: pathname || "/google/free-analysis",
+        content_name: metaContentName,
+        page_path: pathname || apiPath,
         lead_source: payload.source,
         value: META_LEAD_VALUE.qualifiedForm,
         user: {
@@ -104,8 +127,8 @@ export function FreeAnalysisForm() {
           lastName: trimmedName.split(/\s+/).slice(1).join(" ") || undefined,
         },
       });
-      trackAnalyticsEvent("cta_click", "/google/free-analysis", {
-        cta_id: "google_free_analysis_submit",
+      trackAnalyticsEvent("cta_click", pathname || apiPath, {
+        cta_id: analyticsCtaId,
         source: payload.source,
         urgency: payload.urgency,
       });
@@ -139,7 +162,7 @@ export function FreeAnalysisForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
+    <form onSubmit={onSubmit} className={cn("space-y-5", className)}>
       <div className="space-y-2">
         <Label htmlFor="analysis-name">{googleFreeAnalysisFormFields.name} *</Label>
         <Input
@@ -228,9 +251,17 @@ export function FreeAnalysisForm() {
         disabled={loading}
         className="h-14 w-full rounded-full bg-accent text-base font-semibold text-accent-foreground hover:bg-accent/90"
       >
-        {loading ? "Изпращане..." : googleFreeAnalysisContent.formPage.submit}
+        {loading
+          ? "Изпращане..."
+          : submitLabel ?? googleFreeAnalysisContent.formPage.submit}
         <ArrowUpRight className="ml-2 h-5 w-5" />
       </Button>
+
+      {(consentText ?? googleFreeAnalysisContent.formPage.consent) ? (
+        <p className="text-center text-xs leading-relaxed text-muted-foreground italic">
+          {consentText ?? googleFreeAnalysisContent.formPage.consent}
+        </p>
+      ) : null}
     </form>
   );
 }

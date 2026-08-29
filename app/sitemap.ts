@@ -18,6 +18,7 @@ const STATIC_PATHS: Array<{
   { path: "/blog", changeFrequency: "weekly", priority: 0.75 },
   { path: "/templates", changeFrequency: "monthly", priority: 0.6 },
   { path: "/google/free-analysis", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/google/analysis-3-tips", changeFrequency: "monthly", priority: 0.7 },
   { path: "/google/three-free-tips", changeFrequency: "monthly", priority: 0.65 },
   { path: "/videos", changeFrequency: "monthly", priority: 0.55 },
   { path: "/plans", changeFrequency: "monthly", priority: 0.5 },

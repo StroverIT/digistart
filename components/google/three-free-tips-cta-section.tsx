@@ -6,6 +6,7 @@ import { ArrowRight, Gift } from "lucide-react";
 import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
 import { googleFreeAnalysisContent } from "@/lib/data/google-free-analysis-content";
+import { GOOGLE_FREE_ANALYSIS_PAGE_PATH } from "@/lib/data/google-free-analysis-content";
 import { cn } from "@/lib/utils";
 
 type ThreeFreeTipsCtaSectionProps = {
@@ -22,7 +23,9 @@ export function ThreeFreeTipsCtaSection({
       ? googleFreeAnalysisContent.analysisCta
       : googleFreeAnalysisContent.tipsCta;
   const href =
-    variant === "analysis" ? "/google/free-analysis" : "/google/three-free-tips";
+    variant === "analysis"
+      ? GOOGLE_FREE_ANALYSIS_PAGE_PATH
+      : "/google/three-free-tips";
 
   useSectionScrollAnimations(sectionRef, {
     staggerReveal: 0.12,

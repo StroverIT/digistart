@@ -156,8 +156,14 @@ function StatusBadge({ status }: { status: GoogleFreeAnalysisLeadStatus }) {
 
 export default function GoogleFreeAnalysisLeadsTable({
   initialLeads,
+  apiBasePath = "/api/admin/google-free-analysis",
+  landingPagePath = GOOGLE_FREE_ANALYSIS_PAGE_PATH,
 }: {
   initialLeads: GoogleFreeAnalysisLeadRow[];
+  /** Admin API prefix for status/notes updates. */
+  apiBasePath?: string;
+  /** Public landing page shown in the detail sheet. */
+  landingPagePath?: string;
 }) {
   const [leads, setLeads] = useState(initialLeads);
   const [search, setSearch] = useState("");
@@ -223,7 +229,7 @@ export default function GoogleFreeAnalysisLeadsTable({
     async (id: string, status: GoogleFreeAnalysisLeadStatus) => {
       setSavingId(id);
       try {
-        const res = await fetch(`/api/admin/google-free-analysis/${id}/status`, {
+        const res = await fetch(`${apiBasePath}/${id}/status`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status }),
@@ -249,13 +255,13 @@ export default function GoogleFreeAnalysisLeadsTable({
         setSavingId(null);
       }
     },
-    [],
+    [apiBasePath],
   );
 
   const onSaveNotes = useCallback(async (id: string, notes: string) => {
     setSavingNotesId(id);
     try {
-      const res = await fetch(`/api/admin/google-free-analysis/${id}/notes`, {
+      const res = await fetch(`${apiBasePath}/${id}/notes`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ notes: notes.trim() ? notes.trim() : null }),
@@ -277,7 +283,7 @@ export default function GoogleFreeAnalysisLeadsTable({
     } finally {
       setSavingNotesId(null);
     }
-  }, []);
+  }, [apiBasePath]);
 
   return (
     <div className="space-y-4">
@@ -624,7 +630,7 @@ export default function GoogleFreeAnalysisLeadsTable({
                   </Button>
                 )}
                 <Button asChild variant="outline" className="w-full">
-                  <Link href={GOOGLE_FREE_ANALYSIS_PAGE_PATH} target="_blank" rel="noreferrer">
+                  <Link href={landingPagePath} target="_blank" rel="noreferrer">
                     <ExternalLink className="mr-2 h-4 w-4" />
                     Отвори формата
                   </Link>

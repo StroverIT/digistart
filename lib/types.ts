@@ -261,6 +261,9 @@ export interface GoogleFreeAnalysisLeadRow {
   createdAt: string;
 }
 
+export type GoogleAnalysis3TipsLeadStatus = GoogleFreeAnalysisLeadStatus;
+export type GoogleAnalysis3TipsLeadRow = GoogleFreeAnalysisLeadRow;
+
 // Business Lead types
 export type LeadStatus = "prospect" | "contacted" | "accepted" | "declined";
 

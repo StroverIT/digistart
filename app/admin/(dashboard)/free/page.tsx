@@ -1,9 +1,14 @@
 import { GoogleFreeLeadsPanel } from "@/components/admin/google-free-leads-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getLastThreeFreeTipsStageNumber } from "@/lib/emails/three-free-tips-stages";
+import { listGoogleAnalysis3TipsLeadsNewestFirst } from "@/lib/server/google-analysis-3-tips-leads";
 import { listGoogleFreeAnalysisLeadsNewestFirst } from "@/lib/server/google-free-analysis-leads";
 import { listThreeFreeTipsSubscribersNewestFirst } from "@/lib/server/newsletter";
-import type { GoogleFreeAnalysisLeadRow, ThreeFreeTipsLeadRow } from "@/lib/types";
+import type {
+  GoogleAnalysis3TipsLeadRow,
+  GoogleFreeAnalysisLeadRow,
+  ThreeFreeTipsLeadRow,
+} from "@/lib/types";
 
 function toTipLeadRow(
   lead: Awaited<ReturnType<typeof listThreeFreeTipsSubscribersNewestFirst>>[number],
@@ -18,9 +23,11 @@ function toTipLeadRow(
   };
 }
 
-function toAnalysisLeadRow(
-  lead: Awaited<ReturnType<typeof listGoogleFreeAnalysisLeadsNewestFirst>>[number],
-): GoogleFreeAnalysisLeadRow {
+function toNamedFormLeadRow(
+  lead:
+    | Awaited<ReturnType<typeof listGoogleFreeAnalysisLeadsNewestFirst>>[number]
+    | Awaited<ReturnType<typeof listGoogleAnalysis3TipsLeadsNewestFirst>>[number],
+): GoogleFreeAnalysisLeadRow | GoogleAnalysis3TipsLeadRow {
   return {
     id: lead.id,
     name: lead.name,
@@ -39,9 +46,10 @@ function toAnalysisLeadRow(
 }
 
 export default async function AdminFreePage() {
-  const [tipLeads, analysisLeads] = await Promise.all([
+  const [tipLeads, analysisLeads, analysis3TipsLeads] = await Promise.all([
     listThreeFreeTipsSubscribersNewestFirst(),
     listGoogleFreeAnalysisLeadsNewestFirst(),
+    listGoogleAnalysis3TipsLeadsNewestFirst(),
   ]);
 
   return (
@@ -64,7 +72,8 @@ export default async function AdminFreePage() {
         <TabsContent value="google">
           <GoogleFreeLeadsPanel
             tipLeads={tipLeads.map(toTipLeadRow)}
-            analysisLeads={analysisLeads.map(toAnalysisLeadRow)}
+            analysisLeads={analysisLeads.map(toNamedFormLeadRow)}
+            analysis3TipsLeads={analysis3TipsLeads.map(toNamedFormLeadRow)}
             lastTipsEmailStage={getLastThreeFreeTipsStageNumber()}
           />
         </TabsContent>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { FreeAnalysisFormSection } from "@/components/google/free-analysis-form-section";
-import { FreeAnalysisHeroSection } from "@/components/google/free-analysis-hero-section";
+import { Analysis3TipsFormSection } from "@/components/google/analysis-3-tips-form-section";
+import { Analysis3TipsHeroSection } from "@/components/google/analysis-3-tips-hero-section";
 import { gbLabelClass } from "@/components/services/service-detail-google-business-v2/shared";
 import { googleFreeAnalysisContent } from "@/lib/data/google-free-analysis-content";
 import { ogImageMetadata } from "@/lib/seo/open-graph";
@@ -13,18 +13,18 @@ const PasFaqSection = dynamic(() =>
 );
 
 export const metadata: Metadata = {
-  title: "Безплатен Google анализ",
+  title: "Анализ: 3 съвета за Google",
   description:
-    "Попълни формата и ще запишем персонализиран анализ с точните стъпки, за да се класираш в топ 3 в Google Maps.",
-  ...ogImageMetadata("googleBusiness", "DigiStart – Безплатен Google анализ"),
+    "Безплатен одит на Google Business профила ти — 3 конкретни неща, които да промениш, за да се класираш по-високо в Google.",
+  ...ogImageMetadata("googleBusiness", "DigiStart – Анализ 3 съвета"),
 };
 
-export default function GoogleFreeAnalysisPage() {
+export default function GoogleAnalysis3TipsPage() {
   return (
     <div className="min-h-screen bg-linear-to-b from-white via-background to-primary/30 [&_.container]:mx-auto [&_.container]:w-full [&_.container]:max-w-[1200px] [&_.container]:px-4 sm:[&_.container]:px-6 md:[&_.container]:px-12">
       <main className="mx-auto w-full max-w-[1200px] px-4 pb-16 pt-24 sm:px-6 md:px-12 md:pb-24 md:pt-28">
-        <FreeAnalysisHeroSection />
-        <FreeAnalysisFormSection />
+        <Analysis3TipsHeroSection />
+        <Analysis3TipsFormSection />
       </main>
 
       <PasFaqSection

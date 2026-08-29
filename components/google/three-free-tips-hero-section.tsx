@@ -75,9 +75,9 @@ export function ThreeFreeTipsHeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-8 text-center md:flex-row md:items-center md:gap-10 md:text-left lg:gap-14"
+      className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-8 text-center md:gap-10"
     >
-      <div className="flex w-full flex-col gap-4 md:w-1/2 md:gap-6">
+      <div className="flex w-full max-w-3xl flex-col items-center gap-4 md:gap-6">
         <h1
           data-animate-reveal
           className={cn(
@@ -110,7 +110,7 @@ export function ThreeFreeTipsHeroSection() {
           data-animate-reveal
           onSubmit={onSubmit}
           className={cn(
-            "mx-auto flex w-full max-w-md flex-col gap-2 sm:flex-row md:mx-0",
+            "mx-auto flex w-full max-w-md flex-col gap-2 sm:flex-row",
             LANDING_REVEAL_CLASS,
           )}
         >
@@ -141,7 +141,7 @@ export function ThreeFreeTipsHeroSection() {
           </button>
         </form>
       </div>
-      <div data-animate-reveal className={cn("w-full md:w-1/2", LANDING_REVEAL_CLASS)}>
+      <div data-animate-reveal className={cn("w-full max-w-3xl", LANDING_REVEAL_CLASS)}>
         <HeroVideo
           videoId="_yCuk-GYlzo"
           title="3 безплатни съвета за по-високо класиране в Google"

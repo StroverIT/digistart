@@ -63,6 +63,7 @@ const EXCLUDED_PATH_PREFIXES = [
   "/blog",
   "/google/three-free-tips",
   "/google/free-analysis",
+  "/google/analysis-3-tips",
   "/google/newsletter",
 ] as const;
 

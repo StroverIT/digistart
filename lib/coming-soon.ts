@@ -20,6 +20,7 @@ export function isComingSoonBypassPath(pathname: string): boolean {
   if (path.startsWith("/api/newsletter/three-free-tips")) return true;
   if (path.startsWith("/api/newsletter/google-newsletter")) return true;
   if (path.startsWith("/api/google/free-analysis")) return true;
+  if (path.startsWith("/api/google/analysis-3-tips")) return true;
   if (path.startsWith("/api/stripe/webhook")) return true;
   if (path.startsWith("/user")) return true;
   if (path.startsWith("/digital-roadmap")) return true;
@@ -36,6 +37,7 @@ export function isComingSoonAllowedApiPath(pathname: string): boolean {
   if (path.startsWith("/api/newsletter/three-free-tips")) return true;
   if (path.startsWith("/api/newsletter/google-newsletter")) return true;
   if (path.startsWith("/api/google/free-analysis")) return true;
+  if (path.startsWith("/api/google/analysis-3-tips")) return true;
   if (path.startsWith("/api/stripe/webhook")) return true;
   if (path.startsWith("/api/support-chats")) return true;
   if (path.startsWith("/api/digital-roadmap")) return true;
