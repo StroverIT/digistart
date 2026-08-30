@@ -6,6 +6,7 @@ import {
   getThreeFreeTipsStage,
   listThreeFreeTipsStageNumbers,
   THREE_FREE_TIPS_STAGES,
+  THREE_FREE_TIPS_PREVIEW_EMAIL,
 } from "@/lib/emails/three-free-tips-stages";
 import { prisma } from "@/lib/prisma";
 import {
@@ -218,7 +219,12 @@ export async function previewThreeFreeTipsStageEmail(stage: number): Promise<{
   const def = getThreeFreeTipsStage(stage);
   if (!def) return null;
 
-  const html = await render(def.render());
+  const html = await render(
+    def.render({
+      email: THREE_FREE_TIPS_PREVIEW_EMAIL,
+      stage: def.stage,
+    }),
+  );
   return {
     stage: def.stage,
     subject: def.subject,
@@ -251,7 +257,12 @@ async function sendStageEmailToSubscriber(params: {
     adminEmail: "",
   });
 
-  const html = await render(def.render());
+  const html = await render(
+    def.render({
+      email: params.email,
+      stage: params.stage,
+    }),
+  );
   const subject = withTestSubject(def.subject, delivery.testMode);
   const text = withTestTextBody(
     `${def.previewText}\n\nПоздрави,\nDigiStart`,

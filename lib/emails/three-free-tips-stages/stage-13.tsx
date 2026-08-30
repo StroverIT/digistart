@@ -1,16 +1,16 @@
 import React from "react";
 import { Text } from "@react-email/components";
+import type { ThreeFreeTipsStageEmailProps } from "./types";
 import { tipsEmailColors as colors } from "./colors";
 import {
   TipsStageBodyText,
-  TipsStageCta,
+  TipsStageVideoCta,
   TipsStageEmailShell,
   TipsStageSignOff,
 } from "./layout";
 
-const GOOGLE_BUSINESS_URL = "https://digistart.bg/services/google-business";
 
-export function ThreeFreeTipsStage13Email() {
+export function ThreeFreeTipsStage13Email({ email, stage }: ThreeFreeTipsStageEmailProps) {
   return (
     <TipsStageEmailShell previewText="Управлението на времето се свежда до едно нещо – фокусиране върху това, което има значение.">
       <TipsStageBodyText>Здравейте,</TipsStageBodyText>
@@ -128,7 +128,7 @@ export function ThreeFreeTipsStage13Email() {
         записах видео с малко повече информация по темата.
       </Text>
 
-      <TipsStageCta href={GOOGLE_BUSINESS_URL} label="Гледай видеото" />
+      <TipsStageVideoCta email={email} stage={stage} />
     </TipsStageEmailShell>
   );
 }

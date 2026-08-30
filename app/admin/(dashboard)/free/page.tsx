@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getLastThreeFreeTipsStageNumber } from "@/lib/emails/three-free-tips-stages";
 import { listGoogleAnalysis3TipsLeadsNewestFirst } from "@/lib/server/google-analysis-3-tips-leads";
 import { listGoogleFreeAnalysisLeadsNewestFirst } from "@/lib/server/google-free-analysis-leads";
-import { listThreeFreeTipsSubscribersNewestFirst } from "@/lib/server/newsletter";
+import { listThreeFreeTipsSubscribersNewestFirst, parseTipsVideoCtaClicks } from "@/lib/server/newsletter";
 import type {
   GoogleAnalysis3TipsLeadRow,
   GoogleFreeAnalysisLeadRow,
@@ -21,6 +21,7 @@ function toTipLeadRow(
     tipsEmailStage: lead.tipsEmailStage ?? 1,
     tipsLastEmailSentAt: lead.tipsLastEmailSentAt?.toISOString() ?? null,
     unsubscribedAt: lead.unsubscribedAt?.toISOString() ?? null,
+    videoCtaClicks: parseTipsVideoCtaClicks(lead.metadata),
     createdAt: lead.createdAt.toISOString(),
   };
 }

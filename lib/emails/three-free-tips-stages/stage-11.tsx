@@ -1,16 +1,16 @@
 import React from "react";
 import { Text } from "@react-email/components";
+import type { ThreeFreeTipsStageEmailProps } from "./types";
 import { tipsEmailColors as colors } from "./colors";
 import {
   TipsStageBodyText,
-  TipsStageCta,
+  TipsStageVideoCta,
   TipsStageEmailShell,
   TipsStageSignOff,
 } from "./layout";
 
-const GOOGLE_BUSINESS_URL = "https://digistart.bg/services/google-business";
 
-export function ThreeFreeTipsStage11Email() {
+export function ThreeFreeTipsStage11Email({ email, stage }: ThreeFreeTipsStageEmailProps) {
   return (
     <TipsStageEmailShell previewText="Комбинирайте локално SEO с Meta реклами и Google реклами и ще победите конкуренцията всеки път.">
       <TipsStageBodyText>Здравейте,</TipsStageBodyText>
@@ -114,7 +114,7 @@ export function ThreeFreeTipsStage11Email() {
         информация по темата.
       </Text>
 
-      <TipsStageCta href={GOOGLE_BUSINESS_URL} label="Гледай видеото" />
+      <TipsStageVideoCta email={email} stage={stage} />
     </TipsStageEmailShell>
   );
 }

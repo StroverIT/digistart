@@ -226,6 +226,11 @@ export interface TargetAudienceLeadRow {
   createdAt: string;
 }
 
+export interface ThreeFreeTipsVideoCtaClickRow {
+  stage: number;
+  clickedAt: string;
+}
+
 export interface ThreeFreeTipsLeadRow {
   id: string;
   email: string;
@@ -234,6 +239,7 @@ export interface ThreeFreeTipsLeadRow {
   tipsEmailStage: number | null;
   tipsLastEmailSentAt: string | null;
   unsubscribedAt: string | null;
+  videoCtaClicks: ThreeFreeTipsVideoCtaClickRow[];
   createdAt: string;
 }
 

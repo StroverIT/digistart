@@ -28,6 +28,12 @@ function formatStageLabel(stage: number | null, lastStage: number) {
   return String(resolved);
 }
 
+function formatVideoCtaSummary(clicks: ThreeFreeTipsLeadRow["videoCtaClicks"]) {
+  if (clicks.length === 0) return "—";
+  const latest = clicks[0]!;
+  return `Етап ${latest.stage} (${clicks.length})`;
+}
+
 export default function ThreeFreeTipsLeadsTable({
   initialLeads,
   lastTipsEmailStage,
@@ -83,6 +89,9 @@ export default function ThreeFreeTipsLeadsTable({
                   Етап
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
+                  Гледай видеото
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                   Записан на
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
@@ -103,6 +112,9 @@ export default function ThreeFreeTipsLeadsTable({
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
                     {formatStageLabel(lead.tipsEmailStage, lastTipsEmailStage)}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
+                    {formatVideoCtaSummary(lead.videoCtaClicks)}
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
                     {formatBgDate(lead.createdAt)}
@@ -169,6 +181,23 @@ export default function ThreeFreeTipsLeadsTable({
                       ? formatBgDate(selectedLead.tipsLastEmailSentAt)
                       : "Все още не е изпращан"}
                   </p>
+                </div>
+                <div className="space-y-2 border-b border-border pb-3">
+                  <p className="text-sm font-medium">Кликове „Гледай видеото“</p>
+                  {selectedLead.videoCtaClicks.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">Няма записани кликове</p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {selectedLead.videoCtaClicks.map((click) => (
+                        <li
+                          key={`${click.stage}-${click.clickedAt}`}
+                          className="text-sm text-muted-foreground"
+                        >
+                          Етап {click.stage} · {formatBgDate(click.clickedAt)}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
                 <div className="space-y-2 border-b border-border pb-3">
                   <p className="text-sm font-medium">Източник</p>

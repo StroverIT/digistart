@@ -5,6 +5,7 @@ import {
   sendNicheRecommendationEmails,
   sendThreeFreeTipsEmails,
 } from "@/lib/emails/newsletter-emails";
+import { getThreeFreeTipsStage } from "@/lib/emails/three-free-tips-stages";
 import {
   NEWSLETTER_STATUS_SUBSCRIBED,
   NEWSLETTER_STATUS_UNSUBSCRIBED,
@@ -281,6 +282,90 @@ export function isNewsletterSubscribed(
   row: Pick<NewsletterSubscriber, "status">,
 ): boolean {
   return row.status !== NEWSLETTER_STATUS_UNSUBSCRIBED;
+}
+
+export type ThreeFreeTipsVideoCtaClick = {
+  stage: number;
+  clickedAt: string;
+};
+
+function isTipsSubscriberRow(row: Pick<NewsletterSubscriber, "source" | "metadata">): boolean {
+  if (row.source === THREE_FREE_TIPS_SOURCE) return true;
+  if (!row.metadata || typeof row.metadata !== "object" || Array.isArray(row.metadata)) {
+    return false;
+  }
+  return "threeFreeTipsAt" in row.metadata;
+}
+
+export function parseTipsVideoCtaClicks(metadata: unknown): ThreeFreeTipsVideoCtaClick[] {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return [];
+  }
+
+  const clicks = (metadata as Record<string, unknown>).tipsVideoCtaClicks;
+  if (!Array.isArray(clicks)) return [];
+
+  return clicks
+    .map((entry) => {
+      if (!entry || typeof entry !== "object" || Array.isArray(entry)) return null;
+      const row = entry as Record<string, unknown>;
+      const stage = row.stage;
+      const clickedAt = row.clickedAt;
+      if (typeof stage !== "number" || !Number.isInteger(stage) || stage < 1) return null;
+      if (typeof clickedAt !== "string" || clickedAt.length === 0) return null;
+      return { stage, clickedAt };
+    })
+    .filter((entry): entry is ThreeFreeTipsVideoCtaClick => entry !== null)
+    .sort((a, b) => b.clickedAt.localeCompare(a.clickedAt));
+}
+
+export type RecordThreeFreeTipsVideoCtaClickResult =
+  | { status: "ok" }
+  | { status: "not_found" }
+  | { status: "invalid_stage" };
+
+export async function recordThreeFreeTipsVideoCtaClick(
+  email: string,
+  stage: number,
+): Promise<RecordThreeFreeTipsVideoCtaClickResult> {
+  if (!Number.isInteger(stage) || stage < 1 || !getThreeFreeTipsStage(stage)) {
+    return { status: "invalid_stage" };
+  }
+
+  const normalized = email.trim().toLowerCase();
+  const existing = await prisma.newsletterSubscriber.findUnique({
+    where: { email: normalized },
+  });
+
+  if (!existing || !isTipsSubscriberRow(existing)) {
+    return { status: "not_found" };
+  }
+
+  const click: ThreeFreeTipsVideoCtaClick = {
+    stage,
+    clickedAt: new Date().toISOString(),
+  };
+
+  const baseMetadata =
+    existing.metadata &&
+    typeof existing.metadata === "object" &&
+    !Array.isArray(existing.metadata)
+      ? (existing.metadata as Record<string, unknown>)
+      : {};
+
+  const existingClicks = parseTipsVideoCtaClicks(existing.metadata);
+
+  await prisma.newsletterSubscriber.update({
+    where: { email: normalized },
+    data: {
+      metadata: {
+        ...baseMetadata,
+        tipsVideoCtaClicks: [click, ...existingClicks],
+      },
+    },
+  });
+
+  return { status: "ok" };
 }
 
 export async function listThreeFreeTipsSubscribersNewestFirst() {

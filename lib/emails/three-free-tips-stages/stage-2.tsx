@@ -1,18 +1,18 @@
 import React from "react";
 import { Text } from "@react-email/components";
+import type { ThreeFreeTipsStageEmailProps } from "./types";
 import { tipsEmailColors as colors } from "./colors";
 import {
   TipsStageBodyText,
   TipsStageBullet,
-  TipsStageCta,
+  TipsStageVideoCta,
   TipsStageEmailShell,
   TipsStageListItem,
   TipsStageSignOff,
 } from "./layout";
 
-const GOOGLE_BUSINESS_URL = "https://digistart.bg/services/google-business";
 
-export function ThreeFreeTipsStage2Email() {
+export function ThreeFreeTipsStage2Email({ email, stage }: ThreeFreeTipsStageEmailProps) {
   return (
     <TipsStageEmailShell previewText="Защо конкуренцията Ви се класира по-добре? Вероятно мамят.">
       <TipsStageBodyText>Здравейте,</TipsStageBodyText>
@@ -131,7 +131,7 @@ export function ThreeFreeTipsStage2Email() {
         повече за това как работим заедно, изгледайте това видео:
       </Text>
 
-      <TipsStageCta href={GOOGLE_BUSINESS_URL} label="Гледай видеото" />
+      <TipsStageVideoCta email={email} stage={stage} />
     </TipsStageEmailShell>
   );
 }

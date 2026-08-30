@@ -6,12 +6,12 @@ import {
   Head,
   Hr,
   Html,
-  Link,
   Preview,
   Section,
   Text,
 } from "@react-email/components";
 import { getUnsubscribePageUrl } from "@/lib/emails/unsubscribe";
+import { buildThreeFreeTipsVideoCtaUrl } from "./cta-url";
 import { tipsEmailColors as colors, tipsEmailFontFamily } from "./colors";
 
 const textBlack = "#000000";
@@ -80,19 +80,6 @@ export function TipsStageEmailShell({
             >
               Отпиши ме
             </Button>
-            <Text
-              style={{
-                margin: "14px 0 0",
-                fontSize: "11px",
-                lineHeight: "1.5",
-                color: "#94a3b8",
-              }}
-            >
-              или отворете{" "}
-              <Link href={unsubscribeUrl} style={{ color: "#64748b" }}>
-                {unsubscribeUrl}
-              </Link>
-            </Text>
           </Section>
         </Container>
       </Body>
@@ -202,6 +189,15 @@ export function TipsStageCta({ href, label }: { href: string; label: string }) {
         {label}
       </Button>
     </Section>
+  );
+}
+
+export function TipsStageVideoCta({ email, stage }: { email: string; stage: number }) {
+  return (
+    <TipsStageCta
+      href={buildThreeFreeTipsVideoCtaUrl({ email, stage })}
+      label="Гледай видеото"
+    />
   );
 }
 
