@@ -13,6 +13,8 @@ import { ThreeFreeTipsStage11Email } from "./stage-11";
 import { ThreeFreeTipsStage12Email } from "./stage-12";
 import { ThreeFreeTipsStage13Email } from "./stage-13";
 import { ThreeFreeTipsStage14Email } from "./stage-14";
+import { ThreeFreeTipsStage15Email } from "./stage-15";
+import { ThreeFreeTipsStage16Email } from "./stage-16";
 import type { ThreeFreeTipsStageEmailProps } from "./types";
 import { THREE_FREE_TIPS_PREVIEW_EMAIL } from "./types";
 
@@ -113,6 +115,18 @@ export const THREE_FREE_TIPS_STAGES: ThreeFreeTipsStageDefinition[] = [
     subject: "дали си заслужава?",
     previewText: "Ако можете да привлечете повече клиенти, класирането в топ 3 си заслужава.",
     render: (ctx) => <ThreeFreeTipsStage14Email {...ctx} />,
+  },
+  {
+    stage: 15,
+    subject: "едното нещо",
+    previewText: "Единственото нещо, което предсказва дали ще се справите добре с лийдовете, е скоростта.",
+    render: (ctx) => <ThreeFreeTipsStage15Email {...ctx} />,
+  },
+  {
+    stage: 16,
+    subject: "трябва да е така",
+    previewText: "Ако не Ви плаши леко, вероятно не натискате достатъчно силно.",
+    render: (ctx) => <ThreeFreeTipsStage16Email {...ctx} />,
   },
 ];
 
