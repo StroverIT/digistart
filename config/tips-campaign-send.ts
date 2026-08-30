@@ -23,7 +23,10 @@ export type TipsCampaignSendConfig = {
   timeBudgetMs: number;
   /** Колко дълго UI чака отговор от API (ms). Под function timeout. */
   fetchTimeoutMs: number;
-  /** Макс. имейли на един клик „Изпрати следваща партида“. */
+  /**
+   * Макс. имейли на един клик. 0 = без лимит — браузърът върти заявки
+   * докато remainingEligible стане 0 (или Gmail rate limit).
+   */
   sessionCap: number;
   /** Пауза между API заявките в UI (ms) — основен Gmail throttle. */
   chunkPauseMs: number;
@@ -35,7 +38,7 @@ export const tipsCampaignSendConfig: TipsCampaignSendConfig = {
   delayBetweenEmailsMs: 0,
   timeBudgetMs: 7_500,
   fetchTimeoutMs: 8_500,
-  sessionCap: 40,
+  sessionCap: 0,
   chunkPauseMs: 2_000,
 };
 
