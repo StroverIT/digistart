@@ -8,7 +8,12 @@
  */
 
 export type TipsCampaignSendConfig = {
-  /** Трябва да съвпада с `maxDuration` в send route. Hobby = 10, Pro = 60. */
+  /**
+   * Must match `export const maxDuration = …` in
+   * `app/api/admin/three-free-tips-campaign/send/route.ts`
+   * (Next.js requires that export to be a static literal).
+   * Hobby = 10, Pro = 60.
+   */
   functionMaxDurationSeconds: number;
   /** Имейли на една API заявка. На Hobby остави 1. */
   chunkSize: number;
