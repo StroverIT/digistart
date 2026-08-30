@@ -288,6 +288,46 @@ async function sendStageEmailToSubscriber(params: {
   });
 }
 
+/**
+ * Sends one stage email to a chosen address without advancing campaign stage.
+ * Used for admin testing of templates / CTA links.
+ */
+export async function sendTestThreeFreeTipsStageEmail(params: {
+  email: string;
+  stage: number;
+}): Promise<{ email: string; stage: number; subject: string }> {
+  const normalizedEmail = params.email.trim().toLowerCase();
+  if (!normalizedEmail.includes("@")) {
+    throw new Error("Невалиден имейл.");
+  }
+
+  const def = getThreeFreeTipsStage(params.stage);
+  if (!def) {
+    throw new Error(`Няма шаблон за етап ${params.stage}`);
+  }
+
+  const from = resolveFromAddress();
+  const mailer = await createOAuth2Transporter();
+  if (!mailer || !from) {
+    throw new Error(
+      "Имейл конфигурацията липсва (Gmail OAuth / SMTP_FROM). Проверете env променливите.",
+    );
+  }
+
+  await sendStageEmailToSubscriber({
+    email: normalizedEmail,
+    stage: params.stage,
+    mailer,
+    from,
+  });
+
+  return {
+    email: normalizedEmail,
+    stage: params.stage,
+    subject: def.subject,
+  };
+}
+
 export async function sendDailyThreeFreeTipsStageEmails(
   options?: { limit?: number },
 ): Promise<ThreeFreeTipsDailySendResult> {

@@ -118,7 +118,10 @@ export function GoogleFreeLeadsPanel({
 
         <TabsContent value="tips" className="space-y-4">
           <ThreeFreeTipsVideoUrlEditor />
-          <ThreeFreeTipsCampaignPanel onSent={() => router.refresh()} />
+          <ThreeFreeTipsCampaignPanel
+            onSent={() => router.refresh()}
+            tipEmails={tipLeads.map((lead) => lead.email)}
+          />
           <Card>
             <CardHeader>
               <CardTitle>

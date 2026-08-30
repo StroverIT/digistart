@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -64,8 +65,10 @@ function sleep(ms: number): Promise<void> {
 
 export function ThreeFreeTipsCampaignPanel({
   onSent,
+  tipEmails = [],
 }: {
   onSent?: () => void;
+  tipEmails?: string[];
 }) {
   const [summary, setSummary] = useState<CampaignSummary | null>(null);
   const [loadingSummary, setLoadingSummary] = useState(true);
@@ -75,6 +78,9 @@ export function ThreeFreeTipsCampaignPanel({
   const [sending, setSending] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [sendProgress, setSendProgress] = useState<string | null>(null);
+  const [testEmail, setTestEmail] = useState(() => tipEmails[0] ?? "");
+  const [testStage, setTestStage] = useState("1");
+  const [sendingTest, setSendingTest] = useState(false);
 
   const loadSummary = useCallback(async () => {
     setLoadingSummary(true);
@@ -118,9 +124,64 @@ export function ThreeFreeTipsCampaignPanel({
   }, [loadSummary]);
 
   useEffect(() => {
+    if (!testEmail && tipEmails.length > 0) {
+      setTestEmail(tipEmails[0]!);
+    }
+  }, [tipEmails, testEmail]);
+
+  useEffect(() => {
     if (!selectedStage) return;
     void loadPreview(selectedStage);
   }, [selectedStage, loadPreview]);
+
+  useEffect(() => {
+    if (summary?.stages.length) {
+      setTestStage((current) => {
+        const stillValid = summary.stages.some((s) => String(s.stage) === current);
+        return stillValid ? current : String(summary.stages[0]!.stage);
+      });
+    }
+  }, [summary]);
+
+  const handleSendTest = async () => {
+    const email = testEmail.trim();
+    const stage = Number(testStage);
+    if (!email) {
+      toast.error("Моля, изберете или въведете имейл.");
+      return;
+    }
+    if (!Number.isInteger(stage) || stage < 1) {
+      toast.error("Моля, изберете етап.");
+      return;
+    }
+
+    setSendingTest(true);
+    try {
+      const response = await fetch("/api/admin/three-free-tips-campaign/test-send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, stage }),
+      });
+      const data = (await response.json().catch(() => ({}))) as {
+        ok?: boolean;
+        subject?: string;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        toast.error(data.error ?? "Неуспешно изпращане на тестовия имейл.");
+        return;
+      }
+
+      toast.success(
+        `Тестов имейл изпратен към ${email} (етап ${stage}${data.subject ? `: ${data.subject}` : ""}). Етапът на абоната не е променен.`,
+      );
+    } catch {
+      toast.error("Неуспешно изпращане на тестовия имейл.");
+    } finally {
+      setSendingTest(false);
+    }
+  };
 
   const handleSend = async () => {
     const sendConfig = summary?.sendConfig;
@@ -381,6 +442,79 @@ export function ThreeFreeTipsCampaignPanel({
               Vercel Hobby: 1 имейл на заявка (10s timeout), до {sessionCap} на
               клик, {Math.round(chunkPauseMs / 1000)}s пауза между заявките.
             </p>
+
+            <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
+              <div>
+                <p className="text-sm font-medium">Тестов имейл</p>
+                <p className="text-xs text-muted-foreground">
+                  Изпраща шаблона към избран имейл без да променя етапа на абоната.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <label className="text-xs font-medium text-muted-foreground">Имейл</label>
+                  {tipEmails.length > 0 ? (
+                    <Select
+                      value={tipEmails.includes(testEmail) ? testEmail : undefined}
+                      onValueChange={setTestEmail}
+                      disabled={sendingTest || sending}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Избери абонат" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {tipEmails.map((email) => (
+                          <SelectItem key={email} value={email}>
+                            {email}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : null}
+                  <Input
+                    type="email"
+                    value={testEmail}
+                    onChange={(event) => setTestEmail(event.target.value)}
+                    placeholder="name@email.com"
+                    disabled={sendingTest || sending}
+                    className="font-mono text-sm"
+                  />
+                </div>
+                <div className="w-full space-y-1.5 sm:w-[220px]">
+                  <label className="text-xs font-medium text-muted-foreground">Етап</label>
+                  <Select
+                    value={testStage}
+                    onValueChange={setTestStage}
+                    disabled={sendingTest || sending || !summary.stages.length}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Етап" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {summary.stages.map((stage) => (
+                        <SelectItem key={stage.stage} value={String(stage.stage)}>
+                          Етап {stage.stage}: {stage.subject}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={sendingTest || sending || !testEmail.trim()}
+                  onClick={() => void handleSendTest()}
+                  className="sm:mb-0"
+                >
+                  {sendingTest ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Mail className="mr-2 h-4 w-4" />
+                  )}
+                  Изпрати тест
+                </Button>
+              </div>
+            </div>
 
             <div className="space-y-2">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
