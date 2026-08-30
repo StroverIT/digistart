@@ -4,22 +4,29 @@ import {
   Button,
   Container,
   Head,
+  Hr,
   Html,
+  Link,
   Preview,
   Section,
   Text,
 } from "@react-email/components";
+import { getUnsubscribePageUrl } from "@/lib/emails/unsubscribe";
 import { tipsEmailColors as colors, tipsEmailFontFamily } from "./colors";
 
 const textBlack = "#000000";
 
 export function TipsStageEmailShell({
   previewText,
+  recipientEmail,
   children,
 }: {
   previewText: string;
+  recipientEmail?: string;
   children: React.ReactNode;
 }) {
+  const unsubscribeUrl = getUnsubscribePageUrl(recipientEmail);
+
   return (
     <Html>
       <Head />
@@ -45,6 +52,48 @@ export function TipsStageEmailShell({
           }}
         >
           <Section style={{ padding: "28px 28px 24px" }}>{children}</Section>
+          <Hr style={{ borderColor: colors.border, margin: "0" }} />
+          <Section style={{ padding: "20px 28px 28px", textAlign: "center" as const }}>
+            <Text
+              style={{
+                margin: "0 0 12px",
+                fontSize: "12px",
+                lineHeight: "1.5",
+                color: "#64748b",
+              }}
+            >
+              Не желаете да получавате повече имейли?
+            </Text>
+            <Button
+              href={unsubscribeUrl}
+              style={{
+                backgroundColor: "#ffffff",
+                color: textBlack,
+                borderRadius: "8px",
+                padding: "10px 18px",
+                fontWeight: 600,
+                fontSize: "13px",
+                textDecoration: "none",
+                display: "inline-block",
+                border: `1px solid ${colors.border}`,
+              }}
+            >
+              Отпиши ме
+            </Button>
+            <Text
+              style={{
+                margin: "14px 0 0",
+                fontSize: "11px",
+                lineHeight: "1.5",
+                color: "#94a3b8",
+              }}
+            >
+              или отворете{" "}
+              <Link href={unsubscribeUrl} style={{ color: "#64748b" }}>
+                {unsubscribeUrl}
+              </Link>
+            </Text>
+          </Section>
         </Container>
       </Body>
     </Html>

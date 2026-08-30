@@ -10,41 +10,34 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import type { UtmDailyStats } from "@/lib/analytics/types";
+import type { ShortLinkDailyStat } from "@/lib/analytics/types";
 
 const COLORS = [
+  "oklch(0.65 0.22 320)",
   "oklch(0.65 0.22 250)",
   "oklch(0.65 0.2 170)",
   "oklch(0.72 0.18 90)",
   "oklch(0.65 0.22 20)",
-  "oklch(0.68 0.2 320)",
 ];
 
-function getEventKey(row: UtmDailyStats) {
-  return `${row.utmSource} / ${row.utmMedium} / ${row.utmCampaign}`;
-}
-
-export function UtmDailyViewsChart({ data }: { data: UtmDailyStats[] }) {
-  const totalsByEvent = new Map<string, number>();
+export function SocialShortLinksDailyChart({ data }: { data: ShortLinkDailyStat[] }) {
+  const totalsByLink = new Map<string, number>();
   for (const row of data) {
-    const key = getEventKey(row);
-    totalsByEvent.set(key, (totalsByEvent.get(key) ?? 0) + row.views);
+    totalsByLink.set(row.label, (totalsByLink.get(row.label) ?? 0) + row.views);
   }
 
-  const topEvents = Array.from(totalsByEvent.entries())
+  const topLinks = Array.from(totalsByLink.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
-    .map(([event]) => event);
+    .map(([label]) => label);
 
   const byDate = new Map<string, Record<string, string | number>>();
   for (const row of data) {
-    const event = getEventKey(row);
-    if (!topEvents.includes(event)) continue;
-    const dateKey = row.date;
-    const current = byDate.get(dateKey) ?? { date: dateKey };
-    const previous = Number(current[event] ?? 0);
-    current[event] = previous + row.views;
-    byDate.set(dateKey, current);
+    if (!topLinks.includes(row.label)) continue;
+    const current = byDate.get(row.date) ?? { date: row.date };
+    const previous = Number(current[row.label] ?? 0);
+    current[row.label] = previous + row.views;
+    byDate.set(row.date, current);
   }
 
   const chartData = Array.from(byDate.entries())
@@ -57,10 +50,10 @@ export function UtmDailyViewsChart({ data }: { data: UtmDailyStats[] }) {
       }),
     }));
 
-  if (chartData.length === 0 || topEvents.length === 0) {
+  if (chartData.length === 0 || topLinks.length === 0) {
     return (
       <div className="h-[320px] flex items-center justify-center text-muted-foreground">
-        Няма дневни UTM данни
+        Няма кликове от социални линкове за избрания период
       </div>
     );
   }
@@ -93,8 +86,8 @@ export function UtmDailyViewsChart({ data }: { data: UtmDailyStats[] }) {
             }}
           />
           <Legend />
-          {topEvents.map((event, index) => (
-            <Bar key={event} dataKey={event} stackId="views" fill={COLORS[index % COLORS.length]} />
+          {topLinks.map((label, index) => (
+            <Bar key={label} dataKey={label} stackId="views" fill={COLORS[index % COLORS.length]} />
           ))}
         </BarChart>
       </ResponsiveContainer>

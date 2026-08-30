@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { SHORT_LINK_REDIRECTS } from "./config/short-links";
 import { buildTemplatePreviewRewrites } from "./config/templates";
 
 const nextConfig: NextConfig = {
@@ -34,11 +35,7 @@ const nextConfig: NextConfig = {
         destination: "/services/google-business",
         permanent: true,
       },
-      {
-        source: "/gnewsletter",
-        destination: "/google/newsletter",
-        permanent: true,
-      },
+      ...SHORT_LINK_REDIRECTS,
       {
         source: "/demo/:category/:id",
         destination: "/templates/:category/:id",

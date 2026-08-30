@@ -15,7 +15,10 @@ import {
   withTestSubject,
   withTestTextBody,
 } from "@/lib/server/email-test";
-import { THREE_FREE_TIPS_SOURCE } from "@/lib/server/newsletter";
+import {
+  isNewsletterSubscribed,
+  THREE_FREE_TIPS_SOURCE,
+} from "@/lib/server/newsletter";
 
 const BATCH_SIZE = 3;
 const SEND_LIMIT_PER_REQUEST = 20;
@@ -147,12 +150,15 @@ export async function getThreeFreeTipsCampaignSummary(): Promise<ThreeFreeTipsCa
     select: {
       source: true,
       metadata: true,
+      status: true,
       tipsEmailStage: true,
       tipsLastEmailSentAt: true,
     },
   });
 
-  const tips = subscribers.filter(isTipsSubscriber);
+  const tips = subscribers.filter(
+    (row) => isTipsSubscriber(row) && isNewsletterSubscribed(row),
+  );
   const lastStage = getLastThreeFreeTipsStageNumber();
   const stageNumbers = listThreeFreeTipsStageNumbers();
 
@@ -291,6 +297,7 @@ export async function sendDailyThreeFreeTipsStageEmails(
 
   const eligibleAll = subscribers.filter((row) => {
     if (!isTipsSubscriber(row)) return false;
+    if (!isNewsletterSubscribed(row)) return false;
     const stage = row.tipsEmailStage ?? 1;
     // Past last stage (e.g. 8 of 7): skip — no email, no +1.
     if (!canSendTipsCampaignStage(stage, lastStage)) return false;

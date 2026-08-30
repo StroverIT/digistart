@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { extractAllUtmParams } from "@/lib/analytics/source";
+import { extractAllUtmParams, stripUtmParamsFromUrl } from "@/lib/analytics/source";
 import { generateClientUuid } from "@/lib/utils";
 
 const TRACKED_DEDUPE_KEY_STORAGE = "digistart_tracked_utm_dedupe_keys";
@@ -76,7 +76,7 @@ export function UtmTracker() {
       writeStoredKeys([...trackedKeys, dedupeKey]);
     }
 
-    window.history.replaceState({}, "", "/");
+    window.history.replaceState({}, "", stripUtmParamsFromUrl(url));
   }, []);
 
   return null;

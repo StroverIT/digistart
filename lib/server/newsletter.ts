@@ -5,6 +5,10 @@ import {
   sendNicheRecommendationEmails,
   sendThreeFreeTipsEmails,
 } from "@/lib/emails/newsletter-emails";
+import {
+  NEWSLETTER_STATUS_SUBSCRIBED,
+  NEWSLETTER_STATUS_UNSUBSCRIBED,
+} from "@/lib/emails/unsubscribe";
 import { prisma } from "@/lib/prisma";
 
 export const COMING_SOON_SOURCE = "coming-soon" as const;
@@ -13,6 +17,16 @@ export const TEMPLATE_NICHE_SOURCE = "template-niche-recommendation" as const;
 export const THREE_FREE_TIPS_SOURCE = "three-free-tips" as const;
 export const GOOGLE_NEWSLETTER_SOURCE = "google-newsletter" as const;
 export const NICHE_LAUNCH_DISCOUNT_PERCENT = 10;
+
+export {
+  NEWSLETTER_STATUS_SUBSCRIBED,
+  NEWSLETTER_STATUS_UNSUBSCRIBED,
+} from "@/lib/emails/unsubscribe";
+
+const resubscribeData = {
+  status: NEWSLETTER_STATUS_SUBSCRIBED,
+  unsubscribedAt: null,
+} as const;
 
 export type NicheRecommendationEntry = {
   type: "niche_recommendation";
@@ -45,7 +59,9 @@ export type NewsletterSubscribeResult =
   | { status: "full" };
 
 export async function countNewsletterSubscribersBySource(source: string): Promise<number> {
-  return prisma.newsletterSubscriber.count({ where: { source } });
+  return prisma.newsletterSubscriber.count({
+    where: { source, status: NEWSLETTER_STATUS_SUBSCRIBED },
+  });
 }
 
 export async function getComingSoonSpotsRemaining(): Promise<number> {
@@ -63,10 +79,18 @@ export async function subscribeToNewsletter(
   });
 
   if (existing) {
+    const wasUnsubscribed = existing.status === NEWSLETTER_STATUS_UNSUBSCRIBED;
+    const subscriber = wasUnsubscribed
+      ? await prisma.newsletterSubscriber.update({
+          where: { email: normalized },
+          data: { ...resubscribeData },
+        })
+      : existing;
+
     return {
       status: "ok",
-      subscriber: existing,
-      alreadySubscribed: true,
+      subscriber,
+      alreadySubscribed: !wasUnsubscribed,
       emailSent: false,
     };
   }
@@ -79,7 +103,7 @@ export async function subscribeToNewsletter(
   }
 
   const subscriber = await prisma.newsletterSubscriber.create({
-    data: { email: normalized, source },
+    data: { email: normalized, source, status: NEWSLETTER_STATUS_SUBSCRIBED },
   });
 
   let emailSent = false;
@@ -171,7 +195,7 @@ export async function subscribeToNicheRecommendation(
   if (existing) {
     subscriber = await prisma.newsletterSubscriber.update({
       where: { email: normalizedEmail },
-      data: { metadata },
+      data: { metadata, ...resubscribeData },
     });
   } else {
     subscriber = await prisma.newsletterSubscriber.create({
@@ -179,6 +203,7 @@ export async function subscribeToNicheRecommendation(
         email: normalizedEmail,
         source: TEMPLATE_NICHE_SOURCE,
         metadata,
+        status: NEWSLETTER_STATUS_SUBSCRIBED,
       },
     });
   }
@@ -219,6 +244,43 @@ export async function removeNewsletterSubscriber(
   if (!existing) return null;
 
   return prisma.newsletterSubscriber.delete({ where: { id } });
+}
+
+export type UnsubscribeNewsletterResult =
+  | { status: "ok"; alreadyUnsubscribed: boolean }
+  | { status: "not_found" };
+
+export async function unsubscribeNewsletterByEmail(
+  email: string,
+): Promise<UnsubscribeNewsletterResult> {
+  const normalized = email.trim().toLowerCase();
+  const existing = await prisma.newsletterSubscriber.findUnique({
+    where: { email: normalized },
+  });
+
+  if (!existing) {
+    return { status: "not_found" };
+  }
+
+  if (existing.status === NEWSLETTER_STATUS_UNSUBSCRIBED) {
+    return { status: "ok", alreadyUnsubscribed: true };
+  }
+
+  await prisma.newsletterSubscriber.update({
+    where: { email: normalized },
+    data: {
+      status: NEWSLETTER_STATUS_UNSUBSCRIBED,
+      unsubscribedAt: new Date(),
+    },
+  });
+
+  return { status: "ok", alreadyUnsubscribed: false };
+}
+
+export function isNewsletterSubscribed(
+  row: Pick<NewsletterSubscriber, "status">,
+): boolean {
+  return row.status !== NEWSLETTER_STATUS_UNSUBSCRIBED;
 }
 
 export async function listThreeFreeTipsSubscribersNewestFirst() {
@@ -289,7 +351,7 @@ export async function subscribeToThreeFreeTips(
   const subscriber = existing
     ? await prisma.newsletterSubscriber.update({
         where: { email: normalized },
-        data: { metadata: mergedMetadata, ...tipsStageData },
+        data: { metadata: mergedMetadata, ...tipsStageData, ...resubscribeData },
       })
     : await prisma.newsletterSubscriber.create({
         data: {
@@ -297,6 +359,7 @@ export async function subscribeToThreeFreeTips(
           source: THREE_FREE_TIPS_SOURCE,
           metadata: tipMeta,
           tipsEmailStage: 1,
+          status: NEWSLETTER_STATUS_SUBSCRIBED,
         },
       });
 
@@ -361,13 +424,14 @@ export async function subscribeToGoogleNewsletter(
   const subscriber = existing
     ? await prisma.newsletterSubscriber.update({
         where: { email: normalized },
-        data: { metadata: mergedMetadata },
+        data: { metadata: mergedMetadata, ...resubscribeData },
       })
     : await prisma.newsletterSubscriber.create({
         data: {
           email: normalized,
           source: GOOGLE_NEWSLETTER_SOURCE,
           metadata: signupMeta,
+          status: NEWSLETTER_STATUS_SUBSCRIBED,
         },
       });
 

@@ -50,6 +50,18 @@ export function buildTrackingMetadata(params: TrackingParams): TrackingMetadata 
   return metadata;
 }
 
+/** Path + non-UTM query string (UTM params stripped). */
+export function stripUtmParamsFromUrl(url: URL): string {
+  const cleanParams = new URLSearchParams();
+  for (const [key, value] of url.searchParams.entries()) {
+    if (key.startsWith("utm_")) continue;
+    cleanParams.set(key, value);
+  }
+
+  const query = cleanParams.toString();
+  return query ? `${url.pathname}?${query}` : url.pathname;
+}
+
 /**
  * Extracts every query param prefixed with `utm_`.
  */

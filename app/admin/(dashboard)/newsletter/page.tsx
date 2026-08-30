@@ -8,7 +8,9 @@ export default async function AdminNewsletterPage() {
     id: row.id,
     email: row.email,
     source: row.source,
+    status: row.status === "unsubscribed" ? "unsubscribed" : "subscribed",
     createdAt: row.createdAt.toISOString(),
+    unsubscribedAt: row.unsubscribedAt?.toISOString() ?? null,
     metadata: row.metadata,
   }));
 

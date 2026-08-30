@@ -77,6 +77,9 @@ export default function ThreeFreeTipsLeadsTable({
                   Имейл
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
+                  Статус
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                   Етап
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
@@ -91,6 +94,13 @@ export default function ThreeFreeTipsLeadsTable({
               {visibleLeads.map((lead) => (
                 <tr key={lead.id} className="border-b border-border/60 last:border-0">
                   <td className="px-4 py-3 font-mono text-sm">{lead.email}</td>
+                  <td className="px-4 py-3 text-sm">
+                    {lead.status === "unsubscribed" ? (
+                      <span className="text-muted-foreground">Отписан</span>
+                    ) : (
+                      <span>Активен</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
                     {formatStageLabel(lead.tipsEmailStage, lastTipsEmailStage)}
                   </td>
@@ -137,6 +147,14 @@ export default function ThreeFreeTipsLeadsTable({
                   >
                     {selectedLead.email}
                   </a>
+                </div>
+                <div className="space-y-2 border-b border-border pb-3">
+                  <p className="text-sm font-medium">Статус</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedLead.status === "unsubscribed"
+                      ? `Отписан${selectedLead.unsubscribedAt ? ` на ${formatBgDate(selectedLead.unsubscribedAt)}` : ""}`
+                      : "Активен"}
+                  </p>
                 </div>
                 <div className="space-y-2 border-b border-border pb-3">
                   <p className="text-sm font-medium">Етап</p>

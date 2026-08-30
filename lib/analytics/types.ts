@@ -46,12 +46,7 @@ export type AnalyticsAdminResponse = {
   ctaStats: CtaAnalyticsStats[];
   totalClicks: number;
   dailyStats: DailyAnalyticsStats[];
-  utmDailyStats: UtmDailyStats[];
-  utmMonthlyStats: UtmMonthlyStats[];
-  utmSources: UtmDimensionStats[];
-  utmMediums: UtmDimensionStats[];
-  utmCampaigns: UtmDimensionStats[];
-  utmLandingUrls: UtmDimensionStats[];
+  shortLinkTraffic: ShortLinkTrafficAggregate;
   cartAdditions: {
     allTimeTotalAdds: number;
     lastDaysTotalAdds: number;
@@ -112,6 +107,33 @@ export type UtmMonthlyStats = {
 export type UtmDimensionStats = {
   key: string;
   views: number;
+};
+
+export type ShortLinkTrafficStat = {
+  path: string;
+  label: string;
+  platform: "instagram" | "facebook" | "other";
+  destinationPath: string;
+  views: number;
+  dailyViews: { date: string; views: number }[];
+};
+
+export type ShortLinkDailyStat = {
+  date: string;
+  path: string;
+  label: string;
+  views: number;
+};
+
+export type ShortLinkTrafficAggregate = {
+  totalViews: number;
+  byPlatform: {
+    instagram: number;
+    facebook: number;
+    other: number;
+  };
+  links: ShortLinkTrafficStat[];
+  dailyByLink: ShortLinkDailyStat[];
 };
 
 export type SurveyAnalyticsStat = {

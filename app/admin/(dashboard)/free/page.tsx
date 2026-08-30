@@ -17,8 +17,10 @@ function toTipLeadRow(
     id: lead.id,
     email: lead.email,
     source: lead.source,
+    status: lead.status === "unsubscribed" ? "unsubscribed" : "subscribed",
     tipsEmailStage: lead.tipsEmailStage ?? 1,
     tipsLastEmailSentAt: lead.tipsLastEmailSentAt?.toISOString() ?? null,
+    unsubscribedAt: lead.unsubscribedAt?.toISOString() ?? null,
     createdAt: lead.createdAt.toISOString(),
   };
 }

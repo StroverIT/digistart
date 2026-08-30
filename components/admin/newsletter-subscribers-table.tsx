@@ -83,6 +83,9 @@ export function NewsletterSubscribersTable({
                       Имейл
                     </th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
+                      Статус
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                       Източник
                     </th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
@@ -100,6 +103,13 @@ export function NewsletterSubscribersTable({
                   {subscribers.map((row) => (
                     <tr key={row.id} className="border-b border-border/60 last:border-0">
                       <td className="px-4 py-3 font-mono text-sm">{row.email}</td>
+                      <td className="px-4 py-3 text-sm">
+                        {row.status === "unsubscribed" ? (
+                          <span className="text-muted-foreground">Отписан</span>
+                        ) : (
+                          <span>Активен</span>
+                        )}
+                      </td>
                       <td className="px-4 py-3 text-sm">{row.source}</td>
                       <td className="px-4 py-3 text-sm text-muted-foreground">
                         {formatBgDate(row.createdAt)}

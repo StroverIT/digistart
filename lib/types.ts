@@ -230,8 +230,10 @@ export interface ThreeFreeTipsLeadRow {
   id: string;
   email: string;
   source: string;
+  status: "subscribed" | "unsubscribed";
   tipsEmailStage: number | null;
   tipsLastEmailSentAt: string | null;
+  unsubscribedAt: string | null;
   createdAt: string;
 }
 
@@ -239,7 +241,9 @@ export interface NewsletterSubscriberRow {
   id: string;
   email: string;
   source: string;
+  status: "subscribed" | "unsubscribed";
   createdAt: string;
+  unsubscribedAt: string | null;
   metadata: unknown;
 }
 

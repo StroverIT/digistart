@@ -22,6 +22,7 @@ import {
   withTestSubject,
   withTestTextBody,
 } from "@/lib/server/email-test";
+import { getUnsubscribePageUrl } from "@/lib/emails/unsubscribe";
 
 /** Aligns with app/globals.css light theme: white bg, slate text, electric blue accent */
 const colors = {
@@ -34,6 +35,55 @@ const colors = {
   border: "#e2e8f0",
   accentSoft: "#eff6ff",
 } as const;
+
+function renderCustomerEmailFooter(siteUrl: string, email: string) {
+  const unsubscribeUrl = getUnsubscribePageUrl(email);
+  return [
+    React.createElement(Hr, {
+      key: "footer-hr",
+      style: { borderColor: colors.border, margin: "0" },
+    }),
+    React.createElement(
+      Section,
+      { key: "footer-section", style: { padding: "16px 28px 24px", textAlign: "center" as const } },
+      React.createElement(
+        Text,
+        { style: { margin: "0 0 10px", fontSize: "12px", color: colors.muted } },
+        React.createElement(Link, { href: siteUrl, style: { color: colors.primary } }, siteUrl),
+      ),
+      React.createElement(
+        Text,
+        {
+          style: {
+            margin: "0 0 12px",
+            fontSize: "12px",
+            lineHeight: "1.5",
+            color: colors.muted,
+          },
+        },
+        "Не желаете да получавате повече имейли?",
+      ),
+      React.createElement(
+        Button,
+        {
+          href: unsubscribeUrl,
+          style: {
+            backgroundColor: "#ffffff",
+            color: colors.foreground,
+            borderRadius: "8px",
+            padding: "10px 18px",
+            fontWeight: 600,
+            fontSize: "13px",
+            textDecoration: "none",
+            display: "inline-block",
+            border: `1px solid ${colors.border}`,
+          },
+        },
+        "Отпиши ме",
+      ),
+    ),
+  ];
+}
 
 function resolveGmailUser(): string | undefined {
   const pairs = [
@@ -215,16 +265,7 @@ async function renderSubscriberEmailHtml(params: { email: string }) {
               "Ако не сте заявили този бюлетин, можете спокойно да игнорирате този имейл.",
             ),
           ),
-          React.createElement(Hr, { style: { borderColor: colors.border, margin: "0" } }),
-          React.createElement(
-            Section,
-            { style: { padding: "16px 28px 24px" } },
-            React.createElement(
-              Text,
-              { style: { margin: "0", fontSize: "12px", color: colors.muted } },
-              React.createElement(Link, { href: siteUrl, style: { color: colors.primary } }, siteUrl),
-            ),
-          ),
+          ...renderCustomerEmailFooter(siteUrl, params.email),
         ),
       ),
     ),
@@ -511,16 +552,7 @@ async function renderNicheRecommendationSubscriberEmailHtml(params: {
               "Ако не сте изпратили тази препоръка, можете спокойно да игнорирате този имейл.",
             ),
           ),
-          React.createElement(Hr, { style: { borderColor: colors.border, margin: "0" } }),
-          React.createElement(
-            Section,
-            { style: { padding: "16px 28px 24px" } },
-            React.createElement(
-              Text,
-              { style: { margin: "0", fontSize: "12px", color: colors.muted } },
-              React.createElement(Link, { href: siteUrl, style: { color: colors.primary } }, siteUrl),
-            ),
-          ),
+          ...renderCustomerEmailFooter(siteUrl, params.email),
         ),
       ),
     ),
@@ -711,8 +743,12 @@ export async function sendNicheRecommendationEmails(params: {
   }
 }
 
-async function renderThreeFreeTipsSubscriberEmailHtml(videoUrl: string) {
+async function renderThreeFreeTipsSubscriberEmailHtml(params: {
+  videoUrl: string;
+  email: string;
+}) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
+  const videoUrl = params.videoUrl;
 
   return render(
     React.createElement(
@@ -835,16 +871,7 @@ async function renderThreeFreeTipsSubscriberEmailHtml(videoUrl: string) {
               ),
             ),
           ),
-          React.createElement(Hr, { style: { borderColor: colors.border, margin: "0" } }),
-          React.createElement(
-            Section,
-            { style: { padding: "16px 28px 24px" } },
-            React.createElement(
-              Text,
-              { style: { margin: "0", fontSize: "12px", color: colors.muted } },
-              React.createElement(Link, { href: siteUrl, style: { color: colors.primary } }, siteUrl),
-            ),
-          ),
+          ...renderCustomerEmailFooter(siteUrl, params.email),
         ),
       ),
     ),
@@ -962,7 +989,10 @@ export async function sendThreeFreeTipsEmails(params: {
   });
   const mailFrom = withTestFrom(from, delivery.testMode);
 
-  const subscriberHtml = await renderThreeFreeTipsSubscriberEmailHtml(videoUrl);
+  const subscriberHtml = await renderThreeFreeTipsSubscriberEmailHtml({
+    videoUrl,
+    email: params.email,
+  });
   const subscriberSubject = withTestSubject(
     "3 безплатни съвета за Google - DigiStart",
     delivery.testMode,
@@ -1021,6 +1051,7 @@ const GOOGLE_NEWSLETTER_SUBSCRIBER_MESSAGE =
 
 async function renderGoogleNewsletterSubscriberEmailHtml(params: {
   firstName: string;
+  email: string;
 }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
   const greeting = params.firstName ? `Здравейте, ${params.firstName}!` : "Здравейте!";
@@ -1125,16 +1156,7 @@ async function renderGoogleNewsletterSubscriberEmailHtml(params: {
               "DigiStart",
             ),
           ),
-          React.createElement(Hr, { style: { borderColor: colors.border, margin: "0" } }),
-          React.createElement(
-            Section,
-            { style: { padding: "16px 28px 24px" } },
-            React.createElement(
-              Text,
-              { style: { margin: "0", fontSize: "12px", color: colors.muted } },
-              React.createElement(Link, { href: siteUrl, style: { color: colors.primary } }, siteUrl),
-            ),
-          ),
+          ...renderCustomerEmailFooter(siteUrl, params.email),
         ),
       ),
     ),
@@ -1259,6 +1281,7 @@ export async function sendGoogleNewsletterEmails(params: {
 
   const subscriberHtml = await renderGoogleNewsletterSubscriberEmailHtml({
     firstName: params.firstName,
+    email: params.email,
   });
   const subscriberSubject = withTestSubject(
     "Успешно записахте за бюлетина - DigiStart",

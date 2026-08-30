@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { comboCodeFromIndex } from "@/lib/analytics/survey-combinations";
+import { buildShortLinkTrafficStats } from "@/lib/analytics/short-link-traffic";
 import {
   CHECKOUT_FUNNEL_STAGE_LABELS,
   CHECKOUT_FUNNEL_STAGES,
@@ -23,15 +24,12 @@ import {
   type CtaAnalyticsStats,
   type DailyAnalyticsStats,
   type PageAnalyticsStats,
-  type UtmDimensionStats,
-  type UtmDailyStats,
   type SurveyAnalyticsStat,
   type FunnelCompetitorStat,
   type FunnelAudienceViewsAggregate,
   type FunnelAudienceViewsStat,
   type SurveyCombinationsAggregate,
   type UtmLandingEventPayload,
-  type UtmMonthlyStats,
 } from "@/lib/analytics/types";
 
 const MAX_INGEST_BATCH_SIZE = 100;
@@ -235,69 +233,6 @@ function buildDailyStats(rows: AnalyticsRow[]): DailyAnalyticsStats[] {
   return Array.from(visitsByDate.entries())
     .map(([date, visits]) => ({ date, visits }))
     .sort((a, b) => a.date.localeCompare(b.date));
-}
-
-function buildUtmDailyStats(
-  rows: {
-    createdAt: Date;
-    utmSource: string | null;
-    utmMedium: string | null;
-    utmCampaign: string | null;
-  }[],
-): UtmDailyStats[] {
-  const byKey = new Map<string, UtmDailyStats>();
-  for (const row of rows) {
-    const date = row.createdAt.toISOString().split("T")[0];
-    const utmSource = row.utmSource ?? "(not set)";
-    const utmMedium = row.utmMedium ?? "(not set)";
-    const utmCampaign = row.utmCampaign ?? "(not set)";
-    const key = `${date}::${utmSource}::${utmMedium}::${utmCampaign}`;
-    const current = byKey.get(key);
-    if (current) {
-      current.views += 1;
-      continue;
-    }
-    byKey.set(key, { date, utmSource, utmMedium, utmCampaign, views: 1 });
-  }
-
-  return Array.from(byKey.values()).sort((a, b) => {
-    if (a.date === b.date) return b.views - a.views;
-    return a.date.localeCompare(b.date);
-  });
-}
-
-function buildUtmMonthlyStats(
-  rows: {
-    createdAt: Date;
-  }[],
-): UtmMonthlyStats[] {
-  const byMonth = new Map<string, number>();
-  for (const row of rows) {
-    const month = row.createdAt.toISOString().slice(0, 7);
-    byMonth.set(month, (byMonth.get(month) ?? 0) + 1);
-  }
-  return Array.from(byMonth.entries())
-    .map(([month, views]) => ({ month, views }))
-    .sort((a, b) => a.month.localeCompare(b.month));
-}
-
-function buildUtmDimensionStats(
-  rows: {
-    utmSource: string | null;
-    utmMedium: string | null;
-    utmCampaign: string | null;
-    landingUrl: string;
-  }[],
-  key: "utmSource" | "utmMedium" | "utmCampaign" | "landingUrl",
-): UtmDimensionStats[] {
-  const byValue = new Map<string, number>();
-  for (const row of rows) {
-    const value = row[key] && row[key].trim().length > 0 ? row[key] : "(not set)";
-    byValue.set(value, (byValue.get(value) ?? 0) + 1);
-  }
-  return Array.from(byValue.entries())
-    .map(([item, views]) => ({ key: item, views }))
-    .sort((a, b) => b.views - a.views);
 }
 
 function buildCartAdditionStats(rows: AnalyticsRow[], days = 30): CartAdditionAggregate {
@@ -901,18 +836,12 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
   const utmRows = await prisma.$queryRaw<
     {
       createdAt: Date;
-      utmSource: string | null;
-      utmMedium: string | null;
-      utmCampaign: string | null;
-      landingUrl: string;
+      utmPayload: Prisma.JsonValue;
     }[]
   >`
     SELECT
       "created_at" AS "createdAt",
-      "utm_source" AS "utmSource",
-      "utm_medium" AS "utmMedium",
-      "utm_campaign" AS "utmCampaign",
-      "landing_url" AS "landingUrl"
+      "utm_payload" AS "utmPayload"
     FROM "utm_landing_events"
     WHERE (${fromDate}::timestamp IS NULL OR "created_at" >= ${fromDate}::timestamp)
       AND (${toDate}::timestamp IS NULL OR "created_at" <= ${toDate}::timestamp)
@@ -922,12 +851,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
   const pageStats = buildPageStats(rows);
   const { stats: ctaStats, totalClicks } = buildCtaStats(rows);
   const dailyStats = buildDailyStats(rows);
-  const utmDailyStats = buildUtmDailyStats(utmRows);
-  const utmMonthlyStats = buildUtmMonthlyStats(utmRows);
-  const utmSources = buildUtmDimensionStats(utmRows, "utmSource");
-  const utmMediums = buildUtmDimensionStats(utmRows, "utmMedium");
-  const utmCampaigns = buildUtmDimensionStats(utmRows, "utmCampaign");
-  const utmLandingUrls = buildUtmDimensionStats(utmRows, "landingUrl");
+  const shortLinkTraffic = buildShortLinkTrafficStats(utmRows);
   const cartAdditions = buildCartAdditionStats(rows, 30);
   const surveyStats = buildSurveyStats(rows);
   const funnelCompetitorStats = buildFunnelCompetitorStats(rows);
@@ -941,12 +865,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     ctaStats,
     totalClicks,
     dailyStats,
-    utmDailyStats,
-    utmMonthlyStats,
-    utmSources,
-    utmMediums,
-    utmCampaigns,
-    utmLandingUrls,
+    shortLinkTraffic,
     cartAdditions,
     surveyStats,
     funnelCompetitorStats,
