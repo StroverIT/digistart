@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { Suspense } from "react";
 import { BookingForm } from "@/components/home/booking-form";
+import { ThreeFreeTipsVideoClickTracker } from "@/components/google/three-free-tips-video-click-tracker";
 import HeroSection from "@/components/services/service-detail-google-business-v2/HeroSection";
 import { AdvantageSection } from "@/components/services/service-detail-google-business-v2/AdvantageSection";
 import { BeforeAfterSection } from "@/components/services/service-detail-google-business-v2/BeforeAfterSection";
@@ -26,6 +28,9 @@ export const metadata: Metadata = {
 export default function GoogleBusinessPage() {
   return (
     <section className="[&_.container]:mx-auto [&_.container]:w-full [&_.container]:max-w-[1200px] [&_.container]:px-4 sm:[&_.container]:px-6 md:[&_.container]:px-12">
+      <Suspense fallback={null}>
+        <ThreeFreeTipsVideoClickTracker />
+      </Suspense>
       <HeroSection />
       <BookingForm
         sourcePage="Google Business (/services/google-business)"
