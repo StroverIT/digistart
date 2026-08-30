@@ -23,6 +23,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  estimateChunkDurationSeconds,
+  type TipsCampaignSendConfig,
+} from "@/config/tips-campaign-send";
+
+type SendConfig = TipsCampaignSendConfig;
 
 type CampaignSummary = {
   stages: Array<{ stage: number; subject: string; count: number }>;
@@ -30,6 +36,7 @@ type CampaignSummary = {
   eligibleTodayCount: number;
   sentTodayCount: number;
   totalTipsSubscribers: number;
+  sendConfig: SendConfig;
 };
 
 type StagePreview = {
@@ -43,9 +50,17 @@ type SendResult = {
   failed: number;
   skipped: number;
   remainingEligible: number;
+  rateLimited?: boolean;
+  timedOut?: boolean;
   errors?: Array<{ email: string; stage: number; message: string }>;
   error?: string;
 };
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
 export function ThreeFreeTipsCampaignPanel({
   onSent,
@@ -108,17 +123,47 @@ export function ThreeFreeTipsCampaignPanel({
   }, [selectedStage, loadPreview]);
 
   const handleSend = async () => {
+    const sendConfig = summary?.sendConfig;
+    const sessionCap = sendConfig?.sessionCap ?? 40;
+    const chunkPauseMs = sendConfig?.chunkPauseMs ?? 2000;
+    const fetchTimeoutMs = sendConfig?.fetchTimeoutMs ?? 8_500;
+    const startingEligible = summary?.eligibleTodayCount ?? 0;
+
     setSending(true);
     setSendProgress("Стартиране...");
     let totalSent = 0;
     let totalFailed = 0;
+    let lastRemaining = startingEligible;
     const errorMessages: string[] = [];
 
     try {
       while (true) {
-        const response = await fetch("/api/admin/three-free-tips-campaign/send", {
-          method: "POST",
-        });
+        if (totalSent >= sessionCap) {
+          toast.info(
+            `Достигнат лимит за тази сесия (${sessionCap}). Изчакай 30–60 мин и натисни отново за останалите.`,
+          );
+          break;
+        }
+
+        let response: Response;
+        try {
+          response = await fetch("/api/admin/three-free-tips-campaign/send", {
+            method: "POST",
+            signal: AbortSignal.timeout(fetchTimeoutMs),
+          });
+        } catch (error) {
+          const aborted =
+            error instanceof DOMException &&
+            (error.name === "TimeoutError" || error.name === "AbortError");
+          toast.error(
+            aborted
+              ? "Времето за изпращане изтече. Вече изпратените няма да се дублират днес — натисни отново за останалите."
+              : "Неуспешно изпращане.",
+          );
+          await loadSummary();
+          return;
+        }
+
         let data: SendResult;
         try {
           data = (await response.json()) as SendResult;
@@ -144,24 +189,46 @@ export function ThreeFreeTipsCampaignPanel({
         }
 
         const remaining = data.remainingEligible ?? 0;
+        lastRemaining = remaining;
         setSendProgress(
           `Изпратени ${totalSent}${totalFailed > 0 ? ` · неуспешни ${totalFailed}` : ""} · остават ${remaining}`,
         );
         await loadSummary();
 
+        if (data.rateLimited) {
+          toast.error(
+            "Gmail ограничи изпращането. Изчакай 30–60 мин и продължи с бутона отново.",
+          );
+          break;
+        }
+
         if (remaining <= 0) break;
+        if (totalSent >= sessionCap) break;
         if (data.sent === 0) {
           toast.error(
-            errorMessages[0] ??
-              "Никой имейл не беше изпратен в тази партида. Провери Gmail лимита и опитай отново след малко.",
+            data.timedOut
+              ? "Функцията спря преди да изпрати имейл (Vercel timeout). Намали партидата или увеличи maxDuration."
+              : (errorMessages[0] ??
+                "Никой имейл не беше изпратен в тази партида. Провери Gmail лимита и опитай отново след малко."),
           );
           return;
         }
+
+        setSendProgress(
+          `Пауза ${Math.round(chunkPauseMs / 1000)}s преди следващата партида...`,
+        );
+        await sleep(chunkPauseMs);
       }
 
-      toast.success(
-        `Изпратени: ${totalSent} · Неуспешни: ${totalFailed}`,
-      );
+      if (totalSent > 0) {
+        if (lastRemaining > 0) {
+          toast.success(
+            `Изпратени: ${totalSent} · Неуспешни: ${totalFailed}. Остават ${lastRemaining} — натисни отново след пауза.`,
+          );
+        } else {
+          toast.success(`Изпратени: ${totalSent} · Неуспешни: ${totalFailed}`);
+        }
+      }
       setConfirmOpen(false);
       onSent?.();
     } catch {
@@ -174,6 +241,13 @@ export function ThreeFreeTipsCampaignPanel({
 
   const eligible = summary?.eligibleTodayCount ?? 0;
   const sentToday = summary?.sentTodayCount ?? 0;
+  const sendConfig = summary?.sendConfig;
+  const sessionCap = sendConfig?.sessionCap ?? 40;
+  const chunkSize = sendConfig?.chunkSize ?? 1;
+  const delayBetweenEmailsMs = sendConfig?.delayBetweenEmailsMs ?? 0;
+  const chunkPauseMs = sendConfig?.chunkPauseMs ?? 2000;
+  const sessionTarget = Math.min(eligible, sessionCap);
+  const chunkSeconds = estimateChunkDurationSeconds(chunkSize, delayBetweenEmailsMs);
 
   return (
     <Card>
@@ -218,19 +292,35 @@ export function ThreeFreeTipsCampaignPanel({
                 ) : (
                   <Mail className="mr-2 h-4 w-4" />
                 )}
-                Изпрати днешните имейли
+                Изпрати следваща партида
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Изпращане на днешните имейли?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Ще се изпратят имейли на {eligible}{" "}
-                  {eligible === 1 ? "абонат" : "абоната"}, които още нямат
-                  имейл за днес, според текущия им етап. {sentToday}{" "}
-                  {sentToday === 1 ? "абонат вече е получил" : "абоната вече са получили"}{" "}
-                  имейл днес и ще бъдат пропуснати до утре. Изпращането става на
-                  партиди, за да не прекъсне заявката.
+                <AlertDialogDescription asChild>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p>
+                      Ще се изпратят до <strong>{sessionTarget}</strong> от{" "}
+                      {eligible} {eligible === 1 ? "абонат" : "абоната"} без
+                      имейл за днес (лимит на сесия: {sessionCap}). {sentToday}{" "}
+                      {sentToday === 1
+                        ? "абонат вече е получил"
+                        : "абоната вече са получили"}{" "}
+                      имейл днес.
+                    </p>
+                    <p>
+                      Vercel Hobby: 1 имейл на заявка (лимит 10s). Пауза{" "}
+                      {Math.round(chunkPauseMs / 1000)}s между заявките (~
+                      {chunkSeconds}s на имейл).
+                    </p>
+                    {eligible > sessionCap ? (
+                      <p>
+                        След {sessionCap} имейла изпращането спира — натисни отново
+                        след 30–60 мин за останалите.
+                      </p>
+                    ) : null}
+                  </div>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -288,8 +378,8 @@ export function ThreeFreeTipsCampaignPanel({
             </div>
             <p className="text-xs text-muted-foreground">
               Всеки абонат получава най-много един кампаниен имейл на ден.
-              „За изпращане днес“ са хората без имейл за днес — не всички, които
-              стоят на даден етап.
+              Vercel Hobby: 1 имейл на заявка (10s timeout), до {sessionCap} на
+              клик, {Math.round(chunkPauseMs / 1000)}s пауза между заявките.
             </p>
 
             <div className="space-y-2">

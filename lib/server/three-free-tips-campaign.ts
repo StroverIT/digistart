@@ -20,10 +20,12 @@ import {
   isNewsletterSubscribed,
   THREE_FREE_TIPS_SOURCE,
 } from "@/lib/server/newsletter";
-
-const BATCH_SIZE = 3;
-const SEND_LIMIT_PER_REQUEST = 20;
-const DELAY_BETWEEN_BATCHES_MS = 400;
+import {
+  getTipsCampaignSendConfig,
+  isGmailRateLimitError,
+  tipsCampaignSendConfig,
+} from "@/config/tips-campaign-send";
+import { getUnsubscribePageUrl } from "@/lib/emails/unsubscribe";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -144,6 +146,7 @@ export type ThreeFreeTipsCampaignSummary = {
   eligibleTodayCount: number;
   sentTodayCount: number;
   totalTipsSubscribers: number;
+  sendConfig: ReturnType<typeof getTipsCampaignSendConfig>;
 };
 
 export async function getThreeFreeTipsCampaignSummary(): Promise<ThreeFreeTipsCampaignSummary> {
@@ -208,6 +211,7 @@ export async function getThreeFreeTipsCampaignSummary(): Promise<ThreeFreeTipsCa
     eligibleTodayCount,
     sentTodayCount,
     totalTipsSubscribers: tips.length,
+    sendConfig: getTipsCampaignSendConfig(),
   };
 }
 
@@ -237,6 +241,8 @@ export type ThreeFreeTipsDailySendResult = {
   failed: number;
   skipped: number;
   remainingEligible: number;
+  rateLimited: boolean;
+  timedOut: boolean;
   byStage: Record<string, { sent: number; failed: number }>;
   errors: Array<{ email: string; stage: number; message: string }>;
 };
@@ -268,6 +274,7 @@ async function sendStageEmailToSubscriber(params: {
     `${def.previewText}\n\nПоздрави,\nDigiStart`,
     delivery.testMode,
   );
+  const unsubscribeUrl = getUnsubscribePageUrl(params.email);
 
   await params.mailer.sendMail({
     from: withTestFrom(params.from, delivery.testMode),
@@ -275,6 +282,9 @@ async function sendStageEmailToSubscriber(params: {
     subject,
     html: withTestHtmlBody(html, delivery.testMode),
     text,
+    headers: {
+      "List-Unsubscribe": `<${unsubscribeUrl}>`,
+    },
   });
 }
 
@@ -296,6 +306,8 @@ export async function sendDailyThreeFreeTipsStageEmails(
       failed: 0,
       skipped: 0,
       remainingEligible: 0,
+      rateLimited: false,
+      timedOut: false,
       byStage: {},
       errors: [],
     };
@@ -310,76 +322,81 @@ export async function sendDailyThreeFreeTipsStageEmails(
     if (!isTipsSubscriber(row)) return false;
     if (!isNewsletterSubscribed(row)) return false;
     const stage = row.tipsEmailStage ?? 1;
-    // Past last stage (e.g. 8 of 7): skip — no email, no +1.
     if (!canSendTipsCampaignStage(stage, lastStage)) return false;
     if (wasSentTodaySofia(row.tipsLastEmailSentAt)) return false;
     return true;
   });
 
-  const limit = Math.min(
-    Math.max(options?.limit ?? SEND_LIMIT_PER_REQUEST, 1),
-    50,
+  const chunkSize = Math.min(
+    Math.max(options?.limit ?? tipsCampaignSendConfig.chunkSize, 1),
+    tipsCampaignSendConfig.chunkSize,
   );
-  const eligible = eligibleAll.slice(0, limit);
+  const eligible = eligibleAll.slice(0, chunkSize);
+  const delayMs = tipsCampaignSendConfig.delayBetweenEmailsMs;
+  const timeBudgetMs = tipsCampaignSendConfig.timeBudgetMs;
+  const startedAt = Date.now();
+  const sendSafetyMs = 2_500;
 
   const result: ThreeFreeTipsDailySendResult = {
     sent: 0,
     failed: 0,
     skipped: eligibleAll.length - eligible.length,
     remainingEligible: eligibleAll.length,
+    rateLimited: false,
+    timedOut: false,
     byStage: {},
     errors: [],
   };
 
-  for (let i = 0; i < eligible.length; i += BATCH_SIZE) {
-    if (i > 0) {
-      await sleep(DELAY_BETWEEN_BATCHES_MS);
+  for (let i = 0; i < eligible.length; i++) {
+    const elapsed = Date.now() - startedAt;
+    const nextDelay = i > 0 ? delayMs : 0;
+    // Always attempt the first email; Hobby's 10s budget is too tight to skip it.
+    if (i > 0 && elapsed + nextDelay + sendSafetyMs >= timeBudgetMs) {
+      result.timedOut = true;
+      break;
     }
-    const batch = eligible.slice(i, i + BATCH_SIZE);
-    const settled = await Promise.allSettled(
-      batch.map(async (row) => {
-        const stage = row.tipsEmailStage ?? 1;
-        if (!canSendTipsCampaignStage(stage, lastStage)) {
-          throw new Error(`Етап ${stage} е извън поредицата — пропускане`);
-        }
-        await sendStageEmailToSubscriber({
-          email: row.email,
-          stage,
-          mailer,
-          from,
-        });
-        // Advance only after successful send; never climb past lastStage + 1.
-        await prisma.newsletterSubscriber.update({
-          where: { id: row.id },
-          data: {
-            tipsEmailStage: nextTipsCampaignStage(stage, lastStage),
-            tipsLastEmailSentAt: new Date(),
-          },
-        });
-        return { email: row.email, stage };
-      }),
-    );
 
-    for (let j = 0; j < settled.length; j++) {
-      const outcome = settled[j]!;
-      const row = batch[j]!;
-      const stage = row.tipsEmailStage ?? 1;
-      const key = String(stage);
-      if (!result.byStage[key]) {
-        result.byStage[key] = { sent: 0, failed: 0 };
+    const row = eligible[i]!;
+    const stage = row.tipsEmailStage ?? 1;
+    const key = String(stage);
+    if (!result.byStage[key]) {
+      result.byStage[key] = { sent: 0, failed: 0 };
+    }
+
+    if (i > 0) {
+      await sleep(delayMs);
+    }
+
+    try {
+      if (!canSendTipsCampaignStage(stage, lastStage)) {
+        throw new Error(`Етап ${stage} е извън поредицата — пропускане`);
       }
+      await sendStageEmailToSubscriber({
+        email: row.email,
+        stage,
+        mailer,
+        from,
+      });
+      await prisma.newsletterSubscriber.update({
+        where: { id: row.id },
+        data: {
+          tipsEmailStage: nextTipsCampaignStage(stage, lastStage),
+          tipsLastEmailSentAt: new Date(),
+        },
+      });
+      result.sent += 1;
+      result.byStage[key].sent += 1;
+    } catch (error) {
+      result.failed += 1;
+      result.byStage[key].failed += 1;
+      const message =
+        error instanceof Error ? error.message : "Неуспешно изпращане";
+      result.errors.push({ email: row.email, stage, message });
 
-      if (outcome.status === "fulfilled") {
-        result.sent += 1;
-        result.byStage[key].sent += 1;
-      } else {
-        result.failed += 1;
-        result.byStage[key].failed += 1;
-        const message =
-          outcome.reason instanceof Error
-            ? outcome.reason.message
-            : "Неуспешно изпращане";
-        result.errors.push({ email: row.email, stage, message });
+      if (isGmailRateLimitError(message)) {
+        result.rateLimited = true;
+        break;
       }
     }
   }
