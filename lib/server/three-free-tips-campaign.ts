@@ -22,8 +22,10 @@ import {
 } from "@/lib/server/newsletter";
 import {
   getTipsCampaignSendConfig,
+  getTipsCampaignWarmupInfo,
   isGmailRateLimitError,
   tipsCampaignSendConfig,
+  type TipsCampaignWarmupInfo,
 } from "@/config/tips-campaign-send";
 import { getUnsubscribePageUrl } from "@/lib/emails/unsubscribe";
 
@@ -143,9 +145,13 @@ export function nextTipsCampaignStage(
 export type ThreeFreeTipsCampaignSummary = {
   stages: Array<{ stage: number; subject: string; count: number }>;
   completedCount: number;
+  /** Eligible subscribers still within today's warmup daily quota. */
   eligibleTodayCount: number;
+  /** All eligible subscribers not yet emailed today (ignores daily quota). */
+  eligibleUncappedCount: number;
   sentTodayCount: number;
   totalTipsSubscribers: number;
+  warmup: TipsCampaignWarmupInfo;
   sendConfig: ReturnType<typeof getTipsCampaignSendConfig>;
 };
 
@@ -165,6 +171,7 @@ export async function getThreeFreeTipsCampaignSummary(): Promise<ThreeFreeTipsCa
   );
   const lastStage = getLastThreeFreeTipsStageNumber();
   const stageNumbers = listThreeFreeTipsStageNumbers();
+  const warmup = getTipsCampaignWarmupInfo(sofiaCalendarDate());
 
   const countsByStage = new Map<number, number>();
   for (const stage of stageNumbers) {
@@ -172,11 +179,17 @@ export async function getThreeFreeTipsCampaignSummary(): Promise<ThreeFreeTipsCa
   }
 
   let completedCount = 0;
-  let eligibleTodayCount = 0;
+  let eligibleUncappedCount = 0;
   let sentTodayCount = 0;
 
   for (const row of tips) {
     const stage = row.tipsEmailStage ?? 1;
+    const sentToday = wasSentTodaySofia(row.tipsLastEmailSentAt);
+
+    if (sentToday) {
+      sentTodayCount += 1;
+    }
+
     if (isTipsCampaignCompleted(stage, lastStage)) {
       completedCount += 1;
       continue;
@@ -188,15 +201,15 @@ export async function getThreeFreeTipsCampaignSummary(): Promise<ThreeFreeTipsCa
       countsByStage.set(stage, 1);
     }
 
-    if (wasSentTodaySofia(row.tipsLastEmailSentAt)) {
-      sentTodayCount += 1;
-      continue;
-    }
+    if (sentToday) continue;
 
     if (canSendTipsCampaignStage(stage, lastStage)) {
-      eligibleTodayCount += 1;
+      eligibleUncappedCount += 1;
     }
   }
+
+  const remainingDailyQuota = Math.max(0, warmup.dailyLimit - sentTodayCount);
+  const eligibleTodayCount = Math.min(eligibleUncappedCount, remainingDailyQuota);
 
   return {
     stages: stageNumbers.map((stage) => {
@@ -209,8 +222,10 @@ export async function getThreeFreeTipsCampaignSummary(): Promise<ThreeFreeTipsCa
     }),
     completedCount,
     eligibleTodayCount,
+    eligibleUncappedCount,
     sentTodayCount,
     totalTipsSubscribers: tips.length,
+    warmup,
     sendConfig: getTipsCampaignSendConfig(),
   };
 }
@@ -354,24 +369,40 @@ export async function sendDailyThreeFreeTipsStageEmails(
   }
 
   const lastStage = getLastThreeFreeTipsStageNumber();
+  const warmup = getTipsCampaignWarmupInfo(sofiaCalendarDate());
   const subscribers = await prisma.newsletterSubscriber.findMany({
     orderBy: { createdAt: "asc" },
   });
 
-  const eligibleAll = subscribers.filter((row) => {
-    if (!isTipsSubscriber(row)) return false;
-    if (!isNewsletterSubscribed(row)) return false;
-    const stage = row.tipsEmailStage ?? 1;
-    if (!canSendTipsCampaignStage(stage, lastStage)) return false;
-    if (wasSentTodaySofia(row.tipsLastEmailSentAt)) return false;
-    return true;
-  });
+  let sentTodayCount = 0;
+  for (const row of subscribers) {
+    if (!isTipsSubscriber(row)) continue;
+    if (!isNewsletterSubscribed(row)) continue;
+    if (wasSentTodaySofia(row.tipsLastEmailSentAt)) {
+      sentTodayCount += 1;
+    }
+  }
+
+  const eligibleUncapped = subscribers
+    .filter((row) => {
+      if (!isTipsSubscriber(row)) return false;
+      if (!isNewsletterSubscribed(row)) return false;
+      const stage = row.tipsEmailStage ?? 1;
+      if (!canSendTipsCampaignStage(stage, lastStage)) return false;
+      if (wasSentTodaySofia(row.tipsLastEmailSentAt)) return false;
+      return true;
+    })
+    // Lowest stage first — don't advance later stages until earlier ones are clear.
+    .sort((a, b) => (a.tipsEmailStage ?? 1) - (b.tipsEmailStage ?? 1));
+
+  const remainingDailyQuota = Math.max(0, warmup.dailyLimit - sentTodayCount);
+  const eligibleWithinQuota = eligibleUncapped.slice(0, remainingDailyQuota);
 
   const chunkSize = Math.min(
     Math.max(options?.limit ?? tipsCampaignSendConfig.chunkSize, 1),
     tipsCampaignSendConfig.chunkSize,
   );
-  const eligible = eligibleAll.slice(0, chunkSize);
+  const eligible = eligibleWithinQuota.slice(0, chunkSize);
   const delayMs = tipsCampaignSendConfig.delayBetweenEmailsMs;
   const timeBudgetMs = tipsCampaignSendConfig.timeBudgetMs;
   const startedAt = Date.now();
@@ -380,8 +411,8 @@ export async function sendDailyThreeFreeTipsStageEmails(
   const result: ThreeFreeTipsDailySendResult = {
     sent: 0,
     failed: 0,
-    skipped: eligibleAll.length - eligible.length,
-    remainingEligible: eligibleAll.length,
+    skipped: eligibleWithinQuota.length - eligible.length,
+    remainingEligible: eligibleWithinQuota.length,
     rateLimited: false,
     timedOut: false,
     byStage: {},
@@ -441,6 +472,6 @@ export async function sendDailyThreeFreeTipsStageEmails(
     }
   }
 
-  result.remainingEligible = eligibleAll.length - result.sent;
+  result.remainingEligible = Math.max(0, eligibleWithinQuota.length - result.sent);
   return result;
 }

@@ -27,6 +27,7 @@ import {
 import {
   estimateChunkDurationSeconds,
   type TipsCampaignSendConfig,
+  type TipsCampaignWarmupInfo,
 } from "@/config/tips-campaign-send";
 
 type SendConfig = TipsCampaignSendConfig;
@@ -35,8 +36,10 @@ type CampaignSummary = {
   stages: Array<{ stage: number; subject: string; count: number }>;
   completedCount: number;
   eligibleTodayCount: number;
+  eligibleUncappedCount: number;
   sentTodayCount: number;
   totalTipsSubscribers: number;
+  warmup: TipsCampaignWarmupInfo;
   sendConfig: SendConfig;
 };
 
@@ -334,7 +337,11 @@ export function ThreeFreeTipsCampaignPanel({
   };
 
   const eligible = summary?.eligibleTodayCount ?? 0;
+  const eligibleUncapped = summary?.eligibleUncappedCount ?? eligible;
   const sentToday = summary?.sentTodayCount ?? 0;
+  const warmup = summary?.warmup;
+  const dailyLimit = warmup?.dailyLimit ?? 15;
+  const warmupWeek = warmup?.week ?? 1;
   const sendConfig = summary?.sendConfig;
   const sessionCap = sendConfig?.sessionCap ?? 0;
   const chunkSize = sendConfig?.chunkSize ?? 1;
@@ -343,6 +350,9 @@ export function ThreeFreeTipsCampaignPanel({
   const hasSessionCap = sessionCap > 0;
   const sessionTarget = hasSessionCap ? Math.min(eligible, sessionCap) : eligible;
   const chunkSeconds = estimateChunkDurationSeconds(chunkSize, delayBetweenEmailsMs);
+  const dailyQuotaReached = sentToday >= dailyLimit;
+  const baseDailyLimit = warmup?.baseDailyLimit ?? 15;
+  const weeklyIncrement = warmup?.weeklyIncrement ?? 10;
 
   return (
     <Card>
@@ -389,7 +399,9 @@ export function ThreeFreeTipsCampaignPanel({
                 )}
                 {sending
                   ? (sendProgress ?? "Изпращане...")
-                  : "Изпрати всички за днес"}
+                  : dailyQuotaReached
+                    ? `Дневният лимит (${dailyLimit}) е достигнат`
+                    : "Изпрати всички за днес"}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -398,14 +410,11 @@ export function ThreeFreeTipsCampaignPanel({
                 <AlertDialogDescription asChild>
                   <div className="space-y-2 text-sm text-muted-foreground">
                     <p>
-                      Браузърът ще изпраща по 1 имейл, докато свършат всички{" "}
+                      <strong>Седмица {warmupWeek}</strong> — дневен лимит{" "}
+                      <strong>{dailyLimit}</strong> имейла. Ще се изпратят до{" "}
                       <strong>{sessionTarget}</strong>{" "}
-                      {sessionTarget === 1 ? "абонат" : "абоната"} без имейл за
-                      днес. {sentToday}{" "}
-                      {sentToday === 1
-                        ? "абонат вече е получил"
-                        : "абоната вече са получили"}{" "}
-                      имейл днес.
+                      {sessionTarget === 1 ? "абонат" : "абоната"} (първо етап
+                      1, после следващите). Днес вече: {sentToday}/{dailyLimit}.
                     </p>
                     <p>
                       Не затваряй и не презареждай този таб. Vercel Hobby: 1
@@ -447,6 +456,13 @@ export function ThreeFreeTipsCampaignPanel({
         ) : summary ? (
           <>
             <div className="flex flex-wrap gap-2">
+              <div className="rounded-md border border-border bg-primary/10 px-3 py-2 text-sm">
+                <span className="font-medium">Седмица {warmupWeek}</span>
+                <span className="text-muted-foreground">
+                  {" "}
+                  · {dailyLimit}/ден
+                </span>
+              </div>
               {summary.stages.map((stage) => (
                 <div
                   key={stage.stage}
@@ -467,7 +483,7 @@ export function ThreeFreeTipsCampaignPanel({
                 <span className="font-medium">Изпратени днес</span>
                 <span className="text-muted-foreground">
                   {" "}
-                  · {sentToday}
+                  · {sentToday}/{dailyLimit}
                 </span>
               </div>
               <div className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
@@ -476,11 +492,18 @@ export function ThreeFreeTipsCampaignPanel({
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Всеки абонат получава най-много един кампаниен имейл на ден.
-              Един клик върти заявките в браузъра, докато всички за днес се
-              изпратят. Vercel Hobby: 1 имейл на заявка (10s timeout),{" "}
-              {Math.round(chunkPauseMs / 1000)}s пауза между заявките. Дръж
-              таба отворен.
+              Warmup: седмица 1 = {baseDailyLimit}/ден, после +{weeklyIncrement}{" "}
+              всеки следващ седмица ({baseDailyLimit},{" "}
+              {baseDailyLimit + weeklyIncrement},{" "}
+              {baseDailyLimit + weeklyIncrement * 2}, …)
+              {eligibleUncapped > eligible
+                ? ` · още ${eligibleUncapped - eligible} чакат след дневния лимит`
+                : null}
+              . Изпращаме първо етап 1, после 2, 3… — следващ етап само когато
+              предишният е изчистен. Всеки абонат получава най-много един
+              кампаниен имейл на ден. Vercel Hobby: 1 имейл на заявка (10s
+              timeout), {Math.round(chunkPauseMs / 1000)}s пауза между
+              заявките. Дръж таба отворен.
             </p>
 
             <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
