@@ -342,6 +342,10 @@ export function ThreeFreeTipsCampaignPanel({
   const warmup = summary?.warmup;
   const dailyLimit = warmup?.dailyLimit ?? 15;
   const warmupWeek = warmup?.week ?? 1;
+  const campaignDay = warmup?.campaignDay ?? 0;
+  const daysUntilStart = warmup?.daysUntilStart ?? 0;
+  const warmupStarted = warmup?.started ?? true;
+  const startDate = warmup?.startDate ?? "";
   const sendConfig = summary?.sendConfig;
   const sessionCap = sendConfig?.sessionCap ?? 0;
   const chunkSize = sendConfig?.chunkSize ?? 1;
@@ -390,7 +394,7 @@ export function ThreeFreeTipsCampaignPanel({
               <Button
                 type="button"
                 size="sm"
-                disabled={sending || loadingSummary || eligible === 0}
+                disabled={sending || loadingSummary || eligible === 0 || !warmupStarted}
               >
                 {sending ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -399,9 +403,11 @@ export function ThreeFreeTipsCampaignPanel({
                 )}
                 {sending
                   ? (sendProgress ?? "Изпращане...")
-                  : dailyQuotaReached
-                    ? `Дневният лимит (${dailyLimit}) е достигнат`
-                    : "Изпрати всички за днес"}
+                  : !warmupStarted
+                    ? `Старт на ${startDate} (след ${daysUntilStart} ${daysUntilStart === 1 ? "ден" : "дни"})`
+                    : dailyQuotaReached
+                      ? `Дневният лимит (${dailyLimit}) е достигнат`
+                      : "Изпрати всички за днес"}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -456,13 +462,23 @@ export function ThreeFreeTipsCampaignPanel({
         ) : summary ? (
           <>
             <div className="flex flex-wrap gap-2">
-              <div className="rounded-md border border-border bg-primary/10 px-3 py-2 text-sm">
-                <span className="font-medium">Седмица {warmupWeek}</span>
-                <span className="text-muted-foreground">
-                  {" "}
-                  · {dailyLimit}/ден
-                </span>
-              </div>
+              {!warmupStarted ? (
+                <div className="rounded-md border border-border bg-amber-500/10 px-3 py-2 text-sm">
+                  <span className="font-medium">Старт {startDate}</span>
+                  <span className="text-muted-foreground">
+                    {" "}
+                    · след {daysUntilStart} {daysUntilStart === 1 ? "ден" : "дни"}
+                  </span>
+                </div>
+              ) : (
+                <div className="rounded-md border border-border bg-primary/10 px-3 py-2 text-sm">
+                  <span className="font-medium">Ден {campaignDay}</span>
+                  <span className="text-muted-foreground">
+                    {" "}
+                    · седмица {warmupWeek} · {dailyLimit}/ден
+                  </span>
+                </div>
+              )}
               {summary.stages.map((stage) => (
                 <div
                   key={stage.stage}
@@ -492,10 +508,13 @@ export function ThreeFreeTipsCampaignPanel({
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Warmup: седмица 1 = {baseDailyLimit}/ден, после +{weeklyIncrement}{" "}
+              Warmup от {startDate}: седмица 1 = {baseDailyLimit}/ден, после +{weeklyIncrement}{" "}
               всеки следващ седмица ({baseDailyLimit},{" "}
               {baseDailyLimit + weeklyIncrement},{" "}
               {baseDailyLimit + weeklyIncrement * 2}, …)
+              {!warmupStarted
+                ? ` · кампанията започва след ${daysUntilStart} ${daysUntilStart === 1 ? "ден" : "дни"}`
+                : null}
               {eligibleUncapped > eligible
                 ? ` · още ${eligibleUncapped - eligible} чакат след дневния лимит`
                 : null}

@@ -36,7 +36,7 @@ export type TipsCampaignSendConfig = {
 };
 
 /** Начало на седмица 1 (YYYY-MM-DD, Europe/Sofia). */
-export const tipsCampaignWarmupStartDate = "2026-08-31";
+export const tipsCampaignWarmupStartDate = "2026-09-08";
 
 /** Дневен лимит в седмица 1. */
 export const tipsCampaignWarmupBaseDailyLimit = 15;
@@ -63,20 +63,29 @@ function parseYmd(ymd: string): number {
   return Date.UTC(y!, m! - 1, d!);
 }
 
-/** 1-базирана седмица от warmupStartDate (календарни дни / 7). */
-export function getTipsCampaignWarmupWeek(
+/** 0-базиран индекс на календарния ден от startDate (отрицателен преди старта). */
+export function getTipsCampaignDayIndex(
   todayYmd: string,
   startYmd = tipsCampaignWarmupStartDate,
 ): number {
   const start = parseYmd(startYmd);
   const today = parseYmd(todayYmd);
-  const dayIndex = Math.floor((today - start) / 86_400_000);
-  if (dayIndex < 0) return 1;
+  return Math.floor((today - start) / 86_400_000);
+}
+
+/** 1-базирана седмица от warmupStartDate (календарни дни / 7). 0 преди старта. */
+export function getTipsCampaignWarmupWeek(
+  todayYmd: string,
+  startYmd = tipsCampaignWarmupStartDate,
+): number {
+  const dayIndex = getTipsCampaignDayIndex(todayYmd, startYmd);
+  if (dayIndex < 0) return 0;
   return Math.floor(dayIndex / 7) + 1;
 }
 
-/** Дневен лимит: base + (week - 1) * increment. */
+/** Дневен лимит: base + (week - 1) * increment. 0 преди старта. */
 export function getTipsCampaignDailyLimit(week: number): number {
+  if (week <= 0) return 0;
   const safeWeek = Math.max(week, 1);
   return (
     tipsCampaignWarmupBaseDailyLimit +
@@ -90,9 +99,15 @@ export type TipsCampaignWarmupInfo = {
   startDate: string;
   baseDailyLimit: number;
   weeklyIncrement: number;
+  /** 1-базиран ден от старта. 0 преди startDate. */
+  campaignDay: number;
+  /** Дни до startDate. 0 на или след старта. */
+  daysUntilStart: number;
+  started: boolean;
 };
 
 export function getTipsCampaignWarmupInfo(todayYmd: string): TipsCampaignWarmupInfo {
+  const dayIndex = getTipsCampaignDayIndex(todayYmd);
   const week = getTipsCampaignWarmupWeek(todayYmd);
   return {
     week,
@@ -100,6 +115,9 @@ export function getTipsCampaignWarmupInfo(todayYmd: string): TipsCampaignWarmupI
     startDate: tipsCampaignWarmupStartDate,
     baseDailyLimit: tipsCampaignWarmupBaseDailyLimit,
     weeklyIncrement: tipsCampaignWarmupWeeklyIncrement,
+    campaignDay: dayIndex >= 0 ? dayIndex + 1 : 0,
+    daysUntilStart: dayIndex < 0 ? -dayIndex : 0,
+    started: dayIndex >= 0,
   };
 }
 
