@@ -48,7 +48,7 @@ export function FreeAnalysisHeroSection() {
         <p
           data-animate-reveal
           className={cn(
-            "text-base leading-relaxed text-muted-foreground sm:text-lg md:text-xl",
+            "text-base leading-relaxed text-foreground/80 sm:text-lg md:text-xl",
             LANDING_REVEAL_CLASS,
           )}
         >
@@ -76,7 +76,7 @@ export function FreeAnalysisHeroSection() {
 
       <div data-animate-reveal className={cn("w-full max-w-3xl", LANDING_REVEAL_CLASS)}>
         <HeroVideo
-          videoId="_yCuk-GYlzo"
+          videoId="Dl_lcHcaMng"
           title="Безплатен Google анализ"
           thumbnailSrc="/video-thumbnail.png"
           muteOnPlay
