@@ -53,7 +53,7 @@ function buildClipEmailBody(name: string, clipUrl: string) {
   return [
     `Здравейте, ${greetingName},`,
     "",
-    "Това е обещаният клип за безплатен анализ с 3 съвета, за по-добро класиране в Google My Business.",
+    "Това е обещаният клип с безплатен анализ за по-добро класиране в Google.",
     "",
     "Линк към клипа:",
     link,
