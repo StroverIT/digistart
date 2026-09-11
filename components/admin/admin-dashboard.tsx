@@ -11,7 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { Order, DailyStats, ServiceStats } from "@/lib/types";
+import type { DailyStats, ServiceStats } from "@/lib/types";
 import { RevenueChart } from "@/components/admin/revenue-chart";
 import { ServicesPieChart } from "@/components/admin/services-pie-chart";
 import { SubscriptionsChart } from "@/components/admin/subscriptions-chart";
@@ -79,8 +79,7 @@ function StatCard({ title, value, description, icon, trend }: StatCardProps) {
 export function AdminDashboard({ initialTab }: { initialTab?: DashboardTabId }) {
   const dashboardRootRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<DashboardTabId>(initialTab ?? "overview");
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [serviceStats, setServiceStats] = useState<ServiceStats[]>([]);
+  const [serviceStats] = useState<ServiceStats[]>([]);
   const [mounted, setMounted] = useState(false);
   const [analytics, setAnalytics] = useState<AnalyticsAdminResponse>({
     pageStats: [],
@@ -139,15 +138,9 @@ export function AdminDashboard({ initialTab }: { initialTab?: DashboardTabId }) 
 
   useEffect(() => {
     setMounted(true);
-    Promise.all([
-      fetch("/api/checkout/orders").then((response) => response.json()),
-      fetch("/api/admin/analytics").then((response) =>
-        response.ok ? response.json() : Promise.resolve(null),
-      ),
-    ])
-      .then(([ordersData, analyticsData]: [{ orders?: Order[] }, AnalyticsAdminResponse | null]) => {
-        const allOrders = ordersData.orders ?? [];
-        setOrders(allOrders);
+    fetch("/api/admin/analytics")
+      .then((response) => (response.ok ? response.json() : Promise.resolve(null)))
+      .then((analyticsData: AnalyticsAdminResponse | null) => {
         setAnalytics(
           analyticsData ?? {
             pageStats: [],
@@ -196,43 +189,21 @@ export function AdminDashboard({ initialTab }: { initialTab?: DashboardTabId }) 
             },
           },
         );
-
-        const byService = new Map<string, ServiceStats>();
-        for (const order of allOrders) {
-          for (const item of order.cart.items) {
-            const current = byService.get(item.serviceId) ?? {
-              serviceId: item.serviceId,
-              serviceName: item.serviceName,
-              orderCount: 0,
-              revenue: 0,
-            };
-            current.orderCount += 1;
-            current.revenue += item.totalPrice;
-            byService.set(item.serviceId, current);
-          }
-        }
-        setServiceStats(Array.from(byService.values()));
       })
       .catch(() => {
-        setOrders([]);
-        setServiceStats([]);
+        /* keep default empty analytics */
       });
   }, []);
 
   const revenueStats = useMemo(
     () =>
-      buildRevenueDailyStats(orders, analytics.dailyStats, revenueFromDate, revenueToDate),
-    [orders, analytics.dailyStats, revenueFromDate, revenueToDate]
+      buildRevenueDailyStats(analytics.dailyStats, revenueFromDate, revenueToDate),
+    [analytics.dailyStats, revenueFromDate, revenueToDate]
   );
 
   const subscriptionsStats = useMemo(
-    () =>
-      buildSubscriptionDailyStats(
-        orders,
-        subscriptionsFromDate,
-        subscriptionsToDate
-      ),
-    [orders, subscriptionsFromDate, subscriptionsToDate]
+    () => buildSubscriptionDailyStats(subscriptionsFromDate, subscriptionsToDate),
+    [subscriptionsFromDate, subscriptionsToDate]
   );
 
   useEffect(() => {
@@ -1089,27 +1060,14 @@ function buildViewsDailyStats(
 }
 
 function buildRevenueDailyStats(
-  orders: Order[],
   analyticsDays: { date: string; visits: number }[],
   fromDate: string,
   toDate: string
 ): DailyStats[] {
-  const byDate = new Map<string, DailyStats>();
-
-  for (const dateKey of listDateRange(fromDate, toDate)) {
+  return listDateRange(fromDate, toDate).map((dateKey) => {
     const visits = analyticsDays.find((entry) => entry.date === dateKey)?.visits ?? 0;
-    byDate.set(dateKey, { date: dateKey, visits, orders: 0, revenue: 0 });
-  }
-
-  for (const order of orders) {
-    const dateStr = order.createdAt.split("T")[0];
-    const row = byDate.get(dateStr);
-    if (!row) continue;
-    row.orders += 1;
-    row.revenue += order.cart.totalOneTime + order.cart.totalMonthly;
-  }
-
-  return Array.from(byDate.values());
+    return { date: dateKey, visits, orders: 0, revenue: 0 };
+  });
 }
 
 interface DailySubscriptionStats {
@@ -1119,34 +1077,14 @@ interface DailySubscriptionStats {
 }
 
 function buildSubscriptionDailyStats(
-  orders: Order[],
   fromDate: string,
   toDate: string
 ): DailySubscriptionStats[] {
-  const byDate = new Map<string, DailySubscriptionStats>();
-
-  for (const dateKey of listDateRange(fromDate, toDate)) {
-    byDate.set(dateKey, { date: dateKey, subscriptions: 0, monthlyRevenue: 0 });
-  }
-
-  for (const order of orders) {
-    if (!isSubscriptionOrder(order)) continue;
-    const dateStr = order.createdAt.split("T")[0];
-    const row = byDate.get(dateStr);
-    if (!row) continue;
-    row.subscriptions += 1;
-    row.monthlyRevenue += order.cart.totalMonthly;
-  }
-
-  return Array.from(byDate.values());
-}
-
-function isSubscriptionOrder(order: Order) {
-  return (
-    order.stripe?.checkoutMode === "subscription" ||
-    Boolean(order.stripe?.subscriptionId) ||
-    order.cart.totalMonthly > 0
-  );
+  return listDateRange(fromDate, toDate).map((dateKey) => ({
+    date: dateKey,
+    subscriptions: 0,
+    monthlyRevenue: 0,
+  }));
 }
 
 function listDateRange(fromDate: string, toDate: string) {

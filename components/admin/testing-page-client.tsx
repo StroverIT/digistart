@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FlaskConical, Loader2, ExternalLink } from "lucide-react";
+import { FlaskConical, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -56,7 +56,7 @@ export function TestingPageClient() {
           <CardDescription>
             Създава реална поръчка в базата и отваря Stripe Checkout за{" "}
             <span className="font-medium text-foreground">€0.50</span>. След плащане
-            проверете поръчката в &quot;Поръчки&quot; и в Stripe Dashboard.
+            проверете поръчката в Stripe Dashboard.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -82,24 +82,16 @@ export function TestingPageClient() {
             </p>
           ) : null}
 
-          <div className="flex flex-wrap gap-3">
-            <Button type="button" onClick={startTestCheckout} disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Подготовка…
-                </>
-              ) : (
-                "Стартирай тестово плащане €0.50"
-              )}
-            </Button>
-            <Button variant="outline" asChild>
-              <a href="/admin/orders">
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Към поръчки
-              </a>
-            </Button>
-          </div>
+          <Button type="button" onClick={startTestCheckout} disabled={loading}>
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Подготовка…
+              </>
+            ) : (
+              "Стартирай тестово плащане €0.50"
+            )}
+          </Button>
         </CardContent>
       </Card>
     </div>

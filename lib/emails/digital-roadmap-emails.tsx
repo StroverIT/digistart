@@ -95,7 +95,7 @@ function formatBgDate(d: Date) {
   });
 }
 
-async function renderSubscriberEmailHtml(params: { name: string }) {
+export async function renderDigitalRoadmapSubscriberEmailHtml(params: { name: string }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
 
   return render(
@@ -242,7 +242,7 @@ async function renderSubscriberEmailHtml(params: { name: string }) {
   );
 }
 
-async function renderAdminEmailHtml(params: {
+export async function renderDigitalRoadmapAdminEmailHtml(params: {
   name: string;
   email: string;
   source: string;
@@ -357,8 +357,8 @@ export async function sendDigitalRoadmapLeadEmails(params: {
   });
   const mailFrom = withTestFrom(from, delivery.testMode);
 
-  const subscriberHtml = await renderSubscriberEmailHtml({ name: params.name });
-  const adminHtml = await renderAdminEmailHtml({
+  const subscriberHtml = await renderDigitalRoadmapSubscriberEmailHtml({ name: params.name });
+  const adminHtml = await renderDigitalRoadmapAdminEmailHtml({
     name: params.name,
     email: params.email,
     source: params.source,

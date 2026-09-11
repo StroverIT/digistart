@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createOrderInDb, listOrdersFromDb, updateOrderStatusInDb } from "@/lib/server/orders";
+import { createOrderInDb, updateOrderStatusInDb } from "@/lib/server/orders";
 import type { CartItemUpsell, Order } from "@/lib/types";
 import { getCheckoutSlotBlockReason } from "@/lib/server/checkout-slot-guard";
 import { resolveCheckoutCart } from "@/lib/server/resolve-checkout-cart";
@@ -46,11 +46,6 @@ const payloadSchema = z.object({
   }),
   consultationId: z.string().optional(),
 });
-
-export async function GET() {
-  const orders = await listOrdersFromDb();
-  return NextResponse.json({ orders });
-}
 
 export async function POST(req: Request) {
   try {

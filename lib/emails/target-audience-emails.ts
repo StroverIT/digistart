@@ -74,7 +74,7 @@ function resolveFromAddress(): string | undefined {
   return process.env.SMTP_FROM ?? (gmailUser ? `DigiStart <${gmailUser}>` : undefined);
 }
 
-function renderCustomerHtml(name: string) {
+export function renderTargetAudienceCustomerHtml(name: string) {
   return `
     <div style="font-family: Inter, Arial, sans-serif; color: #1f1f1f; line-height: 1.6;">
       <h2 style="margin: 0 0 16px;">Здравей, ${name}!</h2>
@@ -89,7 +89,7 @@ function renderCustomerHtml(name: string) {
   `;
 }
 
-function renderAdminHtml(input: TargetAudienceEmailInput) {
+export function renderTargetAudienceAdminHtml(input: TargetAudienceEmailInput) {
   const urgency = getUrgencyLabel(input.urgency);
   return `
     <div style="font-family: Inter, Arial, sans-serif; color: #1f1f1f; line-height: 1.6;">
@@ -149,8 +149,8 @@ export async function sendTargetAudienceLeadEmails(input: TargetAudienceEmailInp
     delivery.testMode,
   );
 
-  const customerHtml = renderCustomerHtml(input.name);
-  const adminHtml = renderAdminHtml(input);
+  const customerHtml = renderTargetAudienceCustomerHtml(input.name);
+  const adminHtml = renderTargetAudienceAdminHtml(input);
   const adminText = renderAdminText(input);
 
   const sends = await Promise.allSettled([

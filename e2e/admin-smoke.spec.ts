@@ -9,13 +9,8 @@ import {
 
 const ADMIN_NAV: { label: string; heading: string | RegExp }[] = [
   { label: "Табло", heading: "Табло" },
-  { label: "Поръчки", heading: "Поръчки" },
-  { label: "Абонаменти", heading: /Recurring subscriptions/i },
   { label: "Консултации", heading: "Консултации" },
-  { label: "Чат за помощ", heading: "Чат за помощ" },
   { label: "Бюлетин", heading: "Бюлетин" },
-  { label: "Бизнеси", heading: "Бизнеси" },
-  { label: "Проекти", heading: "Проекти" },
 ];
 
 test.describe("Admin smoke", () => {

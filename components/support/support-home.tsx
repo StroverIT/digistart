@@ -98,18 +98,21 @@ export function SupportHome() {
     void createChat();
   }
 
-  const closedChats = chats.filter((c) => c.status === "closed");
+  const listedChats = isAdmin
+    ? chats
+    : chats.filter((c) => c.status === "closed");
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <MessageCircle className="h-7 w-7" />
-          Поискай помощ
+          {isAdmin ? "Чат за помощ" : "Поискай помощ"}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Свържете се с наш екип в реално време. Отговор до 10 минути. Работим
-          всеки ден от 9:00 до 22:00 ч.
+          {isAdmin
+            ? "Всички разговори с клиенти"
+            : "Свържете се с наш екип в реално време. Отговор до 10 минути. Работим всеки ден от 9:00 до 22:00 ч."}
         </p>
       </div>
 
@@ -151,11 +154,13 @@ export function SupportHome() {
         <div className="flex justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
-      ) : closedChats.length > 0 ? (
+      ) : listedChats.length > 0 ? (
         <div className="space-y-3">
-          <h2 className="text-sm font-medium text-muted-foreground">Предишни разговори</h2>
+          <h2 className="text-sm font-medium text-muted-foreground">
+            {isAdmin ? "Разговори" : "Предишни разговори"}
+          </h2>
           <ul className="space-y-2">
-            {closedChats.map((chat) => {
+            {listedChats.map((chat) => {
               const preview =
                 chat.messages[chat.messages.length - 1]?.body ??
                 "Без съобщения";
@@ -174,6 +179,11 @@ export function SupportHome() {
                         minute: "2-digit",
                       })}
                     </span>
+                    {isAdmin && (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        ({chat.status === "open" ? "отворен" : "затворен"})
+                      </span>
+                    )}
                     <p className="text-muted-foreground line-clamp-1 mt-1">{preview}</p>
                   </Link>
                 </li>

@@ -222,17 +222,6 @@ export async function createOrderInDb(params: {
   return mapOrder(order as OrderWithItemsAndConsultation);
 }
 
-export async function listOrdersFromDb(): Promise<Order[]> {
-  const orders = await prisma.order.findMany({
-    include: {
-      items: true,
-      consultation: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
-  return orders.map(mapOrder);
-}
-
 export async function getOrderByIdFromDb(orderId: string): Promise<Order | null> {
   const order = await prisma.order.findUnique({
     where: { id: orderId },

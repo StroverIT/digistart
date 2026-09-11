@@ -83,7 +83,7 @@ function escapeHtml(value: string) {
     .replaceAll('"', "&quot;");
 }
 
-function renderCustomerHtml(name: string) {
+export function renderGoogleAnalysis3TipsCustomerHtml(name: string) {
   return `
     <div style="font-family: Inter, Arial, sans-serif; color: #1f1f1f; line-height: 1.6;">
       <h2 style="margin: 0 0 16px;">Здравей, ${escapeHtml(name)}!</h2>
@@ -99,7 +99,7 @@ function renderCustomerHtml(name: string) {
   `;
 }
 
-function renderAdminHtml(input: GoogleAnalysis3TipsEmailInput) {
+export function renderGoogleAnalysis3TipsAdminHtml(input: GoogleAnalysis3TipsEmailInput) {
   const urgency = getGoogleFreeAnalysisUrgencyLabel(input.urgency);
   return `
     <div style="font-family: Inter, Arial, sans-serif; color: #1f1f1f; line-height: 1.6;">
@@ -179,7 +179,7 @@ export async function sendGoogleAnalysis3TipsLeadEmails(
         delivery.testMode,
         { originalTo: input.email },
       ),
-      html: withTestHtmlBody(renderCustomerHtml(input.name), delivery.testMode, {
+      html: withTestHtmlBody(renderGoogleAnalysis3TipsCustomerHtml(input.name), delivery.testMode, {
         originalTo: input.email,
       }),
     }),
@@ -190,7 +190,7 @@ export async function sendGoogleAnalysis3TipsLeadEmails(
       text: withTestTextBody(renderAdminText(input), delivery.testMode, {
         originalTo: notifyEmail,
       }),
-      html: withTestHtmlBody(renderAdminHtml(input), delivery.testMode, {
+      html: withTestHtmlBody(renderGoogleAnalysis3TipsAdminHtml(input), delivery.testMode, {
         originalTo: notifyEmail,
       }),
     }),

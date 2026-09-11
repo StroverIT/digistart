@@ -28,10 +28,6 @@ export default async function UserSupportChatPage({
 
   const { chatId } = await params;
 
-  if (role === "admin") {
-    redirect(`/admin/support/${chatId}`);
-  }
-
   try {
     const chat = await getSupportChatById(chatId, session.user.id, role);
     const initialChat = serializeSupportChat(chat) as SupportChatDto;
@@ -45,7 +41,11 @@ export default async function UserSupportChatPage({
           <ArrowLeft className="h-4 w-4" />
           Обратно към помощ
         </Link>
-        <SupportChat initialChat={initialChat} variant="user" key={chatId} />
+        <SupportChat
+          initialChat={initialChat}
+          variant={role === "admin" ? "admin" : "user"}
+          key={chatId}
+        />
       </div>
     );
   } catch (error) {

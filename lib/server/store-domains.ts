@@ -50,17 +50,6 @@ export async function getStoreDomainByOrderItemId(
   return data ? mapRow(data as DbRow) : null;
 }
 
-export async function listStoreDomains(): Promise<StoreDomainRow[]> {
-  const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from("store_domains")
-    .select("*")
-    .order("updated_at", { ascending: false });
-
-  if (error) throw error;
-  return (data ?? []).map((row) => mapRow(row as DbRow));
-}
-
 export async function upsertStoreDomainForOrderItem(input: {
   orderItemId: string;
   userId: string;
@@ -97,25 +86,5 @@ export async function upsertStoreDomainForOrderItem(input: {
     throw error;
   }
 
-  return mapRow(data as DbRow);
-}
-
-export async function updateStoreDomainStatus(
-  id: string,
-  status: StoreDomainStatus,
-  adminNotes?: string | null,
-): Promise<StoreDomainRow> {
-  const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from("store_domains")
-    .update({
-      status,
-      ...(adminNotes !== undefined ? { admin_notes: adminNotes } : {}),
-    })
-    .eq("id", id)
-    .select("*")
-    .single();
-
-  if (error) throw error;
   return mapRow(data as DbRow);
 }

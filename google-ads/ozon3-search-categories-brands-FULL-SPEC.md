@@ -27,12 +27,13 @@ If you later want English/Romanian tourists, that would be a separate experiment
 | Setting | Value |
 |---|---|
 | Type | Search only |
+| Campaign goal | **Sales** (not Website traffic) |
 | Networks | Search Network **ON**; Search partners **OFF**; Display **OFF** |
 | AI Max / automatically created assets | **OFF** (do not Apply Google recommendations that expand match/networks) |
 | Locations | **Radius 110 km around Pleven, Bulgaria** |
 | Location options | **Presence: People in or regularly in your targeted locations** (not “interested in”) |
 | Languages | **Bulgarian** |
-| Bid strategy | Manual CPC or Maximize clicks with €5/day (match what you prefer; plan used low fixed daily budget) |
+| Bid strategy | **Maximize conversions** (add Target CPA later when enough conversion data; needs working conversion tracking) |
 | Daily budget | **€5 / day per campaign** |
 | Campaign status | **Paused** |
 | Match types | **Phrase + Exact only** (no Broad) |
@@ -59,11 +60,11 @@ pdf
 
 | Sitelink text | Description line 1 | Description line 2 | Final URL |
 |---|---|---|---|
-| Монтаж | Включен стандартен монтаж | Професионален екип | https://www.ozon3.bg/uslugi/ |
+| Монтаж | Включен стандартен монтаж | Професионален екип | https://www.ozon3.bg/info/montazh-i-garanciya/montazh-na-klimatici |
 | Изплащане | Стоки на изплащане | 0% лихва при оферта | https://www.ozon3.bg/info/dostavka-i-plashtane/stoki-na-izplashtane |
-| Гаранция | Оригинални марки | Гаранция и консултация | https://www.ozon3.bg/klimatici |
+| Гаранция | Оригинални марки | Гаранция и консултация | https://www.ozon3.bg/info/montazh-i-garanciya/garanciya-na-klimatici |
 
-*(Adjust sitelink URLs if `/uslugi/` or warranty page differs — keep them on ozon3.bg.)*
+*(Verified live URLs on ozon3.bg — `/uslugi/` is dead; use `/info/...` paths.)*
 
 ### Call asset
 

@@ -22,7 +22,7 @@ import {
   withTestTextBody,
 } from "@/lib/server/email-test";
 
-async function renderCustomerEmailHtml(params: {
+export async function renderOrderCustomerEmailHtml(params: {
   customerFirstName: string;
   orderId: string;
 }) {
@@ -66,7 +66,7 @@ async function renderCustomerEmailHtml(params: {
   );
 }
 
-async function renderAdminEmailHtml(params: {
+export async function renderOrderAdminEmailHtml(params: {
   orderId: string;
   customerName: string;
   customerEmail: string;
@@ -224,11 +224,11 @@ export async function sendOrderPaidConfirmationEmails(params: {
   });
   const mailFrom = withTestFrom(from, delivery.testMode);
   const customerFirstName = params.customerName.trim().split(" ")[0] || "клиент";
-  const customerHtml = await renderCustomerEmailHtml({
+  const customerHtml = await renderOrderCustomerEmailHtml({
     customerFirstName,
     orderId: params.orderId,
   });
-  const adminHtml = await renderAdminEmailHtml({
+  const adminHtml = await renderOrderAdminEmailHtml({
     orderId: params.orderId,
     customerName: params.customerName,
     customerEmail: params.customerEmail,

@@ -47,47 +47,7 @@ function getSiteUrl(): string {
 }
 
 export function getAdminSupportChatUrl(chatId: string): string {
-  return `${getSiteUrl()}/admin/support/${chatId}`;
-}
-
-export type SupportChatListItem = {
-  id: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  adminJoinedAt: string | null;
-  adminNotifiedAt: string | null;
-  user: { id: string; name: string | null; email: string };
-  problemPreview: string | null;
-};
-
-export async function listSupportChatsForAdmin(): Promise<SupportChatListItem[]> {
-  const chats = await prisma.supportChat.findMany({
-    include: {
-      user: { select: { id: true, name: true, email: true } },
-      messages: {
-        where: { senderType: SUPPORT_SENDER_USER },
-        orderBy: { createdAt: "asc" },
-        take: 1,
-      },
-    },
-    orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
-  });
-
-  return chats.map((chat) => ({
-    id: chat.id,
-    status: chat.status,
-    createdAt: chat.createdAt.toISOString(),
-    updatedAt: chat.updatedAt.toISOString(),
-    adminJoinedAt: chat.adminJoinedAt?.toISOString() ?? null,
-    adminNotifiedAt: chat.adminNotifiedAt?.toISOString() ?? null,
-    user: {
-      id: chat.user.id,
-      name: chat.user.name,
-      email: chat.user.email,
-    },
-    problemPreview: chat.messages[0]?.body ?? null,
-  }));
+  return `${getSiteUrl()}/user/support/${chatId}`;
 }
 
 async function getMailer() {

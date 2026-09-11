@@ -163,16 +163,3 @@ export async function updateTenantProject(
   const updated = await prisma.tenantProject.update({ where: { id }, data });
   return mapProject(updated);
 }
-
-export async function listTenantProjects(): Promise<
-  (TenantProjectDto & { user: { email: string; name: string | null } })[]
-> {
-  const rows = await prisma.tenantProject.findMany({
-    include: { user: { select: { email: true, name: true } } },
-    orderBy: { updatedAt: "desc" },
-  });
-  return rows.map((row) => ({
-    ...mapProject(row),
-    user: { email: row.user.email, name: row.user.name },
-  }));
-}

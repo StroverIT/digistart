@@ -8,12 +8,7 @@ import { signOut } from "next-auth/react";
 import {
   Zap,
   LayoutDashboard,
-  ShoppingBag,
-  RefreshCw,
   CalendarDays,
-  MessageCircle,
-  MapPin,
-  FolderKanban,
   LogOut,
   ExternalLink,
   User,
@@ -23,6 +18,7 @@ import {
   Megaphone,
   Users,
   Gift,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,15 +40,11 @@ interface AdminSidebarProps {
 
 const navItems = [
   { href: "/admin", label: "Табло", icon: LayoutDashboard },
-  { href: "/admin/orders", label: "Поръчки", icon: ShoppingBag },
-  { href: "/admin/subscriptions", label: "Абонаменти", icon: RefreshCw },
   { href: "/admin/consultations", label: "Консултации", icon: CalendarDays },
   { href: "/admin/target-audiences", label: "Целеви аудитории", icon: Users },
   { href: "/admin/free", label: "Безплатни", icon: Gift },
-  { href: "/admin/support", label: "Чат за помощ", icon: MessageCircle },
   { href: "/admin/newsletter", label: "Бюлетин", icon: Newspaper },
-  { href: "/admin/businesses", label: "Бизнеси", icon: MapPin },
-  { href: "/admin/projects", label: "Проекти", icon: FolderKanban },
+  { href: "/admin/emails", label: "Имейли", icon: Mail },
   { href: "/admin/testing", label: "Тестване", icon: FlaskConical },
   { href: "/services/funnels", label: "Фунии", icon: Megaphone },
 ] as const;
@@ -102,8 +94,8 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
         {navItems.map((item) => {
           const isActive =
             pathname === item.href ||
-            (item.href === "/admin/support" && pathname.startsWith("/admin/support")) ||
             (item.href === "/admin/free" && pathname.startsWith("/admin/free")) ||
+            (item.href === "/admin/emails" && pathname.startsWith("/admin/emails")) ||
             (item.href === "/services/funnels" && pathname.startsWith("/services/funnels"));
           return (
             <Link
