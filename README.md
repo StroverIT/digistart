@@ -1,12 +1,5 @@
 # digistart
 
-## Coming soon mode
-
-- Set `IS_COMING_SOON=true` to show the launch page and block normal page content.
-- Accepted truthy values: `true`, `1`, `yes`, `on`.
-- `/admin` (including login) stays available; other page routes show the launch screen. Public APIs return `503` except `POST /api/newsletter/subscribe`, NextAuth, and Stripe webhooks.
-- After pulling, run `npx prisma migrate deploy` (or `prisma migrate dev`) so the `newsletter_subscribers` table exists.
-
 ## Support chat (Supabase Realtime)
 
 Client support chat at `/user/support` uses Postgres persistence (Prisma) and [Supabase Realtime](https://supabase.com/docs/guides/realtime/postgres-changes) for live updates.
@@ -67,7 +60,6 @@ Checkout flows are covered by serial scenarios: guest paths (one service, two se
   - `STRIPE_PUBLISHABLE_KEY`
   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (same publishable key as above)
   - `NEXT_PUBLIC_SITE_URL=http://localhost:3000`
-- `IS_COMING_SOON` unset or `false` (coming soon blocks checkout APIs)
 - `NEXTAUTH_SECRET` set (required by the app)
 - Logged-in scenario (optional): `E2E_CUSTOMER_PASSWORD` in `.env.local`, and optionally `E2E_CUSTOMER_EMAIL` (default `emilzlatinov1234@gmail.com`). Run `E2E_CUSTOMER_PASSWORD=… npx tsx scripts/ensure-e2e-customer.ts` once against your local DB if the user does not exist yet.
 

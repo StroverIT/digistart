@@ -2,10 +2,6 @@ import { NextFetchEvent, NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { withAuth } from "next-auth/middleware";
 import { getToken } from "next-auth/jwt";
-import {
-  isComingSoonEnabled,
-  isComingSoonAllowedApiPath,
-} from "@/lib/coming-soon";
 
 const authMiddleware = withAuth({
   callbacks: {
@@ -27,15 +23,6 @@ const authMiddleware = withAuth({
 
 export default async function middleware(req: NextRequest, event: NextFetchEvent) {
   const path = req.nextUrl.pathname;
-  const requestHeaders = new Headers(req.headers);
-  requestHeaders.set("x-pathname", path);
-
-  if (isComingSoonEnabled() && path.startsWith("/api") && !isComingSoonAllowedApiPath(path)) {
-    return NextResponse.json(
-      { error: "Услугата е временно недостъпна." },
-      { status: 503 },
-    );
-  }
 
   if (path === "/services/funnels") {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -48,7 +35,7 @@ export default async function middleware(req: NextRequest, event: NextFetchEvent
     if (role !== "admin") {
       return NextResponse.redirect(new URL("/", req.url));
     }
-    return NextResponse.next({ request: { headers: requestHeaders } });
+    return NextResponse.next();
   }
 
   if (path.startsWith("/user")) {
@@ -64,18 +51,18 @@ export default async function middleware(req: NextRequest, event: NextFetchEvent
       url.searchParams.set("callbackUrl", path);
       return NextResponse.redirect(url);
     }
-    return NextResponse.next({ request: { headers: requestHeaders } });
+    return NextResponse.next();
   }
 
   if (path.startsWith("/admin")) {
     const adminResult = await authMiddleware(req as never, event);
     if (!adminResult) {
-      return NextResponse.next({ request: { headers: requestHeaders } });
+      return NextResponse.next();
     }
     if (adminResult.status >= 300 && adminResult.status < 400) {
       return adminResult;
     }
-    const next = NextResponse.next({ request: { headers: requestHeaders } });
+    const next = NextResponse.next();
     adminResult.headers.forEach((value, key) => {
       if (key.toLowerCase() === "set-cookie") {
         next.headers.append(key, value);
@@ -84,7 +71,7 @@ export default async function middleware(req: NextRequest, event: NextFetchEvent
     return next;
   }
 
-  return NextResponse.next({ request: { headers: requestHeaders } });
+  return NextResponse.next();
 }
 
 export const config = {

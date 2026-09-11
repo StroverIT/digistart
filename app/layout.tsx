@@ -1,18 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Roboto_Slab, Unbounded } from "next/font/google";
-import { headers } from "next/headers";
 import { DigiStartAnalytics } from "@/components/analytics/digistart-analytics";
 import { GoogleAnalyticsConsentLoader } from "@/components/analytics/google-analytics-consent-loader";
 import { GoogleAnalyticsEvents } from "@/components/analytics/google-analytics-events";
 import { MetaPixelConsentLoader } from "@/components/analytics/meta-pixel-consent-loader";
-import { ComingSoonPage } from "@/components/coming-soon-page";
 import { MetaPixelEvents } from "@/components/analytics/meta-pixel-events";
 import { UtmTracker } from "@/components/analytics/utm-tracker";
 import { Providers } from "@/components/providers";
 import { LocalBusinessJsonLd } from "@/components/seo/local-business-json-ld";
-import { shouldRenderComingSoonInLayout } from "@/lib/coming-soon";
 import { OG_COVER, SITE_METADATA_BASE } from "@/lib/seo/open-graph";
-import { Toaster } from "sonner";
 import "./globals.css";
 
 const unbounded = Unbounded({
@@ -160,41 +156,24 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headerList = await headers();
-  const pathname = headerList.get("x-pathname") ?? "/";
-  const showComingSoon = shouldRenderComingSoonInLayout(pathname);
-
   return (
     <html lang="bg" className="bg-background overflow-x-clip">
       <body
         className={`${inter.variable} ${unbounded.variable} ${robotoSlab.variable} font-sans antialiased overflow-x-clip overscroll-x-none`}
       >
-        {showComingSoon ? (
-          <>
-            <UtmTracker />
-            <ComingSoonPage />
-            <GoogleAnalyticsConsentLoader />
-            <GoogleAnalyticsEvents />
-            <MetaPixelEvents />
-            <Toaster richColors position="top-center" />
-          </>
-        ) : (
-          <>
-            <LocalBusinessJsonLd />
-            <UtmTracker />
-            <DigiStartAnalytics />
-            <GoogleAnalyticsConsentLoader />
-            <GoogleAnalyticsEvents />
-            <MetaPixelConsentLoader />
-            <MetaPixelEvents />
-            <Providers>{children}</Providers>
-          </>
-        )}
+        <LocalBusinessJsonLd />
+        <UtmTracker />
+        <DigiStartAnalytics />
+        <GoogleAnalyticsConsentLoader />
+        <GoogleAnalyticsEvents />
+        <MetaPixelConsentLoader />
+        <MetaPixelEvents />
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

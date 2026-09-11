@@ -21,8 +21,6 @@ import {
 import {
   renderGoogleNewsletterAdminEmailHtml,
   renderGoogleNewsletterSubscriberEmailHtml,
-  renderNewsletterAdminEmailHtml,
-  renderNewsletterSubscriberEmailHtml,
   renderNicheRecommendationAdminEmailHtml,
   renderNicheRecommendationSubscriberEmailHtml,
   renderThreeFreeTipsAdminEmailHtml,
@@ -111,20 +109,6 @@ async function buildHtml(id: string): Promise<{ subject: string; html: string } 
           meetUrl: "https://meet.google.com/abc-defg-hij",
           meetingType: "online",
           calendarUrl: "https://calendar.google.com/calendar/event?eid=preview",
-        }),
-      };
-    case "newsletter-customer":
-      return {
-        subject: "Благодарим за записването в бюлетина - DigiStart",
-        html: await renderNewsletterSubscriberEmailHtml({ email: PREVIEW_EMAIL }),
-      };
-    case "newsletter-admin":
-      return {
-        subject: `Нов бюлетин абонамент: ${PREVIEW_EMAIL}`,
-        html: await renderNewsletterAdminEmailHtml({
-          email: PREVIEW_EMAIL,
-          source: "website",
-          subscribedAt: PREVIEW_NOW,
         }),
       };
     case "niche-customer":

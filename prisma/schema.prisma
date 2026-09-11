@@ -293,7 +293,7 @@ model AnalyticsEvent {
 model NewsletterSubscriber {
   id                  String    @id @default(cuid())
   email               String    @unique
-  source              String    @default("coming-soon")
+  source              String
   status              String    @default("subscribed")
   metadata            Json?
   tipsEmailStage      Int?      @map("tips_email_stage")
