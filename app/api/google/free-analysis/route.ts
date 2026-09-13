@@ -6,7 +6,7 @@ const payloadSchema = z.object({
   name: z.string().trim().min(2, "Въведете две имена."),
   email: z.string().trim().email("Въведете валиден имейл."),
   phone: z.string().trim().min(6, "Въведете валиден телефонен номер."),
-  website: z.string().trim().min(2, "Въведете уебсайт."),
+  website: z.string().trim().max(300).optional().default(""),
   company: z.string().trim().min(2, "Въведете име на фирмата."),
   urgency: z.enum(["today", "tomorrow", "few_weeks"]),
   source: z.string().trim().max(120).optional(),
@@ -37,7 +37,8 @@ export async function POST(req: Request) {
       alreadyRegistered: result.alreadyRegistered,
       emailSent: result.emailSent,
     });
-  } catch {
+  } catch (error) {
+    console.error("[google/free-analysis]", error);
     return NextResponse.json(
       { error: "Възникна грешка. Моля, опитайте отново." },
       { status: 500 },

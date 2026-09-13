@@ -62,6 +62,7 @@ export function FreeAnalysisForm({
 
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [hasWebsite, setHasWebsite] = useState<"yes" | "no">("no");
   const [payload, setPayload] = useState<LeadPayload>({
     name: "",
     email: "",
@@ -76,6 +77,13 @@ export function FreeAnalysisForm({
     setPayload((prev) => ({ ...prev, [field]: value }));
   };
 
+  const onHasWebsiteChange = (value: "yes" | "no") => {
+    setHasWebsite(value);
+    if (value === "no") {
+      setPayload((prev) => ({ ...prev, website: "" }));
+    }
+  };
+
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (loading || submitted) return;
@@ -83,6 +91,12 @@ export function FreeAnalysisForm({
     const trimmedName = payload.name.trim();
     if (trimmedName.length < 2) {
       toast.error("Моля, въведи две имена.");
+      return;
+    }
+
+    const trimmedWebsite = hasWebsite === "yes" ? payload.website.trim() : "";
+    if (hasWebsite === "yes" && trimmedWebsite.length < 2) {
+      toast.error("Моля, въведи уебсайт.");
       return;
     }
 
@@ -95,7 +109,7 @@ export function FreeAnalysisForm({
           name: trimmedName,
           email: payload.email.trim(),
           phone: payload.phone.trim(),
-          website: payload.website.trim(),
+          website: trimmedWebsite,
           company: payload.company.trim(),
           urgency: payload.urgency,
           source: payload.source,
@@ -203,17 +217,37 @@ export function FreeAnalysisForm({
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="analysis-website">{googleFreeAnalysisFormFields.website} *</Label>
-        <Input
-          id="analysis-website"
-          value={payload.website}
-          onChange={(event) => onChange("website", event.target.value)}
-          className={inputClassName}
-          required
-          disabled={loading}
-        />
+      <div className="space-y-3">
+        <Label>{googleFreeAnalysisFormFields.hasWebsite} *</Label>
+        <RadioGroup
+          value={hasWebsite}
+          onValueChange={(value) => onHasWebsiteChange(value as "yes" | "no")}
+          className="grid grid-cols-2 gap-2"
+        >
+          <Label className="flex min-w-0 cursor-pointer items-center gap-2 rounded-full border border-border bg-card px-4 py-3 text-sm font-medium transition-colors hover:border-accent/40">
+            <RadioGroupItem value="yes" className="shrink-0" />
+            <span>{googleFreeAnalysisFormFields.hasWebsiteYes}</span>
+          </Label>
+          <Label className="flex min-w-0 cursor-pointer items-center gap-2 rounded-full border border-border bg-card px-4 py-3 text-sm font-medium transition-colors hover:border-accent/40">
+            <RadioGroupItem value="no" className="shrink-0" />
+            <span>{googleFreeAnalysisFormFields.hasWebsiteNo}</span>
+          </Label>
+        </RadioGroup>
       </div>
+
+      {hasWebsite === "yes" ? (
+        <div className="space-y-2">
+          <Label htmlFor="analysis-website">{googleFreeAnalysisFormFields.website} *</Label>
+          <Input
+            id="analysis-website"
+            value={payload.website}
+            onChange={(event) => onChange("website", event.target.value)}
+            className={inputClassName}
+            required
+            disabled={loading}
+          />
+        </div>
+      ) : null}
 
       <div className="space-y-2">
         <Label htmlFor="analysis-company">{googleFreeAnalysisFormFields.company} *</Label>

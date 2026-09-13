@@ -512,9 +512,13 @@ export default function GoogleFreeAnalysisLeadsTable({
                 />
                 <FormAnswer
                   label={googleFreeAnalysisFormFields.website}
-                  value={selectedLead.website}
-                  href={toHref(selectedLead.website)}
-                  copyable
+                  value={selectedLead.website.trim() || "Няма"}
+                  href={
+                    selectedLead.website.trim()
+                      ? toHref(selectedLead.website)
+                      : undefined
+                  }
+                  copyable={Boolean(selectedLead.website.trim())}
                 />
                 <FormAnswer
                   label={googleFreeAnalysisFormFields.company}

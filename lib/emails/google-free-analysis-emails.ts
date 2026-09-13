@@ -107,7 +107,7 @@ export function renderGoogleFreeAnalysisAdminHtml(input: GoogleFreeAnalysisEmail
         <li><strong>Име:</strong> ${escapeHtml(input.name)}</li>
         <li><strong>Имейл:</strong> ${escapeHtml(input.email)}</li>
         <li><strong>Телефон:</strong> ${escapeHtml(input.phone)}</li>
-        <li><strong>Уебсайт:</strong> ${escapeHtml(input.website)}</li>
+        <li><strong>Уебсайт:</strong> ${escapeHtml(input.website.trim() || "Няма")}</li>
         <li><strong>Фирма:</strong> ${escapeHtml(input.company)}</li>
         ${
           input.googleMapsUrl.trim()
@@ -127,7 +127,7 @@ function renderAdminText(input: GoogleFreeAnalysisEmailInput) {
     `Име: ${input.name}`,
     `Имейл: ${input.email}`,
     `Телефон: ${input.phone}`,
-    `Уебсайт: ${input.website}`,
+    `Уебсайт: ${input.website.trim() || "Няма"}`,
     `Фирма: ${input.company}`,
     ...(input.googleMapsUrl.trim()
       ? [`Google Maps: ${input.googleMapsUrl}`]
