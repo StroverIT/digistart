@@ -231,7 +231,7 @@ export function ThreeFreeTipsCampaignPanel({
           if (!aborted || consecutiveEmpty >= 3) {
             toast.error(
               aborted
-                ? "Времето за изпращане изтече няколко пъти. Вече изпратените няма да се дублират — натисни отново за останалите."
+                ? "Времето за изпращане изтече няколко пъти. Вече изпратените няма да се дублират - натисни отново за останалите."
                 : "Неуспешно изпращане.",
             );
             await loadSummary({ silent: true });
@@ -251,7 +251,7 @@ export function ThreeFreeTipsCampaignPanel({
           consecutiveEmpty += 1;
           if (consecutiveEmpty >= 3) {
             toast.error(
-              "Времето за изпращане изтече няколко пъти. Вече изпратените няма да се дублират — натисни отново за останалите.",
+              "Времето за изпращане изтече няколко пъти. Вече изпратените няма да се дублират - натисни отново за останалите.",
             );
             await loadSummary({ silent: true });
             break;
@@ -416,7 +416,7 @@ export function ThreeFreeTipsCampaignPanel({
                 <AlertDialogDescription asChild>
                   <div className="space-y-2 text-sm text-muted-foreground">
                     <p>
-                      <strong>Седмица {warmupWeek}</strong> — дневен лимит{" "}
+                      <strong>Седмица {warmupWeek}</strong> - дневен лимит{" "}
                       <strong>{dailyLimit}</strong> имейла. Ще се изпратят до{" "}
                       <strong>{sessionTarget}</strong>{" "}
                       {sessionTarget === 1 ? "абонат" : "абоната"} (първо етап
@@ -430,7 +430,7 @@ export function ThreeFreeTipsCampaignPanel({
                     </p>
                     {hasSessionCap && eligible > sessionCap ? (
                       <p>
-                        След {sessionCap} имейла изпращането спира — натисни
+                        След {sessionCap} имейла изпращането спира - натисни
                         отново за останалите.
                       </p>
                     ) : null}
@@ -518,7 +518,7 @@ export function ThreeFreeTipsCampaignPanel({
               {eligibleUncapped > eligible
                 ? ` · още ${eligibleUncapped - eligible} чакат след дневния лимит`
                 : null}
-              . Изпращаме първо етап 1, после 2, 3… — следващ етап само когато
+              . Изпращаме първо етап 1, после 2, 3… - следващ етап само когато
               предишният е изчистен. Всеки абонат получава най-много един
               кампаниен имейл на ден. Vercel Hobby: 1 имейл на заявка (10s
               timeout), {Math.round(chunkPauseMs / 1000)}s пауза между

@@ -20,5 +20,6 @@ export function fitMetaDescription(text: string, max = DESCRIPTION_MAX): string 
   const sliced = trimmed.slice(0, max);
   const lastSpace = sliced.lastIndexOf(" ");
   const cut = lastSpace > 80 ? sliced.slice(0, lastSpace) : sliced;
-  return `${cut.replace(/[.,;:–—-]\s*$/, "")}.`;
+  // Hyphen must stay at the end of the class; `–-` is an invalid range (en-dash > ASCII hyphen).
+  return `${cut.replace(/[.,;:–-]\s*$/, "")}.`;
 }

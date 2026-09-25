@@ -20,7 +20,7 @@ const SERVICES = [
     icon: Megaphone,
     title: "Google Ads и Meta реклами",
     description:
-      "Кампании, които носят запитвания и продажби — не само кликове.",
+      "Кампании, които носят запитвания и продажби - не само кликове.",
   },
   {
     href: "/services/google-business",
@@ -100,7 +100,7 @@ export function LocalServicesSection() {
               LANDING_REVEAL_CLASS,
             )}
           >
-            Google Ads, Meta, SEO, Google Business и онлайн магазини — стратегия и
+            Google Ads, Meta, SEO, Google Business и онлайн магазини - стратегия и
             изпълнение от един екип.
           </p>
         </div>

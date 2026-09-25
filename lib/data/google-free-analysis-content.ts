@@ -69,7 +69,7 @@ export const googleFreeAnalysisContent = {
     successDescription:
       "Ще запишем персонализирания анализ и ще се свържем с теб на посочения имейл.",
   },
-  /** Landing modeled on Prof Results /offer/gmb — “Free Analysis: 3 Things…”. */
+  /** Landing modeled on Prof Results /offer/gmb - “Free Analysis: 3 Things…”. */
   analysis3TipsPage: {
     hero: {
       title:

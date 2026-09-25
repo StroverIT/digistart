@@ -15,7 +15,7 @@ const PasFaqSection = dynamic(() =>
 export const metadata: Metadata = {
   title: "Анализ: 3 съвета за Google",
   description:
-    "Безплатен одит на Google Business профила ти — 3 конкретни неща, които да промениш, за да се класираш по-високо в Google.",
+    "Безплатен одит на Google Business профила ти - 3 конкретни неща, които да промениш, за да се класираш по-високо в Google.",
   ...ogImageMetadata("googleBusiness", "DigiStart – Анализ 3 съвета"),
 };
 

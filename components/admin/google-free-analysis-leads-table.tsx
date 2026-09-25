@@ -562,7 +562,7 @@ export default function GoogleFreeAnalysisLeadsTable({
                       Бележки
                     </Label>
                     <p className="text-xs text-muted-foreground">
-                      Вътрешни бележки за тази заявка — видими само в админа.
+                      Вътрешни бележки за тази заявка - видими само в админа.
                     </p>
                   </div>
                   <Textarea

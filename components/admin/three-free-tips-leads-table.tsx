@@ -29,7 +29,7 @@ function formatStageLabel(stage: number | null, lastStage: number) {
 }
 
 function formatVideoCtaSummary(clicks: ThreeFreeTipsLeadRow["videoCtaClicks"]) {
-  if (clicks.length === 0) return "—";
+  if (clicks.length === 0) return "-";
   const latest = clicks[0]!;
   return `Етап ${latest.stage} (${clicks.length})`;
 }

@@ -1,5 +1,5 @@
 /**
- * Hours — keep identical to Google Business Profile.
+ * Hours - keep identical to Google Business Profile.
  * Regular Hours (08:00–20:00) drive “open now”, NAP, and JSON-LD.
  * Online operating hours are a separate GBP “More hours” type and must not
  * replace regular hours in schema or the office open/closed status.
@@ -52,7 +52,7 @@ export const siteContact = {
   linkedin: "https://www.linkedin.com/company/115850325/",
   /** Primary service area for local SEO */
   areaServed: "София",
-  /** Regular Hours in GBP — office / customer-facing. Also used in JSON-LD. */
+  /** Regular Hours in GBP - office / customer-facing. Also used in JSON-LD. */
   openingHours: {
     opens: "08:00",
     closes: "20:00",

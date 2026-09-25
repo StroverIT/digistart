@@ -59,7 +59,7 @@ export function SocialShortLinksPanel({ stats }: SocialShortLinksPanelProps) {
         <CardHeader>
           <CardTitle>Линкове от социални мрежи</CardTitle>
           <p className="text-sm text-muted-foreground font-normal">
-            Кратки линкове от bio профилите — кой линк колко пъти е отворен
+            Кратки линкове от bio профилите - кой линк колко пъти е отворен
           </p>
         </CardHeader>
         <CardContent>

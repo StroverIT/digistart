@@ -32,7 +32,7 @@ export default function AdminEmailsPage() {
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
         <h1 className="mb-2 text-3xl font-bold">Имейли</h1>
         <p className="text-muted-foreground">
-          Каталог на всички транзакционни и кампанийни шаблони — кой ги получава и как
+          Каталог на всички транзакционни и кампанийни шаблони - кой ги получава и как
           изглеждат.
         </p>
       </div>

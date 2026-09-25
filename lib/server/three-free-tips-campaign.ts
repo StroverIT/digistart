@@ -392,7 +392,7 @@ export async function sendDailyThreeFreeTipsStageEmails(
       if (wasSentTodaySofia(row.tipsLastEmailSentAt)) return false;
       return true;
     })
-    // Lowest stage first — don't advance later stages until earlier ones are clear.
+    // Lowest stage first - don't advance later stages until earlier ones are clear.
     .sort((a, b) => (a.tipsEmailStage ?? 1) - (b.tipsEmailStage ?? 1));
 
   const remainingDailyQuota = Math.max(0, warmup.dailyLimit - sentTodayCount);
@@ -441,7 +441,7 @@ export async function sendDailyThreeFreeTipsStageEmails(
 
     try {
       if (!canSendTipsCampaignStage(stage, lastStage)) {
-        throw new Error(`Етап ${stage} е извън поредицата — пропускане`);
+        throw new Error(`Етап ${stage} е извън поредицата - пропускане`);
       }
       await sendStageEmailToSubscriber({
         email: row.email,
