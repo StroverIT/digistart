@@ -46,9 +46,11 @@ import type {
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+const CONSULTATION_URL = "https://digistart.bg/business-consultation";
+
 function buildClipEmailBody(name: string, clipUrl: string) {
   const greetingName = name.trim() || "{name}";
-  const link = clipUrl.trim();
+  const link = clipUrl.trim() || "{link}";
 
   return [
     `Здравейте, ${greetingName},`,
@@ -57,6 +59,9 @@ function buildClipEmailBody(name: string, clipUrl: string) {
     "",
     "Линк към клипа:",
     link,
+    "",
+    "Линк за безплатна консултация:",
+    CONSULTATION_URL,
   ].join("\n");
 }
 
@@ -464,7 +469,7 @@ export default function GoogleFreeAnalysisLeadsTable({
                   <div className="space-y-1">
                     <p className="text-sm font-medium leading-none">Копирай текст за имейл</p>
                     <p className="text-xs text-muted-foreground">
-                      Копира шаблона с линка към клипа в клипборда.
+                      Копира шаблона с линка към клипа и безплатната консултация.
                     </p>
                   </div>
                   <div className="space-y-2">
