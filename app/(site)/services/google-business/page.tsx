@@ -21,7 +21,7 @@ const PasFaqSection = dynamic(() =>
 export const metadata: Metadata = {
   title: "Google Business · локална видимост",
   description:
-    "Стани видим в Google Maps и локалното търсене. Верификация, локално SEO и дигитална витрина – €49 еднократно.",
+    "Стани видим в Google Maps и локалното търсене. Верификация, локално SEO и дигитална витрина",
   ...ogImageMetadata("googleBusiness", "DigiStart – Google Business"),
 };
 
