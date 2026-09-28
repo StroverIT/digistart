@@ -13,6 +13,7 @@ export default function robots(): MetadataRoute.Robots {
         "/checkout",
         "/marketing",
         "/onboarding",
+        "/preview/",
         "/services/online-store/stop-being-techie",
         "/sign-in",
         "/sign-up",
