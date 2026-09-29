@@ -137,6 +137,7 @@ export default function ConsultationBookingForm({
     address: "",
   });
   const [meetingType, setMeetingType] = useState<"online" | "in_person">("online");
+  const [hasWebsite, setHasWebsite] = useState<"yes" | "no">("no");
   const [hasSocialProfiles, setHasSocialProfiles] = useState(false);
   const [bookingStep, setBookingStep] = useState<HomeBookingStep>("slots");
 
@@ -552,6 +553,12 @@ export default function ConsultationBookingForm({
   }, [hasSocialProfiles, showSocialProfileToggle]);
 
   useEffect(() => {
+    if (hasWebsite === "yes") return;
+    animatedSectionsRef.current.delete("website-url");
+    setFormData((prev) => ({ ...prev, company: "" }));
+  }, [hasWebsite]);
+
+  useEffect(() => {
     if (isLoadingSlots) return;
     const root = rootRef.current;
     if (!root) return;
@@ -594,6 +601,7 @@ export default function ConsultationBookingForm({
     bookingStep,
     hasSocialProfiles,
     showSocialProfileToggle,
+    hasWebsite,
   ]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -618,7 +626,8 @@ export default function ConsultationBookingForm({
           name: formData.name.trim(),
           email: formData.email.trim(),
           phone: formData.phone.trim(),
-          company: formData.company.trim() || undefined,
+          company:
+            hasWebsite === "yes" ? formData.company.trim() || undefined : undefined,
           notes: formData.notes.trim() || undefined,
           date: selectedDate,
           time: selectedTime,
@@ -690,6 +699,7 @@ export default function ConsultationBookingForm({
         notes: "",
         address: "",
       });
+      setHasWebsite("no");
       setMeetingType("online");
     } catch (err) {
       if (willRedirect) {
@@ -714,6 +724,14 @@ export default function ConsultationBookingForm({
           ? "border-primary bg-primary/10 text-primary"
           : "border-border hover:border-primary/40",
       !isEmbedded && "border",
+    );
+
+  const yesNoButtonClass = (value: "yes" | "no") =>
+    cn(
+      "h-11 rounded-xl px-3 text-sm font-semibold transition-all",
+      hasWebsite === value
+        ? "bg-accent text-accent-foreground shadow-md"
+        : "bg-background/80 text-foreground hover:bg-background",
     );
 
   const dayButtonClass = (day: SlotDay) =>
@@ -916,17 +934,42 @@ export default function ConsultationBookingForm({
         />
       </div>
 
-      <div className="grid gap-2">
-        <Label htmlFor="consult-company">Уебсайт / Онлайн магазин</Label>
-        <Input
-          id="consult-company"
-          name="company"
-          value={formData.company}
-          onChange={onInputChange}
-          placeholder="https://example.com"
-          className={cn(embeddedInputClass, "h-12")}
-        />
+      <div className="space-y-2">
+        <Label>Имаш ли уебсайт / онлайн магазин?</Label>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setHasWebsite("yes")}
+            className={yesNoButtonClass("yes")}
+          >
+            Да
+          </button>
+          <button
+            type="button"
+            onClick={() => setHasWebsite("no")}
+            className={yesNoButtonClass("no")}
+          >
+            Не
+          </button>
+        </div>
       </div>
+
+      {hasWebsite === "yes" ? (
+        <div
+          data-consult-animate-key="website-url"
+          className="grid gap-2 opacity-0 translate-y-10"
+        >
+          <Label htmlFor="consult-company">Линк към уебсайт / онлайн магазин</Label>
+          <Input
+            id="consult-company"
+            name="company"
+            value={formData.company}
+            onChange={onInputChange}
+            placeholder="https://example.com"
+            className={cn(embeddedInputClass, "h-12")}
+          />
+        </div>
+      ) : null}
 
       <div className="grid gap-2">
         <Label htmlFor="consult-notes">
