@@ -44,7 +44,6 @@ function getInitialMonth(days: SlotDay[], selectedDate: string) {
 function SlotCalendarMonthCaption({
   calendarMonth,
   className,
-  ...props
 }: MonthCaptionProps) {
   const {
     previousMonth,
@@ -64,7 +63,6 @@ function SlotCalendarMonthCaption({
         "mb-4 grid w-full grid-cols-[2.25rem_1fr_2.25rem] items-center gap-3 px-0 text-base font-semibold text-foreground",
         className,
       )}
-      {...props}
     >
       <Button
         type="button"

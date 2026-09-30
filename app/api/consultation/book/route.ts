@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { CONSULTATION_SLOT_BLOCKING_STATUSES } from "@/lib/consultation/slots";
 import {
   getConsultationBookings,
   GoogleMeetCreationError,
   saveConsultationBooking,
 } from "@/lib/server/consultation-bookings";
-
-const SLOT_BLOCKING_STATUSES = new Set(["scheduled", "attended", "absent"]);
+import { isConsultationSlotBlocked } from "@/lib/server/consultation-blocked-slots";
 
 const bookingSchema = z
   .object({
@@ -59,18 +59,29 @@ export async function POST(req: Request) {
       );
     }
 
-    const bookings = await getConsultationBookings();
+    const [bookings, slotBlocked] = await Promise.all([
+      getConsultationBookings(),
+      isConsultationSlotBlocked(data.date, data.time),
+    ]);
+
+    if (slotBlocked) {
+      return NextResponse.json(
+        { error: "This slot is not available." },
+        { status: 409 },
+      );
+    }
+
     const slotTaken = bookings.some(
       (booking) =>
-        SLOT_BLOCKING_STATUSES.has(booking.status) &&
+        CONSULTATION_SLOT_BLOCKING_STATUSES.has(booking.status) &&
         booking.date === data.date &&
-        booking.time === data.time
+        booking.time === data.time,
     );
 
     if (slotTaken) {
       return NextResponse.json(
         { error: "This slot is already booked." },
-        { status: 409 }
+        { status: 409 },
       );
     }
 

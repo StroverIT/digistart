@@ -1,29 +1,22 @@
 import { NextResponse } from "next/server";
+import {
+  CONSULTATION_PUBLIC_DAY_COUNT,
+  CONSULTATION_SLOT_BLOCKING_STATUSES,
+  CONSULTATION_SLOT_TIMES,
+  formatConsultationDateKey,
+} from "@/lib/consultation/slots";
 import { getConsultationBookings } from "@/lib/server/consultation-bookings";
-
-const SLOT_BLOCKING_STATUSES = new Set(["scheduled", "attended", "absent"]);
-
-const SLOT_TIMES = [
-  "10:00",
-  "11:00",
-  "12:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-];
-
-function formatDate(date: Date) {
-  return date.toISOString().split("T")[0];
-}
+import { getBlockedTimesByDate } from "@/lib/server/consultation-blocked-slots";
 
 export async function GET() {
-  const bookings = await getConsultationBookings();
+  const [bookings, blockedByDate] = await Promise.all([
+    getConsultationBookings(),
+    getBlockedTimesByDate(),
+  ]);
   const bookedByDate = new Map<string, Set<string>>();
 
   for (const booking of bookings) {
-    if (!SLOT_BLOCKING_STATUSES.has(booking.status)) continue;
+    if (!CONSULTATION_SLOT_BLOCKING_STATUSES.has(booking.status)) continue;
     if (!bookedByDate.has(booking.date)) {
       bookedByDate.set(booking.date, new Set<string>());
     }
@@ -31,21 +24,18 @@ export async function GET() {
   }
 
   const days: { date: string; availableTimes: string[] }[] = [];
-  let cursor = new Date();
+  const cursor = new Date();
   cursor.setDate(cursor.getDate() + 1);
 
-  while (days.length < 10) {
-    const dayOfWeek = cursor.getDay();
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+  while (days.length < CONSULTATION_PUBLIC_DAY_COUNT) {
+    const date = formatConsultationDateKey(cursor);
+    const bookedTimes = bookedByDate.get(date) ?? new Set<string>();
+    const blockedTimes = blockedByDate.get(date) ?? new Set<string>();
+    const availableTimes = CONSULTATION_SLOT_TIMES.filter(
+      (time) => !bookedTimes.has(time) && !blockedTimes.has(time),
+    );
 
-    if (!isWeekend) {
-      const date = formatDate(cursor);
-      const bookedTimes = bookedByDate.get(date) ?? new Set<string>();
-      const availableTimes = SLOT_TIMES.filter((time) => !bookedTimes.has(time));
-
-      days.push({ date, availableTimes });
-    }
-
+    days.push({ date, availableTimes: [...availableTimes] });
     cursor.setDate(cursor.getDate() + 1);
   }
 
