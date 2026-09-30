@@ -6,7 +6,7 @@ import {
   getThreeFreeTipsStage,
   listThreeFreeTipsStageNumbers,
   THREE_FREE_TIPS_STAGES,
-  THREE_FREE_TIPS_PREVIEW_EMAIL,
+  THREE_FREE_TIPS_PREVIEW_UID,
 } from "@/lib/emails/three-free-tips-stages";
 import { prisma } from "@/lib/prisma";
 import {
@@ -240,7 +240,7 @@ export async function previewThreeFreeTipsStageEmail(stage: number): Promise<{
 
   const html = await render(
     def.render({
-      email: THREE_FREE_TIPS_PREVIEW_EMAIL,
+      uid: THREE_FREE_TIPS_PREVIEW_UID,
       stage: def.stage,
     }),
   );
@@ -264,6 +264,7 @@ export type ThreeFreeTipsDailySendResult = {
 
 async function sendStageEmailToSubscriber(params: {
   email: string;
+  uid: string;
   stage: number;
   mailer: NonNullable<Awaited<ReturnType<typeof createOAuth2Transporter>>>;
   from: string;
@@ -280,7 +281,7 @@ async function sendStageEmailToSubscriber(params: {
 
   const html = await render(
     def.render({
-      email: params.email,
+      uid: params.uid,
       stage: params.stage,
     }),
   );
@@ -289,7 +290,7 @@ async function sendStageEmailToSubscriber(params: {
     `${def.previewText}\n\nПоздрави,\nDigiStart`,
     delivery.testMode,
   );
-  const unsubscribeUrl = getUnsubscribePageUrl(params.email);
+  const unsubscribeUrl = getUnsubscribePageUrl(params.uid);
 
   await params.mailer.sendMail({
     from: withTestFrom(params.from, delivery.testMode),
@@ -329,8 +330,14 @@ export async function sendTestThreeFreeTipsStageEmail(params: {
     );
   }
 
+  const existing = await prisma.newsletterSubscriber.findUnique({
+    where: { email: normalizedEmail },
+    select: { id: true },
+  });
+
   await sendStageEmailToSubscriber({
     email: normalizedEmail,
+    uid: existing?.id ?? THREE_FREE_TIPS_PREVIEW_UID,
     stage: params.stage,
     mailer,
     from,
@@ -445,6 +452,7 @@ export async function sendDailyThreeFreeTipsStageEmails(
       }
       await sendStageEmailToSubscriber({
         email: row.email,
+        uid: row.id,
         stage,
         mailer,
         from,

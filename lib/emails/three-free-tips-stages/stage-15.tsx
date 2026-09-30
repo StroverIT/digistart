@@ -9,9 +9,9 @@ import {
   TipsStageSignOff,
 } from "./layout";
 
-export function ThreeFreeTipsStage15Email({ email, stage }: ThreeFreeTipsStageEmailProps) {
+export function ThreeFreeTipsStage15Email({ uid, stage }: ThreeFreeTipsStageEmailProps) {
   return (
-    <TipsStageEmailShell previewText="Единственото нещо, което предсказва дали ще се справите добре с лийдовете, е скоростта.">
+    <TipsStageEmailShell recipientUid={uid} previewText="Единственото нещо, което предсказва дали ще се справите добре с лийдовете, е скоростта.">
       <TipsStageBodyText>Здравейте,</TipsStageBodyText>
 
       <TipsStageBodyText>
@@ -103,7 +103,7 @@ export function ThreeFreeTipsStage15Email({ email, stage }: ThreeFreeTipsStageEm
         какво е да работим заедно, разгледайте тази страница:
       </Text>
 
-      <TipsStageVideoCta email={email} stage={stage} />
+      <TipsStageVideoCta uid={uid} stage={stage} />
     </TipsStageEmailShell>
   );
 }

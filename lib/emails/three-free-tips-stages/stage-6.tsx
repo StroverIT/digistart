@@ -5,9 +5,9 @@ import { TipsStageBodyText, TipsStageVideoCta, TipsStageEmailShell, TipsStageSig
 
 const IMAGE_URL = "/assets/unnamed-e0117071-572d-4a8a-ac65-1d7f1b457edb.png";
 
-export function ThreeFreeTipsStage6Email({ email, stage }: ThreeFreeTipsStageEmailProps) {
+export function ThreeFreeTipsStage6Email({ uid, stage }: ThreeFreeTipsStageEmailProps) {
   return (
-    <TipsStageEmailShell previewText="Лесен начин да се класирате по-високо в Google за 30 секунди.">
+    <TipsStageEmailShell recipientUid={uid} previewText="Лесен начин да се класирате по-високо в Google за 30 секунди.">
       <TipsStageBodyText>Здравейте,</TipsStageBodyText>
 
       <TipsStageBodyText>
@@ -111,7 +111,7 @@ export function ThreeFreeTipsStage6Email({ email, stage }: ThreeFreeTipsStageEma
         Вас, свържете се с нас тук:
       </TipsStageBodyText>
 
-      <TipsStageVideoCta email={email} stage={stage} />
+      <TipsStageVideoCta uid={uid} stage={stage} />
     </TipsStageEmailShell>
   );
 }

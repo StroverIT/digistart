@@ -8,14 +8,14 @@ export function ThreeFreeTipsVideoClickTracker() {
   const trackedRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const email = searchParams.get("email")?.trim().toLowerCase();
+    const uid = searchParams.get("uid")?.trim();
     const stageRaw = searchParams.get("stage");
-    if (!email || !stageRaw) return;
+    if (!uid || !stageRaw) return;
 
     const stage = Number(stageRaw);
     if (!Number.isInteger(stage) || stage < 1) return;
 
-    const dedupeKey = `${email}:${stage}`;
+    const dedupeKey = `${uid}:${stage}`;
     if (trackedRef.current === dedupeKey) return;
     trackedRef.current = dedupeKey;
 
@@ -27,7 +27,7 @@ export function ThreeFreeTipsVideoClickTracker() {
     void fetch("/api/newsletter/three-free-tips/video-click", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, stage }),
+      body: JSON.stringify({ uid, stage }),
     })
       .then((res) => {
         if (res.ok && typeof window !== "undefined") {

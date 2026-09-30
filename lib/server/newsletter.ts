@@ -134,6 +134,7 @@ export async function subscribeToNicheRecommendation(
     try {
       await sendNicheRecommendationEmails({
         email: normalizedEmail,
+        uid: subscriber.id,
         niche: normalizedNiche,
         submittedAt: new Date(),
         isNewSubscriber: !existing,
@@ -198,6 +199,37 @@ export async function unsubscribeNewsletterByEmail(
   return { status: "ok", alreadyUnsubscribed: false };
 }
 
+export async function unsubscribeNewsletterByUid(
+  uid: string,
+): Promise<UnsubscribeNewsletterResult> {
+  const normalizedUid = uid.trim();
+  if (!normalizedUid) {
+    return { status: "not_found" };
+  }
+
+  const existing = await prisma.newsletterSubscriber.findUnique({
+    where: { id: normalizedUid },
+  });
+
+  if (!existing) {
+    return { status: "not_found" };
+  }
+
+  if (existing.status === NEWSLETTER_STATUS_UNSUBSCRIBED) {
+    return { status: "ok", alreadyUnsubscribed: true };
+  }
+
+  await prisma.newsletterSubscriber.update({
+    where: { id: normalizedUid },
+    data: {
+      status: NEWSLETTER_STATUS_UNSUBSCRIBED,
+      unsubscribedAt: new Date(),
+    },
+  });
+
+  return { status: "ok", alreadyUnsubscribed: false };
+}
+
 export function isNewsletterSubscribed(
   row: Pick<NewsletterSubscriber, "status">,
 ): boolean {
@@ -245,16 +277,20 @@ export type RecordThreeFreeTipsVideoCtaClickResult =
   | { status: "invalid_stage" };
 
 export async function recordThreeFreeTipsVideoCtaClick(
-  email: string,
+  uid: string,
   stage: number,
 ): Promise<RecordThreeFreeTipsVideoCtaClickResult> {
   if (!Number.isInteger(stage) || stage < 1 || !getThreeFreeTipsStage(stage)) {
     return { status: "invalid_stage" };
   }
 
-  const normalized = email.trim().toLowerCase();
+  const normalizedUid = uid.trim();
+  if (!normalizedUid) {
+    return { status: "not_found" };
+  }
+
   const existing = await prisma.newsletterSubscriber.findUnique({
-    where: { email: normalized },
+    where: { id: normalizedUid },
   });
 
   if (!existing || !isTipsSubscriberRow(existing)) {
@@ -276,7 +312,7 @@ export async function recordThreeFreeTipsVideoCtaClick(
   const existingClicks = parseTipsVideoCtaClicks(existing.metadata);
 
   await prisma.newsletterSubscriber.update({
-    where: { email: normalized },
+    where: { id: normalizedUid },
     data: {
       metadata: {
         ...baseMetadata,
@@ -373,6 +409,7 @@ export async function subscribeToThreeFreeTips(
   try {
     await sendThreeFreeTipsEmails({
       email: normalized,
+      uid: subscriber.id,
       source: THREE_FREE_TIPS_SOURCE,
       subscribedAt: subscriber.createdAt,
       notifyAdmin: !alreadyHadTips,
@@ -445,6 +482,7 @@ export async function subscribeToGoogleNewsletter(
   try {
     await sendGoogleNewsletterEmails({
       email: normalized,
+      uid: subscriber.id,
       firstName: normalizedName,
       source: GOOGLE_NEWSLETTER_SOURCE,
       subscribedAt: subscriber.createdAt,

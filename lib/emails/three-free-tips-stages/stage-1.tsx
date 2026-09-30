@@ -12,9 +12,9 @@ import {
 } from "./layout";
 
 
-export function ThreeFreeTipsStage1Email({ email, stage }: ThreeFreeTipsStageEmailProps) {
+export function ThreeFreeTipsStage1Email({ uid, stage }: ThreeFreeTipsStageEmailProps) {
   return (
-    <TipsStageEmailShell previewText="Трите неща, които трябва да подредите за топ 3 в Google">
+    <TipsStageEmailShell recipientUid={uid} previewText="Трите неща, които трябва да подредите за топ 3 в Google">
       <TipsStageBodyText>Здравейте,</TipsStageBodyText>
 
       <TipsStageBodyText>
@@ -119,7 +119,7 @@ export function ThreeFreeTipsStage1Email({ email, stage }: ThreeFreeTipsStageEma
         това видео:
       </Text>
 
-      <TipsStageVideoCta email={email} stage={stage} />
+      <TipsStageVideoCta uid={uid} stage={stage} />
     </TipsStageEmailShell>
   );
 }

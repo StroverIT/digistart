@@ -116,6 +116,7 @@ async function buildHtml(id: string): Promise<{ subject: string; html: string } 
         subject: "Записахме препоръката ви за ниша - DigiStart",
         html: await renderNicheRecommendationSubscriberEmailHtml({
           email: PREVIEW_EMAIL,
+          uid: "preview_subscriber_uid",
           niche: "зъболекар",
         }),
       };
@@ -134,7 +135,7 @@ async function buildHtml(id: string): Promise<{ subject: string; html: string } 
         subject: "Успешно записахте за бюлетина - DigiStart",
         html: await renderGoogleNewsletterSubscriberEmailHtml({
           firstName: "Иван",
-          email: PREVIEW_EMAIL,
+          uid: "preview_subscriber_uid",
         }),
       };
     case "google-newsletter-admin":
@@ -152,7 +153,7 @@ async function buildHtml(id: string): Promise<{ subject: string; html: string } 
       return {
         subject: "3 безплатни съвета за Google - DigiStart",
         html: await renderThreeFreeTipsSubscriberEmailHtml({
-          email: PREVIEW_EMAIL,
+          uid: "preview_subscriber_uid",
           videoUrl: `${siteUrl}/services/google-business`,
         }),
       };

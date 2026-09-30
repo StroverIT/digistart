@@ -3,7 +3,7 @@ import { z } from "zod";
 import { recordThreeFreeTipsVideoCtaClick } from "@/lib/server/newsletter";
 
 const clickSchema = z.object({
-  email: z.string().trim().email(),
+  uid: z.string().trim().min(1),
   stage: z.coerce.number().int().positive(),
 });
 
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     }
 
     const result = await recordThreeFreeTipsVideoCtaClick(
-      parsed.data.email,
+      parsed.data.uid,
       parsed.data.stage,
     );
 

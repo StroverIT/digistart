@@ -44,13 +44,15 @@ import type {
   GoogleFreeAnalysisLeadRow,
   GoogleFreeAnalysisLeadStatus,
 } from "@/lib/types";
+import { appendTrackingUid } from "@/lib/emails/unsubscribe";
 import { cn } from "@/lib/utils";
 
 const CONSULTATION_URL = "https://digistart.bg/business-consultation";
 
-function buildClipEmailBody(name: string, clipUrl: string) {
+function buildClipEmailBody(name: string, clipUrl: string, uid: string) {
   const greetingName = name.trim() || "{name}";
   const link = clipUrl.trim() || "{link}";
+  const consultationUrl = appendTrackingUid(CONSULTATION_URL, uid);
 
   return [
     `Здравейте, ${greetingName},`,
@@ -61,7 +63,7 @@ function buildClipEmailBody(name: string, clipUrl: string) {
     link,
     "",
     "Линк за безплатна консултация:",
-    CONSULTATION_URL,
+    consultationUrl,
   ].join("\n");
 }
 
@@ -495,6 +497,7 @@ export default function GoogleFreeAnalysisLeadsTable({
                             buildClipEmailBody(
                               greetingName || selectedLead.name,
                               clipUrl,
+                              selectedLead.id,
                             ),
                           );
                           toast.success("Текстът на имейла е копиран");

@@ -10,9 +10,9 @@ import {
 } from "./layout";
 
 
-export function ThreeFreeTipsStage13Email({ email, stage }: ThreeFreeTipsStageEmailProps) {
+export function ThreeFreeTipsStage13Email({ uid, stage }: ThreeFreeTipsStageEmailProps) {
   return (
-    <TipsStageEmailShell previewText="Управлението на времето се свежда до едно нещо – фокусиране върху това, което има значение.">
+    <TipsStageEmailShell recipientUid={uid} previewText="Управлението на времето се свежда до едно нещо – фокусиране върху това, което има значение.">
       <TipsStageBodyText>Здравейте,</TipsStageBodyText>
 
       <TipsStageBodyText>
@@ -128,7 +128,7 @@ export function ThreeFreeTipsStage13Email({ email, stage }: ThreeFreeTipsStageEm
         записах видео с малко повече информация по темата.
       </Text>
 
-      <TipsStageVideoCta email={email} stage={stage} />
+      <TipsStageVideoCta uid={uid} stage={stage} />
     </TipsStageEmailShell>
   );
 }

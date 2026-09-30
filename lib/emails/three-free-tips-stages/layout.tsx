@@ -18,14 +18,14 @@ const textBlack = "#000000";
 
 export function TipsStageEmailShell({
   previewText,
-  recipientEmail,
+  recipientUid,
   children,
 }: {
   previewText: string;
-  recipientEmail?: string;
+  recipientUid?: string;
   children: React.ReactNode;
 }) {
-  const unsubscribeUrl = getUnsubscribePageUrl(recipientEmail);
+  const unsubscribeUrl = getUnsubscribePageUrl(recipientUid);
 
   return (
     <Html>
@@ -192,10 +192,10 @@ export function TipsStageCta({ href, label }: { href: string; label: string }) {
   );
 }
 
-export function TipsStageVideoCta({ email, stage }: { email: string; stage: number }) {
+export function TipsStageVideoCta({ uid, stage }: { uid: string; stage: number }) {
   return (
     <TipsStageCta
-      href={buildThreeFreeTipsVideoCtaUrl({ email, stage })}
+      href={buildThreeFreeTipsVideoCtaUrl({ uid, stage })}
       label="Гледай видеото"
     />
   );

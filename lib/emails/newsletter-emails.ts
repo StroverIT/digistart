@@ -36,8 +36,8 @@ const colors = {
   accentSoft: "#eff6ff",
 } as const;
 
-function renderCustomerEmailFooter(siteUrl: string, email: string) {
-  const unsubscribeUrl = getUnsubscribePageUrl(email);
+function renderCustomerEmailFooter(siteUrl: string, uid: string) {
+  const unsubscribeUrl = getUnsubscribePageUrl(uid);
   return [
     React.createElement(Hr, {
       key: "footer-hr",
@@ -148,6 +148,7 @@ function formatBgDate(d: Date) {
 
 export async function renderNicheRecommendationSubscriberEmailHtml(params: {
   email: string;
+  uid: string;
   niche: string;
 }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
@@ -271,7 +272,7 @@ export async function renderNicheRecommendationSubscriberEmailHtml(params: {
               "Ако не сте изпратили тази препоръка, можете спокойно да игнорирате този имейл.",
             ),
           ),
-          ...renderCustomerEmailFooter(siteUrl, params.email),
+          ...renderCustomerEmailFooter(siteUrl, params.uid),
         ),
       ),
     ),
@@ -390,6 +391,7 @@ function resolveNicheRecommendationAdminEmail(): string | undefined {
 
 export async function sendNicheRecommendationEmails(params: {
   email: string;
+  uid: string;
   niche: string;
   submittedAt: Date;
   isNewSubscriber: boolean;
@@ -412,6 +414,7 @@ export async function sendNicheRecommendationEmails(params: {
 
   const subscriberHtml = await renderNicheRecommendationSubscriberEmailHtml({
     email: params.email,
+    uid: params.uid,
     niche: params.niche,
   });
   const adminHtml = await renderNicheRecommendationAdminEmailHtml({
@@ -464,7 +467,7 @@ export async function sendNicheRecommendationEmails(params: {
 
 export async function renderThreeFreeTipsSubscriberEmailHtml(params: {
   videoUrl: string;
-  email: string;
+  uid: string;
 }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
   const videoUrl = params.videoUrl;
@@ -590,7 +593,7 @@ export async function renderThreeFreeTipsSubscriberEmailHtml(params: {
               ),
             ),
           ),
-          ...renderCustomerEmailFooter(siteUrl, params.email),
+          ...renderCustomerEmailFooter(siteUrl, params.uid),
         ),
       ),
     ),
@@ -687,6 +690,7 @@ export async function renderThreeFreeTipsAdminEmailHtml(params: {
 
 export async function sendThreeFreeTipsEmails(params: {
   email: string;
+  uid: string;
   source: string;
   subscribedAt: Date;
   notifyAdmin: boolean;
@@ -710,7 +714,7 @@ export async function sendThreeFreeTipsEmails(params: {
 
   const subscriberHtml = await renderThreeFreeTipsSubscriberEmailHtml({
     videoUrl,
-    email: params.email,
+    uid: params.uid,
   });
   const subscriberSubject = withTestSubject(
     "3 безплатни съвета за Google - DigiStart",
@@ -770,7 +774,7 @@ const GOOGLE_NEWSLETTER_SUBSCRIBER_MESSAGE =
 
 export async function renderGoogleNewsletterSubscriberEmailHtml(params: {
   firstName: string;
-  email: string;
+  uid: string;
 }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
   const freeAnalysisUrl = `${siteUrl}/google/free-analysis`;
@@ -885,7 +889,7 @@ export async function renderGoogleNewsletterSubscriberEmailHtml(params: {
               ".",
             ),
           ),
-          ...renderCustomerEmailFooter(siteUrl, params.email),
+          ...renderCustomerEmailFooter(siteUrl, params.uid),
         ),
       ),
     ),
@@ -989,6 +993,7 @@ export async function renderGoogleNewsletterAdminEmailHtml(params: {
 
 export async function sendGoogleNewsletterEmails(params: {
   email: string;
+  uid: string;
   firstName: string;
   source: string;
   subscribedAt: Date;
@@ -1010,7 +1015,7 @@ export async function sendGoogleNewsletterEmails(params: {
 
   const subscriberHtml = await renderGoogleNewsletterSubscriberEmailHtml({
     firstName: params.firstName,
-    email: params.email,
+    uid: params.uid,
   });
   const subscriberSubject = withTestSubject(
     "Успешно записахте за бюлетина - DigiStart",

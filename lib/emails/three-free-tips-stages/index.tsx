@@ -16,7 +16,6 @@ import { ThreeFreeTipsStage14Email } from "./stage-14";
 import { ThreeFreeTipsStage15Email } from "./stage-15";
 import { ThreeFreeTipsStage16Email } from "./stage-16";
 import type { ThreeFreeTipsStageEmailProps } from "./types";
-import { THREE_FREE_TIPS_PREVIEW_EMAIL } from "./types";
 
 export type ThreeFreeTipsStageRenderContext = ThreeFreeTipsStageEmailProps;
 
@@ -145,5 +144,5 @@ export function listThreeFreeTipsStageNumbers(): number[] {
   return THREE_FREE_TIPS_STAGES.map((entry) => entry.stage).sort((a, b) => a - b);
 }
 
-export { THREE_FREE_TIPS_PREVIEW_EMAIL } from "./types";
+export { THREE_FREE_TIPS_PREVIEW_UID } from "./types";
 export type { ThreeFreeTipsStageEmailProps } from "./types";
