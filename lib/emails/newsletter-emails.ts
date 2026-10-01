@@ -36,8 +36,19 @@ const colors = {
   accentSoft: "#eff6ff",
 } as const;
 
+function getSiteDisplayLabel(siteUrl: string) {
+  try {
+    const host = new URL(siteUrl).hostname;
+    if (host === "localhost" || host === "127.0.0.1") return "digistart.bg";
+    return host.replace(/^www\./, "");
+  } catch {
+    return "digistart.bg";
+  }
+}
+
 function renderCustomerEmailFooter(siteUrl: string, uid: string) {
   const unsubscribeUrl = getUnsubscribePageUrl(uid);
+  const siteLabel = getSiteDisplayLabel(siteUrl);
   return [
     React.createElement(Hr, {
       key: "footer-hr",
@@ -49,7 +60,7 @@ function renderCustomerEmailFooter(siteUrl: string, uid: string) {
       React.createElement(
         Text,
         { style: { margin: "0 0 10px", fontSize: "12px", color: colors.muted } },
-        React.createElement(Link, { href: siteUrl, style: { color: colors.primary } }, siteUrl),
+        React.createElement(Link, { href: siteUrl, style: { color: colors.primary } }, siteLabel),
       ),
       React.createElement(
         Text,
@@ -465,12 +476,97 @@ export async function sendNicheRecommendationEmails(params: {
   }
 }
 
+function renderConsultationNextStepSection(
+  consultationUrl: string,
+  options?: {
+    buttonVariant?: "primary" | "secondary";
+    eyebrow?: string;
+  },
+) {
+  const buttonVariant = options?.buttonVariant ?? "primary";
+  const eyebrow = options?.eyebrow ?? "Следваща стъпка";
+  const buttonStyle =
+    buttonVariant === "secondary"
+      ? {
+          backgroundColor: "#ffffff",
+          color: colors.foreground,
+          borderRadius: "8px",
+          padding: "12px 20px",
+          fontWeight: 700,
+          fontSize: "14px",
+          textDecoration: "none",
+          display: "inline-block",
+          border: `1px solid ${colors.border}`,
+        }
+      : {
+          backgroundColor: colors.primary,
+          color: colors.primaryFg,
+          borderRadius: "8px",
+          padding: "13px 22px",
+          fontWeight: 700,
+          fontSize: "14px",
+          textDecoration: "none",
+          display: "inline-block",
+        };
+
+  return React.createElement(
+    Section,
+    {
+      style: {
+        backgroundColor: colors.accentSoft,
+        borderRadius: "12px",
+        border: `1px solid ${colors.border}`,
+        padding: "20px 20px 22px",
+      },
+    },
+    React.createElement(
+      Text,
+      {
+        style: {
+          margin: "0 0 6px",
+          fontSize: "12px",
+          fontWeight: 700,
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          color: buttonVariant === "secondary" ? colors.muted : colors.primary,
+        },
+      },
+      eyebrow,
+    ),
+    React.createElement(
+      Text,
+      {
+        style: {
+          margin: "0 0 16px",
+          fontSize: "15px",
+          lineHeight: "1.6",
+          color: colors.foreground,
+        },
+      },
+      CONSULTATION_NEXT_STEP_LEAD,
+    ),
+    React.createElement(
+      Button,
+      {
+        href: consultationUrl,
+        style: buttonStyle,
+      },
+      CONSULTATION_NEXT_STEP_CTA_LABEL,
+    ),
+  );
+}
+
+const CONSULTATION_NEXT_STEP_LEAD =
+  "Ако желаете да поговорим за бизнеса Ви и да намерим най-доброто решение за Вас:";
+const CONSULTATION_NEXT_STEP_CTA_LABEL = "Запази безплатна консултация";
+
 export async function renderThreeFreeTipsSubscriberEmailHtml(params: {
   videoUrl: string;
   uid: string;
 }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
   const videoUrl = params.videoUrl;
+  const consultationUrl = `${siteUrl}/business-consultation`;
 
   return render(
     React.createElement(
@@ -480,7 +576,7 @@ export async function renderThreeFreeTipsSubscriberEmailHtml(params: {
       React.createElement(
         Preview,
         null,
-        "Заповядайте - обещаният клип с 3 безплатни съвета",
+        "Вашите 3 безплатни съвета за Google са готови - гледайте клипа.",
       ),
       React.createElement(
         Body,
@@ -508,17 +604,12 @@ export async function renderThreeFreeTipsSubscriberEmailHtml(params: {
           },
           React.createElement(
             Section,
-            {
-              style: {
-                background: `linear-gradient(135deg, ${colors.accentSoft} 0%, ${colors.cardBg} 55%)`,
-                padding: "28px 28px 20px",
-              },
-            },
+            { style: { padding: "28px 28px 8px" } },
             React.createElement(
               Text,
               {
                 style: {
-                  margin: "0 0 8px",
+                  margin: "0 0 20px",
                   fontSize: "12px",
                   fontWeight: 700,
                   letterSpacing: "0.08em",
@@ -533,63 +624,102 @@ export async function renderThreeFreeTipsSubscriberEmailHtml(params: {
               {
                 as: "h1",
                 style: {
-                  margin: "0",
+                  margin: "0 0 10px",
                   fontSize: "24px",
-                  lineHeight: "1.25",
+                  lineHeight: "1.3",
                   color: colors.foreground,
                   fontWeight: 800,
                 },
               },
-              "3 безплатни съвета за Google",
+              "Вашите 3 безплатни съвета са готови",
             ),
             React.createElement(
               Text,
               {
                 style: {
-                  margin: "16px 0 0",
+                  margin: "0 0 24px",
                   fontSize: "15px",
                   lineHeight: "1.6",
                   color: colors.muted,
                 },
               },
-              "Заповядайте, това е обещаният клип с безплатни 3 съвета.",
+              "Обещахме Ви кратко видео с практически съвети за по-добро класиране в Google. Ето го:",
             ),
-          ),
-          React.createElement(
-            Section,
-            { style: { padding: "0 28px 24px" } },
             React.createElement(
-              Button,
+              Section,
               {
-                href: videoUrl,
                 style: {
-                  backgroundColor: colors.primary,
-                  color: colors.primaryFg,
-                  borderRadius: "8px",
-                  padding: "12px 22px",
-                  fontWeight: 700,
-                  fontSize: "14px",
-                  textDecoration: "none",
-                  display: "inline-block",
+                  backgroundColor: "#f8fafc",
+                  borderRadius: "12px",
+                  border: `1px solid ${colors.border}`,
+                  padding: "20px",
+                  marginBottom: "16px",
                 },
               },
-              "Гледай клипа",
+              React.createElement(
+                Text,
+                {
+                  style: {
+                    margin: "0 0 8px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    color: colors.muted,
+                  },
+                },
+                "Стъпка 1 · Гледайте клипа",
+              ),
+              React.createElement(
+                Text,
+                {
+                  style: {
+                    margin: "0 0 16px",
+                    fontSize: "15px",
+                    lineHeight: "1.55",
+                    color: colors.foreground,
+                  },
+                },
+                "Три съвета, които можете да приложите още днес.",
+              ),
+              React.createElement(
+                Button,
+                {
+                  href: videoUrl,
+                  style: {
+                    backgroundColor: colors.primary,
+                    color: colors.primaryFg,
+                    borderRadius: "8px",
+                    padding: "14px 24px",
+                    fontWeight: 700,
+                    fontSize: "15px",
+                    textDecoration: "none",
+                    display: "inline-block",
+                  },
+                },
+                "Гледай клипа",
+              ),
             ),
+            renderConsultationNextStepSection(consultationUrl, {
+              buttonVariant: "secondary",
+              eyebrow: "Стъпка 2 · По желание",
+            }),
             React.createElement(
               Text,
               {
                 style: {
-                  margin: "16px 0 0",
-                  fontSize: "13px",
+                  margin: "24px 0 8px",
+                  fontSize: "14px",
                   lineHeight: "1.6",
                   color: colors.muted,
                 },
               },
-              "Линк: ",
+              "Поздрави,",
+              React.createElement("br"),
               React.createElement(
-                Link,
-                { href: videoUrl, style: { color: colors.primary } },
-                videoUrl,
+                "strong",
+                { style: { color: colors.foreground } },
+                "Екипът на DigiStart",
               ),
             ),
           ),
@@ -720,7 +850,8 @@ export async function sendThreeFreeTipsEmails(params: {
     "3 безплатни съвета за Google - DigiStart",
     delivery.testMode,
   );
-  const subscriberText = `Заповядайте, това е обещаният клип с безплатни 3 съвета\n\n${videoUrl}\n\nПоздрави,\nDigiStart`;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
+  const subscriberText = `Заповядайте, това е обещаният клип с безплатни 3 съвета\n\nГледай клипа: ${videoUrl}\n\n${CONSULTATION_NEXT_STEP_LEAD}\n${CONSULTATION_NEXT_STEP_CTA_LABEL}: ${siteUrl}/business-consultation\n\nПоздрави,\nDigiStart`;
 
   const sends: Promise<unknown>[] = [
     mailer.sendMail({
@@ -771,8 +902,6 @@ export async function sendThreeFreeTipsEmails(params: {
 
 const GOOGLE_NEWSLETTER_SUBSCRIBER_MESSAGE =
   "Успешно се записахте за нашият бюлетин.";
-const GOOGLE_NEWSLETTER_CONSULTATION_CTA =
-  "Ако желаете да поговорим за бизнеса Ви и да намерим най-доброто решение за Вас, ";
 
 export async function renderGoogleNewsletterSubscriberEmailHtml(params: {
   firstName: string;
@@ -781,24 +910,17 @@ export async function renderGoogleNewsletterSubscriberEmailHtml(params: {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
   const consultationUrl = `${siteUrl}/business-consultation`;
   const greeting = params.firstName ? `Здравейте, ${params.firstName}!` : "Здравейте!";
-  const bodyTextStyle = {
-    margin: "0 0 14px",
-    fontSize: "15px",
-    lineHeight: "1.6",
-    color: colors.muted,
-  } as const;
-  const linkStyle = {
-    color: colors.primary,
-    fontWeight: 600,
-    textDecoration: "underline",
-  } as const;
 
   return render(
     React.createElement(
       Html,
       null,
       React.createElement(Head),
-      React.createElement(Preview, null, GOOGLE_NEWSLETTER_SUBSCRIBER_MESSAGE),
+      React.createElement(
+        Preview,
+        null,
+        `${GOOGLE_NEWSLETTER_SUBSCRIBER_MESSAGE} Запазете безплатна консултация.`,
+      ),
       React.createElement(
         Body,
         {
@@ -827,15 +949,15 @@ export async function renderGoogleNewsletterSubscriberEmailHtml(params: {
             Section,
             {
               style: {
-                background: `linear-gradient(135deg, ${colors.accentSoft} 0%, ${colors.cardBg} 55%)`,
-                padding: "28px 28px 20px",
+                background: `linear-gradient(160deg, ${colors.accentSoft} 0%, ${colors.cardBg} 70%)`,
+                padding: "28px 28px 8px",
               },
             },
             React.createElement(
               Text,
               {
                 style: {
-                  margin: "0 0 8px",
+                  margin: "0 0 18px",
                   fontSize: "12px",
                   fontWeight: 700,
                   letterSpacing: "0.08em",
@@ -846,12 +968,29 @@ export async function renderGoogleNewsletterSubscriberEmailHtml(params: {
               "DigiStart",
             ),
             React.createElement(
+              Text,
+              {
+                style: {
+                  margin: "0 0 14px",
+                  display: "inline-block",
+                  backgroundColor: "#dcfce7",
+                  color: "#166534",
+                  borderRadius: "999px",
+                  padding: "6px 12px",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  letterSpacing: "0.02em",
+                },
+              },
+              "✓ Абонаментът е активен",
+            ),
+            React.createElement(
               Heading,
               {
                 as: "h1",
                 style: {
-                  margin: "0",
-                  fontSize: "24px",
+                  margin: "0 0 8px",
+                  fontSize: "26px",
                   lineHeight: "1.25",
                   color: colors.foreground,
                   fontWeight: 800,
@@ -863,10 +1002,11 @@ export async function renderGoogleNewsletterSubscriberEmailHtml(params: {
               Text,
               {
                 style: {
-                  margin: "16px 0 0",
-                  fontSize: "15px",
+                  margin: "0",
+                  fontSize: "16px",
                   lineHeight: "1.6",
-                  color: colors.muted,
+                  color: colors.foreground,
+                  fontWeight: 500,
                 },
               },
               GOOGLE_NEWSLETTER_SUBSCRIBER_MESSAGE,
@@ -874,13 +1014,25 @@ export async function renderGoogleNewsletterSubscriberEmailHtml(params: {
           ),
           React.createElement(
             Section,
-            { style: { padding: "8px 28px 24px" } },
+            { style: { padding: "20px 28px 8px" } },
+            renderConsultationNextStepSection(consultationUrl),
+          ),
+          React.createElement(
+            Section,
+            { style: { padding: "20px 28px 8px" } },
             React.createElement(
               Text,
-              { style: { ...bodyTextStyle, marginBottom: 0 } },
-              GOOGLE_NEWSLETTER_CONSULTATION_CTA,
-              React.createElement(Link, { href: consultationUrl, style: linkStyle }, "натиснете тук"),
-              ".",
+              {
+                style: {
+                  margin: "0",
+                  fontSize: "14px",
+                  lineHeight: "1.6",
+                  color: colors.muted,
+                },
+              },
+              "Поздрави,",
+              React.createElement("br"),
+              React.createElement("strong", { style: { color: colors.foreground } }, "Екипът на DigiStart"),
             ),
           ),
           ...renderCustomerEmailFooter(siteUrl, params.uid),
@@ -1016,7 +1168,7 @@ export async function sendGoogleNewsletterEmails(params: {
     delivery.testMode,
   );
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
-  const subscriberText = `${params.firstName ? `Здравейте, ${params.firstName}!\n\n` : "Здравейте!\n\n"}${GOOGLE_NEWSLETTER_SUBSCRIBER_MESSAGE}\n\n${GOOGLE_NEWSLETTER_CONSULTATION_CTA.trim()}натиснете тук: ${siteUrl}/business-consultation\n\nПоздрави,\nDigiStart`;
+  const subscriberText = `${params.firstName ? `Здравейте, ${params.firstName}!\n\n` : "Здравейте!\n\n"}${GOOGLE_NEWSLETTER_SUBSCRIBER_MESSAGE}\n\n${CONSULTATION_NEXT_STEP_LEAD}\n${CONSULTATION_NEXT_STEP_CTA_LABEL}: ${siteUrl}/business-consultation\n\nПоздрави,\nЕкипът на DigiStart`;
 
   const sends: Promise<unknown>[] = [
     mailer.sendMail({
