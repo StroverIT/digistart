@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, Copy, RotateCcw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -68,6 +68,7 @@ function ProductPanel({
   campaign,
   onCampaignChange,
   campaignOptions,
+  assignedCampaigns,
   stats,
   savingCampaign,
 }: {
@@ -75,6 +76,7 @@ function ProductPanel({
   campaign: string;
   onCampaignChange: (campaign: string) => void;
   campaignOptions: string[];
+  assignedCampaigns: string[];
   stats: MetaAdsTrafficAggregate;
   savingCampaign: boolean;
 }) {
@@ -124,12 +126,17 @@ function ProductPanel({
   }
 
   const selectOptions = useMemo(() => {
-    const set = new Set<string>([...campaignOptions, campaign, product.defaultCampaign]);
+    const set = new Set<string>([
+      ...campaignOptions,
+      ...assignedCampaigns,
+      campaign,
+      product.defaultCampaign,
+    ]);
     return Array.from(set)
       .map((entry) => entry.trim())
       .filter(Boolean)
       .sort((a, b) => a.localeCompare(b, "bg"));
-  }, [campaignOptions, campaign, product.defaultCampaign]);
+  }, [campaignOptions, assignedCampaigns, campaign, product.defaultCampaign]);
 
   return (
     <div className="space-y-6">
@@ -398,6 +405,11 @@ export function MetaAdsPanel({ stats }: MetaAdsPanelProps) {
   const [activeProduct, setActiveProduct] = useState<MetaAdsProductId>("google-analysis");
   const [campaignMap, setCampaignMap] = useState(getDefaultMetaAdsCampaignMap);
   const [savingCampaign, setSavingCampaign] = useState(false);
+  const campaignMapRef = useRef(campaignMap);
+
+  useEffect(() => {
+    campaignMapRef.current = campaignMap;
+  }, [campaignMap]);
 
   useEffect(() => {
     let cancelled = false;
@@ -420,24 +432,34 @@ export function MetaAdsPanel({ stats }: MetaAdsPanelProps) {
     [stats.byCampaign],
   );
 
+  const assignedCampaigns = useMemo(
+    () => Object.values(campaignMap).filter(Boolean),
+    [campaignMap],
+  );
+
   async function saveCampaign(productId: MetaAdsProductId, campaign: string) {
     const trimmed = campaign.trim();
     if (!trimmed) return;
 
-    const nextMap = { ...campaignMap, [productId]: trimmed };
+    const nextMap = { ...campaignMapRef.current, [productId]: trimmed };
+    campaignMapRef.current = nextMap;
     setCampaignMap(nextMap);
     setSavingCampaign(true);
     try {
+      // Partial update — server merges with existing map so the other product is kept.
       const response = await fetch("/api/admin/meta-ads-campaigns", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ campaigns: nextMap }),
+        body: JSON.stringify({ campaigns: { [productId]: trimmed } }),
       });
       if (!response.ok) return;
       const data = (await response.json()) as {
         campaigns?: Record<MetaAdsProductId, string>;
       };
-      if (data.campaigns) setCampaignMap(data.campaigns);
+      if (data.campaigns) {
+        campaignMapRef.current = data.campaigns;
+        setCampaignMap(data.campaigns);
+      }
     } finally {
       setSavingCampaign(false);
     }
@@ -464,6 +486,7 @@ export function MetaAdsPanel({ stats }: MetaAdsPanelProps) {
             campaign={campaignMap[product.id] || product.defaultCampaign}
             onCampaignChange={(campaign) => void saveCampaign(product.id, campaign)}
             campaignOptions={campaignOptions}
+            assignedCampaigns={assignedCampaigns}
             stats={stats}
             savingCampaign={savingCampaign}
           />

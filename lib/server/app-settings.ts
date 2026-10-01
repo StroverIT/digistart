@@ -60,8 +60,9 @@ export async function getMetaAdsCampaignMap(): Promise<Record<MetaAdsProductId, 
 export async function setMetaAdsCampaignMap(
   map: MetaAdsCampaignMap,
 ): Promise<Record<MetaAdsProductId, string>> {
-  const defaults = getDefaultMetaAdsCampaignMap();
-  const next = { ...defaults };
+  // Merge into the currently saved map so updating one product never wipes the other.
+  const current = await getMetaAdsCampaignMap();
+  const next = { ...current };
   for (const product of META_ADS_PRODUCTS) {
     const value = map[product.id];
     if (typeof value === "string" && value.trim()) {
