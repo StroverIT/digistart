@@ -125,6 +125,77 @@ export function buildEmptyMetaAdsTraffic(): MetaAdsTrafficAggregate {
   };
 }
 
+/** Keep only rows for one campaign (case-insensitive trim). */
+export function filterMetaAdsTrafficByCampaign(
+  stats: MetaAdsTrafficAggregate,
+  campaignName: string,
+): MetaAdsTrafficAggregate {
+  const target = campaignName.trim().toLowerCase();
+  if (!target) return buildEmptyMetaAdsTraffic();
+
+  const rows = stats.rows.filter((row) => row.campaign.trim().toLowerCase() === target);
+  const totalViews = rows.reduce((sum, row) => sum + row.views, 0);
+  const totalRegistrations = rows.reduce((sum, row) => sum + row.registrations, 0);
+
+  const adsets = new Map<string, { views: number; registrations: number }>();
+  const creatives = new Map<string, { views: number; registrations: number }>();
+  for (const row of rows) {
+    const adset = adsets.get(row.adset) ?? { views: 0, registrations: 0 };
+    adset.views += row.views;
+    adset.registrations += row.registrations;
+    adsets.set(row.adset, adset);
+
+    const creative = creatives.get(row.creative) ?? { views: 0, registrations: 0 };
+    creative.views += row.views;
+    creative.registrations += row.registrations;
+    creatives.set(row.creative, creative);
+  }
+
+  const campaigns =
+    rows.length > 0
+      ? [
+          {
+            key: rows[0].campaign,
+            label: rows[0].campaign,
+            views: totalViews,
+            registrations: totalRegistrations,
+            conversionRate:
+              totalViews > 0
+                ? Math.round((totalRegistrations / totalViews) * 10_000) / 100
+                : totalRegistrations > 0
+                  ? 100
+                  : 0,
+          },
+        ]
+      : campaignName.trim()
+        ? [
+            {
+              key: campaignName.trim(),
+              label: campaignName.trim(),
+              views: 0,
+              registrations: 0,
+              conversionRate: 0,
+            },
+          ]
+        : [];
+
+  return {
+    totalViews,
+    totalRegistrations,
+    conversionRate:
+      totalViews > 0
+        ? Math.round((totalRegistrations / totalViews) * 10_000) / 100
+        : totalRegistrations > 0
+          ? 100
+          : 0,
+    byCampaign: campaigns,
+    byAdset: toDimensionStats(adsets),
+    byCreative: toDimensionStats(creatives),
+    rows,
+    daily: [],
+  };
+}
+
 export function buildMetaAdsTrafficStats(
   landingRows: LandingRow[],
   registrationRows: RegistrationRow[],

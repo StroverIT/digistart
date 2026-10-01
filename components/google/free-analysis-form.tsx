@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { readMetaAttribution } from "@/lib/analytics/source";
 import { META_LEAD_VALUE, trackMetaLead } from "@/lib/analytics/meta-pixel";
 import { trackAnalyticsEvent } from "@/lib/analytics/tracker";
 import { Button } from "@/components/ui/button";
@@ -102,6 +103,7 @@ export function FreeAnalysisForm({
 
     setLoading(true);
     try {
+      const attribution = readMetaAttribution();
       const response = await fetch(apiPath, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -114,6 +116,7 @@ export function FreeAnalysisForm({
           urgency: payload.urgency,
           source: payload.source,
           pagePath: pathname,
+          ...(attribution ? { attribution } : {}),
         }),
       });
 

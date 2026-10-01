@@ -6,6 +6,7 @@ import {
   attributionFromNewsletterMetadata,
   buildMetaAdsTrafficStats,
 } from "@/lib/analytics/meta-ads-traffic";
+import { sanitizeMetaAttribution } from "@/lib/analytics/source";
 import {
   CHECKOUT_FUNNEL_STAGE_LABELS,
   CHECKOUT_FUNNEL_STAGES,
@@ -869,10 +870,25 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     },
   });
 
-  const registrationRows = newsletterRows.map((row) => ({
-    createdAt: row.createdAt,
-    attribution: attributionFromNewsletterMetadata(row.metadata),
-  }));
+  const metaPaidLeadRows = rows.filter((row) => {
+    if (row.eventType !== "cta_click") return false;
+    const metadata = row.metadata as Record<string, unknown> | null;
+    return Boolean(metadata?.meta_paid_registration);
+  });
+
+  const registrationRows = [
+    ...newsletterRows.map((row) => ({
+      createdAt: row.createdAt,
+      attribution: attributionFromNewsletterMetadata(row.metadata),
+    })),
+    ...metaPaidLeadRows.map((row) => {
+      const metadata = (row.metadata ?? {}) as Record<string, unknown>;
+      return {
+        createdAt: row.createdAt,
+        attribution: sanitizeMetaAttribution(metadata),
+      };
+    }),
+  ];
 
   const pageStats = buildPageStats(rows);
   const { stats: ctaStats, totalClicks } = buildCtaStats(rows);

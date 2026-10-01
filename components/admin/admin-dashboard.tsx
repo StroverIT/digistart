@@ -856,7 +856,7 @@ export function AdminDashboard({ initialTab }: { initialTab?: DashboardTabId }) 
         <TabsContent value="meta" className="space-y-6 mt-0">
           <DashboardSectionHeading
             title="Мета реклами"
-            description="Прегледи и регистрации по кампания, ad set и creative"
+            description="Прегледи, регистрации и конверсия по продукт — Google Three Tips и Google Анализ"
           />
           <MetaAdsPanel stats={analytics.metaAdsTraffic} />
         </TabsContent>
