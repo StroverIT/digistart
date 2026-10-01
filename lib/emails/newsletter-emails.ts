@@ -770,14 +770,15 @@ export async function sendThreeFreeTipsEmails(params: {
 }
 
 const GOOGLE_NEWSLETTER_SUBSCRIBER_MESSAGE =
-  "Успешно се записахте за нашият бюлетин, очаквайте между 3-5 имейла всяка седмица които са запълнени с важна информация за SEO";
+  "Успешно се записахте за нашият бюлетин.";
+const GOOGLE_NEWSLETTER_CONSULTATION_CTA =
+  "Ако желаете да поговорим за бизнеса Ви и да намерим най-доброто решение за Вас, ";
 
 export async function renderGoogleNewsletterSubscriberEmailHtml(params: {
   firstName: string;
   uid: string;
 }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
-  const freeAnalysisUrl = `${siteUrl}/google/free-analysis`;
   const consultationUrl = `${siteUrl}/business-consultation`;
   const greeting = params.firstName ? `Здравейте, ${params.firstName}!` : "Здравейте!";
   const bodyTextStyle = {
@@ -876,15 +877,8 @@ export async function renderGoogleNewsletterSubscriberEmailHtml(params: {
             { style: { padding: "8px 28px 24px" } },
             React.createElement(
               Text,
-              { style: bodyTextStyle },
-              "Ако желаете безплатен анализ към профила ",
-              React.createElement(Link, { href: freeAnalysisUrl, style: linkStyle }, "натиснете тук"),
-              ".",
-            ),
-            React.createElement(
-              Text,
               { style: { ...bodyTextStyle, marginBottom: 0 } },
-              "Ако желаете да поговорим повече за бизнеса Ви и да видим с какво може да помогнем, ",
+              GOOGLE_NEWSLETTER_CONSULTATION_CTA,
               React.createElement(Link, { href: consultationUrl, style: linkStyle }, "натиснете тук"),
               ".",
             ),
@@ -1022,7 +1016,7 @@ export async function sendGoogleNewsletterEmails(params: {
     delivery.testMode,
   );
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://digistart.bg";
-  const subscriberText = `${params.firstName ? `Здравейте, ${params.firstName}!\n\n` : "Здравейте!\n\n"}${GOOGLE_NEWSLETTER_SUBSCRIBER_MESSAGE}\n\nАко желаете безплатен анализ към профила натиснете тук: ${siteUrl}/google/free-analysis\n\nАко желаете да поговорим повече за бизнеса Ви и да видим с какво може да помогнем, натиснете тук: ${siteUrl}/business-consultation\n\nПоздрави,\nDigiStart`;
+  const subscriberText = `${params.firstName ? `Здравейте, ${params.firstName}!\n\n` : "Здравейте!\n\n"}${GOOGLE_NEWSLETTER_SUBSCRIBER_MESSAGE}\n\n${GOOGLE_NEWSLETTER_CONSULTATION_CTA.trim()}натиснете тук: ${siteUrl}/business-consultation\n\nПоздрави,\nDigiStart`;
 
   const sends: Promise<unknown>[] = [
     mailer.sendMail({
