@@ -14,38 +14,35 @@ export type TrackingMetadata = {
 
 export type UtmPayload = Record<string, string>;
 
-/** Meta Ads hierarchy + UTM snapshot persisted for form attribution. */
+/** Meta Ads hierarchy snapshot persisted for form attribution (localStorage). */
 export type MetaAttribution = {
+  campaign?: string;
+  adset?: string;
+  creative?: string;
+  utm_type?: string;
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
   utm_term?: string;
   utm_content?: string;
-  campaign_id?: string;
-  adset_id?: string;
-  ad_id?: string;
   captured_at?: string;
   landing_page?: string;
 };
 
-export const META_URL_PARAM_KEYS = [
-  "campaign_id",
-  "adset_id",
-  "ad_id",
-] as const;
+export const META_URL_PARAM_KEYS = ["campaign", "adset", "creative"] as const;
 
 export const META_ATTRIBUTION_STORAGE_KEY = "digistart_meta_attribution";
+export const META_UTM_TYPE_PAID = "paid";
 
 /**
- * Default Meta Ads URL parameters (campaign / ad set / creative).
+ * Default Meta Ads URL parameters.
  * Dynamic macros expand per impression/click in Ads Manager.
  */
 export const META_ADS_URL_PARAMS_TEMPLATE = [
-  "utm_source=facebook",
-  "utm_medium=paid",
-  "utm_campaign={{campaign.name}}",
-  "utm_term={{adset.name}}",
-  "utm_content={{ad.name}}",
+  "utm_type=paid",
+  "campaign={{campaign.name}}",
+  "adset={{adset.name}}",
+  "creative={{ad.name}}",
 ].join("&");
 
 const MAX_PARAM_LENGTH = 200;
@@ -117,7 +114,7 @@ export function extractAllUtmParams(params: URLSearchParams): UtmPayload {
 }
 
 /**
- * Extracts UTM + Meta Ads hierarchy params (`campaign_id`, `adset_id`, `ad_id`).
+ * Extracts UTM + Meta Ads hierarchy params (`campaign`, `adset`, `creative`).
  */
 export function extractTrackingPayload(params: URLSearchParams): UtmPayload {
   const payload: UtmPayload = {};
@@ -147,16 +144,23 @@ export function buildMetaAttributionFromPayload(
     }
   };
 
+  copyIfPresent("campaign");
+  copyIfPresent("adset");
+  copyIfPresent("creative");
+  copyIfPresent("utm_type");
   copyIfPresent("utm_source");
   copyIfPresent("utm_medium");
   copyIfPresent("utm_campaign");
   copyIfPresent("utm_term");
   copyIfPresent("utm_content");
-  copyIfPresent("campaign_id");
-  copyIfPresent("adset_id");
-  copyIfPresent("ad_id");
 
-  if (Object.keys(attribution).length === 0) return null;
+  const hasHierarchy = Boolean(attribution.campaign || attribution.adset || attribution.creative);
+  if (!hasHierarchy && !attribution.utm_type) return null;
+
+  // Paid Meta landings always carry utm_type=paid (set if hierarchy present).
+  if (hasHierarchy && !attribution.utm_type) {
+    attribution.utm_type = META_UTM_TYPE_PAID;
+  }
 
   attribution.captured_at = new Date().toISOString();
   if (landingPage) attribution.landing_page = landingPage.slice(0, 500);
@@ -165,7 +169,10 @@ export function buildMetaAttributionFromPayload(
 
 export function persistMetaAttribution(attribution: MetaAttribution) {
   try {
-    sessionStorage.setItem(META_ATTRIBUTION_STORAGE_KEY, JSON.stringify(attribution));
+    const serialized = JSON.stringify(attribution);
+    localStorage.setItem(META_ATTRIBUTION_STORAGE_KEY, serialized);
+    // Mirror for same-tab redirects before localStorage sync edge cases.
+    sessionStorage.setItem(META_ATTRIBUTION_STORAGE_KEY, serialized);
   } catch {
     /* ignore quota / private mode */
   }
@@ -173,11 +180,23 @@ export function persistMetaAttribution(attribution: MetaAttribution) {
 
 export function readMetaAttribution(): MetaAttribution | null {
   try {
-    const raw = sessionStorage.getItem(META_ATTRIBUTION_STORAGE_KEY);
+    const raw =
+      localStorage.getItem(META_ATTRIBUTION_STORAGE_KEY) ??
+      sessionStorage.getItem(META_ATTRIBUTION_STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as unknown;
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-    return sanitizeMetaAttribution(parsed as Record<string, unknown>);
+    const attribution = sanitizeMetaAttribution(parsed as Record<string, unknown>);
+    if (!attribution) return null;
+
+    const hasHierarchy = Boolean(
+      attribution.campaign || attribution.adset || attribution.creative,
+    );
+    if (hasHierarchy && !attribution.utm_type) {
+      attribution.utm_type = META_UTM_TYPE_PAID;
+    }
+
+    return attribution;
   } catch {
     return null;
   }
@@ -189,14 +208,15 @@ export function sanitizeMetaAttribution(
   if (!value) return null;
   const attribution: MetaAttribution = {};
   const keys: (keyof MetaAttribution)[] = [
+    "campaign",
+    "adset",
+    "creative",
+    "utm_type",
     "utm_source",
     "utm_medium",
     "utm_campaign",
     "utm_term",
     "utm_content",
-    "campaign_id",
-    "adset_id",
-    "ad_id",
     "captured_at",
     "landing_page",
   ];

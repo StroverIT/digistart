@@ -24,26 +24,6 @@ const UNKNOWN_CAMPAIGN = "(без кампания)";
 const UNKNOWN_ADSET = "(без ad set)";
 const UNKNOWN_CREATIVE = "(без creative)";
 
-const PAID_MEDIA = new Set([
-  "paid",
-  "paid_social",
-  "cpc",
-  "ppc",
-  "cpm",
-  "cpa",
-  "display",
-]);
-
-const META_SOURCES = new Set([
-  "facebook",
-  "instagram",
-  "meta",
-  "fb",
-  "ig",
-  "an",
-  "messenger",
-]);
-
 function asRecord(payload: Prisma.JsonValue): Record<string, string> {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) return {};
   const out: Record<string, string> = {};
@@ -64,48 +44,38 @@ function readField(
   return null;
 }
 
+/**
+ * Only count landings marked as paid Meta traffic with hierarchy params.
+ * Bio short links (utm_medium=social, no utm_type=paid) are excluded.
+ */
 export function isMetaAdsTrafficPayload(input: {
   utmSource?: string | null;
   utmMedium?: string | null;
   payload: Record<string, string>;
 }): boolean {
-  const source = (input.utmSource ?? input.payload.utm_source ?? "").toLowerCase();
-  const medium = (input.utmMedium ?? input.payload.utm_medium ?? "").toLowerCase();
-  const hasIds = Boolean(
-    input.payload.campaign_id || input.payload.adset_id || input.payload.ad_id,
+  const utmType = (input.payload.utm_type ?? "").toLowerCase();
+  if (utmType !== "paid") return false;
+
+  return Boolean(
+    input.payload.campaign || input.payload.adset || input.payload.creative,
   );
-
-  if (hasIds) return true;
-  if (PAID_MEDIA.has(medium)) return true;
-
-  // Meta source with campaign/ad naming, excluding organic bio short links (utm_medium=social)
-  if (META_SOURCES.has(source) && medium !== "social") {
-    return Boolean(
-      input.payload.utm_campaign ||
-        input.payload.utm_term ||
-        input.payload.utm_content ||
-        input.utmSource,
-    );
-  }
-
-  return false;
 }
 
 function resolveHierarchy(payload: Record<string, string>, fallbackCampaign?: string | null) {
   const campaign =
-    readField(payload, "utm_campaign", "campaign_id") ??
+    readField(payload, "campaign", "utm_campaign") ??
     fallbackCampaign?.trim() ??
     UNKNOWN_CAMPAIGN;
-  const adset = readField(payload, "utm_term", "adset_id") ?? UNKNOWN_ADSET;
-  const creative = readField(payload, "utm_content", "ad_id") ?? UNKNOWN_CREATIVE;
+  const adset = readField(payload, "adset", "utm_term") ?? UNKNOWN_ADSET;
+  const creative = readField(payload, "creative", "utm_content") ?? UNKNOWN_CREATIVE;
 
   return {
     campaign,
     adset,
     creative,
-    campaignId: readField(payload, "campaign_id"),
-    adsetId: readField(payload, "adset_id"),
-    adId: readField(payload, "ad_id"),
+    campaignId: null as string | null,
+    adsetId: null as string | null,
+    adId: null as string | null,
   };
 }
 
@@ -233,13 +203,7 @@ export function buildMetaAdsTrafficStats(
         payload,
       })
     ) {
-      // Still count registrations that carry hierarchy/UTM campaign from Meta
-      const hasHierarchy =
-        Boolean(payload.utm_campaign) ||
-        Boolean(payload.campaign_id) ||
-        Boolean(payload.adset_id) ||
-        Boolean(payload.ad_id);
-      if (!hasHierarchy) continue;
+      continue;
     }
 
     const hierarchy = resolveHierarchy(payload, payload.utm_campaign);

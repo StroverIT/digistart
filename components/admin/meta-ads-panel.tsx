@@ -6,13 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RankedStatsList, type RankedStatItem } from "@/components/admin/ranked-stats-list";
+import { META_UTM_TYPE_PAID } from "@/lib/analytics/source";
 import type { MetaAdsTrafficAggregate } from "@/lib/analytics/types";
 
 type MetaAdsPanelProps = {
   stats: MetaAdsTrafficAggregate;
 };
 
-type ParamKey = "utm_campaign" | "utm_term" | "utm_content";
+type ParamKey = "campaign" | "adset" | "creative";
 
 type ParamField = {
   key: ParamKey;
@@ -20,21 +21,16 @@ type ParamField = {
   hint: string;
 };
 
-const FIXED_PARAMS = {
-  utm_source: "facebook",
-  utm_medium: "paid",
-} as const;
-
 const DEFAULT_PARAM_VALUES: Record<ParamKey, string> = {
-  utm_campaign: "{{campaign.name}}",
-  utm_term: "{{adset.name}}",
-  utm_content: "{{ad.name}}",
+  campaign: "{{campaign.name}}",
+  adset: "{{adset.name}}",
+  creative: "{{ad.name}}",
 };
 
 const PARAM_FIELDS: ParamField[] = [
-  { key: "utm_campaign", label: "Campaign", hint: "Име на кампанията · {{campaign.name}}" },
-  { key: "utm_term", label: "Ad set", hint: "Име на ad set · {{adset.name}}" },
-  { key: "utm_content", label: "Creative", hint: "Име на creative / ad · {{ad.name}}" },
+  { key: "campaign", label: "Campaign", hint: "Име на кампанията · {{campaign.name}}" },
+  { key: "adset", label: "Ad set", hint: "Име на ad set · {{adset.name}}" },
+  { key: "creative", label: "Creative", hint: "Име на creative / ad · {{ad.name}}" },
 ];
 
 const LANDING_PATH = "/google/three-free-tips";
@@ -45,10 +41,7 @@ function encodeParamValue(value: string) {
 }
 
 function buildParamsString(values: Record<ParamKey, string>) {
-  const parts = [
-    `utm_source=${encodeParamValue(FIXED_PARAMS.utm_source)}`,
-    `utm_medium=${encodeParamValue(FIXED_PARAMS.utm_medium)}`,
-  ];
+  const parts = [`utm_type=${encodeParamValue(META_UTM_TYPE_PAID)}`];
 
   for (const field of PARAM_FIELDS) {
     const value = values[field.key].trim();
@@ -82,10 +75,11 @@ export function MetaAdsPanel({ stats }: MetaAdsPanelProps) {
   const creativeItems = useMemo(() => toDimensionItems(stats.byCreative), [stats.byCreative]);
 
   const paramsString = useMemo(() => buildParamsString(values), [values]);
-  const exampleUrl = useMemo(
-    () => (paramsString ? `${LANDING_PATH}?${paramsString}` : LANDING_PATH),
-    [paramsString],
-  );
+  const exampleUrl = useMemo(() => {
+    const path = paramsString ? `${LANDING_PATH}?${paramsString}` : LANDING_PATH;
+    if (typeof window === "undefined") return `https://digistart.bg${path}`;
+    return `${window.location.origin}${path}`;
+  }, [paramsString]);
 
   async function copyText(text: string, kind: "params" | "url") {
     try {
@@ -108,7 +102,8 @@ export function MetaAdsPanel({ stats }: MetaAdsPanelProps) {
           <CardTitle>URL параметри за Meta Ads</CardTitle>
           <p className="text-sm text-muted-foreground font-normal">
             Попълни campaign / ad set / creative - низът отгоре се обновява веднага.
-            `utm_source=facebook` и `utm_medium=paid` се добавят автоматично.
+            `utm_type=paid` се добавя автоматично. Данните се пазят в localStorage през редиректи
+            и се пращат при регистрация.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">

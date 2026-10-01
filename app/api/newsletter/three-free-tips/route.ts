@@ -5,14 +5,15 @@ import { subscribeToThreeFreeTips } from "@/lib/server/newsletter";
 
 const attributionSchema = z
   .object({
+    campaign: z.string().trim().max(200).optional(),
+    adset: z.string().trim().max(200).optional(),
+    creative: z.string().trim().max(200).optional(),
+    utm_type: z.string().trim().max(200).optional(),
     utm_source: z.string().trim().max(200).optional(),
     utm_medium: z.string().trim().max(200).optional(),
     utm_campaign: z.string().trim().max(200).optional(),
     utm_term: z.string().trim().max(200).optional(),
     utm_content: z.string().trim().max(200).optional(),
-    campaign_id: z.string().trim().max(200).optional(),
-    adset_id: z.string().trim().max(200).optional(),
-    ad_id: z.string().trim().max(200).optional(),
     captured_at: z.string().trim().max(200).optional(),
     landing_page: z.string().trim().max(500).optional(),
   })
