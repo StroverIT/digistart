@@ -47,6 +47,7 @@ export type AnalyticsAdminResponse = {
   totalClicks: number;
   dailyStats: DailyAnalyticsStats[];
   shortLinkTraffic: ShortLinkTrafficAggregate;
+  metaAdsTraffic: MetaAdsTrafficAggregate;
   cartAdditions: {
     allTimeTotalAdds: number;
     lastDaysTotalAdds: number;
@@ -134,6 +135,44 @@ export type ShortLinkTrafficAggregate = {
   };
   links: ShortLinkTrafficStat[];
   dailyByLink: ShortLinkDailyStat[];
+};
+
+export type MetaAdsDimensionStat = {
+  key: string;
+  label: string;
+  views: number;
+  registrations: number;
+  conversionRate: number;
+};
+
+export type MetaAdsRowStat = {
+  key: string;
+  campaign: string;
+  adset: string;
+  creative: string;
+  campaignId: string | null;
+  adsetId: string | null;
+  adId: string | null;
+  views: number;
+  registrations: number;
+  conversionRate: number;
+};
+
+export type MetaAdsDailyStat = {
+  date: string;
+  views: number;
+  registrations: number;
+};
+
+export type MetaAdsTrafficAggregate = {
+  totalViews: number;
+  totalRegistrations: number;
+  conversionRate: number;
+  byCampaign: MetaAdsDimensionStat[];
+  byAdset: MetaAdsDimensionStat[];
+  byCreative: MetaAdsDimensionStat[];
+  rows: MetaAdsRowStat[];
+  daily: MetaAdsDailyStat[];
 };
 
 export type SurveyAnalyticsStat = {

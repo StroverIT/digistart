@@ -6,6 +6,7 @@ const DASHBOARD_TABS = [
   "funnels",
   "revenue",
   "traffic",
+  "meta",
   "conversion",
   "operations",
 ] as const;

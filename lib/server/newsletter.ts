@@ -1,4 +1,5 @@
 import type { NewsletterSubscriber, Prisma } from "@prisma/client";
+import type { MetaAttribution } from "@/lib/analytics/source";
 import {
   sendGoogleNewsletterEmails,
   sendNicheRecommendationEmails,
@@ -364,19 +365,27 @@ export type ThreeFreeTipsSubscribeResult = {
 
 export async function subscribeToThreeFreeTips(
   email: string,
+  attribution?: MetaAttribution | null,
 ): Promise<ThreeFreeTipsSubscribeResult> {
   const normalized = email.trim().toLowerCase();
   const existing = await prisma.newsletterSubscriber.findUnique({
     where: { email: normalized },
   });
 
-  const tipMeta = { threeFreeTipsAt: new Date().toISOString() };
-  const mergedMetadata =
+  const tipMeta = {
+    threeFreeTipsAt: new Date().toISOString(),
+    ...(attribution && Object.keys(attribution).length > 0
+      ? { attribution }
+      : {}),
+  } satisfies Record<string, unknown>;
+
+  const mergedMetadata = (
     existing?.metadata &&
     typeof existing.metadata === "object" &&
     !Array.isArray(existing.metadata)
       ? { ...(existing.metadata as Record<string, unknown>), ...tipMeta }
-      : tipMeta;
+      : tipMeta
+  ) as Prisma.InputJsonValue;
 
   const alreadyHadTips =
     Boolean(existing) &&

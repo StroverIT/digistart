@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { extractAllUtmParams, stripUtmParamsFromUrl } from "@/lib/analytics/source";
+import {
+  buildMetaAttributionFromPayload,
+  extractTrackingPayload,
+  persistMetaAttribution,
+  stripUtmParamsFromUrl,
+} from "@/lib/analytics/source";
 import { generateClientUuid } from "@/lib/utils";
 
 const TRACKED_DEDUPE_KEY_STORAGE = "digistart_tracked_utm_dedupe_keys";
@@ -52,9 +57,12 @@ function getOrCreateVisitorId() {
 export function UtmTracker() {
   useEffect(() => {
     const url = new URL(window.location.href);
-    const utmPayload = extractAllUtmParams(url.searchParams);
-    const hasUtm = Object.keys(utmPayload).length > 0;
-    if (!hasUtm) return;
+    const utmPayload = extractTrackingPayload(url.searchParams);
+    const hasTracking = Object.keys(utmPayload).length > 0;
+    if (!hasTracking) return;
+
+    const attribution = buildMetaAttributionFromPayload(utmPayload, url.pathname || "/");
+    if (attribution) persistMetaAttribution(attribution);
 
     const visitorId = getOrCreateVisitorId();
     const dedupeKey = buildDedupeKey(utmPayload, visitorId);

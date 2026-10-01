@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import HeroVideo from "@/components/services/service-detail-ready-store-v2/HeroVideo";
 import { LANDING_REVEAL_CLASS } from "@/components/services/service-detail-ready-store-v2/landing-animation-classes";
 import { useSectionScrollAnimations } from "@/components/services/service-pas-landing/use-section-scroll-animations";
+import { readMetaAttribution } from "@/lib/analytics/source";
 import { META_LEAD_VALUE, trackMetaLead } from "@/lib/analytics/meta-pixel";
 import { cn } from "@/lib/utils";
 
@@ -32,10 +33,14 @@ export function ThreeFreeTipsHeroSection() {
 
     setLoading(true);
     try {
+      const attribution = readMetaAttribution();
       const res = await fetch("/api/newsletter/three-free-tips", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed }),
+        body: JSON.stringify({
+          email: trimmed,
+          ...(attribution ? { attribution } : {}),
+        }),
       });
       const data = (await res.json().catch(() => ({}))) as {
         ok?: boolean;

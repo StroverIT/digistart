@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { storeUtmLandingEvent } from "@/lib/analytics/server";
+import { isValidTrackingPayloadKey } from "@/lib/analytics/source";
 import type { UtmLandingEventPayload } from "@/lib/analytics/types";
 
 function isValidUtmPayload(value: unknown): value is UtmLandingEventPayload {
@@ -34,7 +35,7 @@ function isValidUtmPayload(value: unknown): value is UtmLandingEventPayload {
 
   return entries.every(
     ([key, val]) =>
-      key.startsWith("utm_") &&
+      isValidTrackingPayloadKey(key) &&
       typeof val === "string" &&
       val.trim().length > 0 &&
       key.length <= 120 &&

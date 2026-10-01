@@ -16,8 +16,10 @@ import { RevenueChart } from "@/components/admin/revenue-chart";
 import { ServicesPieChart } from "@/components/admin/services-pie-chart";
 import { SubscriptionsChart } from "@/components/admin/subscriptions-chart";
 import { SocialShortLinksPanel } from "@/components/admin/social-short-links-panel";
+import { MetaAdsPanel } from "@/components/admin/meta-ads-panel";
 import type { AnalyticsAdminResponse } from "@/lib/analytics/types";
 import { buildEmptyShortLinkTraffic } from "@/lib/analytics/short-link-traffic";
+import { buildEmptyMetaAdsTraffic } from "@/lib/analytics/meta-ads-traffic";
 import { CartAdditionsChart } from "@/components/admin/cart-additions-chart";
 import { CheckoutFunnelChart } from "@/components/admin/checkout-funnel-chart";
 import { SurveyCombinationsChart } from "@/components/admin/survey-combinations-chart";
@@ -35,6 +37,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const DASHBOARD_TABS = [
   { id: "overview", label: "Преглед" },
   { id: "traffic", label: "Трафик" },
+  { id: "meta", label: "Мета" },
   { id: "engagement", label: "Ангажираност" },
   { id: "funnels", label: "Funnels" },
   { id: "revenue", label: "Приходи" },
@@ -87,6 +90,7 @@ export function AdminDashboard({ initialTab }: { initialTab?: DashboardTabId }) 
     totalClicks: 0,
     dailyStats: [],
     shortLinkTraffic: buildEmptyShortLinkTraffic(),
+    metaAdsTraffic: buildEmptyMetaAdsTraffic(),
     cartAdditions: {
       allTimeTotalAdds: 0,
       lastDaysTotalAdds: 0,
@@ -148,6 +152,7 @@ export function AdminDashboard({ initialTab }: { initialTab?: DashboardTabId }) 
             totalClicks: 0,
             dailyStats: [],
             shortLinkTraffic: buildEmptyShortLinkTraffic(),
+            metaAdsTraffic: buildEmptyMetaAdsTraffic(),
             cartAdditions: {
               allTimeTotalAdds: 0,
               lastDaysTotalAdds: 0,
@@ -846,6 +851,14 @@ export function AdminDashboard({ initialTab }: { initialTab?: DashboardTabId }) 
             </Card>
           </div>
 
+        </TabsContent>
+
+        <TabsContent value="meta" className="space-y-6 mt-0">
+          <DashboardSectionHeading
+            title="Мета реклами"
+            description="Прегледи и регистрации по кампания, ad set и creative"
+          />
+          <MetaAdsPanel stats={analytics.metaAdsTraffic} />
         </TabsContent>
 
         <TabsContent value="conversion" className="space-y-6 mt-0">

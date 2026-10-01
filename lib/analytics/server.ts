@@ -3,6 +3,10 @@ import { prisma } from "@/lib/prisma";
 import { comboCodeFromIndex } from "@/lib/analytics/survey-combinations";
 import { buildShortLinkTrafficStats } from "@/lib/analytics/short-link-traffic";
 import {
+  attributionFromNewsletterMetadata,
+  buildMetaAdsTrafficStats,
+} from "@/lib/analytics/meta-ads-traffic";
+import {
   CHECKOUT_FUNNEL_STAGE_LABELS,
   CHECKOUT_FUNNEL_STAGES,
   type CheckoutFunnelStage,
@@ -836,11 +840,17 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
   const utmRows = await prisma.$queryRaw<
     {
       createdAt: Date;
+      utmSource: string | null;
+      utmMedium: string | null;
+      utmCampaign: string | null;
       utmPayload: Prisma.JsonValue;
     }[]
   >`
     SELECT
       "created_at" AS "createdAt",
+      "utm_source" AS "utmSource",
+      "utm_medium" AS "utmMedium",
+      "utm_campaign" AS "utmCampaign",
       "utm_payload" AS "utmPayload"
     FROM "utm_landing_events"
     WHERE (${fromDate}::timestamp IS NULL OR "created_at" >= ${fromDate}::timestamp)
@@ -848,10 +858,27 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     ORDER BY "created_at" DESC
   `;
 
+  const newsletterRows = await prisma.newsletterSubscriber.findMany({
+    where: {
+      source: "three-free-tips",
+      ...createdAtFilter,
+    },
+    select: {
+      createdAt: true,
+      metadata: true,
+    },
+  });
+
+  const registrationRows = newsletterRows.map((row) => ({
+    createdAt: row.createdAt,
+    attribution: attributionFromNewsletterMetadata(row.metadata),
+  }));
+
   const pageStats = buildPageStats(rows);
   const { stats: ctaStats, totalClicks } = buildCtaStats(rows);
   const dailyStats = buildDailyStats(rows);
   const shortLinkTraffic = buildShortLinkTrafficStats(utmRows);
+  const metaAdsTraffic = buildMetaAdsTrafficStats(utmRows, registrationRows);
   const cartAdditions = buildCartAdditionStats(rows, 30);
   const surveyStats = buildSurveyStats(rows);
   const funnelCompetitorStats = buildFunnelCompetitorStats(rows);
@@ -866,6 +893,7 @@ export async function getAnalyticsAdminStats(from?: Date, to?: Date): Promise<An
     totalClicks,
     dailyStats,
     shortLinkTraffic,
+    metaAdsTraffic,
     cartAdditions,
     surveyStats,
     funnelCompetitorStats,
