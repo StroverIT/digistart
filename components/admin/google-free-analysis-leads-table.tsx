@@ -9,6 +9,8 @@ import {
   Copy,
   Eye,
   ExternalLink,
+  FlaskConical,
+  Mail,
   RotateCcw,
   Search,
 } from "lucide-react";
@@ -40,32 +42,15 @@ import {
   GOOGLE_FREE_ANALYSIS_URGENCY_OPTIONS,
   googleFreeAnalysisFormFields,
 } from "@/lib/data/google-free-analysis-content";
+import {
+  PROMISED_ANALYSIS_EMAIL_SUBJECT,
+  PROMISED_ANALYSIS_TEST_INBOX,
+} from "@/lib/emails/google-promised-analysis-constants";
 import type {
   GoogleFreeAnalysisLeadRow,
   GoogleFreeAnalysisLeadStatus,
 } from "@/lib/types";
-import { appendTrackingUid } from "@/lib/emails/unsubscribe";
 import { cn } from "@/lib/utils";
-
-const CONSULTATION_URL = "https://digistart.bg/business-consultation";
-
-function buildClipEmailBody(name: string, clipUrl: string, uid: string) {
-  const greetingName = name.trim() || "{name}";
-  const link = clipUrl.trim() || "{link}";
-  const consultationUrl = appendTrackingUid(CONSULTATION_URL, uid);
-
-  return [
-    `Здравейте, ${greetingName},`,
-    "",
-    "Това е обещаният клип с безплатен анализ за по-добро класиране в Google.",
-    "",
-    "Линк към клипа:",
-    link,
-    "",
-    "Линк за безплатна консултация:",
-    consultationUrl,
-  ].join("\n");
-}
 
 type StatusFilter = "pending" | "done" | "all";
 
@@ -179,6 +164,7 @@ export default function GoogleFreeAnalysisLeadsTable({
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [savingNotesId, setSavingNotesId] = useState<string | null>(null);
+  const [sendingEmail, setSendingEmail] = useState<"send" | "test" | null>(null);
   const [greetingName, setGreetingName] = useState("");
   const [clipUrl, setClipUrl] = useState("");
   const [notesDraft, setNotesDraft] = useState("");
@@ -291,6 +277,54 @@ export default function GoogleFreeAnalysisLeadsTable({
       setSavingNotesId(null);
     }
   }, [apiBasePath]);
+
+  const onSendAnalysisEmail = useCallback(
+    async (options: { test: boolean }) => {
+      if (!selectedLead) return;
+
+      const youtubeUrl = clipUrl.trim();
+      if (!youtubeUrl) {
+        toast.error("Добави линк към YouTube клипа");
+        return;
+      }
+
+      setSendingEmail(options.test ? "test" : "send");
+      try {
+        const res = await fetch(
+          `${apiBasePath}/${selectedLead.id}/send-analysis-email`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              youtubeUrl,
+              greetingName: greetingName.trim() || selectedLead.name,
+              test: options.test,
+            }),
+          },
+        );
+        const data = (await res.json().catch(() => null)) as {
+          error?: string;
+          to?: string;
+        } | null;
+        if (!res.ok) {
+          throw new Error(data?.error || "Неуспешно изпращане");
+        }
+
+        if (options.test) {
+          toast.success(`Тестовият имейл е изпратен до ${PROMISED_ANALYSIS_TEST_INBOX}`);
+        } else {
+          toast.success(`Имейлът е изпратен до ${data?.to || selectedLead.email}`);
+        }
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Неуспешно изпращане на имейла",
+        );
+      } finally {
+        setSendingEmail(null);
+      }
+    },
+    [apiBasePath, clipUrl, greetingName, selectedLead],
+  );
 
   return (
     <div className="space-y-4">
@@ -467,16 +501,19 @@ export default function GoogleFreeAnalysisLeadsTable({
                   copyable
                 />
 
-                <div className="space-y-3">
+                <div className="space-y-3 rounded-xl border border-border bg-muted/20 p-4">
                   <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">Копирай текст за имейл</p>
+                    <p className="text-sm font-medium leading-none">Изпрати анализа по имейл</p>
                     <p className="text-xs text-muted-foreground">
-                      Копира шаблона с линка към клипа и безплатната консултация.
+                      Заглавие: <span className="font-medium text-foreground">{PROMISED_ANALYSIS_EMAIL_SUBJECT}</span>
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Красив HTML шаблон като при 3-те безплатни съвета. Ти добавяш YouTube линка.
                     </p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lead-clip-url" className="text-sm font-medium">
-                      Линк към клипа
+                      Линк към YouTube клипа
                     </Label>
                     <Input
                       id="lead-clip-url"
@@ -486,30 +523,30 @@ export default function GoogleFreeAnalysisLeadsTable({
                       placeholder="https://youtube.com/..."
                     />
                   </div>
-                  <Button
-                    type="button"
-                    className="w-full"
-                    variant="secondary"
-                    onClick={() => {
-                      void (async () => {
-                        try {
-                          await navigator.clipboard.writeText(
-                            buildClipEmailBody(
-                              greetingName || selectedLead.name,
-                              clipUrl,
-                              selectedLead.id,
-                            ),
-                          );
-                          toast.success("Текстът на имейла е копиран");
-                        } catch {
-                          toast.error("Неуспешно копиране");
-                        }
-                      })();
-                    }}
-                  >
-                    <Copy className="mr-2 h-4 w-4" />
-                    Копирай имейл
-                  </Button>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <Button
+                      type="button"
+                      className="w-full"
+                      disabled={sendingEmail !== null || !clipUrl.trim()}
+                      onClick={() => void onSendAnalysisEmail({ test: false })}
+                    >
+                      <Mail className="mr-2 h-4 w-4" />
+                      {sendingEmail === "send" ? "Изпращане..." : "Изпрати имейл"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      className="w-full"
+                      disabled={sendingEmail !== null || !clipUrl.trim()}
+                      onClick={() => void onSendAnalysisEmail({ test: true })}
+                    >
+                      <FlaskConical className="mr-2 h-4 w-4" />
+                      {sendingEmail === "test" ? "Изпращане..." : "Test email"}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Test email праща същите данни до {PROMISED_ANALYSIS_TEST_INBOX}.
+                  </p>
                 </div>
 
                 <FormAnswer
