@@ -51,7 +51,7 @@ type ConsultationItem = {
   notes?: string;
   date: string;
   time: string;
-  source: "public" | "checkout";
+  source: "public" | "checkout" | "admin";
   sourcePage?: string;
   pagePath?: string;
   status: ConsultationStatus;

@@ -20,7 +20,7 @@ export type ConsultationEmailBooking = {
   notes?: string;
   date: string;
   time: string;
-  source: "public" | "checkout";
+  source: "public" | "checkout" | "admin";
   sourcePage?: string;
   timezone?: string;
   meetUrl?: string;

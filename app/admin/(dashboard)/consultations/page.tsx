@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getConsultationBookings } from "@/lib/server/consultation-bookings";
 import ConsultationsTable from "@/components/admin/ConsultationsTable";
 import { AdminConsultationAvailabilityPanel } from "@/components/admin/AdminConsultationAvailabilityPanel";
+import { AdminManualConsultationBookingPanel } from "@/components/admin/AdminManualConsultationBookingPanel";
 
 export default async function ConsultationsPage() {
   const consultations = await getConsultationBookings();
@@ -12,7 +13,7 @@ export default async function ConsultationsPage() {
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
         <h1 className="mb-2 text-3xl font-bold">Консултации</h1>
         <p className="text-muted-foreground">
-          Записи от клиенти и заключване на часове без известия
+          Записи от клиенти, ръчни резервации и заключване на часове
         </p>
       </div>
 
@@ -22,6 +23,7 @@ export default async function ConsultationsPage() {
       >
         <TabsList>
           <TabsTrigger value="bookings">Записи</TabsTrigger>
+          <TabsTrigger value="manual">Ръчна резервация</TabsTrigger>
           <TabsTrigger value="availability">Календар</TabsTrigger>
         </TabsList>
 
@@ -38,6 +40,17 @@ export default async function ConsultationsPage() {
               ) : (
                 <ConsultationsTable initialConsultations={consultations} />
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="manual">
+          <Card className="border-border bg-card">
+            <CardHeader>
+              <CardTitle>Ръчна резервация</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AdminManualConsultationBookingPanel />
             </CardContent>
           </Card>
         </TabsContent>

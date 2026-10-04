@@ -120,7 +120,7 @@ export interface ConsultationBooking {
   id: string;
   date: string;
   time: string;
-  source: "public" | "checkout";
+  source: "public" | "checkout" | "admin";
   status: "scheduled" | "attended" | "absent" | "cancelled";
   orderId?: string;
   timezone?: string;
