@@ -201,7 +201,7 @@ export function ConsultationSlotCalendar({
           caption_label: "text-base font-semibold capitalize text-foreground",
           weekdays: "mb-4 flex w-full gap-2",
           weekday:
-            "flex flex-1 basis-0 text-center text-xs font-medium text-muted-foreground",
+            "flex flex-1 basis-0 items-center justify-center text-center text-xs font-medium text-muted-foreground",
           weeks: "block w-full",
           week: "mt-3 flex w-full gap-2 first:mt-0",
           day: "flex flex-1 basis-0 items-center justify-center p-0.5",
