@@ -12,7 +12,8 @@ const bookingSchema = z
   .object({
     name: z.string().trim().min(2),
     email: z.string().email(),
-    phone: z.string().trim().min(6),
+    // Allow placeholder when booking from name+email-only pages (e.g. /business-meeting).
+    phone: z.union([z.string().trim().min(6), z.literal(""), z.literal("—")]),
     company: z.string().trim().optional(),
     notes: z.string().trim().optional(),
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),

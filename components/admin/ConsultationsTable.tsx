@@ -9,6 +9,7 @@ import {
   Check,
   Copy,
   ExternalLink,
+  CalendarPlus,
   Eye,
   FileText,
   Mail,
@@ -175,8 +176,10 @@ function ContactRow({
 
 export default function ConsultationsTable({
   initialConsultations,
+  onBookFollowUp,
 }: {
   initialConsultations: ConsultationItem[];
+  onBookFollowUp?: (consultation: ConsultationItem) => void;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [consultations, setConsultations] = useState<ConsultationItem[]>(initialConsultations);
@@ -331,7 +334,7 @@ export default function ConsultationsTable({
                   Meet
                 </th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                  Детайли
+                  Действия
                 </th>
               </tr>
             </thead>
@@ -398,15 +401,28 @@ export default function ConsultationsTable({
                     )}
                   </td>
                   <td className="py-3 px-4 text-sm">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedConsultationId(consultation.id)}
-                    >
-                      <Eye className="mr-2 h-4 w-4" />
-                      Детайли
-                    </Button>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedConsultationId(consultation.id)}
+                      >
+                        <Eye className="mr-2 h-4 w-4" />
+                        Детайли
+                      </Button>
+                      {onBookFollowUp ? (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => onBookFollowUp(consultation)}
+                        >
+                          <CalendarPlus className="mr-2 h-4 w-4" />
+                          Следваща среща
+                        </Button>
+                      ) : null}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -610,29 +626,44 @@ export default function ConsultationsTable({
                 </section>
               </div>
 
-              <SheetFooter className="shrink-0 border-t border-border bg-background px-6 py-4 sm:flex-row sm:justify-stretch">
-                {selectedConsultation.meetingType !== "in_person" &&
-                  selectedConsultation.meetUrl ? (
-                  <Button asChild className="w-full">
-                    <a
-                      href={selectedConsultation.meetUrl}
-                      target="_blank"
-                      rel="noreferrer"
+              <SheetFooter className="shrink-0 border-t border-border bg-background px-6 py-4 sm:flex-col sm:space-x-0">
+                <div className="flex w-full flex-col gap-2 sm:flex-row">
+                  {onBookFollowUp ? (
+                    <Button
+                      type="button"
+                      className="w-full"
+                      onClick={() => {
+                        onBookFollowUp(selectedConsultation);
+                        setSelectedConsultationId(null);
+                      }}
                     >
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      Отвори Google Meet
-                    </a>
-                  </Button>
-                ) : (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => setSelectedConsultationId(null)}
-                  >
-                    Затвори
-                  </Button>
-                )}
+                      <CalendarPlus className="mr-2 h-4 w-4" />
+                      Следваща среща
+                    </Button>
+                  ) : null}
+                  {selectedConsultation.meetingType !== "in_person" &&
+                  selectedConsultation.meetUrl ? (
+                    <Button asChild variant="outline" className="w-full">
+                      <a
+                        href={selectedConsultation.meetUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Отвори Google Meet
+                      </a>
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => setSelectedConsultationId(null)}
+                    >
+                      Затвори
+                    </Button>
+                  )}
+                </div>
               </SheetFooter>
             </>
           )}

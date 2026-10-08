@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import type { TManualBookingPrefill } from "@/components/admin/ConsultationsAdminClient/types";
 import { cn } from "@/lib/utils";
 
 type SlotStatus = "available" | "booked" | "blocked";
@@ -35,7 +36,11 @@ function formatDisplayDate(date: string) {
   });
 }
 
-export function AdminManualConsultationBookingPanel() {
+export function AdminManualConsultationBookingPanel({
+  prefill = null,
+}: {
+  prefill?: TManualBookingPrefill | null;
+}) {
   const [days, setDays] = useState<AdminDay[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
@@ -45,6 +50,15 @@ export function AdminManualConsultationBookingPanel() {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!prefill) return;
+    setName(prefill.name);
+    setEmail(prefill.email);
+    setPhone(prefill.phone ?? "");
+    setNotes(prefill.notes ?? "");
+    setSelectedTime("");
+  }, [prefill?.key]);
 
   const loadDays = useCallback(async () => {
     const res = await fetch("/api/admin/consultation-slots", { cache: "no-store" });
@@ -189,6 +203,11 @@ export function AdminManualConsultationBookingPanel() {
             Ръчна резервация: избирате свободен час, въвеждате име и имейл. Създава
             Google Calendar събитие и изпраща потвърждение на клиента.
           </p>
+          {prefill ? (
+            <p className="mt-2 rounded-md border border-primary/20 bg-primary/5 px-3 py-2 text-sm text-foreground">
+              Данните на клиента са попълнени от записа. Изберете нов ден и час.
+            </p>
+          ) : null}
         </div>
 
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

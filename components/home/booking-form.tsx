@@ -34,6 +34,8 @@ type BookingFormProps = {
   notesLabel?: string;
   notesPlaceholder?: string;
   showOnSiteOption?: boolean;
+  showPhoneField?: boolean;
+  nameEmailOnly?: boolean;
   showBadge?: boolean;
   titleAs?: "h1" | "h2";
   pricing?: {
@@ -58,6 +60,8 @@ export function BookingForm({
   notesLabel,
   notesPlaceholder,
   showOnSiteOption = false,
+  showPhoneField = true,
+  nameEmailOnly = false,
   showBadge = true,
   titleAs: TitleTag = "h2",
   pricing,
@@ -185,6 +189,8 @@ export function BookingForm({
               variant="embedded"
               showCompanyField={false}
               showNotesField={showNotesField}
+              showPhoneField={showPhoneField}
+              nameEmailOnly={nameEmailOnly}
               showSocialProfileToggle={showSocialProfileToggle}
               notesLabel={notesLabel}
               notesPlaceholder={notesPlaceholder}

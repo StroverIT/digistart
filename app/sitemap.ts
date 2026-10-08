@@ -11,6 +11,7 @@ const STATIC_PATHS: Array<{
   { path: "/", changeFrequency: "weekly", priority: 1 },
   { path: "/about", changeFrequency: "monthly", priority: 0.8 },
   { path: "/business-consultation", changeFrequency: "monthly", priority: 0.85 },
+  { path: "/business-meeting", changeFrequency: "monthly", priority: 0.85 },
   { path: "/services/ads", changeFrequency: "monthly", priority: 0.85 },
   { path: "/services/google-business", changeFrequency: "monthly", priority: 0.85 },
   { path: "/services/online-store", changeFrequency: "monthly", priority: 0.85 },

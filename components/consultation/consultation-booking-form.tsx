@@ -48,6 +48,9 @@ type Props = {
   submitLabel?: string;
   showCompanyField?: boolean;
   showNotesField?: boolean;
+  showPhoneField?: boolean;
+  /** When true, contact step only asks for full name + email (no phone/website/notes). */
+  nameEmailOnly?: boolean;
   showSocialProfileToggle?: boolean;
   socialProfileToggleLabel?: string;
   showOnSiteOption?: boolean;
@@ -93,6 +96,8 @@ export default function ConsultationBookingForm({
   submitLabel = "Запази консултация",
   showCompanyField = true,
   showNotesField = true,
+  showPhoneField = true,
+  nameEmailOnly = false,
   showSocialProfileToggle = false,
   socialProfileToggleLabel = "Имаш ли социални мрежи?",
   showOnSiteOption = false,
@@ -184,12 +189,16 @@ export default function ConsultationBookingForm({
     return days.find((day) => day.date === selectedDate)?.availableTimes ?? [];
   }, [days, selectedDate]);
 
+  const requirePhone = showPhoneField && !nameEmailOnly;
   const isContactComplete = useMemo(() => {
     const name = formData.name.trim();
     const phone = formData.phone.trim();
     const email = formData.email.trim();
-    return name.length > 0 && phone.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }, [formData.name, formData.phone, formData.email]);
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!emailOk || name.length === 0) return false;
+    if (requirePhone && phone.length === 0) return false;
+    return true;
+  }, [formData.name, formData.phone, formData.email, requirePhone]);
 
   const showDayPicker = embeddedShowSlotsFirst ? true : isContactComplete;
   const showMeetingTypePicker = isContactComplete && showOnSiteOption;
@@ -625,10 +634,12 @@ export default function ConsultationBookingForm({
         body: JSON.stringify({
           name: formData.name.trim(),
           email: formData.email.trim(),
-          phone: formData.phone.trim(),
+          phone: requirePhone ? formData.phone.trim() : formData.phone.trim() || "—",
           company:
-            hasWebsite === "yes" ? formData.company.trim() || undefined : undefined,
-          notes: formData.notes.trim() || undefined,
+            nameEmailOnly || hasWebsite !== "yes"
+              ? undefined
+              : formData.company.trim() || undefined,
+          notes: nameEmailOnly ? undefined : formData.notes.trim() || undefined,
           date: selectedDate,
           time: selectedTime,
           source,
@@ -934,70 +945,76 @@ export default function ConsultationBookingForm({
         />
       </div>
 
-      <div className="space-y-2">
-        <Label>Имаш ли уебсайт / онлайн магазин?</Label>
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => setHasWebsite("yes")}
-            className={yesNoButtonClass("yes")}
-          >
-            Да
-          </button>
-          <button
-            type="button"
-            onClick={() => setHasWebsite("no")}
-            className={yesNoButtonClass("no")}
-          >
-            Не
-          </button>
-        </div>
-      </div>
+      {!nameEmailOnly ? (
+        <>
+          <div className="space-y-2">
+            <Label>Имаш ли уебсайт / онлайн магазин?</Label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setHasWebsite("yes")}
+                className={yesNoButtonClass("yes")}
+              >
+                Да
+              </button>
+              <button
+                type="button"
+                onClick={() => setHasWebsite("no")}
+                className={yesNoButtonClass("no")}
+              >
+                Не
+              </button>
+            </div>
+          </div>
 
-      {hasWebsite === "yes" ? (
-        <div
-          data-consult-animate-key="website-url"
-          className="grid gap-2 opacity-0 translate-y-10"
-        >
-          <Label htmlFor="consult-company">Линк към уебсайт / онлайн магазин</Label>
-          <Input
-            id="consult-company"
-            name="company"
-            value={formData.company}
-            onChange={onInputChange}
-            placeholder="https://example.com"
-            className={cn(embeddedInputClass, "h-12")}
-          />
-        </div>
+          {hasWebsite === "yes" ? (
+            <div
+              data-consult-animate-key="website-url"
+              className="grid gap-2 opacity-0 translate-y-10"
+            >
+              <Label htmlFor="consult-company">Линк към уебсайт / онлайн магазин</Label>
+              <Input
+                id="consult-company"
+                name="company"
+                value={formData.company}
+                onChange={onInputChange}
+                placeholder="https://example.com"
+                className={cn(embeddedInputClass, "h-12")}
+              />
+            </div>
+          ) : null}
+
+          <div className="grid gap-2">
+            <Label htmlFor="consult-notes">
+              Какво се опитваш да постигнеш / как можем да ти помогнем?
+            </Label>
+            <Textarea
+              id="consult-notes"
+              name="notes"
+              value={formData.notes}
+              onChange={onInputChange}
+              placeholder="Разкажи накратко за целта си и какво искаш да постигнеш."
+              rows={4}
+              className={embeddedTextareaClass}
+            />
+          </div>
+
+          {requirePhone ? (
+            <div className="grid gap-2">
+              <Label htmlFor="consult-phone">Телефонен номер</Label>
+              <Input
+                id="consult-phone"
+                name="phone"
+                value={formData.phone}
+                onChange={onInputChange}
+                placeholder="0888 123 456"
+                className={cn(embeddedInputClass, "h-12")}
+                required
+              />
+            </div>
+          ) : null}
+        </>
       ) : null}
-
-      <div className="grid gap-2">
-        <Label htmlFor="consult-notes">
-          Какво се опитваш да постигнеш / как можем да ти помогнем?
-        </Label>
-        <Textarea
-          id="consult-notes"
-          name="notes"
-          value={formData.notes}
-          onChange={onInputChange}
-          placeholder="Разкажи накратко за целта си и какво искаш да постигнеш."
-          rows={4}
-          className={embeddedTextareaClass}
-        />
-      </div>
-
-      <div className="grid gap-2">
-        <Label htmlFor="consult-phone">Телефонен номер</Label>
-        <Input
-          id="consult-phone"
-          name="phone"
-          value={formData.phone}
-          onChange={onInputChange}
-          placeholder="0888 123 456"
-          className={cn(embeddedInputClass, "h-12")}
-          required
-        />
-      </div>
     </div>
   );
 
@@ -1034,19 +1051,21 @@ export default function ConsultationBookingForm({
         ) : null}
 
         {showContactAfterSlotSelection && isEmbedded && !isHomeSlotsFlow ? (
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="consult-phone">Телефон</Label>
-              <Input
-                id="consult-phone"
-                name="phone"
-                value={formData.phone}
-                onChange={onInputChange}
-                placeholder="0888 123 456"
-                className={cn(isEmbedded ? embeddedInputClass : undefined, "h-12")}
-                required
-              />
-            </div>
+          <div className={cn("grid gap-5", requirePhone && "md:grid-cols-2")}>
+            {requirePhone ? (
+              <div className="grid gap-2">
+                <Label htmlFor="consult-phone">Телефон</Label>
+                <Input
+                  id="consult-phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={onInputChange}
+                  placeholder="0888 123 456"
+                  className={cn(isEmbedded ? embeddedInputClass : undefined, "h-12")}
+                  required
+                />
+              </div>
+            ) : null}
             <div className="grid gap-2">
               <Label htmlFor="consult-email">Имейл</Label>
               <Input
@@ -1063,13 +1082,15 @@ export default function ConsultationBookingForm({
           </div>
         ) : showContactAfterSlotSelection ? (
           <>
-            <Input
-              name="phone"
-              value={formData.phone}
-              onChange={onInputChange}
-              placeholder="Телефон"
-              required
-            />
+            {requirePhone ? (
+              <Input
+                name="phone"
+                value={formData.phone}
+                onChange={onInputChange}
+                placeholder="Телефон"
+                required
+              />
+            ) : null}
             <Input
               name="email"
               type="email"
@@ -1078,7 +1099,7 @@ export default function ConsultationBookingForm({
               placeholder="Имейл"
               required
             />
-            {showCompanyField ? (
+            {showCompanyField && !nameEmailOnly ? (
               <Input
                 name="company"
                 value={formData.company}
