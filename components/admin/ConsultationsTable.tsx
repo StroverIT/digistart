@@ -12,13 +12,25 @@ import {
   CalendarPlus,
   Eye,
   FileText,
+  Loader2,
   Mail,
   MapPin,
   Phone,
   Search,
+  Trash2,
   Video,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -188,10 +200,17 @@ export default function ConsultationsTable({
   const [sortByDate, setSortByDate] = useState<"newest" | "oldest">("newest");
   const [savingId, setSavingId] = useState<string | null>(null);
   const [selectedConsultationId, setSelectedConsultationId] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const selectedConsultation = useMemo(
     () => consultations.find((item) => item.id === selectedConsultationId) ?? null,
     [consultations, selectedConsultationId]
+  );
+
+  const pendingDeleteConsultation = useMemo(
+    () => consultations.find((item) => item.id === pendingDeleteId) ?? null,
+    [consultations, pendingDeleteId],
   );
 
   const visibleConsultations = useMemo(() => {
@@ -262,6 +281,39 @@ export default function ConsultationsTable({
       // Keep UX non-blocking while allowing retry from selector.
     } finally {
       setSavingId(null);
+    }
+  };
+
+  const onDeleteConsultation = async () => {
+    if (!pendingDeleteId) return;
+
+    setDeletingId(pendingDeleteId);
+    try {
+      const res = await fetch(`/api/admin/consultations/${pendingDeleteId}`, {
+        method: "DELETE",
+      });
+      const data = (await res.json().catch(() => null)) as
+        | { error?: string; consultation?: { date: string; time: string } }
+        | null;
+
+      if (!res.ok) {
+        throw new Error(data?.error ?? "Неуспешно изтриване");
+      }
+
+      setConsultations((prev) => prev.filter((item) => item.id !== pendingDeleteId));
+      if (selectedConsultationId === pendingDeleteId) {
+        setSelectedConsultationId(null);
+      }
+      toast.success("Консултацията е изтрита", {
+        description: data?.consultation
+          ? `Слотът ${data.consultation.date} ${data.consultation.time} е освободен.`
+          : "Слотът е освободен.",
+      });
+      setPendingDeleteId(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Неуспешно изтриване");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -422,6 +474,20 @@ export default function ConsultationsTable({
                           Следваща среща
                         </Button>
                       ) : null}
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        disabled={deletingId === consultation.id}
+                        onClick={() => setPendingDeleteId(consultation.id)}
+                      >
+                        {deletingId === consultation.id ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="mr-2 h-4 w-4" />
+                        )}
+                        Изтрий
+                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -627,48 +693,102 @@ export default function ConsultationsTable({
               </div>
 
               <SheetFooter className="shrink-0 border-t border-border bg-background px-6 py-4 sm:flex-col sm:space-x-0">
-                <div className="flex w-full flex-col gap-2 sm:flex-row">
-                  {onBookFollowUp ? (
-                    <Button
-                      type="button"
-                      className="w-full"
-                      onClick={() => {
-                        onBookFollowUp(selectedConsultation);
-                        setSelectedConsultationId(null);
-                      }}
-                    >
-                      <CalendarPlus className="mr-2 h-4 w-4" />
-                      Следваща среща
-                    </Button>
-                  ) : null}
-                  {selectedConsultation.meetingType !== "in_person" &&
-                  selectedConsultation.meetUrl ? (
-                    <Button asChild variant="outline" className="w-full">
-                      <a
-                        href={selectedConsultation.meetUrl}
-                        target="_blank"
-                        rel="noreferrer"
+                <div className="flex w-full flex-col gap-2">
+                  <div className="flex w-full flex-col gap-2 sm:flex-row">
+                    {onBookFollowUp ? (
+                      <Button
+                        type="button"
+                        className="w-full"
+                        onClick={() => {
+                          onBookFollowUp(selectedConsultation);
+                          setSelectedConsultationId(null);
+                        }}
                       >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Отвори Google Meet
-                      </a>
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => setSelectedConsultationId(null)}
-                    >
-                      Затвори
-                    </Button>
-                  )}
+                        <CalendarPlus className="mr-2 h-4 w-4" />
+                        Следваща среща
+                      </Button>
+                    ) : null}
+                    {selectedConsultation.meetingType !== "in_person" &&
+                    selectedConsultation.meetUrl ? (
+                      <Button asChild variant="outline" className="w-full">
+                        <a
+                          href={selectedConsultation.meetUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <ExternalLink className="mr-2 h-4 w-4" />
+                          Отвори Google Meet
+                        </a>
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => setSelectedConsultationId(null)}
+                      >
+                        Затвори
+                      </Button>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="w-full"
+                    disabled={deletingId === selectedConsultation.id}
+                    onClick={() => setPendingDeleteId(selectedConsultation.id)}
+                  >
+                    {deletingId === selectedConsultation.id ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="mr-2 h-4 w-4" />
+                    )}
+                    Изтрий и освободи слота
+                  </Button>
                 </div>
               </SheetFooter>
             </>
           )}
         </SheetContent>
       </Sheet>
+
+      <AlertDialog
+        open={Boolean(pendingDeleteConsultation)}
+        onOpenChange={(open) => {
+          if (!open && !deletingId) setPendingDeleteId(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Изтриване на консултация?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingDeleteConsultation
+                ? `Ще изтриеш записа на ${pendingDeleteConsultation.name} за ${pendingDeleteConsultation.date} ${pendingDeleteConsultation.time}. Слотът ще бъде свободен за нова резервация.`
+                : "Слотът ще бъде освободен."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={Boolean(deletingId)}>Отказ</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={Boolean(deletingId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(event) => {
+                event.preventDefault();
+                void onDeleteConsultation();
+              }}
+            >
+              {deletingId ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Изтриване…
+                </>
+              ) : (
+                "Изтрий"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

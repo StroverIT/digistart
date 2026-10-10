@@ -158,6 +158,50 @@ export async function updateConsultationBookingStatus(
   };
 }
 
+async function deleteGoogleCalendarEvent(eventId: string) {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+  if (!clientId || !clientSecret || !refreshToken) return;
+
+  const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret);
+  oAuth2Client.setCredentials({ refresh_token: refreshToken });
+  const calendar = google.calendar({ version: "v3", auth: oAuth2Client });
+
+  await calendar.events.delete({
+    calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
+    eventId,
+    sendUpdates: "all",
+  });
+}
+
+export async function deleteConsultationBooking(id: string): Promise<{
+  id: string;
+  date: string;
+  time: string;
+} | null> {
+  const existing = await prisma.consultationBooking.findUnique({ where: { id } });
+  if (!existing) return null;
+
+  if (existing.googleEventId) {
+    await deleteGoogleCalendarEvent(existing.googleEventId).catch(() => undefined);
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.order.updateMany({
+      where: { consultationId: id },
+      data: { consultationId: null },
+    });
+    await tx.consultationBooking.delete({ where: { id } });
+  });
+
+  return {
+    id: existing.id,
+    date: existing.date,
+    time: existing.time,
+  };
+}
+
 function resolveUtcOffsetMinutes(date: string, timezone: string): number {
   const middayUtc = new Date(`${date}T12:00:00.000Z`);
   const timezoneName = new Intl.DateTimeFormat("en-US", {
