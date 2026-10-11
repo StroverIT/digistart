@@ -22,6 +22,7 @@ export default function BusinessMeetingPage() {
       showBadge={false}
       nameEmailOnly
       showPhoneField={false}
+      successRedirectPath="/successful-created-meeting"
       className="flex min-h-screen items-center py-8 md:h-screen md:py-0"
     />
   );

@@ -44,6 +44,7 @@ type BookingFormProps = {
   };
   /** Stagger title, pricing, description, and form when parent section scrolls into view. */
   animateReveals?: boolean;
+  successRedirectPath?: string;
 };
 
 export function BookingForm({
@@ -67,6 +68,7 @@ export function BookingForm({
   pricing,
   className,
   animateReveals = false,
+  successRedirectPath,
 }: BookingFormProps = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const showNotesField = Boolean(notesLabel);
@@ -204,6 +206,7 @@ export function BookingForm({
                 value: metaLead?.value ?? pricing?.originalPrice,
               }}
               embeddedShowSlotsFirst={sectionId == "booking"}
+              successRedirectPath={successRedirectPath}
             />
           </div>
         </div>
