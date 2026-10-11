@@ -70,24 +70,13 @@ function ThankYouLeadContent() {
           >
             {CONTENT.titleLabel}
           </h1>
-
-          <p
-            data-lead-success-desc
-            className="mx-auto mb-8 max-w-md translate-y-10 text-lg text-muted-foreground opacity-0"
-          >
-            {CONTENT.descriptionLabel}
-          </p>
-
           <Card
             data-lead-success-card
-            className="mb-8 translate-y-10 border-border bg-card text-left opacity-0"
+            className="mb-8 translate-y-10 border-0 bg-transparent py-0 text-left opacity-0 shadow-none"
           >
-            <CardContent className="space-y-4 p-6">
-              <h2 className="text-center text-xl font-semibold">
-                {CONTENT.watchBeforeMeetingLabel}
-              </h2>
+            <CardContent className="p-0">
               <div
-                className={`relative mx-auto w-full max-w-xs overflow-hidden rounded-lg ${PRE_MEETING_VIDEO.aspectRatioClass}`}
+                className={`relative mx-auto w-full max-w-md overflow-hidden rounded-lg ${PRE_MEETING_VIDEO.aspectRatioClass}`}
               >
                 <iframe
                   src={PRE_MEETING_VIDEO.embedUrl}

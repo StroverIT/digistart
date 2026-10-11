@@ -1,8 +1,5 @@
 export const CONTENT = {
-  titleLabel: "Успешно се записахте за консултация",
-  descriptionLabel:
-    "Ще получите имейл с детайли за срещата. Изгледайте клипа по-долу преди да се срещнем.",
-  watchBeforeMeetingLabel: "Изгледай преди срещата",
+  titleLabel: "Успешно се записа за консултация",
   homeButtonLabel: "Към начало",
   videoTitleLabel: "Важно преди срещата",
 } as const;
