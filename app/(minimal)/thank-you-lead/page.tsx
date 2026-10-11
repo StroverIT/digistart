@@ -1,23 +1,17 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { CalendarPlus, CheckCircle2, Home, Video } from "lucide-react";
+import { CheckCircle2, Home } from "lucide-react";
 import { TrackedCtaLink } from "@/components/analytics/tracked-cta-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useConfetti } from "@/hooks/use-confetti";
-import { buildConsultationGoogleCalendarUrl } from "@/lib/consultation/google-calendar-url";
-import {
-  formatConsultationDisplayDate,
-  readConsultationLeadSuccess,
-  type ConsultationLeadSuccess,
-} from "@/lib/consultation/lead-success";
+import { CONTENT, PRE_MEETING_VIDEO } from "./consts";
 
 function ThankYouLeadContent() {
   const { ConfettiRenderer } = useConfetti();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [booking, setBooking] = useState<ConsultationLeadSuccess | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -47,29 +41,10 @@ function ThankYouLeadContent() {
     }, rootRef);
 
     return () => ctx.revert();
-  }, [mounted, booking?.id]);
-
-  const calendarUrl = useMemo(() => {
-    if (!booking) return null;
-    if (booking.calendarUrl) return booking.calendarUrl;
-
-    const meetingLine =
-      booking.meetingType === "in_person" ? "На място в София" : "Онлайн (Google Meet)";
-    const meetLine = booking.meetUrl ? `\nGoogle Meet: ${booking.meetUrl}` : "";
-
-    return buildConsultationGoogleCalendarUrl({
-      title: "DigiStart консултация",
-      date: booking.date,
-      time: booking.time,
-      timezone: booking.timezone,
-      description: `Формат: ${meetingLine}${meetLine}`,
-      location: booking.meetingType === "in_person" ? "София" : booking.meetUrl,
-    });
-  }, [booking]);
+  }, [mounted]);
 
   useEffect(() => {
     setMounted(true);
-    setBooking(readConsultationLeadSuccess());
   }, []);
 
   return (
@@ -82,100 +57,61 @@ function ThankYouLeadContent() {
         </div>
       ) : (
         <div ref={rootRef} className="relative z-10 mx-auto w-full max-w-2xl text-center">
-        <div data-lead-success-icon className="relative mb-8 translate-y-10 opacity-0">
-          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-green-500/20">
-            <CheckCircle2 className="h-12 w-12 text-green-500" />
+          <div data-lead-success-icon className="relative mb-8 translate-y-10 opacity-0">
+            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-green-500/20">
+              <CheckCircle2 className="h-12 w-12 text-green-500" />
+            </div>
+            <div className="absolute inset-0 mx-auto h-24 w-24 animate-ping rounded-full bg-green-500/10" />
           </div>
-          <div className="absolute inset-0 mx-auto h-24 w-24 animate-ping rounded-full bg-green-500/10" />
-        </div>
 
-        <h1
-          data-lead-success-title
-          className="mb-4 translate-y-10 text-3xl font-bold opacity-0 sm:text-4xl"
-        >
-          Успешно се записахте за консултация
-        </h1>
+          <h1
+            data-lead-success-title
+            className="mb-4 translate-y-10 text-3xl font-bold opacity-0 sm:text-4xl"
+          >
+            {CONTENT.titleLabel}
+          </h1>
 
-        <p
-          data-lead-success-desc
-          className="mx-auto mb-8 max-w-md translate-y-10 text-lg text-muted-foreground opacity-0"
-        >
-          Ще получите имейл с детайли за срещата. Добавете я в календара си, за да не я пропуснете.
-        </p>
+          <p
+            data-lead-success-desc
+            className="mx-auto mb-8 max-w-md translate-y-10 text-lg text-muted-foreground opacity-0"
+          >
+            {CONTENT.descriptionLabel}
+          </p>
 
-        {booking ? (
           <Card
             data-lead-success-card
             className="mb-8 translate-y-10 border-border bg-card text-left opacity-0"
           >
             <CardContent className="space-y-4 p-6">
-              <div>
-                <p className="text-sm text-muted-foreground">Дата и час</p>
-                <p className="font-medium">
-                  {formatConsultationDisplayDate(booking.date)} в {booking.time}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-sm text-muted-foreground">Формат</p>
-                <p className="font-medium">
-                  {booking.meetingType === "in_person" ? "На място в София" : "Онлайн"}
-                </p>
-              </div>
-
-              {booking.meetUrl ? (
-                <div>
-                  <p className="text-sm text-muted-foreground">Google Meet</p>
-                  <a
-                    href={booking.meetUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 font-medium text-accent hover:underline"
-                  >
-                    <Video className="h-4 w-4 shrink-0" />
-                    Отвори линка за срещата
-                  </a>
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
-        ) : (
-          <Card
-            data-lead-success-card
-            className="mb-8 translate-y-10 border-border bg-card text-left opacity-0"
-          >
-            <CardContent className="p-6 text-sm text-muted-foreground">
-              Детайлите за консултацията са изпратени на вашия имейл.
-            </CardContent>
-          </Card>
-        )}
-
-        <div
-          data-lead-success-actions
-          className="flex translate-y-10 flex-col items-center justify-center gap-4 opacity-0 sm:flex-row"
-        >
-          {calendarUrl ? (
-            <Button asChild size="lg" className="glow-primary">
-              <a
-                href={calendarUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Запиши консултацията в Google Calendar"
+              <h2 className="text-center text-xl font-semibold">
+                {CONTENT.watchBeforeMeetingLabel}
+              </h2>
+              <div
+                className={`relative mx-auto w-full max-w-xs overflow-hidden rounded-lg ${PRE_MEETING_VIDEO.aspectRatioClass}`}
               >
-                <CalendarPlus className="mr-2 h-5 w-5" />
-                Запиши в календара
-              </a>
-            </Button>
-          ) : null}
+                <iframe
+                  src={PRE_MEETING_VIDEO.embedUrl}
+                  title={CONTENT.videoTitleLabel}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="absolute inset-0 h-full w-full border-0"
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-          <TrackedCtaLink href="/" ctaId="thank_you_lead_home">
-            <Button size="lg" variant="secondary">
-              <Home className="mr-2 h-5 w-5" />
-              Към началото
-            </Button>
-          </TrackedCtaLink>
+          <div
+            data-lead-success-actions
+            className="flex translate-y-10 flex-col items-center justify-center gap-4 opacity-0 sm:flex-row"
+          >
+            <TrackedCtaLink href="/" ctaId="thank_you_lead_home">
+              <Button size="lg" className="glow-primary">
+                <Home className="mr-2 h-5 w-5" />
+                {CONTENT.homeButtonLabel}
+              </Button>
+            </TrackedCtaLink>
+          </div>
         </div>
-      </div>
       )}
     </div>
   );
