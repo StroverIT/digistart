@@ -12,9 +12,17 @@ export const CONSULTATION_SLOT_TIMES = [
 /** Admin / manual bookings can use evening slots beyond the public window. */
 export const CONSULTATION_ADMIN_SLOT_TIMES = [
   ...CONSULTATION_SLOT_TIMES,
+  "17:30",
+  "17:45",
   "18:00",
+  "18:30",
+  "18:45",
   "19:00",
+  "19:30",
+  "19:45",
   "20:00",
+  "20:30",
+  "20:45",
   "21:00",
 ] as const;
 
