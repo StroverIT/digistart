@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
-import { CONSULTATION_SLOT_BLOCKING_STATUSES } from "@/lib/consultation/slots";
+import {
+  CONSULTATION_SLOT_BLOCKING_STATUSES,
+  isValidConsultationAdminSlotTime,
+} from "@/lib/consultation/slots";
 import {
   getConsultationBookings,
   GoogleMeetCreationError,
@@ -50,6 +53,13 @@ export async function POST(req: Request) {
     }
 
     const data = parsed.data;
+    if (!isValidConsultationAdminSlotTime(data.time)) {
+      return NextResponse.json(
+        { error: "Невалиден час за резервация." },
+        { status: 400 },
+      );
+    }
+
     const today = formatDate(new Date());
     if (data.date < today) {
       return NextResponse.json(

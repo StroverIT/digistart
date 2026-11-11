@@ -3,11 +3,11 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import {
+  CONSULTATION_ADMIN_SLOT_TIMES,
   CONSULTATION_PUBLIC_DAY_COUNT,
   CONSULTATION_SLOT_BLOCKING_STATUSES,
-  CONSULTATION_SLOT_TIMES,
   formatConsultationDateKey,
-  isValidConsultationSlotTime,
+  isValidConsultationAdminSlotTime,
 } from "@/lib/consultation/slots";
 import { getConsultationBookings } from "@/lib/server/consultation-bookings";
 import {
@@ -90,7 +90,7 @@ export async function GET() {
     const bookedTimes = bookedByDate.get(date) ?? new Map();
     const blockedTimes = blockedByDate.get(date) ?? new Map();
 
-    const slots = CONSULTATION_SLOT_TIMES.map((time) => {
+    const slots = CONSULTATION_ADMIN_SLOT_TIMES.map((time) => {
       const booking = bookedTimes.get(time);
       if (booking) {
         return {
@@ -146,7 +146,7 @@ export async function POST(req: Request) {
     }
 
     const { date, time, reason } = parsed.data;
-    if (!isValidConsultationSlotTime(time)) {
+    if (!isValidConsultationAdminSlotTime(time)) {
       return NextResponse.json({ error: "Invalid slot time." }, { status: 400 });
     }
 
