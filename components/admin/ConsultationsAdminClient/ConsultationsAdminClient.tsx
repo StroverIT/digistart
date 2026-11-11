@@ -1,8 +1,9 @@
 "use client";
 
 import type { FC } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import { AdminConsultationAvailabilityPanel } from "@/components/admin/AdminConsultationAvailabilityPanel";
 import { AdminManualConsultationBookingPanel } from "@/components/admin/AdminManualConsultationBookingPanel";
@@ -10,6 +11,10 @@ import ConsultationsTable from "@/components/admin/ConsultationsTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  isManualBookingTab,
+  parseManualBookingPrefillFromSearchParams,
+} from "@/lib/consultation/manual-booking-prefill";
 import { CONTENT, DEFAULT_TAB } from "./consts";
 import type { TConsultationsAdminTab, TManualBookingPrefill } from "./types";
 
@@ -61,10 +66,26 @@ const buildFollowUpNotes = (consultation: TConsultationListItem) => {
 export const ConsultationsAdminClient: FC<TConsultationsAdminClientProps> = ({
   consultations,
 }) => {
-  const [activeTab, setActiveTab] = useState<TConsultationsAdminTab>(DEFAULT_TAB);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<TConsultationsAdminTab>(() =>
+    isManualBookingTab(searchParams.get("tab")) ? "manual" : DEFAULT_TAB,
+  );
   const [manualPrefill, setManualPrefill] = useState<TManualBookingPrefill | null>(
     null,
   );
+
+  useEffect(() => {
+    const prefill = parseManualBookingPrefillFromSearchParams(searchParams);
+    const wantsManualTab = isManualBookingTab(searchParams.get("tab"));
+    if (!prefill && !wantsManualTab) return;
+
+    if (prefill) setManualPrefill(prefill);
+    if (wantsManualTab || prefill) setActiveTab("manual");
+
+    router.replace(pathname, { scroll: false });
+  }, [pathname, router, searchParams]);
 
   const handleBookFollowUp = useCallback((consultation: TConsultationListItem) => {
     setManualPrefill({

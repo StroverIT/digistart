@@ -471,7 +471,7 @@ export default function ConsultationsTable({
                           onClick={() => onBookFollowUp(consultation)}
                         >
                           <CalendarPlus className="mr-2 h-4 w-4" />
-                          Следваща среща
+                          Ръчна резервация
                         </Button>
                       ) : null}
                       <Button
@@ -705,7 +705,7 @@ export default function ConsultationsTable({
                         }}
                       >
                         <CalendarPlus className="mr-2 h-4 w-4" />
-                        Следваща среща
+                        Ръчна резервация
                       </Button>
                     ) : null}
                     {selectedConsultation.meetingType !== "in_person" &&

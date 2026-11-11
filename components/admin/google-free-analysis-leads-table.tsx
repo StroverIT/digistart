@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowDownUp,
+  CalendarPlus,
   Check,
   CheckCircle2,
   Copy,
@@ -35,6 +36,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { buildManualBookingHref } from "@/lib/consultation/manual-booking-prefill";
 import {
   getGoogleFreeAnalysisStatusLabel,
   getGoogleFreeAnalysisUrgencyLabel,
@@ -144,6 +146,26 @@ function StatusBadge({ status }: { status: GoogleFreeAnalysisLeadStatus }) {
       {getGoogleFreeAnalysisStatusLabel(status)}
     </Badge>
   );
+}
+
+function buildLeadManualBookingHref(lead: GoogleFreeAnalysisLeadRow) {
+  const parts = ["От безплатен Google анализ"];
+  if (lead.company.trim()) parts.push(`Фирма: ${lead.company.trim()}`);
+  if (lead.website.trim()) parts.push(`Сайт: ${lead.website.trim()}`);
+  if (lead.googleMapsUrl.trim()) {
+    parts.push(`Google Maps: ${lead.googleMapsUrl.trim()}`);
+  }
+  if (lead.urgency.trim()) {
+    parts.push(`Спешност: ${getGoogleFreeAnalysisUrgencyLabel(lead.urgency)}`);
+  }
+  if (lead.notes?.trim()) parts.push(lead.notes.trim());
+
+  return buildManualBookingHref({
+    name: lead.name,
+    email: lead.email,
+    phone: lead.phone,
+    notes: parts.join("\n\n"),
+  });
 }
 
 export default function GoogleFreeAnalysisLeadsTable({
@@ -425,6 +447,12 @@ export default function GoogleFreeAnalysisLeadsTable({
                         <Eye className="mr-2 h-4 w-4" />
                         Детайли
                       </Button>
+                      <Button type="button" variant="secondary" size="sm" asChild>
+                        <Link href={buildLeadManualBookingHref(lead)}>
+                          <CalendarPlus className="mr-2 h-4 w-4" />
+                          Ръчна резервация
+                        </Link>
+                      </Button>
                       {lead.status === "pending" ? (
                         <Button
                           type="button"
@@ -656,9 +684,16 @@ export default function GoogleFreeAnalysisLeadsTable({
               </div>
 
               <SheetFooter className="shrink-0 flex-col gap-2 border-t border-border bg-background px-6 py-4 sm:flex-col sm:space-x-0">
+                <Button asChild className="w-full">
+                  <Link href={buildLeadManualBookingHref(selectedLead)}>
+                    <CalendarPlus className="mr-2 h-4 w-4" />
+                    Ръчна резервация
+                  </Link>
+                </Button>
                 {selectedLead.status === "pending" ? (
                   <Button
                     type="button"
+                    variant="secondary"
                     className="w-full"
                     disabled={savingId === selectedLead.id}
                     onClick={() => void onStatusChange(selectedLead.id, "done")}
